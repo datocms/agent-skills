@@ -56,7 +56,24 @@ per-project migration folders.
 
 ---
 
-## Token Naming
+## Authentication
+
+Each profile can authenticate using either method:
+
+### Option A: OAuth-based (recommended for local development)
+
+Link each profile to its project via `datocms link`:
+
+```bash
+npx datocms link --profile=blueprint
+npx datocms link --profile=client_a
+npx datocms link --profile=client_b
+```
+
+This stores `siteId` and `organizationId` in each profile. The CLI resolves
+the API token automatically via OAuth credentials.
+
+### Option B: Environment variable (recommended for CI/CD)
 
 The default CLI token env var is:
 

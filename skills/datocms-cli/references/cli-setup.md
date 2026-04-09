@@ -1,6 +1,6 @@
 # CLI Setup
 
-Configuration, profiles, token selection, and global flags for `@datocms/cli`.
+Installation, authentication, project linking, profiles, token resolution, and global flags for `@datocms/cli`.
 
 ---
 
@@ -17,6 +17,81 @@ version. If the repo already has an established runner style (`pnpm exec`,
 
 ---
 
+## Authentication
+
+CLI v4 uses **OAuth-based authentication** as the best practice. Credentials are stored at
+`~/.config/datocms-cli/credentials.json` (file is `chmod 600`).
+
+### Log in
+
+```bash
+npx datocms login
+```
+
+Opens the browser for OAuth authentication. If port 7651 is in use, falls
+back to a manual copy-paste flow. Re-running `login` replaces existing
+credentials.
+
+### Log out
+
+```bash
+npx datocms logout
+```
+
+Revokes the OAuth token remotely and removes local credentials.
+
+### Check current account
+
+```bash
+npx datocms whoami
+```
+
+Shows the email, name, and company of the currently authenticated account.
+
+---
+
+## Linking a Project
+
+Use `link` to connect the current directory to a DatoCMS project and
+configure its profile in one step.
+
+```bash
+# Interactive: log in (if needed), pick workspace + project, configure profile
+npx datocms link
+
+# Non-interactive: link to a specific project by ID
+npx datocms link --site-id=12345
+
+# Configure a named profile instead of "default"
+npx datocms link --profile=staging
+```
+
+`link` combines authentication and profile configuration:
+1. Authenticates via OAuth (or reuses existing credentials)
+2. Lets you select a workspace and project interactively
+3. Stores the project's `siteId` (and `organizationId`) in the profile
+4. Configures migration directory, model API key, log level, etc.
+
+Alternatively, instead of linking to a project, you can choose to authenticate
+via an API token environment variable during the `link` flow.
+
+Run `npx datocms link --help` for all available flags (`--profile`,
+`--log-level`, `--migrations-dir`, `--migrations-model`,
+`--migrations-template`, `--migrations-tsconfig`, `--organization-id`,
+`--site-id`).
+
+### Unlink a project
+
+```bash
+# Remove the default profile
+npx datocms unlink
+
+# Remove a named profile
+npx datocms unlink --profile=staging
+```
+
+---
+
 ## Configuration File
 
 The CLI uses `datocms.config.json` in the project root. Structure:
@@ -25,6 +100,8 @@ The CLI uses `datocms.config.json` in the project root. Structure:
 {
   "profiles": {
     "default": {
+      "siteId": "12345",
+      "organizationId": "67890",
       "logLevel": "NONE",
       "migrations": {
         "directory": "migrations",
@@ -34,6 +111,7 @@ The CLI uses `datocms.config.json` in the project root. Structure:
       }
     },
     "staging": {
+      "apiTokenEnvName": "DATOCMS_STAGING_TOKEN",
       "logLevel": "BASIC",
       "migrations": {
         "directory": "migrations"
@@ -47,6 +125,9 @@ The CLI uses `datocms.config.json` in the project root. Structure:
 
 | Property | Type | Description |
 |---|---|---|
+| `siteId` | `string` | DatoCMS project ID (set by `link` when using OAuth) |
+| `organizationId` | `string` | Organization ID (set by `link` for org projects) |
+| `apiTokenEnvName` | `string` | Custom env var name for the API token (overrides default naming convention) |
 | `logLevel` | `"NONE" \| "BASIC" \| "BODY" \| "BODY_AND_HEADERS"` | API call logging verbosity |
 | `logMode` | `"stdout" \| "file" \| "directory"` | Where logs are written |
 | `baseUrl` | `string` | Custom API base URL (advanced) |
@@ -54,30 +135,6 @@ The CLI uses `datocms.config.json` in the project root. Structure:
 | `migrations.modelApiKey` | `string` | API key of the model used to track migrations |
 | `migrations.template` | `string` | Path to a custom migration template file |
 | `migrations.tsconfig` | `string` | Path to tsconfig for running TS migrations |
-
----
-
-## Preferred Profile Authoring Flow
-
-Use `profile:set` as the default way to create or update profiles.
-
-### Set a profile
-
-```bash
-# Interactive setup for the default profile
-npx datocms profile:set
-
-# Set a named profile with specific options
-npx datocms profile:set staging --log-level=BASIC --migrations-dir=migrations
-```
-
-Run `npx datocms profile:set --help` for all available flags.
-
-### Remove a profile
-
-```bash
-npx datocms profile:remove staging
-```
 
 ---
 
@@ -99,13 +156,17 @@ same non-default profile.
 Once the active profile is known, the CLI resolves the API token in this order:
 
 1. **`--api-token` flag** — passed directly on the command line
-2. **Environment variable for the active profile**
+2. **Linked project** — if the profile has a `siteId` (set by `link`), the CLI
+   uses OAuth credentials to fetch the project's API token via the Dashboard API.
+   Requires a prior `datocms login`.
+3. **Environment variable for the active profile** — uses the `apiTokenEnvName`
+   from the profile config, or falls back to the default naming convention:
    - default profile: `DATOCMS_API_TOKEN`
    - named profile `staging`: `DATOCMS_STAGING_PROFILE_API_TOKEN`
 
 The token must have CMA access enabled (`can_access_cma: true`).
 
-### Example `.env` setup
+### Example `.env` setup (for env-var-based auth)
 
 ```env
 # For the default profile
