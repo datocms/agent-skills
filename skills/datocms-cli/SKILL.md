@@ -5,7 +5,7 @@ description: >-
   schema type generation, direct one-off CMA calls, environment operations,
   deployment workflows, and multi-project profile syncing. Use when users ask
   for datocms CLI commands or scripts such as migrations:new, migrations:run,
-  schema:generate, cma:call, migration scaffolding for
+  schema:generate, cma:call, cma:docs, migration scaffolding for
   models/fields/blocks, CLI setup with datocms.config.json and profiles,
   OAuth authentication (login, logout, whoami), project linking (link,
   unlink), environment commands (list/fork/promote/rename/destroy),
@@ -62,7 +62,7 @@ Classify the user's task into one or more categories:
 | **Creating migrations** | Scaffold new migration scripts, autogenerate from environment diffs, custom templates |
 | **Running migrations** | Execute pending migrations, dry-run, fork-and-run, in-place execution |
 | **Schema generation** | Run `schema:generate`, scope output to item types, target a specific environment |
-| **Direct CMA calls** | Use `cma:call` for one-off API operations without writing a script |
+| **Direct CMA calls** | Use `cma:docs` to browse API reference, `cma:call` for one-off API operations without writing a script |
 | **Environment management** | Fork, promote, rename, destroy, list environments via CLI commands |
 | **Deployment workflow** | Maintenance mode, safe deployment sequences, CI/CD integration |
 | **Multi-project sync** | Shared migrations across blueprint/client projects via CLI profiles |
@@ -117,6 +117,10 @@ Confirm these inputs when they are not already clear:
 - target environment when sandbox-specific types are needed
 
 ### Direct CMA calls
+
+When unsure about the exact request shape for a resource/action, run
+`npx datocms cma:docs <resource> <action>` first to look up the endpoint
+details.
 
 Confirm these inputs when they are not already clear:
 - resource + method
@@ -239,6 +243,7 @@ Write commands and scripts following these mandatory rules:
 - Route the follow-up code changes that consume those types to `datocms-cma`
 
 ### Direct CMA Calls
+- Use `npx datocms cma:docs <resource> <action>` to look up endpoint details (request body, parameters, examples) before constructing a command
 - Use `npx datocms cma:call <resource> <method> [...pathArgs]` for one-off CMA operations that do not justify a reusable script
 - Pass request bodies with `--data '{...}'` and query parameters with `--params '{...}'`
 - Add `--environment` when the call must target a sandbox environment
