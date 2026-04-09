@@ -7,12 +7,13 @@ description: >-
   for datocms CLI commands or scripts such as migrations:new, migrations:run,
   schema:generate, cma:call, migration scaffolding for
   models/fields/blocks, CLI setup with datocms.config.json and profiles,
-  environment commands (list/fork/promote/rename/destroy), maintenance-mode
-  toggling, CI/CD migration pipelines, blueprint/client project sync,
-  imports from WordPress or Contentful (including assets/content), and CLI
-  plugin management (plugins:install, plugins:add, plugins:available,
-  plugins:link for local plugin development, plugins:remove, plugins:update,
-  plugins:reset, plugins:inspect).
+  OAuth authentication (login, logout, whoami), project linking (link,
+  unlink), environment commands (list/fork/promote/rename/destroy),
+  maintenance-mode toggling, CI/CD migration pipelines, blueprint/client
+  project sync, imports from WordPress or Contentful (including
+  assets/content), and CLI plugin management (plugins:install, plugins:add,
+  plugins:available, plugins:link for local plugin development,
+  plugins:remove, plugins:update, plugins:reset, plugins:inspect).
 ---
 
 # DatoCMS CLI Skill
@@ -35,18 +36,19 @@ Silently examine the project to determine CLI readiness.
 
 2. Look for a `datocms.config.json` file in the project root. This file stores CLI profiles with settings like migration directory, log level, and template paths.
 
-3. Check for a `.env` or `.env.local` file containing `DATOCMS_API_TOKEN`. The CLI resolves tokens in this order:
+3. Check how authentication is set up. The CLI resolves tokens in this order:
    - `--api-token` flag on the command
-   - Environment variable: `DATOCMS_API_TOKEN` (default profile) or `DATOCMS_<PROFILE_ID>_PROFILE_API_TOKEN` (named profile)
+   - Linked project: if the profile has a `siteId` (set by `datocms link`), the CLI uses OAuth credentials (`~/.config/datocms-cli/credentials.json`) to fetch the token via the Dashboard API
+   - Environment variable: `DATOCMS_API_TOKEN` (default profile) or `DATOCMS_<PROFILE_ID>_PROFILE_API_TOKEN` (named profile), or a custom env var name set via `apiTokenEnvName` in the profile config
    - Active profile override via `DATOCMS_PROFILE`
 
 4. Check for a `migrations/` directory to see if migration scripting is already set up.
 
 5. Detect TypeScript: look for `tsconfig.json` or a `migrations.tsconfig` setting in `datocms.config.json`. TypeScript projects default to `.ts` migration files.
 
-**Important:** The CLI requires an API token with CMA access (`can_access_cma: true`). A read-only CDA token will not work. If you see a token named like `DATOCMS_READONLY_API_TOKEN` or `NEXT_PUBLIC_DATOCMS_API_TOKEN`, warn the user.
+**Important:** The CLI requires a CMA-enabled API token. A read-only CDA token will not work. If you see a token named like `DATOCMS_READONLY_API_TOKEN` or `NEXT_PUBLIC_DATOCMS_API_TOKEN`, warn the user. The best practice is `datocms login` + `datocms link`, which handles token resolution automatically via OAuth.
 
-Commands that inspect project state or generate output from the live DatoCMS project — including `migrations:new --autogenerate`, `schema:generate`, and most `cma:call` usage — need that token or an active profile before they can run successfully.
+Commands that inspect project state or generate output from the live DatoCMS project — including `migrations:new --autogenerate`, `schema:generate`, and most `cma:call` usage — need a valid token (via linked project, env var, or `--api-token` flag) before they can run successfully.
 
 ---
 
@@ -56,7 +58,7 @@ Classify the user's task into one or more categories:
 
 | Category | Examples |
 |---|---|
-| **CLI setup** | Install CLI, configure profiles, set API tokens, `datocms.config.json` |
+| **CLI setup** | Install CLI, authenticate (`login`/`logout`/`whoami`), link projects (`link`/`unlink`), configure profiles, `datocms.config.json` |
 | **Creating migrations** | Scaffold new migration scripts, autogenerate from environment diffs, custom templates |
 | **Running migrations** | Execute pending migrations, dry-run, fork-and-run, in-place execution |
 | **Schema generation** | Run `schema:generate`, scope output to item types, target a specific environment |
@@ -81,6 +83,7 @@ workflow decision.
 ### CLI setup
 
 Confirm these inputs when they are not already clear:
+- whether the user wants OAuth-based auth (`login` + `link`, best practice) or env-var-based auth
 - which profile ids are needed
 - whether the repo should preserve an existing migrations convention or create a new shared one
 - whether the project expects JavaScript or TypeScript migrations

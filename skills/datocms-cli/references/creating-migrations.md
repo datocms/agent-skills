@@ -15,8 +15,8 @@ Creates a new migration script in the migrations directory.
 Run `npx datocms migrations:new --help` for all available flags.
 
 > **Precondition:** any mode that inspects the live DatoCMS project
-> (especially `--autogenerate`) needs a CMA-enabled token via `--api-token`,
-> environment variable, or configured profile.
+> (especially `--autogenerate`) needs a CMA-enabled token via a linked
+> project (`datocms link`), `--api-token` flag, or environment variable.
 
 ---
 
