@@ -31,7 +31,32 @@ npx datocms cma:call <RESOURCE> <METHOD> [...pathArgs] [--data '...'] [--params 
 
 ## Resource and Method Discovery
 
-Before constructing a command, discover what is available:
+### `cma:docs` — Browse full API reference
+
+Use `cma:docs` to get detailed, up-to-date documentation about any CMA
+endpoint directly in the terminal:
+
+```bash
+# List all available resources
+npx datocms cma:docs
+
+# Describe a resource and its actions
+npx datocms cma:docs items
+
+# Describe a specific action with request/response examples
+npx datocms cma:docs items create
+
+# Expand a collapsed details section for more info
+npx datocms cma:docs items create --expand "Example: Basic example"
+```
+
+This is the recommended way to look up endpoint details — request body
+schemas, required fields, query parameters, and response shapes — before
+constructing a `cma:call` command or writing CMA client code.
+
+### `cma:call --help` — Quick resource/method listing
+
+For a quick listing of available resources and methods:
 
 ```bash
 # List all available resources
@@ -279,3 +304,7 @@ npx datocms cma:call item_types list --json | jq '.[].api_key'
 - The code should live in the repo as a reusable script
 - You need typed helpers or autocomplete from generated schema types
 - Multiple related API calls depend on each other's results
+
+> **Tip:** Use `npx datocms cma:docs <resource> <action>` to look up the
+> exact request body shape and parameters before writing either a `cma:call`
+> command or CMA client code.

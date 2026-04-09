@@ -43,7 +43,7 @@ Silently examine the project to determine the runtime and which CMA client packa
 
 4. Check for a `.env` or `.env.local` file to see if `DATOCMS_API_TOKEN` (or a similar variable) is already defined.
 
-5. Check for `@datocms/cli` in `devDependencies` and an existing `cma-types.ts` file to determine if CMA type generation is already set up. Do **not** proactively suggest setting up type generation.
+5. Check for `@datocms/cli` in `devDependencies` and an existing `cma-types.ts` file to determine if CMA type generation is already set up. Do **not** proactively suggest setting up type generation. When the CLI is available, use `npx datocms cma:docs <resource> <action>` to look up detailed, up-to-date endpoint documentation (request body schemas, required fields, query parameters, response shapes) before writing CMA client code.
 
 **Important:** The CMA requires an API token with `can_access_cma: true` and a role granting the needed permissions (not a read-only CDA token). If you see a token variable named like `DATOCMS_READONLY_API_TOKEN` or `NEXT_PUBLIC_DATOCMS_API_TOKEN`, warn the user that CMA operations need a token with CMA access enabled. The token does not need to be "full-access" — it can be scoped to specific models, actions, and environments via its role.
 
@@ -173,7 +173,7 @@ This skill covers **content management via the REST CMA** (mutations, schema, up
 
 | Condition | Route to |
 |---|---|
-| CLI commands, migration scaffolding, `datocms schema:generate`, or environment operations via `npx datocms` | **datocms-cli** |
+| CLI commands, migration scaffolding, `datocms schema:generate`, `datocms cma:docs`, or environment operations via `npx datocms` | **datocms-cli** |
 | Querying content with GraphQL for frontend display | **datocms-cda** |
 | Setting up draft mode, Web Previews, Content Link, real-time subscriptions, or framework integration | **datocms-frontend-integrations** |
 | Building a DatoCMS plugin | **datocms-plugin-builder** |

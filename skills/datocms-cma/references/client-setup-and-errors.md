@@ -90,6 +90,8 @@ const client = buildClient({
 
 The client also exposes resources for record versions, webhook calls, SSO, daily usage, subscription features, white-label settings, and more.
 
+> **Tip:** When `@datocms/cli` is installed, run `npx datocms cma:docs <resource> <action>` to browse detailed, up-to-date endpoint documentation (request body schemas, required fields, parameters, examples) directly in the terminal.
+
 ---
 
 ## Error Handling
