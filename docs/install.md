@@ -108,23 +108,30 @@ After making changes, reload without restarting:
 
 ## Codex Plugin Install
 
-This repo ships `.codex-plugin/plugin.json`, so it can be installed as a Codex
-plugin. This is the recommended approach for Codex users.
+This repo ships `.codex-plugin/plugin.json` and a repo-scoped marketplace entry
+at `.agents/plugins/marketplace.json`, so it can be installed as a local Codex
+plugin directly from the repo. This is the recommended approach for Codex users
+working on or validating this repository.
 
-Inside a Codex session, open the Plugin Directory:
+Inside a Codex session from this repo, open the plugin picker:
 
 ```
 /plugins
 ```
 
-Search for **datocms** and install it. All 8 skills are bundled into the
-plugin automatically.
+Choose the **DatoCMS Local Plugins** marketplace and install `datocms`. All 8
+skills are bundled into the plugin automatically. If the repo marketplace is
+not visible yet, restart Codex and open `/plugins` again.
 
 ### Updates
 
-Codex checks for plugin updates at session start. When the plugin version is
-bumped upstream (new commit + version bump in `.codex-plugin/plugin.json`),
-Codex prompts you to update.
+The repo marketplace points to the local repo for development. After changing
+plugin files, restart Codex and reinstall or refresh the local plugin if the
+cached copy has not updated yet.
+
+For published distribution, keep the plugin version in
+`.codex-plugin/plugin.json` bumped whenever you want downstream installs to
+pick up changes.
 
 ### Fallback: `$skill-installer`
 

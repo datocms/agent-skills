@@ -1,6 +1,6 @@
 {
   "skill_name": "datocms-cli",
-  "description": "Work with the DatoCMS CLI tool (@datocms/cli) for command-line migrations, schema type generation, direct one-off CMA calls, environment operations, deployment workflows, and multi-project profile syncing. Use when users ask for datocms CLI commands or scripts such as migrations:new, migrations:run, migrations:status, schema:generate, cma:call, migration scaffolding for models/fields/blocks, CLI setup with datocms.config.json and profiles, environment commands (list/fork/promote/rename/destroy), maintenance-mode toggling, CI/CD migration pipelines, blueprint/client project sync, and imports from WordPress or Contentful (including assets/content).",
+  "description": "Work with the DatoCMS CLI tool (@datocms/cli) for command-line migrations, schema type generation, direct one-off CMA calls, environment operations, deployment workflows, and multi-project profile syncing. Use when users ask for datocms CLI commands or scripts such as migrations:new, migrations:run, schema:generate, cma:call, migration scaffolding for models/fields/blocks, CLI setup with datocms.config.json and profiles, environment commands (list/fork/promote/rename/destroy), maintenance-mode toggling, CI/CD migration pipelines, blueprint/client project sync, imports from WordPress or Contentful (including assets/content), and CLI plugin management (plugins:install, plugins:add, plugins:available, plugins:link for local plugin development, plugins:remove, plugins:update, plugins:reset, plugins:inspect).",
   "evaluation_source": "combined",
   "results": [
     {
@@ -272,15 +272,65 @@
       "should_trigger": false,
       "query_mode": "explicit",
       "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "How do I install the DatoCMS WordPress CLI plugin so I can use the wordpress:import command?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
       "trigger_rate": 1.0,
       "triggers": 1,
       "runs": 1,
-      "pass": false
+      "pass": true
+    },
+    {
+      "query": "I want to see what official DatoCMS CLI plugins are available and install one",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I'm developing a custom DatoCMS CLI plugin locally and need to link it for testing",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Use datocms-cli to remove all installed CLI plugins and start fresh with the defaults",
+      "should_trigger": true,
+      "query_mode": "explicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I want to install a sidebar plugin into my DatoCMS project so editors can see SEO scores",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
     }
   ],
   "summary": {
-    "total": 27,
-    "passed": 26,
-    "failed": 1
+    "total": 32,
+    "passed": 32,
+    "failed": 0
   }
 }

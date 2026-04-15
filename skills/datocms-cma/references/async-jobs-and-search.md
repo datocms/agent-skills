@@ -137,9 +137,21 @@ for (const event of events) {
 }
 ```
 
-### Common Event Types
+### Common Action Names
 
-`create`, `update`, `destroy`, `publish`, `unpublish`, `duplicate`, `fork`, `promote`
+Individual record operations use the `items.*` prefix:
+
+`items.create`, `items.update`, `items.destroy`, `items.publish`, `items.unpublish`, `items.duplicate`
+
+Bulk record operations use a different prefix — `item_bulk_operations.*`:
+
+`item_bulk_operations.destroy`, `item_bulk_operations.publish`, `item_bulk_operations.unpublish`
+
+**Important:** Bulk operations log a single event with all affected record IDs in `request.payload.data.relationships.items`, not in the request path. The path for bulk operations is `/items/bulk/destroy` (or `/publish`, `/unpublish`). To find which records were affected by a bulk operation, inspect the payload rather than filtering by path.
+
+Other common action names:
+
+`environments.fork`, `environments.promote`, `roles.update`, `uploads.create`, `uploads.destroy`
 
 ### Common Entity Types
 

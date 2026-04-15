@@ -120,18 +120,23 @@ for scopes, update details, and single-skill install options.
 
 ### Codex (recommended)
 
-This repo ships as a Codex plugin. Inside a Codex session:
+This repo ships as a Codex plugin and includes a repo-scoped Codex marketplace
+entry at `.agents/plugins/marketplace.json` for local installation and testing.
+Inside a Codex session from this repo:
 
 ```
 /plugins
 ```
 
-Search for **datocms** in the Plugin Directory and install it. All 8 skills
-are bundled into the plugin automatically.
+Choose the **DatoCMS Local Plugins** marketplace and install `datocms`. All 8
+skills are bundled into the plugin automatically. If the repo marketplace does
+not appear yet, restart Codex and open `/plugins` again.
 
-**Updates:** Codex checks for plugin updates at session start. When the plugin
-version is bumped upstream (new commit + version bump in
-`.codex-plugin/plugin.json`), Codex prompts you to update.
+**Updates:** This repo-scoped marketplace points at the local repo, so it is
+best for development and validation. After changing the plugin files, restart
+Codex and reinstall/update the local plugin if needed. For published Codex
+distribution, keep `.codex-plugin/plugin.json` versioned and treat the repo
+marketplace as the local verification path.
 
 ### Codex (fallback — `$skill-installer`)
 

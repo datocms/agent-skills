@@ -1,0 +1,20 @@
+{
+  "name": "datocms-local",
+  "interface": {
+    "displayName": "DatoCMS Local Plugins"
+  },
+  "plugins": [
+    {
+      "name": "datocms",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -1,25 +1,25 @@
 # Trigger Eval Analysis
 
-Generated at: 2026-03-20T15:02:38.705081+00:00
+Generated at: 2026-04-15T18:11:56.395781+00:00
 Threshold: `0.5`
 
 Coverage manifest: `Current accepted trigger snapshot`
 Coverage: 8 included skill(s), 0 explicit exclusion(s).
 
-Overall: 183/192 reported-pass (95.3%), precision 94.3%, recall 98.3%, F1 96.3%.
+Overall: 189/197 reported-pass (95.9%), precision 95.2%, recall 98.4%, F1 96.8%.
 
 ## Overall By Query Mode
 
 | Query Mode | Total | Reported Pass | Precision | Recall | F1 | Unstable |
 |---|---:|---:|---:|---:|---:|---:|
-| implicit | 107 | 106/107 (99.1%) | 97.9% | 100.0% | 98.9% | 0 |
-| explicit | 62 | 57/62 (91.9%) | 90.9% | 100.0% | 95.2% | 0 |
+| implicit | 111 | 110/111 (99.1%) | 98.0% | 100.0% | 99.0% | 0 |
+| explicit | 63 | 59/63 (93.7%) | 92.7% | 100.0% | 96.2% | 0 |
 | overlap | 23 | 20/23 (87.0%) | 95.0% | 90.5% | 92.7% | 0 |
 
 | Skill | Reported Pass | Precision | Recall | F1 | FN | FP | Unstable |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | datocms-cda | 20/22 (90.9%) | 84.6% | 100.0% | 91.7% | 0 | 2 | 0 |
-| datocms-cli | 26/27 (96.3%) | 94.4% | 100.0% | 97.1% | 0 | 1 | 0 |
+| datocms-cli | 32/32 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 | 0 |
 | datocms-cma | 21/21 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 | 0 |
 | datocms-frontend-integrations | 21/23 (91.3%) | 100.0% | 85.7% | 92.3% | 2 | 0 | 0 |
 | datocms-plugin-builder | 14/14 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 | 0 |
@@ -41,8 +41,8 @@ Overall: 183/192 reported-pass (95.3%), precision 94.3%, recall 98.3%, F1 96.3%.
 
 | Query Mode | Total | Reported Pass | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
-| implicit | 22 | 22/22 (100.0%) | 100.0% | 100.0% | 100.0% |
-| explicit | 3 | 2/3 (66.7%) | 66.7% | 100.0% | 80.0% |
+| implicit | 26 | 26/26 (100.0%) | 100.0% | 100.0% | 100.0% |
+| explicit | 4 | 4/4 (100.0%) | 100.0% | 100.0% | 100.0% |
 | overlap | 2 | 2/2 (100.0%) | 100.0% | 100.0% | 100.0% |
 
 ### datocms-cma
