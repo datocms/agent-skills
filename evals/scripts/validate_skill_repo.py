@@ -91,7 +91,7 @@ class SkillMetadata:
     display_name: str
     short_description: str
     default_prompt: str
-    allow_implicit_invocation: bool
+    allow_implicit_invocation: bool | None
 
 
 def _decode_double_quoted_yaml(value: str) -> str:
@@ -182,8 +182,6 @@ def _parse_metadata_file(path: Path) -> SkillMetadata:
         missing_fields.append("interface.short_description")
     if default_prompt_match is None:
         missing_fields.append("interface.default_prompt")
-    if allow_implicit_match is None:
-        missing_fields.append("policy.allow_implicit_invocation")
 
     if missing_fields:
         missing = ", ".join(missing_fields)
@@ -195,7 +193,11 @@ def _parse_metadata_file(path: Path) -> SkillMetadata:
         display_name=_decode_double_quoted_yaml(display_name_match.group("value")),
         short_description=_decode_double_quoted_yaml(short_description_match.group("value")),
         default_prompt=_decode_double_quoted_yaml(default_prompt_match.group("value")),
-        allow_implicit_invocation=allow_implicit_match.group("value") == "true",
+        allow_implicit_invocation=(
+            allow_implicit_match.group("value") == "true"
+            if allow_implicit_match is not None
+            else None
+        ),
     )
 
 
@@ -323,11 +325,16 @@ def _validate_metadata(skill_file: Path, frontmatter: SkillFrontmatter, errors: 
     if f"${frontmatter.name}" not in metadata.default_prompt:
         errors.append(f"{metadata_path}: interface.default_prompt must reference ${frontmatter.name}")
 
-    if metadata.allow_implicit_invocation != expected_allow_implicit:
-        expected_value = "true" if expected_allow_implicit else "false"
-        errors.append(
-            f"{metadata_path}: policy.allow_implicit_invocation must be {expected_value}"
-        )
+    if expected_allow_implicit:
+        if metadata.allow_implicit_invocation is not True:
+            errors.append(
+                f"{metadata_path}: policy.allow_implicit_invocation must be true"
+            )
+    else:
+        if metadata.allow_implicit_invocation is not None:
+            errors.append(
+                f"{metadata_path}: omit policy.allow_implicit_invocation for explicit-only skills"
+            )
 
 
 def _validate_scaffold_contract(skill_file: Path, frontmatter: SkillFrontmatter, errors: list[str]) -> None:

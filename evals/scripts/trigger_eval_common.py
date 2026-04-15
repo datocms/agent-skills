@@ -137,8 +137,6 @@ def extract_metadata(skill_path: Path) -> SkillMetadata:
         missing_fields.append("interface.short_description")
     if default_prompt_match is None:
         missing_fields.append("interface.default_prompt")
-    if allow_implicit_match is None:
-        missing_fields.append("policy.allow_implicit_invocation")
 
     if missing_fields:
         missing_text = ", ".join(missing_fields)
@@ -148,7 +146,11 @@ def extract_metadata(skill_path: Path) -> SkillMetadata:
         display_name=decode_double_quoted_yaml(display_name_match.group("value")),
         short_description=decode_double_quoted_yaml(short_description_match.group("value")),
         default_prompt=decode_double_quoted_yaml(default_prompt_match.group("value")),
-        allow_implicit_invocation=allow_implicit_match.group("value") == "true",
+        allow_implicit_invocation=(
+            allow_implicit_match.group("value") == "true"
+            if allow_implicit_match is not None
+            else False
+        ),
     )
 
 

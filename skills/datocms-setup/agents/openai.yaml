@@ -4,5 +4,3 @@ interface:
   display_name: "DatoCMS Setup"
   short_description: "One-time DatoCMS setup wizard"
   default_prompt: "Use $datocms-setup to scaffold or configure DatoCMS setup in this project."
-policy:
-  allow_implicit_invocation: false
