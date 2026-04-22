@@ -5,93 +5,85 @@ agents how to work effectively with [DatoCMS](https://www.datocms.com) — from
 GraphQL queries and content management scripts to plugin development and
 one-shot project setup.
 
-Eight skills, all open source, installable in one step on every supported
-platform.
+All open source, installable in one step on every supported platform.
 
 ---
 
-## What's included
+## What's covered
 
-| Skill | What it does |
-|---|---|
-| `datocms-cda` | Read content with the Content Delivery API and GraphQL — including media, SEO, and typed query workflows. |
-| `datocms-cma` | Write records, manage schema, environments, uploads, webhooks, and other content-management automation. |
-| `datocms-cli` | Drive the DatoCMS CLI: setup/config, migrations, schema generation, direct CMA calls, environments, deployment, multi-project sync, and imports. |
-| `datocms-frontend-integrations` | Patch and extend frontend integrations for draft mode, web previews, visual editing, rendering, and search. |
-| `datocms-plugin-builder` | Patch and maintain existing DatoCMS plugins. |
-| `datocms-plugin-design-system` | Restyle plugin UI so it feels native to the DatoCMS dashboard. |
-| `datocms-plugin-scaffold` | Scaffold brand-new DatoCMS plugin projects. |
-| `datocms-setup` | One-shot setup orchestrator for frontend foundation/features, migrations, onboarding imports, and platform automation. |
+Most skills trigger **automatically** based on your prompt. The only one you
+invoke explicitly is `datocms-setup` (see [Usage](#usage)). Together they
+cover the full range of DatoCMS work:
 
-The first seven skills trigger **automatically** based on what you ask. The
-eighth, `datocms-setup`, is invoked **explicitly** — see [Usage](#usage) below.
+- **Frontend integrations** — draft mode, Web Previews, Visual Editing and
+  Content Link overlays, real-time preview subscriptions, cache-tag
+  invalidation, SEO/robots/sitemap wiring, crawler-safe search — across
+  Next.js App Router, Nuxt, SvelteKit, Astro, plus `react-datocms`,
+  `vue-datocms`, `@datocms/svelte`, and `@datocms/astro`.
+- **Reading content** — GraphQL against the Content Delivery API, with
+  filters, pagination, localization, modular content, Structured Text,
+  responsive images, SEO metadata, and typed queries (gql.tada / codegen).
+- **Writing content & project automation** — record CRUD and bulk edits,
+  CSV imports and exports, asset uploads, environment forks and promotions,
+  webhooks and build triggers, roles and tokens, scheduled publish flows,
+  audit logs.
+- **CLI workflows** — CLI setup and profiles, migrations, schema-type
+  generation, direct and typed CMA scripts, environment operations, CI/CD
+  pipelines, WordPress/Contentful imports, plugin management.
+- **Plugin development** — scaffolding new plugins with the Plugin SDK,
+  maintaining existing ones (config screens, hooks, sidebars, pages, field
+  extensions), and restyling plugin UI to feel native to the DatoCMS
+  dashboard.
+- **One-shot project setup** (explicit) — `datocms-setup` bootstraps draft
+  mode, visual editing, migrations workflows, content imports, and similar
+  multi-step flows in a single command.
+
+For the full list of skill names, internal setup recipes, and routing rules
+see [`docs/skill-catalog.md`](docs/skill-catalog.md).
 
 ---
 
 ## Install
 
-Pick the section for your agent. All variants install the full set of eight
-skills; for single-skill installs and advanced options see
+The universal installer works on every supported agent — Claude Code, Codex,
+Cursor, Copilot, Windsurf, and anything else that reads agent skills:
+
+```bash
+npx skills add datocms/llm-skills
+```
+
+This installs all skills via symlinks. Update later with:
+
+```bash
+npx skills update
+```
+
+For single-skill installs, scopes, and detached snapshots see
 [`docs/install.md`](docs/install.md).
 
-### Claude Code
+### Native plugin integration (Claude Code & Codex)
 
-This repo ships as a Claude Code plugin:
+Claude Code and Codex ship with plugin systems that wrap the skills with
+extras: namespaced invocation, auto-update from the plugin UI, and
+discoverability through the marketplace. If you're on one of these agents and
+want that integration, use the plugin install instead of `npx skills`.
+
+**Claude Code**
 
 ```bash
 /plugin marketplace add datocms/llm-skills
 /plugin install datocms@datocms-skills
 ```
 
-Skills are namespaced under the plugin (e.g. `/datocms:datocms-cda`).
+Skills are namespaced under the plugin (e.g. `/datocms:datocms-cda`). Enable
+auto-update from `/plugin` → **Marketplaces** → `datocms-skills`, or update
+manually with `claude plugin update datocms@datocms-skills`.
 
-To stay current, run `/plugin` → **Marketplaces** → `datocms-skills` →
-**Enable auto-update**. You can also update manually with
-`claude plugin update datocms@datocms-skills`.
+**Codex**
 
-### Codex
-
-This repo also ships as a Codex plugin. From a Codex session in this repo,
-open the plugin picker:
-
-```
-/plugins
-```
-
-Choose **DatoCMS Local Plugins** and install `datocms`. All eight skills are
-bundled. If the marketplace doesn't appear, restart Codex and reopen
-`/plugins`.
-
-If the Plugin Directory is unavailable, fall back to the `$skill-installer`:
-
-```
-$skill-installer install all of these skills from https://github.com/datocms/llm-skills:
-- skills/datocms-cda
-- skills/datocms-cli
-- skills/datocms-cma
-- skills/datocms-frontend-integrations
-- skills/datocms-plugin-builder
-- skills/datocms-plugin-design-system
-- skills/datocms-plugin-scaffold
-- skills/datocms-setup
-```
-
-Restart Codex afterwards and verify with `ls ~/.codex/skills/ | grep datocms`
-(you should see all eight folders).
-
-### Cursor, Copilot, Windsurf, and other agents
-
-Use the cross-agent `npx skills` CLI:
-
-```bash
-npx skills add datocms/llm-skills
-```
-
-This installs all eight skills via symlinks, so updating later is one command:
-
-```bash
-npx skills update
-```
+From a Codex session, open the plugin picker with `/plugins`, choose
+**DatoCMS Local Plugins**, and install `datocms`. All skills are bundled.
+Restart Codex if the marketplace doesn't appear on first open.
 
 ### Claude.ai
 
@@ -108,31 +100,21 @@ Upload each skill via **Customize → Skills** in
 
 ### Automatic skills
 
-You don't need to invoke the seven core skills — describe what you want in
-plain language and the right one activates:
+You don't need to invoke the auto-triggered skills — describe what you want
+in plain language and the right one activates:
 
-```text
-Write a GraphQL query to fetch all blog posts with images
-                                          → datocms-cda
-
-Create a migration that adds a "category" field to the blog_post model
-                                          → datocms-cli
-
-Bulk-publish all draft records of type "article"
-                                          → datocms-cma
-
-Add draft mode to my Next.js app
-                                          → datocms-frontend-integrations
-
-Add a sidebar panel to my plugin that shows word count
-                                          → datocms-plugin-builder
-
-Make my plugin config screen match the DatoCMS style
-                                          → datocms-plugin-design-system
-
-Create a new DatoCMS plugin from scratch
-                                          → datocms-plugin-scaffold
-```
+- "Write a GraphQL query to fetch all blog posts with images"
+- "How do I paginate past the 100-record limit?"
+- "Add draft mode to my Next.js app"
+- "Why isn't my Visual Editing overlay showing up?"
+- "Create a migration that adds a `category` field to the blog_post model"
+- "What's the safest way to run a migration in production?"
+- "Bulk-publish all draft records of type `article`"
+- "Publish them"
+- "Fix those slugs"
+- "Import this CSV into the authors model"
+- "Make my plugin config screen match the DatoCMS style"
+- "Create a new DatoCMS plugin from scratch"
 
 ### The setup skill (explicit)
 
