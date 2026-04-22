@@ -1,0 +1,2 @@
+[done] datocms-cli: 32/39 -> /Users/stefanoverna/trash/datocms-llm-skills/evals/results/adHocRuns/2026-04-22-branch-candidate/raw/datocms-cli-eval-results.json
+[summary] overall 32/39 (82.1%)
