@@ -1,33 +1,34 @@
 # Structured Text and Block Tools
 
-Covers DatoCMS structured text (DAST), embedded block and record-link nodes, and advanced block tooling such as `SchemaRepository`, traversal helpers, and `inspectItem()`.
+DatoCMS structured text (DAST) — node types, embedded block and record-link nodes, DAST tree manipulation with `datocms-structured-text-utils`, block traversal with `SchemaRepository`, and the `inspectItem()` debugging helper.
+
+For the *mental model* of blocks (ID/object duality, response modes, the 5 mutation rules), read `references/block-records-and-modular-content.md` first — this file extends those rules to the DAST tree and its tooling. Each code snippet below shows its own import; the full per-package import map and the generics pattern (`buildBlockRecord<Schema.HeroBlock>`) live in that file under **Helpers Toolkit → Imports / Typed usage**.
 
 ## Quick Navigation
 
-- [Structured Text (`structured_text`) Field](#structured-text-structured_text-field)
-- [Text Nodes](#text-nodes)
-- [Lists](#lists)
-- [Code Blocks](#code-blocks)
-- [Blockquote](#blockquote)
-- [Thematic Break](#thematic-break)
-- [Block Nodes (Embedded Blocks)](#block-nodes-embedded-blocks)
-- [Inline Block Nodes](#inline-block-nodes)
-- [Item Link Nodes](#item-link-nodes)
-- [Inline Item Nodes](#inline-item-nodes)
-- [Structured Text Embedded Content Types](#structured-text-embedded-content-types)
-- [Complete Structured Text Example](#complete-structured-text-example)
-- [`SchemaRepository`](#schemarepository)
-- [Block Traversal Utilities](#block-traversal-utilities)
-- [`inspectItem()`](#inspectitem)
-- [Common Pitfalls](#common-pitfalls)
+| If you need to… | Read |
+|---|---|
+| Compose paragraphs, headings, lists, links, code blocks, blockquotes | Text Nodes, Lists, Code Blocks, Blockquote, Thematic Break |
+| Embed or edit a block in structured text | Block Nodes, Inline Block Nodes |
+| Reference an existing record from within text | Item Link Nodes, Inline Item Nodes |
+| Decide between `block`, `inlineBlock`, `itemLink`, `inlineItem` | Structured Text Embedded Content Types |
+| See a full DAST document with multiple node types assembled | Complete Structured Text Example |
+| Transform the DAST tree (rename headings, replace text, add link attrs) | DAST Tree Manipulation (`datocms-structured-text-utils`) |
+| Resolve block models or cache schema lookups across a traversal | `SchemaRepository` |
+| Walk every block in a block-bearing value at any depth | Block Traversal Utilities |
+| Debug a record or block payload as a readable tree | `inspectItem()` |
+| Find a canonical worked example for structured text | Worked Examples via `cma:docs` |
+| Diagnose a DAST or embed error | Common Pitfalls |
 
 ---
 
 ## Structured Text (`structured_text`) Field
 
-Structured text fields use the DatoCMS Abstract Syntax Tree (DAST) format.
+Structured text fields use the DatoCMS Abstract Syntax Tree (DAST) format. The canonical types live in `datocms-structured-text-utils` — fall back to them when an edge case is not covered here.
 
 ### DAST Document Structure
+
+The top-level value is `{ schema: "dast", document: Root }`:
 
 ```ts
 {
@@ -35,44 +36,72 @@ Structured text fields use the DatoCMS Abstract Syntax Tree (DAST) format.
   document: {
     type: "root",
     children: [
-      // Content nodes go here
+      // block-level nodes only — see grammar below
     ],
   },
 }
 ```
+
+### DAST Grammar
+
+Each node may only contain the children listed here. Violating the grammar produces API errors.
+
+| Node | Allowed children |
+|---|---|
+| `root` | `paragraph`, `heading`, `list`, `code`, `blockquote`, `block`, `thematicBreak` |
+| `paragraph` | `span`, `link`, `itemLink`, `inlineItem`, `inlineBlock` |
+| `heading` | `span`, `link`, `itemLink`, `inlineItem`, `inlineBlock` |
+| `list` | `listItem` |
+| `listItem` | `paragraph`, `list` (lists can nest) |
+| `blockquote` | `paragraph` |
+| `link` | `span` |
+| `itemLink` | `span` |
+| `span`, `code`, `thematicBreak`, `block`, `inlineBlock`, `inlineItem` | leaf nodes — no children |
+
+Notes:
+- `block` may appear **only** as a direct child of `root`. Inside text flow use `inlineBlock`.
+- `link` and `itemLink` contain only `span` children — no nested links or inline embeds.
+- Line breaks inside a `span` use the literal `\n` in `value`; there is no dedicated break node.
 
 ---
 
 ## Text Nodes
 
 ```ts
-// Paragraph
+// Paragraph — optional `style` for custom styles defined via Plugin SDK
 {
   type: "paragraph",
+  style: "lead",            // optional
   children: [{ type: "span", value: "Hello world" }],
 }
 
-// Heading (levels 1-6)
+// Heading — `level` is 1–6; optional `style` via Plugin SDK
 {
   type: "heading",
   level: 2,
+  style: "section-title",   // optional
   children: [{ type: "span", value: "Section Title" }],
 }
 
-// Span with marks (bold, italic, etc.)
+// Span — optional `marks`; line breaks use \n inside `value`
 {
   type: "span",
   marks: ["strong", "emphasis"],
-  value: "Bold and italic text",
+  value: "Line one.\nLine two.",
 }
 
-// Link
+// Link — optional `meta` for custom attributes (rel, target, …)
 {
   type: "link",
   url: "https://example.com",
+  meta: [{ id: "target", value: "_blank" }],
   children: [{ type: "span", value: "Click here" }],
 }
 ```
+
+**Default span marks:** `strong`, `emphasis`, `underline`, `strikethrough`, `code`, `highlight`. Custom marks can be defined via the Plugin SDK — any string is accepted in the `marks` array.
+
+**`meta` on `link` / `itemLink`:** array of `{ id: string; value: string }` tuples. Typically used for `rel`, `target`, `class`, or anything the frontend renderer honours. The API does not enforce a fixed vocabulary.
 
 ---
 
@@ -105,7 +134,8 @@ Ordered lists use `style: "numbered"`.
 ```ts
 {
   type: "code",
-  language: "typescript",
+  language: "typescript",   // optional — syntax-highlighting hint
+  highlight: [0, 3],        // optional — zero-based line numbers to highlight
   code: "const x = 42;",
 }
 ```
@@ -117,10 +147,11 @@ Ordered lists use `style: "numbered"`.
 ```ts
 {
   type: "blockquote",
+  attribution: "Oscar Wilde",   // optional
   children: [
     {
       type: "paragraph",
-      children: [{ type: "span", value: "A wise quote" }],
+      children: [{ type: "span", value: "Be yourself; everyone else is taken." }],
     },
   ],
 }
@@ -138,7 +169,7 @@ Ordered lists use `style: "numbered"`.
 
 ## Block Nodes (Embedded Blocks)
 
-Use `block` nodes for full-width embedded block records:
+Use `block` nodes for full-width embedded block records. These obey the 5 mutation rules (`references/block-records-and-modular-content.md`) — `item` is either a `buildBlockRecord(...)` payload (create / update) or an ID string (keep unchanged).
 
 ```ts
 {
@@ -161,7 +192,7 @@ Use `block` nodes for full-width embedded block records:
 
 ## Inline Block Nodes
 
-Use `inlineBlock` nodes for inline embedded block records:
+Use `inlineBlock` nodes for inline embedded block records. Same 5 rules as `block` — just inline inside text flow.
 
 ```ts
 {
@@ -185,7 +216,7 @@ Use `inlineBlock` nodes for inline embedded block records:
 
 ## Item Link Nodes
 
-Use `itemLink` when the text should link to an existing top-level record:
+Use `itemLink` when the text should link to an existing top-level record. `item` is always a record ID string — no embedding, no block duality. `meta` follows the same `Array<{ id, value }>` shape as `link`.
 
 ```ts
 {
@@ -195,6 +226,7 @@ Use `itemLink` when the text should link to an existing top-level record:
     {
       type: "itemLink",
       item: "linked-record-id",
+      meta: [{ id: "target", value: "_blank" }],   // optional
       children: [{ type: "span", value: "blog post" }],
     },
     { type: "span", value: " for more details." },
@@ -206,7 +238,7 @@ Use `itemLink` when the text should link to an existing top-level record:
 
 ## Inline Item Nodes
 
-Use `inlineItem` to reference an existing record inline:
+Use `inlineItem` to reference an existing record inline (self-closing, no child text).
 
 ```ts
 {
@@ -224,12 +256,12 @@ Use `inlineItem` to reference an existing record inline:
 
 | Node | `item` value | Position in tree | Use case |
 |---|---|---|---|
-| `block` | `buildBlockRecord({...})` | Root-level | Full-width embeds such as images, CTAs, or videos |
-| `inlineBlock` | `buildBlockRecord({...})` | Inline inside text | Badges, tooltips, inline widgets |
-| `itemLink` | `"record-id"` | Inline, wraps text | Hyperlink text to another record |
-| `inlineItem` | `"record-id"` | Inline, self-closing | Inline preview or card of another record |
+| `block` | `buildBlockRecord({...})` or ID string | Root-level | Full-width embeds such as images, CTAs, or videos |
+| `inlineBlock` | `buildBlockRecord({...})` or ID string | Inline inside text | Badges, tooltips, inline widgets |
+| `itemLink` | ID string (existing record) | Inline, wraps text | Hyperlink text to another record |
+| `inlineItem` | ID string (existing record) | Inline, self-closing | Inline preview or card of another record |
 
-The important distinction is that `block` and `inlineBlock` create new inline block records, while `itemLink` and `inlineItem` reference existing top-level records.
+The important distinction: `block` / `inlineBlock` **embed new or existing block records** (the whole 5-rules machinery applies to the `item` position); `itemLink` / `inlineItem` only **reference existing top-level records** by ID.
 
 ---
 
@@ -237,8 +269,9 @@ The important distinction is that `block` and `inlineBlock` create new inline bl
 
 ```ts
 import { buildBlockRecord } from "@datocms/cma-client-node";
+import * as Schema from "./cma-types";
 
-await client.items.create({
+await client.items.create<Schema.Post>({
   item_type: { id: modelId, type: "item_type" },
   content: {
     schema: "dast",
@@ -260,7 +293,7 @@ await client.items.create({
         },
         {
           type: "block",
-          item: buildBlockRecord({
+          item: buildBlockRecord<Schema.ImageBlock>({
             item_type: { id: imageBlockId, type: "item_type" },
             image: {
               upload_id: "upload-id",
@@ -288,6 +321,85 @@ await client.items.create({
   },
 });
 ```
+
+---
+
+## DAST Tree Manipulation (`datocms-structured-text-utils`)
+
+For transformations that walk the DAST tree itself — changing heading levels, replacing text, adding link attributes, removing empty paragraphs — use the tree helpers from `datocms-structured-text-utils`. They operate on the raw DAST shape, so you do not have to match node types by hand.
+
+```ts
+import {
+  mapNodes,
+  filterNodes,
+  findFirstNode,
+  // Type guards
+  isBlock,
+  isInlineBlock,
+  isSpan,
+  isHeading,
+  isLink,
+  isItemLink,
+  isParagraph,
+} from "datocms-structured-text-utils";
+```
+
+| Helper | Use for |
+|---|---|
+| `mapNodes(document, fn)` | Transform nodes recursively. Return a replacement node; return the node unchanged to pass through. |
+| `filterNodes(document, predicate)` | Remove nodes that fail the predicate (returns `null` if the root fails). |
+| `findFirstNode(document, predicate)` | Return the first node (and its path) matching the predicate, or `undefined`. |
+| `isBlock`, `isInlineBlock`, `isSpan`, `isHeading`, `isLink`, `isItemLink`, `isParagraph`, … | Type guards to narrow nodes inside `mapNodes` / `filterNodes` callbacks. |
+
+### Anchor example: rebrand + clean a document
+
+Demote every `h1` to `h2`, replace every "ZEIT" span with "Vercel", add `target="_blank"` to external links, and drop empty paragraphs:
+
+```ts
+import {
+  filterNodes,
+  isHeading,
+  isLink,
+  isParagraph,
+  isSpan,
+  mapNodes,
+} from "datocms-structured-text-utils";
+import * as Schema from "./cma-types";
+
+const transformed = mapNodes(record.content, (node) => {
+  if (isHeading(node) && node.level === 1) {
+    return { ...node, level: 2 };
+  }
+  if (isLink(node)) {
+    return {
+      ...node,
+      meta: [...(node.meta || []), { id: "target", value: "_blank" }],
+    };
+  }
+  if (isSpan(node) && node.value.includes("ZEIT")) {
+    return { ...node, value: node.value.replace(/ZEIT/g, "Vercel") };
+  }
+  return node;
+});
+
+const cleaned = filterNodes(transformed, (node) =>
+  isParagraph(node)
+    ? node.children.some((c) => !isSpan(c) || c.value.trim().length > 0)
+    : true,
+);
+
+await client.items.update<Schema.BlogPost>(recordId, { content: cleaned });
+```
+
+For embedded *blocks* inside structured text (updating attributes of an embedded `block` / `inlineBlock`), `mapNodes` reaches the node itself — but mutating the block's attributes is still a block payload concern, so combine these helpers with `buildBlockRecord()` and the 5 mutation rules. See the worked example via `cma:docs` below.
+
+### When to use DAST helpers vs the CMA Block Traversal utilities
+
+| Task | Use |
+|---|---|
+| Walk every block inside *any* block-bearing field value (modular content, single block, structured text), at any nesting depth | [`*BlocksInNonLocalizedFieldValue`](#block-traversal-utilities) |
+| Walk the structured-text DAST tree itself (nodes, not just blocks) | `mapNodes` / `filterNodes` / `findFirstNode` |
+| Transform mixed nodes (headings, spans, links) *and* embedded blocks in the same pass | `mapNodes` + `buildBlockRecord` inside the callback |
 
 ---
 
@@ -324,7 +436,7 @@ await schemaRepo.prefetchAllModelsAndFields();
 
 ## Block Traversal Utilities
 
-These helpers recursively inspect block-bearing field values. They require a `SchemaRepository` so nested block types can be resolved correctly.
+These helpers recursively inspect block-bearing field values of any type. They require a `SchemaRepository` so nested block types can be resolved correctly.
 
 ```ts
 import {
@@ -389,12 +501,36 @@ If the field is localized, extract each locale's inner value first. See `referen
 
 ```ts
 import { inspectItem } from "@datocms/cma-client-node";
+import * as Schema from "./cma-types";
 
-const record = await client.items.find("record-id", { nested: true });
+const record = await client.items.find<Schema.Post>("record-id", { nested: true });
 console.log(inspectItem(record));
 ```
 
-You can pass options such as `maxWidth` to control formatting.
+You can pass options such as `maxWidth` to control formatting. Pair it with `buildBlockRecord()` + `inspectItem()` around an update to see before / payload / after when debugging block mutations.
+
+---
+
+## Worked Examples via `cma:docs`
+
+Long worked scripts for structured text and embedded blocks are maintained in the CMA reference. Fetch the canonical version on demand.
+
+**Prerequisite:** `@datocms/cli` installed (normally bootstrapped per SKILL.md Step 1a). `cma:docs` itself needs *no* login and *no* linked project. If `npx datocms …` errors with "command not found", install the CLI (`npm install --save-dev @datocms/cli`) or invoke on demand with `npx --yes @datocms/cli cma:docs …`.
+
+| Scenario | Command |
+|---|---|
+| Create a structured text document with multiple embedded blocks | `npx datocms cma:docs items create --expand "Example: Structured text fields"` |
+| Transform a DAST tree (heading levels, link attrs, text replace) | `npx datocms cma:docs items update --expand "Example: Managing Structured Text documents"` |
+| Mixed block mutations inside structured text (add + update + keep) | `npx datocms cma:docs items update --expand "Example: Managing blocks in Structured Text fields"` |
+| Localized structured text | `npx datocms cma:docs items --expand "Example: Localized Structured Text field"` |
+
+If a section title is renamed in the docs, list the available titles:
+
+```bash
+npx datocms cma:docs items update | grep -oE '<details><summary>[^<]+</summary>'
+```
+
+The full examples index (create, update, localization) is in `references/block-records-and-modular-content.md` under [`cma:docs` Examples Index](block-records-and-modular-content.md#cmadocs-examples-index).
 
 ---
 
@@ -402,16 +538,13 @@ You can pass options such as `maxWidth` to control formatting.
 
 ### Invalid DAST Tree Structure
 
-DAST has strict parent-child rules:
-
-- Valid `root` children: `paragraph`, `heading`, `list`, `blockquote`, `code`, `thematicBreak`, `block`
-- Valid `paragraph` and `heading` children: `span`, `link`, `itemLink`, `inlineItem`, `inlineBlock`
+DAST enforces strict parent-child rules — see the [DAST Grammar](#dast-grammar) table above. The most common violation is putting a `block` node inside a `paragraph` instead of at root level:
 
 ```ts
 // Invalid: block inside paragraph
 { type: "paragraph", children: [{ type: "block", item: ... }] }
 
-// Valid: block at root level
+// Valid: block at root, inlineBlock for inline embeds
 {
   type: "root",
   children: [
@@ -423,8 +556,12 @@ DAST has strict parent-child rules:
 
 ### Forgetting `nested: true` for Structured Text Embeds
 
-If you read structured text with embedded blocks without `nested: true`, `block` and `inlineBlock` nodes contain string IDs instead of inline block objects.
+Without `nested: true`, `block` and `inlineBlock` nodes contain string IDs in `item` instead of expanded block objects. Any `mapNodes` callback that expects `node.item.attributes` then reads `undefined`. See the mental model in `references/block-records-and-modular-content.md`.
 
 ### Confusing Block Nodes with Record-Link Nodes
 
-`block` and `inlineBlock` embed new block records. `itemLink` and `inlineItem` reference existing top-level records by string ID. Mixing those up produces API errors.
+`block` and `inlineBlock` embed new block records (the 5 rules apply to `item`). `itemLink` and `inlineItem` reference existing top-level records by string ID. Mixing those up produces API errors.
+
+### Mutating the DAST in place
+
+`mapNodes` expects you to return new node objects, not mutate the input. Always return `{ ...node, … }` so the transform is pure and subtrees that did not change pass through unchanged.
