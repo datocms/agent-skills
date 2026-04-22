@@ -9,7 +9,9 @@ discovery commands below rather than guessing resource/method pairs.
 
 > **Related:** For multi-step or typed TypeScript logic that still does not
 > need to live in the repo (loops, branching, dependent calls, `Schema.*`
-> record types), reach for `cma:script` instead — see `cma-script.md`.
+> record types), reach for `cma:script` instead — stdin-mode for heredocs
+> and pipes, file-mode for longer scripts in a scratch dir. See
+> `cma-script.md`.
 
 ---
 
@@ -20,9 +22,11 @@ When unsure about the exact request shape for a resource/action, run
 details.
 
 Pick the right tool for the shape of the task:
-- **`cma:call`** — single API method invocation from the terminal
-- **`cma:script`** — multi-step or typed TypeScript logic (loops, branching, `Schema.*` types, dependent calls) that does not need to live in the repo; runs from a file or stdin with ambient `client` / `Schema` globals (see `cma-script.md`)
-- **Reusable repo script** — switch to **datocms-cma** when the code should be checked in, reused, tested, or needs packages outside the `cma:script` workspace
+- **`cma:call`** — a single CMA call with a shape you can read from `cma:docs`. Fastest path (direct HTTP request, no workspace cold-start) and the most discoverable (resource/method/body map 1:1 to the docs output).
+- **`cma:script` stdin-mode** — anything one-off that needs loops, branching, dependent calls, or typed `Schema.*` payloads. Piped or heredoc, ambient `client` / `Schema`, zero setup. See `cma-script.md`.
+- **`cma:script` file-mode** — same throwaway scenario as stdin-mode, but the script is long enough that heredoc quoting hurts, imports local helpers, or should be rerunnable by filename. Lives in a gitignored scratch dir.
+- **Migration** — switch to `migrations:new` when the code should be committed, versioned, and replayed across environments.
+- **Checked-in `buildClient()` script (datocms-cma)** — switch when the code will run **unattended** (CI, app server, webhook, long-lived automation) and needs a CMA token in the environment.
 
 Confirm these inputs when they are not already clear:
 - resource + method (for `cma:call`) or script scope (for `cma:script`)
@@ -298,9 +302,14 @@ list. The most frequently used:
 > (`environments:fork`, `environments:promote`, etc.) — they have better flags
 > and output than the `cma:call` equivalents.
 
-> **Note:** Creating new uploads from URL or local file is better done via
-> **datocms-cma** (the `client.uploads.createFromUrl()` helper). The raw
-> `upload_request` + `uploads create` flow via CLI is multi-step.
+> **Note:** Creating new uploads from URL or local file via `cma:call`
+> is painful — it is the raw `upload_request` + `uploads create` two-step
+> JSON:API dance. Escalate to `cma:script` (stdin-mode or file-mode):
+> the `client` you get — ambient in stdin-mode, function parameter in
+> file-mode — exposes `client.uploads.createFromUrl()` and
+> `client.uploads.createFromLocalFile()` directly. A checked-in
+> `buildClient()` script (**datocms-cma**) is only needed for unattended
+> runtime, not for the upload ergonomics themselves.
 
 ---
 
@@ -331,19 +340,22 @@ npx datocms cma:call item_types list --json | jq '.[].api_key'
 
 ## When to Escalate
 
-`cma:call` is ideal for single-method terminal operations. Before switching
-to a reusable repo script, consider whether **`cma:script`** (see
-`cma-script.md`) is enough — it runs typed TypeScript from a file or stdin
-with ambient `client` and `Schema` globals, handles loops, branching, and
-dependent calls, and keeps the code out of the repo.
+`cma:call` is ideal for a single CMA call. If the task needs loops,
+branching, dependent calls, or typed payloads, escalate to **`cma:script`**
+(see `cma-script.md`) — stdin-mode for heredocs and pipes, file-mode for
+longer scripts in a gitignored scratch dir.
 
-Switch to a full **datocms-cma** repo script when:
+Escalate past `cma:script` when:
 
-- The code should live in the repo as a reusable, reviewable script
-- You need packages outside the `cma:script` pre-installed workspace
-- You need tests, custom error handling, retries, or progress reporting
-- The operation involves file uploads from URL or local files
-- Multiple related API calls span a larger surface (imports, migrations)
+- **The code should be committed, versioned, and replayed across
+  environments** → that is a **migration** (`migrations:new`), not a
+  `cma:script`. A file-mode script can be promoted into a migration with
+  `mv` since imports and signature already match.
+- **The code will run unattended** (CI, app server, webhook, long-lived
+  automation) and needs a CMA token in the environment → checked-in
+  `buildClient()` script via **datocms-cma**.
+- **You need tests, custom error handling, retries, or progress
+  reporting** → repo script, **datocms-cma**.
 
 > **Tip:** Use `npx datocms cma:docs <resource> <action>` to look up the
 > exact request body shape and parameters before writing either a `cma:call`

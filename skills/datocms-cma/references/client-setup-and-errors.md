@@ -1,6 +1,8 @@
 # Client Setup and Error Handling
 
-This reference is always loaded. It covers package selection, `buildClient()` setup, token and environment configuration, and the error types you should handle in most CMA scripts.
+This reference is always loaded. It covers package selection, `buildClient()` setup, token and environment configuration, and the error types to handle in CMA code.
+
+> **Scope:** `buildClient()` is for **unattended runtime** code (CI, app server, webhook, long-lived automation, repo-committed scripts) — that is the scenario where you need a CMA token in the environment and you construct the client yourself. Interactive one-offs go through `cma:call` or `cma:script` (stdin-mode or file-mode), where the client is either absent or handed to you as `client` (ambient in stdin-mode, default-export parameter in file-mode and migrations) — the configuration options and error types below still apply, you just don't call `buildClient()` yourself.
 
 ## Quick Navigation
 

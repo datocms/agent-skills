@@ -100,7 +100,7 @@ Classify the user's task into one or more categories:
 | **Creating migrations** | Scaffold new migration scripts, autogenerate from environment diffs, custom templates (sub-task of schema changes once the migration approach is chosen) |
 | **Running migrations** | Execute pending migrations, dry-run, fork-and-run, in-place execution |
 | **Schema generation** | Run `schema:generate`, scope output to item types, target a specific environment |
-| **Direct CMA calls** | Use `cma:docs` to browse API reference, `cma:call` for single-method ad-hoc API operations, `cma:script` for typed TypeScript one-off scripts (loops, branching, `Schema.*` types) without scaffolding a repo project |
+| **Direct CMA calls** | Use `cma:docs` to browse API reference, `cma:call` for a single call with a shape from the docs, `cma:script` for one-off TypeScript logic that needs loops, branching, or typed `Schema.*` types — stdin-mode for heredocs/pipes, file-mode for longer scripts in a gitignored scratch dir |
 | **Environment management** | Fork, promote, rename, destroy, list environments via CLI commands |
 | **Deployment workflow** | Maintenance mode, safe deployment sequences, CI/CD integration |
 | **Multi-project sync** | Shared migrations across blueprint/client projects via CLI profiles |
@@ -133,34 +133,40 @@ is not automatic — ask the user when the bucket is not obvious from the
 request, because reversibility and workflow preference matter more than
 which tool performs the mutation.
 
-| Bucket | What it covers | Approach |
+| Situation | What it covers | Approach |
 |---|---|---|
-| **A. Truly destructive** | DROP a field, DROP a model, `bulk_destroy` records, lossy `field_type` changes (e.g. `string → json`, `json → string`, anything that discards stored values) | **Migration script** via `datocms-cli`, against a forked sandbox first. Never run these against a primary environment without explicit, repeated user confirmation. |
-| **B. Additive / reversible-config** | Add a field, add a model or block, rename a field, toggle `required`, add or tighten a validation, reorder fieldsets | **Ask the user.** Both approaches are safe; pick by preference and context. Lean to a migration script (`datocms-cli`) when the repo already uses a migrations workflow or the user is on a secondary branch — reviewable, reproducible. Direct mutation (`cma:call` / `cma:script` / `buildClient()`) is fine for quick iteration on a sandbox. Default to migration only when the user has no preference AND the repo shows migration conventions (`migrations/` directory, prior migration commits). |
-| **C. User explicit opt-out** | Phrases like "quickly, without a migrations workflow", "just patch this", "one-off", "don't scaffold migrations for this" | **Honor the opt-out.** Use direct mutation via `cma:call` (single op), `cma:script` (typed multi-step logic), or `buildClient()` (checked-in reusable script). Do not re-suggest migrations unless the change turns out to fall in bucket A. |
-| **D. Content operations (not schema)** | Publish, unpublish, delete individual records, fix slugs, bulk update a field value, re-tag uploads | Either tool is correct. Prefer `cma:call` for one-shots, `cma:script` for typed multi-step logic, or `buildClient()` for reusable scripts. No migration is needed for content mutations. |
+| **Destructive schema change** | DROP a field, DROP a model, `bulk_destroy` records, lossy `field_type` changes (e.g. `string → json`, `json → string`, anything that discards stored values) | **Migration** via `datocms-cli` (`migrations:new`), against a forked sandbox first. Never run these against a primary environment without explicit, repeated user confirmation. |
+| **Reversible schema change** | Add a field, add a model or block, rename a field, toggle `required`, add or tighten a validation, reorder fieldsets | **Ask the user.** Both approaches are safe; pick by preference and context. Lean to a migration (`datocms-cli`) when the repo already uses a migrations workflow or the user is on a secondary branch — reviewable, reproducible. Direct mutation (`cma:call`, `cma:script` stdin-mode, or `cma:script` file-mode) is fine for quick iteration on a sandbox. Default to migration only when the user has no preference AND the repo shows migration conventions (`migrations/` directory, prior migration commits). |
+| **User-requested one-off** | Phrases like "quickly, without a migrations workflow", "just patch this", "one-off", "don't scaffold migrations for this" | **Honor the opt-out.** Use direct mutation via `cma:call` (single call with shape from `cma:docs`) or `cma:script` (stdin-mode for loops/multi-step, file-mode when the script is long enough that a heredoc hurts). Do not re-suggest migrations unless the change turns out to be a destructive schema change. |
+| **Content operation** | Publish, unpublish, delete individual records, fix slugs, bulk update a field value, re-tag uploads | No migration needed. Prefer `cma:call` for a single call; `cma:script` stdin-mode for loops, pagination, or multi-step logic; `cma:script` file-mode only when a heredoc becomes painful. Code that needs to be committed and replayed across environments is a migration (`datocms-cli`), not **datocms-cma**. |
 
 Regardless of which skill is loaded, the **question to ask the user is
-the same** when bucket B is ambiguous: *"Do you want this as a reviewable
-migration script, or a direct mutation against a sandbox?"* The answer
-determines which skill owns the follow-up — not which skill was loaded
-first.
+the same** for a reversible schema change: *"Do you want this as a
+reviewable migration, or a direct mutation against a sandbox?"* The
+answer determines which skill owns the follow-up — not which skill was
+loaded first.
 
 **Cross-skill routing.**
-- Bucket A and the migration branch of B are this skill's core:
-  `migrations:new`, `migrations:run`, fork-and-run, safe deployment.
-  Stay here and load `creating-migrations.md` + `running-migrations.md`.
-- Buckets C and D — and the direct-mutation branch of B — are better
-  covered by **datocms-cma**. Switch when the user has opted out of
-  migrations, when the task is a content mutation (publish, delete,
-  fix), or when the user wants reusable `buildClient()` code checked
-  into the repo. The handoff is loading the sibling skill's
-  references — do not bounce the user.
+- Destructive schema changes and the migration branch of a reversible
+  schema change are this skill's core: `migrations:new`,
+  `migrations:run`, fork-and-run, safe deployment. Stay here and load
+  `creating-migrations.md` + `running-migrations.md`.
+- User-requested one-offs, content operations, and the direct-mutation
+  branch of a reversible schema change are better covered by
+  **datocms-cma**. Switch when the user has opted out of migrations,
+  when the task is a content mutation (publish, delete, fix), or when
+  the user wants a `cma:script` or a checked-in `buildClient()` script.
+  The handoff is loading the sibling skill's references — do not
+  bounce the user.
+- Unattended runtime code (CI, app server, webhook, long-lived
+  automation) is a separate scenario — that is where a checked-in
+  `buildClient()` script belongs, and **datocms-cma** owns that
+  pattern.
 
 ### Destructive and production-sensitive confirmations
 
-Bucket A above always requires these confirmations; the list below also
-covers non-schema destructive commands.
+Destructive schema changes always require these confirmations; the list
+below also covers non-schema destructive commands.
 
 If context is missing, ask for explicit confirmation before proposing final commands for:
 - `environments:destroy`
@@ -254,10 +260,14 @@ npx datocms cma:call fields create <ITEM_TYPE_ID> --data='{label: "Title", api_k
 
 Run `npx datocms cma:call --help` for the full list of built-in examples, or `npx datocms cma:docs <resource> <action>` for body schema and required fields.
 
-- Use `npx datocms cma:script` (file or stdin) when the task needs loops, branching, multiple dependent calls, or typed `Schema.*` records, but the code does not need to live in the repo — `client` and `Schema` are ambient globals, and `tsc --noEmit` type-checks before execution
-- Prefer Format A (`export default async function (client: Client)`) when the script may be promoted into a migration, or when a TypeScript error needs editor LSP / diagnostics to triage (Format B heredocs have no on-disk file for the language server); Format B (top-level await) for throwaway one-liners or heredocs
-- Redirect `2>/dev/null` when piping `cma:script` stdout into `jq`
-- Switch to `datocms-cma` when the task needs reusable code checked into the repo, tests, or packages outside the `cma:script` workspace
+- Use `npx datocms cma:script` when the task needs loops, branching, multiple dependent calls, or typed `Schema.*` records, but the code does not need to live in the repo
+- **stdin-mode** (heredoc / pipe / redirect): top-level await only, ambient `client` and `Schema`, `tsc --noEmit` type-checks before execution, pre-installed packages available. Zero setup
+- **file-mode** (`.ts` file on disk):
+  - Signature: `export default async function (client: Client)` with `Client` imported from `@datocms/cli/lib/cma-client-node` — same import as migrations, so a file-mode script can be promoted with a plain `mv` into `migrations/`.
+  - Validation: no CLI-side typecheck; rely on your editor LSP against your `tsconfig.json`, or an explicit `tsc --noEmit`. Typed `Schema.*` is opt-in via `datocms schema:generate ./datocms-schema.ts`.
+  - Placement: gitignored scratch dir (`tmp/scripts/`, `scratch/`). Prefer a migration for anything you want to commit, version, and replay across environments.
+- Redirect `2>/dev/null` when piping stdin-mode stdout into `jq`
+- Switch to **datocms-cma** when the task needs reusable code checked into the repo for **unattended runtime** (CI, app server, webhook, long-lived automation)
 - **Schema changes:** default to scaffolding a migration. Only propose `cma:call` or `cma:script` for schema mutations after the user has explicitly opted out of the migration workflow, and never propose a direct schema mutation against a primary-like environment without an explicit confirmation from the user
 
 ### CLI Plugin Commands
