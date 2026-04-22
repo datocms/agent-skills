@@ -141,9 +141,11 @@ right recipe.
 If a prerequisite is missing (e.g. draft mode is needed before web previews),
 setup queues it in the same run instead of requiring a second call.
 
-Each setup step is reported as `scaffolded` when project-specific values still
-need to be filled in, and as `production-ready` only when those gaps are gone —
-so you always know whether a recipe is ready to ship or still needs a hand.
+Every recipe ends with one of two statuses: `scaffolded` if it still contains
+placeholders you need to fill in (API tokens, route mappings, model-to-URL
+maps, TODO stubs), or `production-ready` if it's wired to real project values
+and works end-to-end with no further edits. No guessing whether the output
+is ready to ship.
 
 For the full recipe catalog and routing rules see
 [`docs/skill-catalog.md`](docs/skill-catalog.md).
