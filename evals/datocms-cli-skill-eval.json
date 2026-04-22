@@ -141,19 +141,31 @@
   },
   {
     "query": "I need to add a seo field to the article model on DatoCMS",
-    "should_trigger": true
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
   },
   {
     "query": "rename the 'body' field on blog_post to 'content' in our DatoCMS project",
-    "should_trigger": true
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
   },
   {
     "query": "add a required meta_description to every DatoCMS model that has a title field",
-    "should_trigger": true
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
   },
   {
     "query": "I just want to add a new optional text field to the author model on DatoCMS, quickly, without setting up a migrations workflow — what's the right way?",
-    "should_trigger": true,
+    "should_trigger": false,
     "query_mode": "overlap",
     "boundary_with": [
       "datocms-cma"

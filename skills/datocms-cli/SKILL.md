@@ -126,37 +126,41 @@ this step. Do not skip loading the reference for the task's category: it
 carries the workflow decisions this step is designed to protect. If you
 skip it, you skip the checklist.
 
-### Schema changes (decide the approach first)
+### Schema changes — decide the approach with the user
 
-Any request that mutates models, fields, fieldsets, or block models is a
-schema change. Pick the approach **explicitly with the user** before
-writing commands — do **not** assume migration or direct change based on
-verb alone. The three valid approaches, in order of safety:
+DatoCMS schema operations fall into four buckets. The choice of approach
+is not automatic — ask the user when the bucket is not obvious from the
+request, because reversibility and workflow preference matter more than
+which tool performs the mutation.
 
-- **Migration script (default for any non-trivial change):** reviewable,
-  checked into the repo, reproducible across environments, dry-run-able,
-  runs against a forked sandbox first. Route to `creating-migrations.md`
-  + `running-migrations.md`.
-- **Direct change on a sandbox environment:** via `cma:call` (single op)
-  or `cma:script` (multi-step typed logic). Fine for disposable sandboxes
-  and quick iteration. No audit trail.
-- **Direct change on the primary environment:** risky. No review, no
-  reproducibility, affects live editors immediately, usually not easily
-  reversible. Acceptable only after the user has confirmed the trade-off
-  and typically only for trivially reversible additions (e.g., adding a
-  new non-required field).
+| Bucket | What it covers | Approach |
+|---|---|---|
+| **A. Truly destructive** | DROP a field, DROP a model, `bulk_destroy` records, lossy `field_type` changes (e.g. `string → json`, `json → string`, anything that discards stored values) | **Migration script** via `datocms-cli`, against a forked sandbox first. Never run these against a primary environment without explicit, repeated user confirmation. |
+| **B. Additive / reversible-config** | Add a field, add a model or block, rename a field, toggle `required`, add or tighten a validation, reorder fieldsets | **Ask the user.** Both approaches are safe; pick by preference and context. Lean to a migration script (`datocms-cli`) when the repo already uses a migrations workflow or the user is on a secondary branch — reviewable, reproducible. Direct mutation (`cma:call` / `cma:script` / `buildClient()`) is fine for quick iteration on a sandbox. Default to migration only when the user has no preference AND the repo shows migration conventions (`migrations/` directory, prior migration commits). |
+| **C. User explicit opt-out** | Phrases like "quickly, without a migrations workflow", "just patch this", "one-off", "don't scaffold migrations for this" | **Honor the opt-out.** Use direct mutation via `cma:call` (single op), `cma:script` (typed multi-step logic), or `buildClient()` (checked-in reusable script). Do not re-suggest migrations unless the change turns out to fall in bucket A. |
+| **D. Content operations (not schema)** | Publish, unpublish, delete individual records, fix slugs, bulk update a field value, re-tag uploads | Either tool is correct. Prefer `cma:call` for one-shots, `cma:script` for typed multi-step logic, or `buildClient()` for reusable scripts. No migration is needed for content mutations. |
 
-Always ask, unless the user has already picked an approach:
-- Migration script, or direct change?
-- If direct: which environment — sandbox or primary?
-- If primary: is the change reversible? Are editors currently working on
-  the affected model?
+Regardless of which skill is loaded, the **question to ask the user is
+the same** when bucket B is ambiguous: *"Do you want this as a reviewable
+migration script, or a direct mutation against a sandbox?"* The answer
+determines which skill owns the follow-up — not which skill was loaded
+first.
 
-**Default to migration** whenever the intent is ambiguous. Do not
-propose a direct schema mutation against a primary-like environment
-without an explicit confirmation from the user.
+**Cross-skill routing.**
+- Bucket A and the migration branch of B are this skill's core:
+  `migrations:new`, `migrations:run`, fork-and-run, safe deployment.
+  Stay here and load `creating-migrations.md` + `running-migrations.md`.
+- Buckets C and D — and the direct-mutation branch of B — are better
+  covered by **datocms-cma**. Switch when the user has opted out of
+  migrations, when the task is a content mutation (publish, delete,
+  fix), or when the user wants reusable `buildClient()` code checked
+  into the repo. The handoff is loading the sibling skill's
+  references — do not bounce the user.
 
 ### Destructive and production-sensitive confirmations
+
+Bucket A above always requires these confirmations; the list below also
+covers non-schema destructive commands.
 
 If context is missing, ask for explicit confirmation before proposing final commands for:
 - `environments:destroy`

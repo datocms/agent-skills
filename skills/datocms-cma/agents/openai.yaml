@@ -1,5 +1,5 @@
 # synced_from_name: datocms-cma
-# synced_from_description_sha256: 38c83d870eac01a83c851df1210728d2602a47839261a025abe4df8899108372
+# synced_from_description_sha256: 4b130abe31680415b92f2ccfed23d219715f1a33281120d0141734a18cfa462a
 interface:
   display_name: "DatoCMS CMA"
   short_description: "Write DatoCMS management API scripts and typed record flows"

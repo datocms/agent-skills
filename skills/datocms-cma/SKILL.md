@@ -1,24 +1,30 @@
 ---
 name: datocms-cma
 description: >-
-  Write programmatic Node.js or TypeScript scripts that mutate DatoCMS content,
-  schema, or project settings through the Content Management API using
-  @datocms/cma-client, @datocms/cma-client-node, or @datocms/cma-client-browser.
-  Prefer this skill over one-off CLI commands whenever the task needs code —
-  including short mid-conversation asks like "publish them", "fix those slugs",
-  "delete all drafts", or "bulk import this CSV". Covers four areas:
+  Write programmatic Node.js or TypeScript scripts that drive the DatoCMS
+  Content Management API using @datocms/cma-client, @datocms/cma-client-node,
+  or @datocms/cma-client-browser — the code-first companion for content-heavy
+  and automation work. Prefer this skill whenever the task needs real code for
+  records, uploads, or project automation — including short mid-conversation
+  asks like "publish them", "fix those slugs", "delete all drafts", or "bulk
+  import this CSV", and longer checked-in scripts. Covers four areas:
   (1) content operations — create/update/delete/publish records, bulk
   import/export and CSV pipelines, pagination over large record sets, asset
   uploads from URL or local files with metadata, structured text and block
-  payload edits; (2) schema and UI configuration — models, fields, blocks,
-  saved filters, dashboard and schema menus, plugin install and configuration;
-  (3) environment and project governance — fork/promote environments, webhooks
-  and build triggers, project settings and maintenance mode, scheduled
-  publish/unpublish workflows, audit logs, usage analytics, subscription
-  limits; (4) access control and typed flows — roles and API tokens, upload
-  tracks and tags, generated CMA schema types for type-safe record operations.
-  Works for both one-off execution via `cma:call` / `cma:script` and checked-in
-  `buildClient()` scripts for reusable or unattended code.
+  payload edits; (2) environment and project governance — fork/promote
+  environments, webhooks and build triggers, project settings and maintenance
+  mode, scheduled publish/unpublish workflows, audit logs, usage analytics,
+  subscription limits; (3) access control and typed flows — roles and API
+  tokens, upload tracks and tags, generated CMA schema types for type-safe
+  record operations; (4) schema and UI configuration when the user explicitly
+  bypasses the migrations workflow or wants schema mutations embedded in a
+  larger script — models, fields, blocks, saved filters, dashboard and schema
+  menus, plugin install and configuration. For ordinary schema changes inside
+  a project with a migrations workflow or a secondary environment, prefer
+  `datocms-cli` migrations as the safe default; reach for this skill only
+  when the user opts out or the mutation is part of a broader automation.
+  Works for both one-off execution via `cma:call` / `cma:script` and
+  checked-in `buildClient()` scripts for reusable or unattended code.
 ---
 
 # DatoCMS Content Management API Skill
@@ -106,7 +112,7 @@ runtime and which CMA client package is available.
 
 4. Only if the deliverable is unattended runtime code (see Step 1a): check for a `.env` or `.env.local` file and see whether a CMA-enabled `DATOCMS_API_TOKEN` (or similar) is already defined. If the only variable present is something read-only (`DATOCMS_READONLY_API_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`, a CDA token), flag that a separate CMA-enabled token is needed for that specific runtime — not for the agent's own introspection, which must go through CLI + link regardless.
 
-5. Check for an existing `cma-types.ts` file to determine if CMA type generation is already set up. Do **not** proactively suggest setting up type generation. For `cma:docs` lookups, `cma:call`, and `cma:script` this skill owns the execution shape directly — see the cheat sheets in Step 4. Route to **datocms-cli** only for CLI-workflow topics (migrations, `schema:generate`, environment operations, imports, plugin management, multi-project sync, CI/CD).
+5. Check for an existing `cma-types.ts` file to determine if CMA type generation is already set up. Do **not** proactively suggest setting up type generation. For `cma:docs` lookups, `cma:call`, and `cma:script` this skill owns the execution shape directly — see the cheat sheets in Step 4. For schema-change requests, see the decision tree in **Step 2.5** — it covers when this skill owns the work directly and when it routes to **datocms-cli** migrations. Otherwise route to **datocms-cli** for CLI-workflow topics (`schema:generate`, environment operations, imports, plugin management, multi-project sync, CI/CD).
 
 **Token scope reminder** (only when an unattended runtime genuinely needs one): the token must have `can_access_cma: true` and a role with the permissions the task requires (publishing, editing schema, etc.). It does not need to be "full-access" — it should be scoped to the smallest set of models, actions, and environments that the runtime actually needs.
 
@@ -136,6 +142,38 @@ Classify the user's task into one or more categories. Ask follow-up questions on
 - **Audit & debugging** — Query audit logs, inspect async job results, CMA-side search
 
 If the user's request is clear and falls into an obvious category, skip the clarifying questions and proceed directly.
+
+---
+
+## Step 2.5: Schema changes — decide the approach with the user
+
+DatoCMS schema operations fall into four buckets. The choice of approach
+is not automatic — ask the user when the bucket is not obvious from the
+request, because reversibility and workflow preference matter more than
+which tool performs the mutation.
+
+| Bucket | What it covers | Approach |
+|---|---|---|
+| **A. Truly destructive** | DROP a field, DROP a model, `bulk_destroy` records, lossy `field_type` changes (e.g. `string → json`, `json → string`, anything that discards stored values) | **Migration script** via `datocms-cli`, against a forked sandbox first. Never run these against a primary environment without explicit, repeated user confirmation. |
+| **B. Additive / reversible-config** | Add a field, add a model or block, rename a field, toggle `required`, add or tighten a validation, reorder fieldsets | **Ask the user.** Both approaches are safe; pick by preference and context. Lean to a migration script (`datocms-cli`) when the repo already uses a migrations workflow or the user is on a secondary branch — reviewable, reproducible. Direct mutation (`cma:call` / `cma:script` / `buildClient()`) is fine for quick iteration on a sandbox. Default to migration only when the user has no preference AND the repo shows migration conventions (`migrations/` directory, prior migration commits). |
+| **C. User explicit opt-out** | Phrases like "quickly, without a migrations workflow", "just patch this", "one-off", "don't scaffold migrations for this" | **Honor the opt-out.** Use direct mutation via `cma:call` (single op), `cma:script` (typed multi-step logic), or `buildClient()` (checked-in reusable script). Do not re-suggest migrations unless the change turns out to fall in bucket A. |
+| **D. Content operations (not schema)** | Publish, unpublish, delete individual records, fix slugs, bulk update a field value, re-tag uploads | Either tool is correct. Prefer `cma:call` for one-shots, `cma:script` for typed multi-step logic, or `buildClient()` for reusable scripts. No migration is needed for content mutations. |
+
+Regardless of which skill is loaded, the **question to ask the user is
+the same** when bucket B is ambiguous: *"Do you want this as a reviewable
+migration script, or a direct mutation against a sandbox?"* The answer
+determines which skill owns the follow-up — not which skill was loaded
+first.
+
+**Cross-skill routing.**
+- Buckets C, D, and the direct-mutation branch of B are this skill's
+  core: `cma:call`, `cma:script`, `buildClient()` patterns, bulk content
+  work. Stay here and load the references in Step 3.
+- Bucket A and the migration branch of B are better covered by
+  **datocms-cli**. Switch when the change is truly destructive, when the
+  repo already uses a migrations workflow, or when the user wants the
+  change as a reviewable migration script. The handoff is loading the
+  sibling skill's references — do not bounce the user.
 
 ---
 
