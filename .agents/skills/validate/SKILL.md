@@ -1,6 +1,8 @@
 ---
 name: validate
 description: Run repo validation to check skill metadata sync, eval fixture coverage, and repo invariants.
+metadata:
+  internal: true
 ---
 
 Run the repo validator with the freshness gate enabled:

@@ -2,6 +2,8 @@
 name: eval-triggers
 description: Run the trigger evaluation pipeline — classify, analyze, and optionally compare against a baseline. Only run when explicitly asked — evals are expensive.
 disable-model-invocation: true
+metadata:
+  internal: true
 ---
 
 **IMPORTANT:** This skill is expensive (makes many LLM API calls). Only run when the user explicitly asks for it. Never run proactively.

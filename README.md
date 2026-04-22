@@ -1,147 +1,68 @@
 # DatoCMS Skills
 
-Focused DatoCMS skills for content delivery, content management, CLI workflows,
-frontend integrations, plugin implementation, plugin UI design, and project
-setup. This README is the main guide for the repo.
+A collection of agent skills that teach Claude, Codex, Cursor, and other coding
+agents how to work effectively with [DatoCMS](https://www.datocms.com) — from
+GraphQL queries and content management scripts to plugin development and
+one-shot project setup.
 
-## Public Skills
+Eight skills, all open source, installable in one step on every supported
+platform.
 
-- `datocms-cda`: read content with the DatoCMS CDA and GraphQL, including media, SEO, and typed query workflows.
-- `datocms-cma`: write records, manage schema, environments, uploads, webhooks, and automation.
-- `datocms-cli`: handle CLI workflows such as setup/config, migrations, schema generation, direct CMA calls, environments, deployment, multi-project sync, and imports.
-- `datocms-frontend-integrations`: patch or extend existing frontend integrations for draft mode, previews, visual editing, rendering, and search.
-- `datocms-plugin-builder`: patch and maintain existing DatoCMS plugins.
-- `datocms-plugin-design-system`: design or restyle DatoCMS plugins so they feel native to the DatoCMS UI.
-- `datocms-plugin-scaffold`: scaffold new DatoCMS plugin projects.
-- `datocms-setup`: one-time setup orchestrator for frontend foundation/features, migrations, onboarding imports, and platform automation.
+---
 
-## Usage
+## What's included
 
-### Implicit skills (7 of 8)
+| Skill | What it does |
+|---|---|
+| `datocms-cda` | Read content with the Content Delivery API and GraphQL — including media, SEO, and typed query workflows. |
+| `datocms-cma` | Write records, manage schema, environments, uploads, webhooks, and other content-management automation. |
+| `datocms-cli` | Drive the DatoCMS CLI: setup/config, migrations, schema generation, direct CMA calls, environments, deployment, multi-project sync, and imports. |
+| `datocms-frontend-integrations` | Patch and extend frontend integrations for draft mode, web previews, visual editing, rendering, and search. |
+| `datocms-plugin-builder` | Patch and maintain existing DatoCMS plugins. |
+| `datocms-plugin-design-system` | Restyle plugin UI so it feels native to the DatoCMS dashboard. |
+| `datocms-plugin-scaffold` | Scaffold brand-new DatoCMS plugin projects. |
+| `datocms-setup` | One-shot setup orchestrator for frontend foundation/features, migrations, onboarding imports, and platform automation. |
 
-The first 7 skills listed above trigger **automatically** — you do not need to
-invoke them. Just describe what you want in plain language and the right skill
-activates based on your request.
+The first seven skills trigger **automatically** based on what you ask. The
+eighth, `datocms-setup`, is invoked **explicitly** — see [Usage](#usage) below.
 
-Examples:
-
-```text
-Write a GraphQL query to fetch all blog posts with images
-                                          → triggers datocms-cda
-
-Create a migration that adds a "category" field to the blog_post model
-                                          → triggers datocms-cli
-
-Bulk-publish all draft records of type "article"
-                                          → triggers datocms-cma
-
-Add draft mode to my Next.js app
-                                          → triggers datocms-frontend-integrations
-
-Add a sidebar panel to my plugin that shows word count
-                                          → triggers datocms-plugin-builder
-
-Make my plugin config screen match the DatoCMS style
-                                          → triggers datocms-plugin-design-system
-
-Create a new DatoCMS plugin from scratch
-                                          → triggers datocms-plugin-scaffold
-```
-
-### Setup skill (explicit only)
-
-`datocms-setup` does **not** trigger automatically. You must invoke it
-explicitly:
-
-| Platform | Invocation |
-|----------|-----------|
-| **Claude Code** | `/datocms:datocms-setup <your request>` |
-| **Codex** | `$datocms-setup <your request>` |
-
-Write the prompt as the outcome you want in plain language. You do not need to
-know the internal recipe ids, but using terms like `content link`,
-`visual editing`, `click-to-edit`, or `draft mode` helps the router land on the
-smallest matching setup bundle.
-
-Examples (Claude Code):
-
-```text
-/datocms:datocms-setup install visual editing in this project
-/datocms:datocms-setup set up draft mode and web previews
-/datocms:datocms-setup add migrations and a release workflow
-/datocms:datocms-setup set up click-to-edit overlays for draft pages
-```
-
-Examples (Codex):
-
-```text
-$datocms-setup install visual editing in this project
-$datocms-setup set up draft mode and web previews
-$datocms-setup add migrations and a release workflow
-```
-
-If a prerequisite is missing (e.g., draft mode is needed before web previews),
-the setup skill queues it in the same run instead of requiring a second call.
-
-Inside `datocms-setup`, setup work is organized into five internal lanes:
-
-- `frontend-foundation`: `cda-client`, `draft-mode`, `web-previews`, `content-link`, `realtime`, `visual-editing`, `cache-tags`, `graphql-types`
-- `frontend-features`: `responsive-images`, `structured-text`, `video-player`, `site-search`, `seo`, `robots-sitemaps`
-- `migrations`: `migrations`, `migration-release-workflow`, `blueprint-sync`, `sandbox-iteration`, `cli-profiles`, `migration-autogenerate`
-- `onboarding`: `contentful-import`, `wordpress-import`
-- `platform`: `cma-types`, `webhooks`, `build-triggers`
-
-Setup work is reported as `scaffolded` when placeholders or unresolved
-project-specific values remain, and `production-ready` only when those gaps are
-gone.
+---
 
 ## Install
 
-Each public skill can be installed on its own, but the full public set gives
-the smoothest cross-skill routing.
+Pick the section for your agent. All variants install the full set of eight
+skills; for single-skill installs and advanced options see
+[`docs/install.md`](docs/install.md).
 
-### Claude Code (recommended)
+### Claude Code
 
-This repo ships as a Claude Code plugin. Add the marketplace and install:
-
+This repo ships as a Claude Code plugin:
 
 ```bash
 /plugin marketplace add datocms/llm-skills
 /plugin install datocms@datocms-skills
 ```
 
-Skills are namespaced under the plugin name (e.g. `/datocms:datocms-cda`).
+Skills are namespaced under the plugin (e.g. `/datocms:datocms-cda`).
 
-**Updates:** After installation, enable auto-update so you always get the
-latest skill improvements: run `/plugin`, go to **Marketplaces**, select
-`datocms-skills`, and choose **Enable auto-update**. Or update manually with
-`claude plugin update datocms@datocms-skills`. See [docs/install.md](docs/install.md)
-for scopes, update details, and single-skill install options.
+To stay current, run `/plugin` → **Marketplaces** → `datocms-skills` →
+**Enable auto-update**. You can also update manually with
+`claude plugin update datocms@datocms-skills`.
 
-### Codex (recommended)
+### Codex
 
-This repo ships as a Codex plugin and includes a repo-scoped Codex marketplace
-entry at `.agents/plugins/marketplace.json` for local installation and testing.
-Inside a Codex session from this repo:
+This repo also ships as a Codex plugin. From a Codex session in this repo,
+open the plugin picker:
 
 ```
 /plugins
 ```
 
-Choose the **DatoCMS Local Plugins** marketplace and install `datocms`. All 8
-skills are bundled into the plugin automatically. If the repo marketplace does
-not appear yet, restart Codex and open `/plugins` again.
+Choose **DatoCMS Local Plugins** and install `datocms`. All eight skills are
+bundled. If the marketplace doesn't appear, restart Codex and reopen
+`/plugins`.
 
-**Updates:** This repo-scoped marketplace points at the local repo, so it is
-best for development and validation. After changing the plugin files, restart
-Codex and reinstall/update the local plugin if needed. For published Codex
-distribution, keep `.codex-plugin/plugin.json` versioned and treat the repo
-marketplace as the local verification path.
-
-### Codex (fallback — `$skill-installer`)
-
-If the Plugin Directory is unavailable, ask the skill installer to pull all
-skills from this repo:
+If the Plugin Directory is unavailable, fall back to the `$skill-installer`:
 
 ```
 $skill-installer install all of these skills from https://github.com/datocms/llm-skills:
@@ -155,18 +76,10 @@ $skill-installer install all of these skills from https://github.com/datocms/llm
 - skills/datocms-setup
 ```
 
-Restart Codex after installing. Then verify all 8 skills were picked up by
-running `ls ~/.codex/skills/ | grep datocms`. You should see all 8 folders
-listed. If any are missing, re-run `$skill-installer` for the missing skill
-individually.
+Restart Codex afterwards and verify with `ls ~/.codex/skills/ | grep datocms`
+(you should see all eight folders).
 
-**Updates:** The `$skill-installer` copies skill files into `~/.codex/skills/`.
-These are frozen snapshots — there is no auto-update. To get the latest
-version after the repo is updated, re-run the same `$skill-installer` command
-above. It will overwrite the existing copies with the latest files from the
-repo.
-
-### Other agents (Cursor, Copilot, Windsurf, etc.)
+### Cursor, Copilot, Windsurf, and other agents
 
 Use the cross-agent `npx skills` CLI:
 
@@ -174,7 +87,7 @@ Use the cross-agent `npx skills` CLI:
 npx skills add datocms/llm-skills
 ```
 
-Installs all 8 skills at once. Uses symlinks by default so updates are easy:
+This installs all eight skills via symlinks, so updating later is one command:
 
 ```bash
 npx skills update
@@ -182,57 +95,96 @@ npx skills update
 
 ### Claude.ai
 
-Upload each skill individually via **Customize > Skills** in
-[claude.ai](https://claude.ai). Pre-built zips are in the [`zips/`](zips/)
-folder — one per skill:
+Upload each skill via **Customize → Skills** in
+[claude.ai](https://claude.ai). Pre-built `.zip` files live in the
+[`zips/`](zips/) folder — one per skill.
 
-1. Go to **Customize > Skills** and click **"+"** > **"Upload a skill"**
-2. Upload each `.zip` from `zips/` (e.g. `datocms-cda.zip`, `datocms-cma.zip`, etc.)
+1. Go to **Customize → Skills**, click **+** → **Upload a skill**
+2. Upload each `.zip` (e.g. `datocms-cda.zip`, `datocms-cma.zip`, …)
 
-To regenerate the zips after skill content changes:
+---
 
-```bash
-rm -rf zips && mkdir zips && for s in skills/datocms-*/; do n=$(basename "$s"); (cd skills && zip -r "../zips/${n}.zip" "$n/" -x "${n}/agents/*"); done
-```
+## Usage
 
-## Repo Layout
+### Automatic skills
+
+You don't need to invoke the seven core skills — describe what you want in
+plain language and the right one activates:
 
 ```text
-.claude-plugin/
-  plugin.json         # Claude Code plugin manifest
-  marketplace.json    # Claude Code marketplace registry
-.codex-plugin/
-  plugin.json         # Codex plugin manifest
-skills/
-  datocms-cda/
-  datocms-cli/
-  datocms-cma/
-  datocms-frontend-integrations/
-  datocms-plugin-builder/
-  datocms-plugin-design-system/
-  datocms-plugin-scaffold/
-  datocms-setup/
-    agents/           # Codex agent interface config (openai.yaml)
-    patterns/
-    references/
-    recipes/
-docs/   # deeper guides and longer repo notes
-evals/
-  *.json    # eval fixtures and checked-in result snapshots
-  *.md      # eval guides and manual review matrices
-  results/  # analyzed outputs and historical snapshots
-  scripts/  # validation and eval tooling
-local/  # local-only scratch inputs
+Write a GraphQL query to fetch all blog posts with images
+                                          → datocms-cda
+
+Create a migration that adds a "category" field to the blog_post model
+                                          → datocms-cli
+
+Bulk-publish all draft records of type "article"
+                                          → datocms-cma
+
+Add draft mode to my Next.js app
+                                          → datocms-frontend-integrations
+
+Add a sidebar panel to my plugin that shows word count
+                                          → datocms-plugin-builder
+
+Make my plugin config screen match the DatoCMS style
+                                          → datocms-plugin-design-system
+
+Create a new DatoCMS plugin from scratch
+                                          → datocms-plugin-scaffold
 ```
 
-For the evaluation workflow details, see [evals/README.md](evals/README.md).
+### The setup skill (explicit)
 
-### Claude.ai
+`datocms-setup` is the only skill you invoke explicitly. It handles one-shot
+project bootstrapping (draft mode, visual editing, migrations workflows,
+content imports, etc.) and queues prerequisites automatically when needed.
 
-To use these skills in [claude.ai](https://claude.ai):
+| Platform | Invocation |
+|---|---|
+| Claude Code | `/datocms:datocms-setup <your request>` |
+| Codex | `$datocms-setup <your request>` |
 
-1. Download the individual `.zip` files from the [`zips/`](zips/) folder
-2. Go to **Customize > Skills** and click **"+"** > **"Upload a skill"**
-3. Upload each `.zip` one at a time (e.g. `datocms-cda.zip`, `datocms-cma.zip`, etc.)
+Phrase the prompt as the outcome you want. Terms like `content link`,
+`visual editing`, `click-to-edit`, or `draft mode` help the router pick the
+right recipe.
 
-All 8 skills will then be available in your claude.ai conversations.
+```text
+/datocms:datocms-setup install visual editing in this project
+/datocms:datocms-setup set up draft mode and web previews
+/datocms:datocms-setup add migrations and a release workflow
+/datocms:datocms-setup set up click-to-edit overlays for draft pages
+```
+
+If a prerequisite is missing (e.g. draft mode is needed before web previews),
+setup queues it in the same run instead of requiring a second call.
+
+Each setup step is reported as `scaffolded` when project-specific values still
+need to be filled in, and as `production-ready` only when those gaps are gone —
+so you always know whether a recipe is ready to ship or still needs a hand.
+
+For the full recipe catalog and routing rules see
+[`docs/skill-catalog.md`](docs/skill-catalog.md).
+
+---
+
+## Documentation
+
+- [`docs/install.md`](docs/install.md) — installation reference (scopes,
+  single-skill installs, detached snapshots, update mechanics)
+- [`docs/skill-catalog.md`](docs/skill-catalog.md) — full skill catalog,
+  internal setup recipes, and routing rules
+- [`docs/repo-layout.md`](docs/repo-layout.md) — repository layout and the
+  reasoning behind it
+- [`docs/maintenance.md`](docs/maintenance.md) — contributor and maintainer
+  workflows (validation, regenerating zips, release notes)
+- [`evals/README.md`](evals/README.md) — trigger-quality evaluation framework
+
+---
+
+## License & contributing
+
+Issues and pull requests are welcome on
+[github.com/datocms/llm-skills](https://github.com/datocms/llm-skills).
+See [`docs/maintenance.md`](docs/maintenance.md) for the contributor
+workflow.
