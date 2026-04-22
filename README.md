@@ -106,7 +106,7 @@ This repo ships as a Claude Code plugin. Add the marketplace and install:
 
 
 ```bash
-/plugin marketplace add marcelofinamorvieira/datocms-llm-skills
+/plugin marketplace add datocms/llm-skills
 /plugin install datocms@datocms-skills
 ```
 
@@ -144,7 +144,7 @@ If the Plugin Directory is unavailable, ask the skill installer to pull all
 skills from this repo:
 
 ```
-$skill-installer install all of these skills from https://github.com/marcelofinamorvieira/datocms-llm-skills:
+$skill-installer install all of these skills from https://github.com/datocms/llm-skills:
 - skills/datocms-cda
 - skills/datocms-cli
 - skills/datocms-cma
@@ -171,7 +171,7 @@ repo.
 Use the cross-agent `npx skills` CLI:
 
 ```bash
-npx skills add marcelofinamorvieira/datocms-llm-skills
+npx skills add datocms/llm-skills
 ```
 
 Installs all 8 skills at once. Uses symlinks by default so updates are easy:

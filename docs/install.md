@@ -20,7 +20,7 @@ a Claude Code plugin. This is the recommended approach for Claude Code users.
 
 ```bash
 # Add the marketplace (once)
-/plugin marketplace add marcelofinamorvieira/datocms-llm-skills
+/plugin marketplace add datocms/llm-skills
 
 # Install the plugin
 /plugin install datocms@datocms-skills
