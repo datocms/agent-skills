@@ -4,6 +4,17 @@ Installation, authentication, project linking, profiles, token resolution, and g
 
 ---
 
+## Inputs to confirm before running commands
+
+Confirm these inputs when they are not already clear:
+- whether the user wants OAuth-based auth (`login` + `link`, best practice) or env-var-based auth
+- which profile ids are needed
+- whether the repo should preserve an existing migrations convention or create a new shared one
+- whether the project expects JavaScript or TypeScript migrations
+- whether custom migration template / migrations tsconfig paths already exist and must be preserved
+
+---
+
 Install the CLI in the project and run it locally:
 
 ```bash
@@ -19,8 +30,7 @@ version. If the repo already has an established runner style (`pnpm exec`,
 
 ## Authentication
 
-CLI v4 uses **OAuth-based authentication** as the best practice. Credentials are stored at
-`~/.config/datocms-cli/credentials.json` (file is `chmod 600`).
+CLI v4 uses **OAuth-based authentication** as the best practice.
 
 ### Log in
 
@@ -50,30 +60,100 @@ Shows the email, name, and company of the currently authenticated account.
 
 ---
 
+## Listing Accessible Projects
+
+Use `projects:list` to discover the projects the authenticated account
+can reach across personal account and organizations. Read-only,
+OAuth-only (no `--api-token`, no `--profile` — it never touches the
+CMA, only the Dashboard API).
+
+```bash
+# List all projects (capped to --limit, default 20)
+npx datocms projects:list
+
+# Fuzzy-match by name or subdomain
+npx datocms projects:list blog
+
+# Restrict to a workspace (personal, org name, or org id)
+npx datocms projects:list --workspace="Acme Corp"
+npx datocms projects:list --workspace=personal
+
+# Raise the cap
+npx datocms projects:list --limit=100
+
+# Machine-readable for scripts and agents
+npx datocms projects:list blog --json
+```
+
+Search behavior:
+1. **Exact match first** — if the query equals an `id`, `name` (case-insensitive), or full `domain` (case-insensitive), only those matches are returned.
+2. **Fuzzy match otherwise** — scores against project name and short domain (custom domain or `internal_subdomain`). `.admin.datocms.com` is excluded from fuzzy matching.
+3. Results sorted by score, capped to `--limit`. **Always returns a list, never a single "best" guess.**
+
+JSON output schema (one object per project):
+
+```json
+{
+  "id": "12345",
+  "name": "Blog",
+  "domain": "blog.admin.datocms.com",
+  "workspace": {
+    "type": "personal_account",
+    "name": "Personal account",
+    "id": null
+  }
+}
+```
+
+Common pipeline for agents bootstrapping a project link:
+
+```bash
+SITE_ID=$(npx datocms projects:list blog --json | jq -r '.[0].id')
+npx datocms link --site-id=$SITE_ID
+```
+
+Only safe to auto-pick `.[0]` when the agent has high confidence the
+query matches a single project (or the result has length 1). On
+ambiguity, surface the list to the user and let them choose.
+
+---
+
 ## Linking a Project
 
 Use `link` to connect the current directory to a DatoCMS project and
-configure its profile in one step.
+configure its profile.
 
 ```bash
-# Interactive: log in (if needed), pick workspace + project, configure profile
+# Interactive: pick workspace + project, configure profile
 npx datocms link
 
-# Non-interactive: link to a specific project by ID
+# Non-interactive: link to a specific project by ID (no prompts when
+# OAuth credentials are already saved)
 npx datocms link --site-id=12345
 
+# Add the org id when the project belongs to an organization
+npx datocms link --site-id=12345 --organization-id=67890
+
 # Configure a named profile instead of "default"
-npx datocms link --profile=staging
+npx datocms link --profile=staging --site-id=12345
 ```
 
 `link` combines authentication and profile configuration:
-1. Authenticates via OAuth (or reuses existing credentials)
-2. Lets you select a workspace and project interactively
+1. Authenticates via OAuth (reuses existing credentials when present)
+2. Picks a project — interactively when no `--site-id` is passed, otherwise non-interactively
 3. Stores the project's `siteId` (and `organizationId`) in the profile
 4. Configures migration directory, model API key, log level, etc.
+   (auto-defaulted in non-TTY)
+
+### Interactive vs non-interactive behavior
+
+- **`--site-id` provided + OAuth credentials present** → fully non-interactive. Defaults are written for log level and migrations settings; the agent can drive this.
+- **`--site-id` provided but no credentials** → fails fast in non-TTY with a suggestion to run `datocms login` first.
+- **No `--site-id` in non-TTY** → fails fast with a suggestion to pass `--site-id=<ID>` (use `projects:list` to discover it) or run in an interactive terminal.
+- **No `--site-id` in TTY** → interactive picker (workspace selection + project search prompt).
 
 Alternatively, instead of linking to a project, you can choose to authenticate
-via an API token environment variable during the `link` flow.
+via an API token environment variable during the interactive `link` flow.
 
 Run `npx datocms link --help` for all available flags (`--profile`,
 `--log-level`, `--migrations-dir`, `--migrations-model`,

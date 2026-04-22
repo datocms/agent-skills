@@ -3,9 +3,15 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 # DatoCMS CLI Profiles Setup
 
-You are an expert at setting up named DatoCMS CLI profiles in existing
-projects. This recipe stays lean: it only patches CLI config, env placeholders,
-and one safe listing script when needed.
+You are an expert at adding named DatoCMS CLI profiles on top of the
+OAuth-linked default created by `cli-bootstrap`. Named profiles exist for one
+reason: **managing multiple DatoCMS projects from the same repo**, typically
+a blueprint plus its client projects (see `blueprint-sync`).
+
+Same-project environment separation (staging vs production of one project)
+belongs to DatoCMS environments (`--environment=<id>`, `--source` /
+`--destination` on migration commands), not to profiles. Parallel profiles
+pointing at the same `siteId` duplicate work and invite drift.
 
 Follow these steps in order. Do not skip steps.
 
@@ -18,21 +24,27 @@ Silently examine the project:
 Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
 
 1. **Node project** — Check for `package.json`
-2. **CLI installation** — Check `package.json` for `@datocms/cli`
-3. **Existing CLI config** — Check for `datocms.config.json`
-4. **Existing profiles** — Inspect `datocms.config.json` for a `default`
-   profile and any named profiles
-5. **Migrations convention** — Check whether the repo already has a clear
+2. **Bootstrap state** — Confirm `@datocms/cli` is installed and that the
+   active profile has a `siteId` (owned by `cli-bootstrap`). If missing,
+   surface `cli-bootstrap` as an unmet prerequisite and stop.
+3. **Existing profiles** — Inspect `datocms.config.json` for a `default`
+   profile and any named profiles.
+4. **Migrations convention** — Check whether the repo already has a clear
    migrations convention through existing CLI config, a `migrations/`
-   directory, or package scripts
-6. **Environment files** — Check `.env.example`, `.env`, and `.env.local`
-7. **Existing scripts** — Check `package.json` for `datocms:environments:list`
-   or another safe equivalent that already runs `npx datocms environments:list`
+   directory, or package scripts.
+5. **Environment files** — Check `.env.example`, `.env`, and `.env.local`.
+6. **Existing scripts** — Check `package.json` for `datocms:environments:list`
+   or another safe equivalent that already runs `npx datocms environments:list`.
 
 ### Stop conditions
 
 - If `package.json` is missing, stop and explain that this setup targets Node
   projects only.
+- If `@datocms/cli` is not installed or the default profile has no `siteId`,
+  stop and route back to `cli-bootstrap`.
+- If the request is "add staging/production profiles" and the user really
+  means "separate environments of the same project", stop and point them at
+  DatoCMS environments instead.
 - If the repo already has a materially different profile scheme, patch it in
   place by default instead of normalizing names or removing profiles.
 
@@ -40,9 +52,10 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 
 ## Step 2: Ask Questions
 
-Ask one grouped question:
+Ask one grouped question that also confirms the intent is multi-project and
+not "staging/production of the same project":
 
-> "Which CLI profile ids should I create or update? Recommended default: preserve any existing profile ids and add only the new ids you name. If the repo does not already have a clear migrations convention, should these new profiles inherit a migrations block or stay environment-only? Recommended default: preserve the repo's strongest existing migrations convention; if none exists, stay environment-only. If you skip the second part, I'll follow that default and derive the env-var names directly from the chosen profile ids."
+> "These named profiles will layer on top of the OAuth-linked default and are meant for managing multiple DatoCMS projects (blueprint-sync). Staging/production of the same project belongs to DatoCMS environments (`--environment`), not profiles — confirm that's not what you need. Then tell me which profile ids to create. Recommended default: preserve any existing profile ids and add only the new ids you name. If the repo does not already have a clear migrations convention, should these new profiles inherit a migrations block or stay environment-only? Recommended default: preserve the repo's strongest existing migrations convention; if none exists, stay environment-only. If you skip, I'll follow those defaults and derive env-var names from the chosen profile ids."
 
 ---
 
@@ -59,30 +72,37 @@ Read only these references:
 
 Generate only these project changes:
 
-1. **Create or patch `datocms.config.json`**
+1. **Patch `datocms.config.json`** to add the requested named profiles
+   alongside the existing OAuth-linked `default`. Each new profile uses
+   `apiTokenEnvName` (default naming: `DATOCMS_<PROFILE_ID>_PROFILE_API_TOKEN`
+   uppercased) and **no `siteId`** — it points at a different project, not a
+   different environment of the default one.
 2. **Patch `.env.example`** with one token placeholder per named profile:
 
    ```env
-   DATOCMS_STAGING_PROFILE_API_TOKEN=your_token_here
-   DATOCMS_PRODUCTION_PROFILE_API_TOKEN=your_token_here
+   DATOCMS_BLUEPRINT_PROFILE_API_TOKEN=your_token_here
+   DATOCMS_CLIENT_A_PROFILE_API_TOKEN=your_token_here
    ```
 
 3. **Patch `package.json`** with `datocms:environments:list` only when no safe
-   equivalent already exists
+   equivalent already exists.
 
 ### Required behavior
 
-- Preserve the current `default` profile if one exists
-- Clone the current default profile's non-token config into the requested named
-  profiles when possible
-- If no config exists yet, create `default` plus the requested named profiles
-  with `logLevel: "NONE"`
+- Preserve the current `default` profile with its `siteId` — never overwrite
+  or remove it.
 - Only include a `migrations` block for new profiles when the repo already has
-  one clear migrations convention
+  one clear migrations convention.
+- Use the profile id → env-var naming convention (e.g. profile `blueprint` →
+  `DATOCMS_BLUEPRINT_PROFILE_API_TOKEN`) unless the user asks for a custom
+  `apiTokenEnvName`.
 
 ### Mandatory rules
 
 - Do not remove or rename existing profiles unless the user explicitly asks
+- Never point two profiles at the same DatoCMS project (same `siteId`) —
+  environments of one project are the job of DatoCMS environments
+  (`--environment`), not of named profiles.
 - Do not generate one package script per profile
 - Do not force a fixed local, staging, production naming convention
 - Do not create multi-project rollout helpers in this setup
@@ -92,8 +112,8 @@ Generate only these project changes:
 
 ## Step 5: Install Dependencies
 
-Install `@datocms/cli` only if it is missing. Do not add any other packages for
-this setup.
+No new dependencies in this recipe — `@datocms/cli` is installed by
+`cli-bootstrap`.
 
 ---
 
@@ -115,8 +135,9 @@ Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, i
 
 Before presenting the result, verify:
 
-1. `datocms.config.json` exists and preserves current working profile config
-2. Requested profile ids exist in config after the patch
+1. `datocms.config.json` preserves the existing OAuth-linked `default` profile (`siteId` untouched)
+2. Requested profile ids exist in config after the patch, using `apiTokenEnvName` (not `siteId`) unless the user explicitly wires them at different DatoCMS projects
 3. `.env.example` contains the per-profile token placeholders
 4. `datocms:environments:list` is added only when no safe equivalent exists
 5. No one-script-per-profile expansion was added
+6. No new profile was given a `siteId` equal to an existing profile's `siteId` (that would mean using profiles to simulate environments)

@@ -3,9 +3,12 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 # DatoCMS CMA Type Generation Setup
 
-You are an expert at setting up standalone CMA schema type generation. This
-skill configures only the `schema:generate` workflow and does not overlap with
-GraphQL query type-generation setup.
+You are an expert at setting up standalone CMA schema type generation on top of
+an already-linked project. This skill configures only the `schema:generate`
+workflow and does not overlap with GraphQL query type-generation setup.
+
+`schema:generate` authenticates via the OAuth-linked default profile from
+`cli-bootstrap` — no CMA token in `.env`, no `dotenv-cli` wrapper.
 
 Follow these steps in order. Do not skip steps.
 
@@ -18,18 +21,19 @@ Silently examine the project:
 Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
 
 1. **Framework and file layout** — use `../../../references/repo-conventions.md` for supported framework detection and `src/` usage.
-2. **Node project** — Confirm `package.json` exists
-3. **CLI installation** — Check `package.json` for `@datocms/cli`
-4. **dotenv support** — Check `package.json` for `dotenv-cli`
-5. **Existing script** — Check `package.json` for `generate-cma-types`
-6. **Existing output** — Check for `src/lib/datocms/cma-types.ts` or
-   `lib/datocms/cma-types.ts`
-7. **Environment files** — Check `.env.example`, `.env`, and `.env.local` for a
-   CMA-capable token
+2. **Node project** — Confirm `package.json` exists.
+3. **Bootstrap state** — Confirm `@datocms/cli` is installed and the active
+   profile has a `siteId` (owned by `cli-bootstrap`). If missing, surface
+   `cli-bootstrap` as an unmet prerequisite and stop.
+4. **Existing script** — Check `package.json` for `generate-cma-types`.
+5. **Existing output** — Check for `src/lib/datocms/cma-types.ts` or
+   `lib/datocms/cma-types.ts`.
 
 ### Stop conditions
 
 - If the framework cannot be determined, ask the user.
+- If `@datocms/cli` is not installed or the active profile has no `siteId`,
+  stop and route back to `cli-bootstrap`.
 - If the repo already has a materially different schema-type generation setup,
   inspect and patch it in place by default instead of replacing it.
 
@@ -63,16 +67,15 @@ Generate only the standalone CMA type-generation setup.
 
 ### Required project changes
 
-1. **Install missing packages**:
-   - `@datocms/cli`
-   - `dotenv-cli`
-2. **Patch `.env.example`** with the framework-appropriate CMA token placeholder
-3. **Patch `package.json`** with `generate-cma-types`
-4. **Choose the output path**:
+1. **Patch `package.json`** with a `generate-cma-types` script that invokes
+   `npx datocms schema:generate <output-path>`. No `dotenv-cli` wrapper, no
+   explicit `--api-token` — the linked default profile handles auth.
+2. **Choose the output path**:
    - Next.js / Astro / SvelteKit with `src/`: `src/lib/datocms/cma-types.ts`
    - Next.js / Astro / SvelteKit without `src/`: `lib/datocms/cma-types.ts`
    - Nuxt: `lib/datocms/cma-types.ts`
-5. **Run the initial generation only if a CMA-capable token already exists**
+3. **Run the initial generation** via the new script. With the default profile
+   linked via OAuth, no token prompt or env lookup is needed.
 
 ### Mandatory rules
 
@@ -81,7 +84,10 @@ Generate only the standalone CMA type-generation setup.
 - Do not configure GraphQL Code Generator
 - Preserve an existing working script name if the repo already uses one, but
   ensure `generate-cma-types` exists
-- Use the framework-specific env var naming from the reference
+- Do not install `@datocms/cli` — `cli-bootstrap` owns that
+- Do not install `dotenv-cli` — unnecessary with OAuth-linked profile
+- Do not add any CMA token placeholder to `.env.example` for `schema:generate`.
+  `schema:generate` uses the default profile's OAuth resolution.
 
 ---
 
@@ -102,7 +108,9 @@ After generating the files, tell the user:
 Before presenting the result, verify:
 
 1. `package.json` contains `generate-cma-types`
-2. `.env.example` contains the correct framework-specific CMA token placeholder
-3. The output path matches the detected framework and `src/` layout
-4. `@datocms/cli` and `dotenv-cli` are installed or added
-5. No GraphQL query type-generation setup was added by this skill
+2. The output path matches the detected framework and `src/` layout
+3. The script uses `npx datocms schema:generate` without a `dotenv` wrapper or
+   an explicit `--api-token` flag (OAuth via the linked default profile)
+4. No CMA token placeholder was added to `.env.example` by this recipe
+5. `dotenv-cli` was not added as a dependency
+6. No GraphQL query type-generation setup was added by this skill

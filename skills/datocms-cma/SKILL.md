@@ -1,51 +1,114 @@
 ---
 name: datocms-cma
 description: >-
-  Interact with the DatoCMS Content Management API (CMA) using
+  Write programmatic Node.js or TypeScript scripts that mutate DatoCMS content,
+  schema, or project settings through the Content Management API using
   @datocms/cma-client, @datocms/cma-client-node, or @datocms/cma-client-browser.
-  Use when users need programmatic CMA scripts: create/update/delete/publish
-  records, bulk import/export (including CSV pipelines), paginate through large
-  record sets, upload assets from URL/local files and set metadata, update
-  structured text or block payloads, create/modify schema (models/fields/blocks),
-  fork/promote environments, configure webhooks and build triggers, manage roles
-  and API tokens, schedule publish/unpublish workflows, consume generated CMA
-  schema types for type-safe record operations, manage dashboard and schema menus,
-  install and configure plugins, update project settings and maintenance mode,
-  create saved filters, query audit logs and usage analytics, manage upload
-  tracks and tags, and check subscription limits.
+  Prefer this skill over one-off CLI commands whenever the task needs code —
+  including short mid-conversation asks like "publish them", "fix those slugs",
+  "delete all drafts", or "bulk import this CSV". Covers four areas:
+  (1) content operations — create/update/delete/publish records, bulk
+  import/export and CSV pipelines, pagination over large record sets, asset
+  uploads from URL or local files with metadata, structured text and block
+  payload edits; (2) schema and UI configuration — models, fields, blocks,
+  saved filters, dashboard and schema menus, plugin install and configuration;
+  (3) environment and project governance — fork/promote environments, webhooks
+  and build triggers, project settings and maintenance mode, scheduled
+  publish/unpublish workflows, audit logs, usage analytics, subscription
+  limits; (4) access control and typed flows — roles and API tokens, upload
+  tracks and tags, generated CMA schema types for type-safe record operations.
+  Works for both one-off execution via `cma:call` / `cma:script` and checked-in
+  `buildClient()` scripts for reusable or unattended code.
 ---
 
 # DatoCMS Content Management API Skill
 
 You are an expert at writing code that interacts with the DatoCMS Content Management API (CMA). Use this workflow as a default. Reorder or skip steps when the task is purely diagnostic, advisory, or the user only needs an explanation.
 
+A short, imperative request in mid-conversation ("publish them",
+"delete those", "fix the slugs", "check how many drafts I have") that
+follows earlier DatoCMS context is still a DatoCMS task — do not lose
+the context just because the latest message is short. Signals that
+you are on a DatoCMS-connected repo: `@datocms/*` packages in
+`package.json`, `DATOCMS_*` env vars, `datocms.config.json`,
+`cma-types.ts`.
+
 ---
 
 ## Step 1: Detect Context
 
 If the project context is already established in this conversation (client
-package, token variable, environment targeting), skip broad detection below.
-Re-inspect only when a question cannot be answered from prior context.
+package, authentication approach, environment targeting), skip broad
+detection below. Re-inspect only when a question cannot be answered from
+prior context.
 
-Silently examine the project to determine the runtime and which CMA client package is available.
+### Step 1a — Bootstrap project awareness (CLI + `datocms link` is mandatory)
+
+Any CMA work on a DatoCMS-connected repo requires agent-side visibility
+into the live project (models, fields, ids, record state). `@datocms/cli`
+installed + `datocms login` + `datocms link` is that bootstrap — treat it
+like `git init` or `npm install`: missing → fix first, do not route around.
+
+**Bootstrap flow** (only `datocms login` needs an interactive terminal;
+the rest the agent drives in non-TTY):
+
+```bash
+npm install --save-dev @datocms/cli        # if missing
+npx datocms login                          # user, one-time, interactive
+npx datocms projects:list [hint] --json    # agent discovers siteId
+npx datocms link --site-id=<ID> [--organization-id=<ID>]   # agent links
+```
+
+**Always confirm the target project with the user before running `datocms
+link`**, even when `projects:list` returns a single candidate. Show the
+candidate(s) (name, id, organization) and wait for an explicit yes. Do not
+treat "only one result" as consent — the user may have access to a project
+they did not mean to wire to this repo, and fixing a mis-linked project
+later is painful.
+
+**Detection hints** (do not rely on `which datocms` — the CLI runs via
+`npx`):
+
+- `@datocms/cli` in `package.json` devDependencies → CLI available
+- `datocms.config.json` with a `siteId` on the active profile → linked
+- `npx datocms whoami` succeeds → OAuth session active
+- none of the above → drive the bootstrap above
+
+**Token-in-`.env` is the exception.** An explicit `DATOCMS_API_TOKEN` is
+only for runtimes that cannot use OAuth: CI, server-side application code,
+cron, webhooks, shared repo scripts. Even there, the agent still needs
+CLI + link during development for project visibility.
+
+**Red flag:** if you are about to say "paste a CMA token" or "add
+`DATOCMS_CMA_TOKEN=...` to `.env`" for a task the user is running
+interactively, stop. The right answer is the bootstrap above + the
+actual operation expressed as a `cma:call` / `cma:script` invocation
+(shapes in Step 4).
+
+### Step 1b — Package and project detection
+
+Once the auth approach is chosen, examine the project to determine the
+runtime and which CMA client package is available.
 
 1. Read `package.json` and check for these packages (in priority order):
    - `@datocms/cma-client` — Universal/isomorphic package. **Recommended for most cases.** Works in any environment with native `fetch`. Only provide a `fetchFn` if your runtime lacks native Fetch API.
    - `@datocms/cma-client-node` — Node.js-optimized. Adds upload helpers (`createFromLocalFile`, `createFromUrl`). Use when you need file-system upload convenience methods.
    - `@datocms/cma-client-browser` — Browser-optimized. Adds `createFromFileOrBlob()` for File/Blob uploads.
 
-2. If none is installed, recommend the appropriate package:
+2. If none is installed and the task requires `buildClient()` code, recommend the appropriate package:
    - General / universal → `@datocms/cma-client`
    - Node.js project needing upload helpers → `@datocms/cma-client-node`
    - Browser-only project needing File/Blob uploads → `@datocms/cma-client-browser`
 
+   (For pure OAuth-path work via `cma:call` / `cma:script`, none of these need to be installed — the CLI workspace ships its own client.)
+
 3. Search for existing `buildClient()` calls to understand how the project already configures the client (API token source, environment targeting, etc.).
 
-4. Check for a `.env` or `.env.local` file to see if `DATOCMS_API_TOKEN` (or a similar variable) is already defined.
+4. Only if the deliverable is unattended runtime code (see Step 1a): check for a `.env` or `.env.local` file and see whether a CMA-enabled `DATOCMS_API_TOKEN` (or similar) is already defined. If the only variable present is something read-only (`DATOCMS_READONLY_API_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`, a CDA token), flag that a separate CMA-enabled token is needed for that specific runtime — not for the agent's own introspection, which must go through CLI + link regardless.
 
-5. Check for `@datocms/cli` in `devDependencies` and an existing `cma-types.ts` file to determine if CMA type generation is already set up. Do **not** proactively suggest setting up type generation. When the CLI is available, use `npx datocms cma:docs <resource> <action>` to look up detailed, up-to-date endpoint documentation (request body schemas, required fields, query parameters, response shapes) before writing CMA client code.
+5. Check for an existing `cma-types.ts` file to determine if CMA type generation is already set up. Do **not** proactively suggest setting up type generation. For `cma:docs` lookups, `cma:call`, and `cma:script` this skill owns the execution shape directly — see the cheat sheets in Step 4. Route to **datocms-cli** only for CLI-workflow topics (migrations, `schema:generate`, environment operations, imports, plugin management, multi-project sync, CI/CD).
 
-**Important:** The CMA requires an API token with `can_access_cma: true` and a role granting the needed permissions (not a read-only CDA token). If you see a token variable named like `DATOCMS_READONLY_API_TOKEN` or `NEXT_PUBLIC_DATOCMS_API_TOKEN`, warn the user that CMA operations need a token with CMA access enabled. The token does not need to be "full-access" — it can be scoped to specific models, actions, and environments via its role.
+**Token scope reminder** (only when an unattended runtime genuinely needs one): the token must have `can_access_cma: true` and a role with the permissions the task requires (publishing, editing schema, etc.). It does not need to be "full-access" — it should be scoped to the smallest set of models, actions, and environments that the runtime actually needs.
 
 ---
 
@@ -121,9 +184,85 @@ Based on the task classification, read the appropriate reference files from the 
 
 When the response includes code, follow these default rules:
 
-### Client Setup
-- Default to `buildClient()` from the detected package (Step 1)
-- Store the API token in an environment variable, never hardcode it
+### Authentication (respect the Step 1a bootstrap)
+- CLI + link is a prerequisite of Step 4, not a choice. If the project is not yet linked, fix that first (propose install + login + link) before writing any solution code.
+- For interactive / one-off work (the majority of CMA tasks), do not write `buildClient({ apiToken: ... })` code at all — output a `cma:call` invocation (single op) or a `cma:script` file (multi-step typed logic) using the shapes below. The CLI handles auth silently via the linked project; no cross-skill hop needed.
+- Only when the deliverable is unattended runtime code (CI, server-side app, long-lived automation, repo-committed shared scripts) should the response include `buildClient()` + env-var token code.
+
+#### `cma:call` shape — do not invent REST-style flags
+
+`cma:call` is **positional** (`<RESOURCE> <METHOD>` + any URL placeholders as
+extra positional args), with JSON5 request bodies and query params passed via
+`--data` / `--params`. It is **not** a REST wrapper — there is no
+`--endpoint`, `--method`, `--query-params`, or `--body` flag.
+
+```bash
+# List + filter
+npx datocms cma:call items list --params='{filter: {type: "article"}}'
+
+# Single resource
+npx datocms cma:call items find <ITEM_ID>
+
+# Mutate (confirm environment first)
+npx datocms cma:call items update <ITEM_ID> --data='{title: "Updated"}'
+npx datocms cma:call items publish <ITEM_ID>
+
+# Schema (prefer a migration unless the user opted out)
+npx datocms cma:call fields create <ITEM_TYPE_ID> --data='{label: "Title", api_key: "title", field_type: "string"}'
+```
+
+`--data` / `--params` accept JSON5 (unquoted keys, single-quoted wrapping), which
+keeps shell escaping sane. If unsure about the exact resource/method/body shape,
+run `npx datocms cma:docs <resource> <action>` — that is the authoritative
+source.
+
+#### `cma:script` shape — typed one-off TypeScript, no checked-in code
+
+Use `cma:script` when a one-off task needs loops, branching, multiple dependent
+calls, or typed `Schema.*` record payloads. The file runs against the CLI's
+bundled workspace — `client` (pre-authenticated) and `Schema` (project-specific
+record types) are **ambient globals**, `tsc --noEmit` type-checks before
+execution, no `buildClient()` or imports needed.
+
+**Format A** — default-export async function (portable; can later be promoted into a migration):
+
+```ts
+// publish-drafts.ts
+import type { Client } from '@datocms/cma-client-node';
+
+export default async function (client: Client): Promise<void> {
+  for await (const draft of client.items.listPagedIterator({
+    filter: { fields: { _status: { eq: 'draft' } } },
+  })) {
+    await client.items.publish(draft.id);
+  }
+}
+```
+
+```bash
+npx datocms cma:script publish-drafts.ts [--environment <env>]
+```
+
+**Format B** — top-level await, stdin heredoc (throwaway one-liners):
+
+```bash
+npx datocms cma:script <<'EOF'
+const items = await client.items.list({ filter: { type: 'article' } });
+console.log(items.length);
+EOF
+```
+
+Rules of thumb:
+- Prefer Format A when the script may be promoted into a migration, needs a named function, or will be edited by multiple people. Prefer Format B for throwaway piping / heredocs.
+- Use `Schema.*` types for record operations — `any` and `unknown` are rejected by the workspace typecheck.
+- Redirect `2>/dev/null` when piping Format B stdout into `jq`.
+- Switch to a checked-in `buildClient()` script (see "Client Setup" below) only when the code needs to live in the repo, be tested, or use packages outside the `cma:script` workspace.
+
+For advanced patterns (allowed package imports, long-running scripts, stdout shaping), consult the **datocms-cli** skill.
+
+### Client Setup (unattended-runtime code only)
+- Default to `buildClient()` from the detected package (Step 1b)
+- Read the API token from an environment variable; never hardcode it and never ask the user to paste it into the chat
 - Set the `environment` option when working with sandbox environments
 
 ### API Surface
@@ -155,7 +294,7 @@ When the response includes code, follow these default rules:
 
 Before presenting the final code:
 
-1. **Token permissions** — CMA operations need a token with CMA access enabled and appropriate role permissions (not a CDA-only read-only token). Schema changes require a role with `can_edit_schema: true`.
+1. **Project-awareness bootstrap** — Confirm the repo has `@datocms/cli` installed and the project is linked (`datocms.config.json` with a `siteId`, `npx datocms whoami` succeeds). If not, the final proposal must include the install + login + link sequence before any CMA operation. For interactive / one-off tasks the deliverable should be a `cma:call` / `cma:script` invocation (shapes in Step 4), not a `buildClient()` script that requires a token in `.env`. Only when the code will run unattended (CI, server-side app, long-lived automation) should a token-in-env solution be presented — and in that case the token must have CMA access enabled and the role permissions the task needs. Schema changes require a role with `can_edit_schema: true`.
 2. **Environment targeting** — If working with a sandbox, ensure the `environment` config option is set
 3. **Error handling** — Ensure `ApiError` is caught at appropriate boundaries
 4. **Pagination** — If the solution iterates a collection that could exceed a single page, prefer `listPagedIterator()`
@@ -173,7 +312,7 @@ This skill covers **content management via the REST CMA** (mutations, schema, up
 
 | Condition | Route to |
 |---|---|
-| CLI commands, migration scaffolding, `datocms schema:generate`, `datocms cma:docs`, or environment operations via `npx datocms` | **datocms-cli** |
+| CLI-workflow topics: migrations (creating, running, autogenerate), `schema:generate`, environment operations (`fork`/`promote`/`destroy`/`rename`), imports (WordPress, Contentful), CLI plugin management, blueprint/multi-project sync, CI/CD deployment workflows | **datocms-cli** |
 | Querying content with GraphQL for frontend display | **datocms-cda** |
 | Setting up draft mode, Web Previews, Content Link, real-time subscriptions, or framework integration | **datocms-frontend-integrations** |
 | Building a DatoCMS plugin | **datocms-plugin-builder** |

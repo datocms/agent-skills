@@ -4,6 +4,17 @@ Maintenance mode, safe deployment sequences, and CI/CD integration.
 
 ---
 
+## Inputs to confirm before running commands
+
+Confirm these inputs when they are not already clear:
+- CLI profile to use
+- destination environment naming convention
+- whether maintenance mode is acceptable for this release
+- whether promotion is manual-after-review or automatic in the proposed workflow
+- whether `--fast-fork` / `--force` are acceptable operationally
+
+---
+
 ## Maintenance Mode
 
 ### Turn on maintenance mode

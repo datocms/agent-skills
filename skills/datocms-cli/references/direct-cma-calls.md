@@ -1,11 +1,35 @@
 # Direct CMA Calls
 
-Use `cma:call` for one-off Content Management API operations from the terminal
-when a reusable script would be overkill.
+Use `cma:call` for single-method Content Management API operations from the
+terminal when a reusable script would be overkill.
 
 The command surface is **dynamic**: available resources and methods reflect the
 `@datocms/cma-client` version installed in the project. Always use the
 discovery commands below rather than guessing resource/method pairs.
+
+> **Related:** For multi-step or typed TypeScript logic that still does not
+> need to live in the repo (loops, branching, dependent calls, `Schema.*`
+> record types), reach for `cma:script` instead — see `cma-script.md`.
+
+---
+
+## Inputs to confirm before running commands
+
+When unsure about the exact request shape for a resource/action, run
+`npx datocms cma:docs <resource> <action>` first to look up the endpoint
+details.
+
+Pick the right tool for the shape of the task:
+- **`cma:call`** — single API method invocation from the terminal
+- **`cma:script`** — multi-step or typed TypeScript logic (loops, branching, `Schema.*` types, dependent calls) that does not need to live in the repo; runs from a file or stdin with ambient `client` / `Schema` globals (see `cma-script.md`)
+- **Reusable repo script** — switch to **datocms-cma** when the code should be checked in, reused, tested, or needs packages outside the `cma:script` workspace
+
+Confirm these inputs when they are not already clear:
+- resource + method (for `cma:call`) or script scope (for `cma:script`)
+- required positional path args (for `cma:call`)
+- whether the call needs `--data`, `--params`, or `--environment`
+- whether the operation is read-only (list/find — safe), mutating (create/update/publish — confirm environment), or destructive (destroy/bulk_destroy/promote — always confirm target)
+- whether this is truly a one-off CLI invocation or should become reusable CMA code
 
 ---
 
@@ -116,6 +140,18 @@ Methods that permanently delete data or replace environments:
 - `bulk_destroy` (`items`, `uploads`)
 - `environments promote` (replaces the current primary environment)
 - `environments rename` (may break references to old ID)
+
+### Schema changes need an approach decision first
+
+`create` / `update` / `destroy` on `item_types`, `fields`, `fieldsets`,
+or block models are **schema changes**. Before proposing a `cma:call`
+for any of them, confirm with the user:
+
+- Migration script (default) or direct change via `cma:call`?
+- If direct: sandbox or primary environment?
+- Skipping the migration path means no review, no dry-run, no
+  reproducibility. Direct changes against the primary environment
+  require an explicit user confirmation.
 
 ---
 
@@ -293,17 +329,21 @@ npx datocms cma:call item_types list --json | jq '.[].api_key'
 
 ---
 
-## When to Switch to datocms-cma
+## When to Escalate
 
-`cma:call` is ideal for one-off terminal operations. Switch to **datocms-cma**
-(the JavaScript CMA client) when:
+`cma:call` is ideal for single-method terminal operations. Before switching
+to a reusable repo script, consider whether **`cma:script`** (see
+`cma-script.md`) is enough — it runs typed TypeScript from a file or stdin
+with ambient `client` and `Schema` globals, handles loops, branching, and
+dependent calls, and keeps the code out of the repo.
 
-- The task needs loops or iteration over all pages
-- You need conditional logic, retries, or error handling
+Switch to a full **datocms-cma** repo script when:
+
+- The code should live in the repo as a reusable, reviewable script
+- You need packages outside the `cma:script` pre-installed workspace
+- You need tests, custom error handling, retries, or progress reporting
 - The operation involves file uploads from URL or local files
-- The code should live in the repo as a reusable script
-- You need typed helpers or autocomplete from generated schema types
-- Multiple related API calls depend on each other's results
+- Multiple related API calls span a larger surface (imports, migrations)
 
 > **Tip:** Use `npx datocms cma:docs <resource> <action>` to look up the
 > exact request body shape and parameters before writing either a `cma:call`

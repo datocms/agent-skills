@@ -19,7 +19,9 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 
 1. **Node project** — Check for `package.json`
 2. **Package manager** — See `../../../patterns/MANDATORY_RULES.md`.
-3. **CLI installation** — Check `package.json` for `@datocms/cli`
+3. **Bootstrap state** — Confirm `@datocms/cli` is installed and the active
+   profile has a `siteId` (owned by `cli-bootstrap`). If missing, surface
+   `cli-bootstrap` as an unmet prerequisite and stop.
 4. **WordPress plugin** — Check `package.json` for
    `@datocms/cli-plugin-wordpress`
 5. **Environment files** — Check `.env.example`, `.env`, and `.env.local`
@@ -30,6 +32,8 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 
 - If `package.json` is missing, stop and explain that this setup targets Node
   projects only.
+- If `@datocms/cli` is not installed or the active profile has no `siteId`,
+  stop and route back to `cli-bootstrap`.
 - If an existing WordPress import helper follows a materially different flow,
   patch it in place by default and only ask if a rewrite would replace working
   behavior.
@@ -73,12 +77,13 @@ Also inspect this bundled asset only when generating files:
 Generate only these project changes:
 
 1. **Install missing packages**:
-   - `@datocms/cli`
    - `@datocms/cli-plugin-wordpress`
-2. **Patch `.env.example`** so it includes:
+   (`@datocms/cli` is installed by `cli-bootstrap`.)
+2. **Patch `.env.example`** so it includes the WordPress provider credentials
+   only (no DatoCMS token — `wordpress:import` authenticates through the
+   linked default profile):
 
    ```env
-   DATOCMS_API_TOKEN=your_cma_token_here
    WORDPRESS_URL=https://example.com
    WORDPRESS_JSON_API_URL=https://example.com/wp-json
    WORDPRESS_USERNAME=your_username_here
@@ -96,6 +101,10 @@ Generate only these project changes:
 - The helper must fall back to `WORDPRESS_URL` when no JSON API URL is set
 - The helper must forward extra CLI flags to `wordpress:import`
 - The helper must not pass `--autoconfirm` by default
+- Do not install `@datocms/cli` — `cli-bootstrap` owns that
+- Do not add a `DATOCMS_API_TOKEN` placeholder to `.env.example` — the linked
+  default profile handles DatoCMS auth for the `datocms wordpress:import`
+  command
 - Do not add CI files or multi-step orchestration around the import
 - Do not add provider-mapping or transformation layers in this setup
 
@@ -105,7 +114,8 @@ Generate only these project changes:
 
 After generating the files, tell the user:
 
-1. Fill in the WordPress credentials and DatoCMS CMA token locally
+1. Fill in the WordPress credentials locally (DatoCMS auth is already wired
+   through the linked default profile)
 2. Prefer `WORDPRESS_JSON_API_URL` when they already know the exact REST API
    endpoint
 3. Run the helper once without `--autoconfirm` to review the import behavior
@@ -118,8 +128,9 @@ After generating the files, tell the user:
 
 Before presenting the result, verify:
 
-1. `@datocms/cli` and `@datocms/cli-plugin-wordpress` are installed or added
-2. `.env.example` contains the WordPress placeholders
+1. `@datocms/cli-plugin-wordpress` is installed or added
+2. `.env.example` contains the WordPress placeholders and no new
+   `DATOCMS_API_TOKEN` placeholder was added by this recipe
 3. `scripts/datocms-import-wordpress.mjs` exists
 4. `package.json` contains `datocms:import:wordpress`
 5. The helper prefers `WORDPRESS_JSON_API_URL` over `WORDPRESS_URL`

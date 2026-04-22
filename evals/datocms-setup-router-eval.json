@@ -1,5 +1,15 @@
 [
   {
+    "query": "Use datocms-setup to install @datocms/cli and link this repo to our DatoCMS project via OAuth so the agent can run cma:call and cma:script without any token in .env.",
+    "should_route": true,
+    "expected_recipes": [
+      "cli-bootstrap"
+    ],
+    "expected_stage_a": false,
+    "expected_stage_b": "none",
+    "notes": "Bootstrap-only request: CLI install + datocms login + datocms link without any downstream migrations or types scaffolding."
+  },
+  {
     "query": "Use datocms-setup to add declarative DatoCMS build trigger config plus sync and smoke scripts.",
     "should_route": true,
     "expected_recipes": [
@@ -34,16 +44,18 @@
     "query": "Use datocms-setup to add staging and production profiles to datocms.config.json and wire the per-profile token placeholders.",
     "should_route": true,
     "expected_recipes": [
+      "cli-bootstrap",
       "cli-profiles"
     ],
     "expected_stage_a": false,
     "expected_stage_b": "none",
-    "notes": "Named CLI profiles without broader migration changes."
+    "notes": "Named CLI profiles layered on top of the OAuth-linked default profile."
   },
   {
-    "query": "Use datocms-setup to add generate-cma-types, the CMA token env placeholder, and the cma-types.ts output path for this project.",
+    "query": "Use datocms-setup to add generate-cma-types and wire the cma-types.ts output path for this project.",
     "should_route": true,
     "expected_recipes": [
+      "cli-bootstrap",
       "cma-types"
     ],
     "expected_stage_a": false,
@@ -65,6 +77,7 @@
     "query": "Use datocms-setup to install the DatoCMS Contentful import plugin, add env placeholders, and scaffold a local helper.",
     "should_route": true,
     "expected_recipes": [
+      "cli-bootstrap",
       "contentful-import"
     ],
     "expected_stage_a": false,
@@ -95,6 +108,7 @@
     "query": "Use datocms-setup to add a helper around migrations:new --autogenerate for this repo.",
     "should_route": true,
     "expected_recipes": [
+      "cli-bootstrap",
       "migrations",
       "migration-autogenerate"
     ],
@@ -106,6 +120,7 @@
     "query": "Use datocms-setup to add a local release helper for DatoCMS migrations with maintenance mode and promotion.",
     "should_route": true,
     "expected_recipes": [
+      "cli-bootstrap",
       "migrations",
       "migration-release-workflow"
     ],
@@ -117,11 +132,12 @@
     "query": "Use datocms-setup to scaffold @datocms/cli in this project, create datocms.config.json, add a migrations folder, and wire the baseline scripts.",
     "should_route": true,
     "expected_recipes": [
+      "cli-bootstrap",
       "migrations"
     ],
     "expected_stage_a": false,
     "expected_stage_b": "none",
-    "notes": "Baseline migrations setup."
+    "notes": "Baseline migrations setup on top of the OAuth-linked default profile."
   },
   {
     "query": "Use datocms-setup to add live DatoCMS preview updates over SSE to this Next.js draft site.",
@@ -158,6 +174,7 @@
     "query": "Use datocms-setup to add a helper that destroys and reforks a DatoCMS sandbox, then reruns migrations in place while I iterate locally.",
     "should_route": true,
     "expected_recipes": [
+      "cli-bootstrap",
       "migrations",
       "sandbox-iteration"
     ],
@@ -230,6 +247,7 @@
     "query": "Use datocms-setup to install the DatoCMS WordPress import plugin, add env placeholders, and scaffold a local helper.",
     "should_route": true,
     "expected_recipes": [
+      "cli-bootstrap",
       "wordpress-import"
     ],
     "expected_stage_a": false,
@@ -240,6 +258,7 @@
     "query": "Use datocms-setup to add blueprint sync for duplicated projects that need to keep entity IDs aligned.",
     "should_route": true,
     "expected_recipes": [
+      "cli-bootstrap",
       "migrations",
       "blueprint-sync"
     ],
@@ -307,6 +326,7 @@
     "query": "Use datocms-setup to set up DatoCMS migrations for this repo, but I have not decided yet whether I need named profiles, autogeneration, a release helper, or a sandbox reset loop.",
     "should_route": true,
     "expected_recipes": [
+      "cli-bootstrap",
       "migrations"
     ],
     "expected_stage_a": false,

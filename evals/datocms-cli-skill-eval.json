@@ -138,5 +138,45 @@
   {
     "query": "I want to install a sidebar plugin into my DatoCMS project so editors can see SEO scores",
     "should_trigger": false
+  },
+  {
+    "query": "I need to add a seo field to the article model on DatoCMS",
+    "should_trigger": true
+  },
+  {
+    "query": "rename the 'body' field on blog_post to 'content' in our DatoCMS project",
+    "should_trigger": true
+  },
+  {
+    "query": "add a required meta_description to every DatoCMS model that has a title field",
+    "should_trigger": true
+  },
+  {
+    "query": "I just want to add a new optional text field to the author model on DatoCMS, quickly, without setting up a migrations workflow — what's the right way?",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "build me a reusable, checked-in Node.js utility that programmatically adds/removes fields on DatoCMS models based on a JSON spec, so different teams can run it",
+    "should_trigger": false
+  },
+  {
+    "query": "publish those DatoCMS draft records for me",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "I don't want to add a CMA token to .env for this DatoCMS cleanup — use my login instead and bulk-delete those test records",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
   }
 ]

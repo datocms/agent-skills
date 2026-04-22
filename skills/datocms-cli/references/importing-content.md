@@ -4,14 +4,16 @@ WordPress and Contentful import commands.
 
 ---
 
-## General safety guidance
+## Inputs to confirm before running commands
 
 These importers are best treated as onboarding tools for a **new or disposable**
 DatoCMS target.
 
-Before proposing final commands, confirm whether the target is:
-- a new/disposable project
-- an existing project that should keep current schema/content
+Confirm these inputs when they are not already clear:
+- whether the target is a disposable/new DatoCMS project or an existing one
+- schema-only first vs full import
+- content-type narrowing needs
+- concurrency / ignore-errors tolerance for large asset sets
 
 If the target is existing or unclear, prefer a staged approach:
 - run once **without** `--autoconfirm`

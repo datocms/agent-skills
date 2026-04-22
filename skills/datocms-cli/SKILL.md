@@ -2,13 +2,16 @@
 name: datocms-cli
 description: >-
   Work with the DatoCMS CLI tool (@datocms/cli) for command-line migrations,
-  schema type generation, direct one-off CMA calls, environment operations,
-  deployment workflows, and multi-project profile syncing. Use when users ask
-  for datocms CLI commands or scripts such as migrations:new, migrations:run,
-  schema:generate, cma:call, cma:docs, migration scaffolding for
+  schema type generation, direct one-off CMA calls, typed one-off TypeScript
+  CMA scripts, environment operations, deployment workflows, and
+  multi-project profile syncing. Use when users ask for datocms CLI commands
+  or scripts such as migrations:new, migrations:run, schema:generate,
+  cma:call, cma:docs, cma:script (for ad-hoc typed TypeScript scripts with
+  ambient client/Schema globals), migration scaffolding for
   models/fields/blocks, CLI setup with datocms.config.json and profiles,
-  OAuth authentication (login, logout, whoami), project linking (link,
-  unlink), environment commands (list/fork/promote/rename/destroy),
+  OAuth authentication (login, logout, whoami), discovering accessible
+  projects (projects:list), project linking (link, unlink),
+  environment commands (list/fork/promote/rename/destroy),
   maintenance-mode toggling, CI/CD migration pipelines, blueprint/client
   project sync, imports from WordPress or Contentful (including
   assets/content), and CLI plugin management (plugins:install, plugins:add,
@@ -29,26 +32,60 @@ package, config file, token, migrations directory, TypeScript setup), skip
 broad detection below. Re-inspect only when a question cannot be answered
 from prior context.
 
-Silently examine the project to determine CLI readiness.
+**CLI + link is a required bootstrap for any repo that interfaces with a
+DatoCMS project.** `@datocms/cli` installed + `datocms login` + `datocms
+link` is how the agent gets visibility into the live project (models,
+fields, ids, record state). Missing → fix first, same as `git init` or
+`npm install`.
 
-1. Read `package.json` and check for `@datocms/cli` in `devDependencies` (or `dependencies`).
-   - If not installed, recommend: `npm install --save-dev @datocms/cli`
+### Detection (do not rely on `which datocms` — the CLI runs via `npx`)
 
-2. Look for a `datocms.config.json` file in the project root. This file stores CLI profiles with settings like migration directory, log level, and template paths.
+1. `@datocms/cli` in `package.json` devDependencies → CLI available. If missing, install it (`npm install --save-dev @datocms/cli`) — never fall back to pasted tokens or manual Dashboard steps.
+2. `datocms.config.json` with a `siteId` on the active profile → linked. If missing, drive the bootstrap below.
+3. `npx datocms whoami` succeeds → OAuth session active.
+4. `migrations/` directory → migrations already scaffolded.
+5. `tsconfig.json` or `migrations.tsconfig` → TypeScript migrations convention.
 
-3. Check how authentication is set up. The CLI resolves tokens in this order:
-   - `--api-token` flag on the command
-   - Linked project: if the profile has a `siteId` (set by `datocms link`), the CLI uses OAuth credentials (`~/.config/datocms-cli/credentials.json`) to fetch the token via the Dashboard API
-   - Environment variable: `DATOCMS_API_TOKEN` (default profile) or `DATOCMS_<PROFILE_ID>_PROFILE_API_TOKEN` (named profile), or a custom env var name set via `apiTokenEnvName` in the profile config
-   - Active profile override via `DATOCMS_PROFILE`
+### Bootstrap flow (CLI available but not linked)
 
-4. Check for a `migrations/` directory to see if migration scripting is already set up.
+Only `datocms login` needs a terminal; the rest runs in non-TTY.
 
-5. Detect TypeScript: look for `tsconfig.json` or a `migrations.tsconfig` setting in `datocms.config.json`. TypeScript projects default to `.ts` migration files.
+```bash
+npx datocms login                                   # user, one-time, interactive
+npx datocms projects:list [hint] --json             # agent discovers siteId
+npx datocms link --site-id=<ID> [--organization-id=<ID>]   # agent links
+```
 
-**Important:** The CLI requires a CMA-enabled API token. A read-only CDA token will not work. If you see a token named like `DATOCMS_READONLY_API_TOKEN` or `NEXT_PUBLIC_DATOCMS_API_TOKEN`, warn the user. The best practice is `datocms login` + `datocms link`, which handles token resolution automatically via OAuth.
+**Always confirm the target project with the user before running `datocms
+link`**, even when `projects:list` returns a single candidate. Show the
+candidate(s) (name, id, organization) and wait for an explicit yes. Do not
+treat "only one result" as consent — the user may have access to a project
+they did not mean to wire to this repo, and fixing a mis-linked project
+later is painful.
 
-Commands that inspect project state or generate output from the live DatoCMS project — including `migrations:new --autogenerate`, `schema:generate`, and most `cma:call` usage — need a valid token (via linked project, env var, or `--api-token` flag) before they can run successfully.
+`datocms link` without `--site-id` requires a terminal. In non-TTY it
+now exits cleanly with a suggestion to pass `--site-id`; do not retry
+without it. Same applies when credentials are missing — ask the user to
+run `datocms login` first.
+
+### Authentication policy
+
+- **Interactive task** (publish, delete, fix, backfill, introspect,
+  etc.): OAuth via `login` + `link` is the mechanism. Never ask the user
+  to paste a token or add `DATOCMS_CMA_TOKEN=...` to `.env` for this
+  case.
+- **Unattended execution** (CI, cron, server-side app, shared scripts
+  without an OAuth session): CMA-enabled token via env var. Read-only
+  CDA tokens (`DATOCMS_READONLY_API_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`)
+  will not work — flag that a separate CMA-enabled token is needed. The
+  agent itself still needs CLI + link at development time for visibility.
+
+**Token resolution order the CLI uses:**
+
+- `--api-token` flag
+- Linked project (OAuth-backed, the default after `login` + `link`)
+- Env var: `DATOCMS_API_TOKEN` (default profile), `DATOCMS_<PROFILE>_PROFILE_API_TOKEN` (named), or custom `apiTokenEnvName`
+- Profile override via `DATOCMS_PROFILE`
 
 ---
 
@@ -58,11 +95,12 @@ Classify the user's task into one or more categories:
 
 | Category | Examples |
 |---|---|
-| **CLI setup** | Install CLI, authenticate (`login`/`logout`/`whoami`), link projects (`link`/`unlink`), configure profiles, `datocms.config.json` |
-| **Creating migrations** | Scaffold new migration scripts, autogenerate from environment diffs, custom templates |
+| **CLI setup** | Install CLI, authenticate (`login`/`logout`/`whoami`), discover accessible projects (`projects:list`), link/unlink projects (`link`/`unlink`), configure profiles, `datocms.config.json` |
+| **Schema changes** | Add, modify, or remove models, fields, fieldsets, or block models — via a migration script (default) or a direct CMA operation against a chosen environment |
+| **Creating migrations** | Scaffold new migration scripts, autogenerate from environment diffs, custom templates (sub-task of schema changes once the migration approach is chosen) |
 | **Running migrations** | Execute pending migrations, dry-run, fork-and-run, in-place execution |
 | **Schema generation** | Run `schema:generate`, scope output to item types, target a specific environment |
-| **Direct CMA calls** | Use `cma:docs` to browse API reference, `cma:call` for one-off API operations without writing a script |
+| **Direct CMA calls** | Use `cma:docs` to browse API reference, `cma:call` for single-method ad-hoc API operations, `cma:script` for typed TypeScript one-off scripts (loops, branching, `Schema.*` types) without scaffolding a repo project |
 | **Environment management** | Fork, promote, rename, destroy, list environments via CLI commands |
 | **Deployment workflow** | Maintenance mode, safe deployment sequences, CI/CD integration |
 | **Multi-project sync** | Shared migrations across blueprint/client projects via CLI profiles |
@@ -80,93 +118,43 @@ relevant category, or the repo inspection answers them safely.
 Ask the **minimum targeted question set** needed to avoid flattening a real
 workflow decision.
 
-### CLI setup
+### Category-specific inputs live in the reference files
 
-Confirm these inputs when they are not already clear:
-- whether the user wants OAuth-based auth (`login` + `link`, best practice) or env-var-based auth
-- which profile ids are needed
-- whether the repo should preserve an existing migrations convention or create a new shared one
-- whether the project expects JavaScript or TypeScript migrations
-- whether custom migration template / migrations tsconfig paths already exist and must be preserved
+Each category reference loaded in Step 3 opens with an **"Inputs to confirm
+before running commands"** section — that is the per-category equivalent of
+this step. Do not skip loading the reference for the task's category: it
+carries the workflow decisions this step is designed to protect. If you
+skip it, you skip the checklist.
 
-### Creating migrations
+### Schema changes (decide the approach first)
 
-Confirm these inputs when they are not already clear:
-- manual migration vs `--autogenerate`
-- sandbox/source environment if `--autogenerate` is requested
-- TypeScript vs JavaScript output when the repo does not already imply it
-- whether schema helper types (`--schema`) are needed
+Any request that mutates models, fields, fieldsets, or block models is a
+schema change. Pick the approach **explicitly with the user** before
+writing commands — do **not** assume migration or direct change based on
+verb alone. The three valid approaches, in order of safety:
 
-**Always warn** that `--autogenerate` captures schema changes only. It does **not** include records or uploads.
+- **Migration script (default for any non-trivial change):** reviewable,
+  checked into the repo, reproducible across environments, dry-run-able,
+  runs against a forked sandbox first. Route to `creating-migrations.md`
+  + `running-migrations.md`.
+- **Direct change on a sandbox environment:** via `cma:call` (single op)
+  or `cma:script` (multi-step typed logic). Fine for disposable sandboxes
+  and quick iteration. No audit trail.
+- **Direct change on the primary environment:** risky. No review, no
+  reproducibility, affects live editors immediately, usually not easily
+  reversible. Acceptable only after the user has confirmed the trade-off
+  and typically only for trivially reversible additions (e.g., adding a
+  new non-required field).
 
-### Running migrations
+Always ask, unless the user has already picked an approach:
+- Migration script, or direct change?
+- If direct: which environment — sandbox or primary?
+- If primary: is the change reversible? Are editors currently working on
+  the affected model?
 
-Confirm these inputs when they are not already clear:
-- source environment
-- fork-and-run vs `--in-place`
-- dry-run first vs real execution
-- custom migrations dir / tracking model / migrations tsconfig, if the repo already uses them
-- whether `--fast-fork` is needed for a large environment
-- whether active editors make `--force` risky
-
-### Schema generation
-
-Confirm these inputs when they are not already clear:
-- output file path
-- full schema vs narrowed `--item-types`
-- target environment when sandbox-specific types are needed
-
-### Direct CMA calls
-
-When unsure about the exact request shape for a resource/action, run
-`npx datocms cma:docs <resource> <action>` first to look up the endpoint
-details.
-
-Confirm these inputs when they are not already clear:
-- resource + method
-- required positional path args
-- whether the call needs `--data`, `--params`, or `--environment`
-- whether the operation is read-only (list/find — safe), mutating (create/update/publish — confirm environment), or destructive (destroy/bulk_destroy/promote — always confirm target)
-- whether this is truly a one-off CLI call or should become reusable CMA code
-
-### Environment management
-
-Confirm these inputs when they are not already clear:
-- exact environment ids involved
-- whether the target is disposable
-- whether the action is read-only, destructive, or promotion-related
-
-### Deployment workflow
-
-Confirm these inputs when they are not already clear:
-- CLI profile to use
-- destination environment naming convention
-- whether maintenance mode is acceptable for this release
-- whether promotion is manual-after-review or automatic in the proposed workflow
-- whether `--fast-fork` / `--force` are acceptable operationally
-
-### Multi-project sync
-
-Confirm these inputs when they are not already clear:
-- existing profile ids that must be preserved
-- whether one shared migrations history already exists
-- whether destination projects were duplicated from the blueprint or otherwise keep aligned entity IDs
-- whether the helper should stop at dry-run / forked env creation or also describe promotion steps separately
-
-### Importing content
-
-Confirm these inputs when they are not already clear:
-- whether the target is a disposable/new DatoCMS project
-- schema-only first vs full import
-- content-type narrowing needs
-- concurrency / ignore-errors tolerance for large asset sets
-
-### CLI plugin management
-
-Confirm these inputs when they are not already clear:
-- whether the goal is installing an official DatoCMS CLI plugin or a third-party/custom one
-- whether the plugin is being developed locally (`plugins:link`) or installed from npm
-- whether the action targets all plugins (`reset` / `update`) or a specific one
+**Default to migration** whenever the intent is ambiguous. Do not
+propose a direct schema mutation against a primary-like environment
+without an explicit confirmation from the user.
 
 ### Destructive and production-sensitive confirmations
 
@@ -178,6 +166,7 @@ If context is missing, ask for explicit confirmation before proposing final comm
 - `maintenance:on --force`
 - `environments:fork --fast --force`
 - `cma:call` with `destroy`, `bulk_destroy`, or `promote` methods
+- direct schema mutations (via `cma:call` or `cma:script`) targeting a primary-like environment instead of a migration on a forked sandbox
 - `plugins:reset` (removes all user-installed and linked CLI plugins)
 
 ---
@@ -196,7 +185,7 @@ Based on the task classification, read the appropriate reference files from the 
 | Creating migrations | `references/creating-migrations.md` |
 | Running migrations | `references/running-migrations.md` |
 | Schema generation | `references/schema-generate.md` |
-| Direct CMA calls | `references/direct-cma-calls.md` |
+| Direct CMA calls | `references/direct-cma-calls.md` (for `cma:call`) and/or `references/cma-script.md` (for `cma:script`) |
 | Environment management | `references/environment-commands.md` |
 | Deployment workflow | `references/deployment-workflow.md` |
 | Multi-project sync | `references/blueprint-sync.md` |
@@ -244,10 +233,28 @@ Write commands and scripts following these mandatory rules:
 
 ### Direct CMA Calls
 - Use `npx datocms cma:docs <resource> <action>` to look up endpoint details (request body, parameters, examples) before constructing a command
-- Use `npx datocms cma:call <resource> <method> [...pathArgs]` for one-off CMA operations that do not justify a reusable script
+- Use `npx datocms cma:call <resource> <method> [...pathArgs]` for single-method ad-hoc CMA operations
 - Pass request bodies with `--data '{...}'` and query parameters with `--params '{...}'`
 - Add `--environment` when the call must target a sandbox environment
-- Switch to `datocms-cma` when the task needs reusable code, iteration, branching, or typed application logic
+- `cma:call` is **positional** (`<RESOURCE> <METHOD>` + URL placeholders as extra positional args). It is **not** a REST wrapper: there is no `--endpoint`, `--method`, `--query-params`, or `--body` flag — do not invent these
+
+Concrete shape, with JSON5 accepted in `--data` / `--params`:
+
+```bash
+npx datocms cma:call items list --params='{filter: {type: "article"}}'
+npx datocms cma:call items find <ITEM_ID>
+npx datocms cma:call items update <ITEM_ID> --data='{title: "Updated"}'
+npx datocms cma:call items publish <ITEM_ID>
+npx datocms cma:call fields create <ITEM_TYPE_ID> --data='{label: "Title", api_key: "title", field_type: "string"}'
+```
+
+Run `npx datocms cma:call --help` for the full list of built-in examples, or `npx datocms cma:docs <resource> <action>` for body schema and required fields.
+
+- Use `npx datocms cma:script` (file or stdin) when the task needs loops, branching, multiple dependent calls, or typed `Schema.*` records, but the code does not need to live in the repo — `client` and `Schema` are ambient globals, and `tsc --noEmit` type-checks before execution
+- Prefer Format A (`export default async function (client: Client)`) when the script may be promoted into a migration; Format B (top-level await) when it is a throwaway one-liner or heredoc
+- Redirect `2>/dev/null` when piping `cma:script` stdout into `jq`
+- Switch to `datocms-cma` when the task needs reusable code checked into the repo, tests, or packages outside the `cma:script` workspace
+- **Schema changes:** default to scaffolding a migration. Only propose `cma:call` or `cma:script` for schema mutations after the user has explicitly opted out of the migration workflow, and never propose a direct schema mutation against a primary-like environment without an explicit confirmation from the user
 
 ### CLI Plugin Commands
 - Use `npx datocms plugins:available` to discover official CLI plugins before installing
@@ -272,9 +279,9 @@ Before presenting the final commands or scripts:
 3. **Migrations directory** — Confirm the migrations directory exists or will be created by the command
 4. **TypeScript config** — If generating TS migrations, ensure `tsconfig.json` exists or `--migrations-tsconfig` is set
 5. **Schema generation scope** — If using `schema:generate`, verify the output file path plus any `--item-types` / `--environment` scope match the request
-6. **Direct CMA calls** — If using `cma:call`, verify positional args, `--data`, `--params`, and `--environment` align with the targeted method
+6. **Direct CMA calls** — If using `cma:call`, verify positional args, `--data`, `--params`, and `--environment` align with the targeted method. If using `cma:script`, verify the script uses `Schema.*` types (not `any`/`unknown`), imports only from the pre-installed package list, and targets the intended environment
 7. **Environment targeting** — Verify the correct `--source` / `--destination` environment is specified
-8. **Safety checks** — For destructive operations (promote, destroy, destructive `cma:call` usage, risky imports, maintenance-mode force), confirm the user intends to target the right environment
+8. **Safety checks** — For destructive operations (promote, destroy, destructive `cma:call` usage, risky imports, maintenance-mode force), confirm the user intends to target the right environment. For schema mutations, confirm the chosen approach (migration vs direct) and — if direct — the target environment (sandbox vs primary) before issuing commands
 9. **CLI plugin commands** — If using `plugins:*` commands, verify the plugin name is correct and distinguish CLI plugins from DatoCMS project plugins
 
 ---

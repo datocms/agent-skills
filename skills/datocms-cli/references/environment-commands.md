@@ -5,6 +5,15 @@ CLI.
 
 ---
 
+## Inputs to confirm before running commands
+
+Confirm these inputs when they are not already clear:
+- exact environment ids involved
+- whether the target is disposable
+- whether the action is read-only, destructive, or promotion-related
+
+---
+
 ## Simple Environment Commands
 
 - **`environments:list`** (alias: `environments:index`) — list all primary and sandbox environments: `npx datocms environments:list`

@@ -4,6 +4,18 @@ Executing pending migration scripts with `migrations:run`.
 
 ---
 
+## Inputs to confirm before running commands
+
+Confirm these inputs when they are not already clear:
+- source environment
+- fork-and-run vs `--in-place`
+- dry-run first vs real execution
+- custom migrations dir / tracking model / migrations tsconfig, if the repo already uses them
+- whether `--fast-fork` is needed for a large environment
+- whether active editors make `--force` risky
+
+---
+
 ## Command
 
 ```bash

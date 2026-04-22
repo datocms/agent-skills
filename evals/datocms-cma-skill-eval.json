@@ -89,5 +89,37 @@
     "query": "Use datocms-cma to scaffold a datocms CLI migration and run it against my staging profile.",
     "should_trigger": false,
     "query_mode": "explicit"
+  },
+  {
+    "query": "publish them all in DatoCMS for me",
+    "should_trigger": true
+  },
+  {
+    "query": "unpublish the draft articles on DatoCMS, just do it",
+    "should_trigger": true
+  },
+  {
+    "query": "bulk-update the titles of those DatoCMS records",
+    "should_trigger": true
+  },
+  {
+    "query": "just delete those test records from DatoCMS",
+    "should_trigger": true
+  },
+  {
+    "query": "the DatoCMS records I showed you earlier — can you publish them yourself?",
+    "should_trigger": true
+  },
+  {
+    "query": "fix the slugs on those DatoCMS items",
+    "should_trigger": true
+  },
+  {
+    "query": "do the DatoCMS token setup thing for me before publishing — I don't want to paste an API token into .env, use my OAuth login",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cli"
+    ]
   }
 ]

@@ -4,6 +4,20 @@ Scaffolding new migration scripts with `migrations:new`.
 
 ---
 
+## Inputs to confirm before running commands
+
+Only enter this sub-task once the user has chosen the migration approach
+(see "Schema changes" in Step 2.5 of SKILL.md). Confirm these inputs when
+they are not already clear:
+- manual migration vs `--autogenerate`
+- sandbox/source environment if `--autogenerate` is requested
+- TypeScript vs JavaScript output when the repo does not already imply it
+- whether schema helper types (`--schema`) are needed
+
+**Always warn** that `--autogenerate` captures schema changes only. It does **not** include records or uploads.
+
+---
+
 ## Command
 
 ```bash

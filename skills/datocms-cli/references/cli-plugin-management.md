@@ -11,6 +11,15 @@ importer plugins (`@datocms/cli-plugin-wordpress`,
 
 ---
 
+## Inputs to confirm before running commands
+
+Confirm these inputs when they are not already clear:
+- whether the goal is installing an official DatoCMS CLI plugin or a third-party/custom one
+- whether the plugin is being developed locally (`plugins:link`) or installed from npm
+- whether the action targets all plugins (`reset` / `update`) or a specific one
+
+---
+
 ## List installed plugins
 
 ```

@@ -370,8 +370,10 @@
     {
       "id": "cli-profiles",
       "group": "migrations",
-      "summary": "Add named CLI profiles for multiple DatoCMS environments.",
-      "prerequisites": [],
+      "summary": "Add named CLI profiles when the repo manages multiple DatoCMS projects (blueprint + clients). Not for separating environments of the same project — use DatoCMS environments for that.",
+      "prerequisites": [
+        "cli-bootstrap"
+      ],
       "shared_references": [
         "../datocms-cli/references/cli-setup.md",
         "../datocms-cli/references/environment-commands.md"
@@ -435,8 +437,10 @@
     {
       "id": "migrations",
       "group": "migrations",
-      "summary": "Scaffold the baseline DatoCMS CLI migrations workflow.",
-      "prerequisites": [],
+      "summary": "Scaffold the baseline DatoCMS CLI migrations workflow on top of a linked project.",
+      "prerequisites": [
+        "cli-bootstrap"
+      ],
       "shared_references": [
         "../datocms-cli/references/cli-setup.md",
         "../datocms-cli/references/creating-migrations.md",
@@ -477,7 +481,9 @@
       "id": "contentful-import",
       "group": "onboarding",
       "summary": "Scaffold a lean one-shot Contentful import helper.",
-      "prerequisites": [],
+      "prerequisites": [
+        "cli-bootstrap"
+      ],
       "shared_references": [
         "../datocms-cli/references/cli-setup.md",
         "../datocms-cli/references/importing-content.md"
@@ -495,7 +501,9 @@
       "id": "wordpress-import",
       "group": "onboarding",
       "summary": "Scaffold a lean one-shot WordPress import helper.",
-      "prerequisites": [],
+      "prerequisites": [
+        "cli-bootstrap"
+      ],
       "shared_references": [
         "../datocms-cli/references/cli-setup.md",
         "../datocms-cli/references/importing-content.md"
@@ -507,6 +515,24 @@
       "path": "recipes/onboarding/wordpress-import/recipe.md",
       "triggers": [
         "wordpress import"
+      ]
+    },
+    {
+      "id": "cli-bootstrap",
+      "group": "platform",
+      "summary": "Install @datocms/cli and link this repo to a DatoCMS project via OAuth (no CMA token in env).",
+      "prerequisites": [],
+      "shared_references": [
+        "../datocms-cli/references/cli-setup.md"
+      ],
+      "assets": [],
+      "scripts": [],
+      "path": "recipes/platform/cli-bootstrap/recipe.md",
+      "triggers": [
+        "datocms cli bootstrap",
+        "link datocms project",
+        "datocms link",
+        "install datocms cli"
       ]
     },
     {
@@ -534,7 +560,9 @@
       "id": "cma-types",
       "group": "platform",
       "summary": "Generate typed CMA schema definitions for record operations.",
-      "prerequisites": [],
+      "prerequisites": [
+        "cli-bootstrap"
+      ],
       "shared_references": [
         "../datocms-cli/references/cli-setup.md",
         "../datocms-cma/references/type-generation.md"

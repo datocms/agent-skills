@@ -5,6 +5,16 @@ using CLI profiles.
 
 ---
 
+## Inputs to confirm before running commands
+
+Confirm these inputs when they are not already clear:
+- existing profile ids that must be preserved
+- whether one shared migrations history already exists
+- whether destination projects were duplicated from the blueprint or otherwise keep aligned entity IDs
+- whether the helper should stop at dry-run / forked env creation or also describe promotion steps separately
+
+---
+
 ## Core assumption
 
 This flow is safest when destination projects were **duplicated from the
