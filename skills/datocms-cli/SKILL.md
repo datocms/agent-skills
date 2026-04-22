@@ -255,7 +255,7 @@ npx datocms cma:call fields create <ITEM_TYPE_ID> --data='{label: "Title", api_k
 Run `npx datocms cma:call --help` for the full list of built-in examples, or `npx datocms cma:docs <resource> <action>` for body schema and required fields.
 
 - Use `npx datocms cma:script` (file or stdin) when the task needs loops, branching, multiple dependent calls, or typed `Schema.*` records, but the code does not need to live in the repo — `client` and `Schema` are ambient globals, and `tsc --noEmit` type-checks before execution
-- Prefer Format A (`export default async function (client: Client)`) when the script may be promoted into a migration; Format B (top-level await) when it is a throwaway one-liner or heredoc
+- Prefer Format A (`export default async function (client: Client)`) when the script may be promoted into a migration, or when a TypeScript error needs editor LSP / diagnostics to triage (Format B heredocs have no on-disk file for the language server); Format B (top-level await) for throwaway one-liners or heredocs
 - Redirect `2>/dev/null` when piping `cma:script` stdout into `jq`
 - Switch to `datocms-cma` when the task needs reusable code checked into the repo, tests, or packages outside the `cma:script` workspace
 - **Schema changes:** default to scaffolding a migration. Only propose `cma:call` or `cma:script` for schema mutations after the user has explicitly opted out of the migration workflow, and never propose a direct schema mutation against a primary-like environment without an explicit confirmation from the user

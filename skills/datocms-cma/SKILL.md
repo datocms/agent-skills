@@ -291,7 +291,7 @@ EOF
 ```
 
 Rules of thumb:
-- Prefer Format A when the script may be promoted into a migration, needs a named function, or will be edited by multiple people. Prefer Format B for throwaway piping / heredocs.
+- Prefer Format A when the script may be promoted into a migration, needs a named function, will be edited by multiple people, or surfaces TypeScript errors you want to triage with editor LSP / diagnostics (Format B heredocs have no on-disk file for the language server). Prefer Format B for throwaway piping / heredocs.
 - Use `Schema.*` types for record operations — `any` and `unknown` are rejected by the workspace typecheck.
 - Redirect `2>/dev/null` when piping Format B stdout into `jq`.
 - Switch to a checked-in `buildClient()` script (see "Client Setup" below) only when the code needs to live in the repo, be tested, or use packages outside the `cma:script` workspace.

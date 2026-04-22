@@ -57,6 +57,7 @@ Use when:
 - the script might later be promoted into a migration
 - the logic is long enough to deserve a named, typed function
 - multiple contributors will edit it
+- a TypeScript error surfaces and you want to open the file in an editor so LSP / diagnostics can help track it down (Format B via stdin/heredoc has no on-disk file for the language server to inspect)
 
 ### Format B — top-level await with ambient globals
 
