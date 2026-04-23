@@ -520,7 +520,7 @@
     {
       "id": "cli-bootstrap",
       "group": "platform",
-      "summary": "Install @datocms/cli and link this repo to a DatoCMS project via OAuth (no CMA token in env).",
+      "summary": "Install datocms and link this repo to a DatoCMS project via OAuth (no CMA token in env).",
       "prerequisites": [],
       "shared_references": [
         "../datocms-cli/references/cli-setup.md"

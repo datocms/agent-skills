@@ -336,10 +336,10 @@ See:
 
 Long worked scripts live in the CMA reference — fetch them on demand. Each command prints the canonical example for the scenario and stays in sync with the official docs.
 
-**Prerequisite:** `@datocms/cli` installed (normally bootstrapped per SKILL.md Step 1a). `cma:docs` itself needs *no* login and *no* linked project — it renders public API docs only. If `npx datocms …` fails because the CLI is not in `devDependencies`, either install it (`npm install --save-dev @datocms/cli`) or fetch the CLI on demand:
+**Prerequisite:** the `datocms` npm package installed (normally bootstrapped per SKILL.md Step 1a). `cma:docs` itself needs *no* login and *no* linked project — it renders public API docs only. If `npx datocms …` fails because the CLI is not in `devDependencies`, either install it (`npm install --save-dev datocms`) or fetch the CLI on demand:
 
 ```bash
-npx --yes @datocms/cli cma:docs items update --expand "Example: …"
+npx --yes datocms cma:docs items update --expand "Example: …"
 ```
 
 **Concepts and read patterns** (`cma:docs items`):

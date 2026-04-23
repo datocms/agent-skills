@@ -19,7 +19,7 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 
 1. **Node project** — Check for `package.json`
 2. **Package manager** — See `../../../patterns/MANDATORY_RULES.md`.
-3. **CLI setup** — Check for `@datocms/cli`, `datocms.config.json`, and a
+3. **CLI setup** — Check for the `datocms` npm package, `datocms.config.json`, and a
    `migrations/` directory or existing migration scripts
 4. **Existing profiles** — Inspect `datocms.config.json` for named profiles and
    their migrations directories

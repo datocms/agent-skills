@@ -28,7 +28,7 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 
 1. **Node project** — Check for `package.json`. If missing, stop and
    explain that this recipe targets Node projects only.
-2. **CLI installation** — Check `package.json` for `@datocms/cli` in
+2. **CLI installation** — Check `package.json` for `datocms` in
    `devDependencies` or `dependencies`.
 3. **Existing CLI config** — Check for `datocms.config.json` in the
    repo root.
@@ -92,7 +92,7 @@ for writing `datocms.config.json` when `link` succeeds.
 
 ### Required actions
 
-1. **Install `@datocms/cli`** if it is missing. Use the project's
+1. **Install `datocms`** if it is missing. Use the project's
    package manager (see `../../../patterns/MANDATORY_RULES.md`). Install
    as a `devDependency` — the CLI is a development-time tool.
 2. **Ensure an OAuth session exists.** If `npx datocms whoami` fails,
@@ -136,7 +136,7 @@ for writing `datocms.config.json` when `link` succeeds.
 
 Install only:
 
-- `@datocms/cli` (devDependency)
+- `datocms` (devDependency)
 
 No other package is added by this recipe.
 
@@ -167,7 +167,7 @@ Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, i
 
 Before presenting the result, verify:
 
-1. `@datocms/cli` is present in `package.json` (devDependencies).
+1. `datocms` is present in `package.json` (devDependencies).
 2. `datocms.config.json` exists and the active profile has a `siteId`.
 3. The `siteId` belongs to the project the user intended (if ambiguity
    was possible, confirm that the user explicitly picked it).

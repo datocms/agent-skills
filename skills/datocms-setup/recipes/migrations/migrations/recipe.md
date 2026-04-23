@@ -21,7 +21,7 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 1. **Node project** — Check for `package.json`. If missing, stop and tell the
    user this skill expects a JavaScript or TypeScript project with a package
    manifest.
-2. **Bootstrap state** — Check that `@datocms/cli` is installed and that
+2. **Bootstrap state** — Check that the `datocms` npm package is installed and that
    `datocms.config.json` exists with a `siteId` in the active profile. If
    either is missing, surface `cli-bootstrap` as an unmet prerequisite and
    stop — do not install the CLI or touch `datocms.config.json` from this
@@ -38,7 +38,7 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 - If the repo already has a materially different multi-profile CLI setup, patch
   in place by default and only ask if adopting the single-project baseline
   would override working behavior.
-- If `@datocms/cli` is not installed or the active profile has no `siteId`,
+- If `datocms` is not installed or the active profile has no `siteId`,
   stop and route back to the `cli-bootstrap` recipe.
 
 ---
@@ -94,7 +94,7 @@ top of the linked project.
 
 - Use `npx datocms` in generated scripts
 - Preserve existing scripts and merge changes in place
-- Do not install `@datocms/cli` — `cli-bootstrap` owns that
+- Do not install the `datocms` npm package — `cli-bootstrap` owns that
 - Do not create or modify `datocms.config.json`'s `siteId` / `organizationId`
   / `apiTokenEnvName` — those are owned by `cli-bootstrap` (or, for
   CI-specific profiles, by `cli-profiles`)
@@ -111,7 +111,7 @@ top of the linked project.
 
 ## Step 5: Install Dependencies
 
-No new dependencies in this recipe — `@datocms/cli` is installed by
+No new dependencies in this recipe — the `datocms` npm package is installed by
 `cli-bootstrap`.
 
 ---

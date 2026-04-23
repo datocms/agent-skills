@@ -51,7 +51,7 @@ prior context.
 ### Step 1a — Bootstrap project awareness (CLI + `datocms link` is mandatory)
 
 Any CMA work on a DatoCMS-connected repo requires agent-side visibility
-into the live project (models, fields, ids, record state). `@datocms/cli`
+into the live project (models, fields, ids, record state). `datocms`
 installed + `datocms login` + `datocms link` is that bootstrap — treat it
 like `git init` or `npm install`: missing → fix first, do not route around.
 
@@ -59,7 +59,7 @@ like `git init` or `npm install`: missing → fix first, do not route around.
 the rest the agent drives in non-TTY):
 
 ```bash
-npm install --save-dev @datocms/cli        # if missing
+npm install --save-dev datocms        # if missing
 npx datocms login                          # user, one-time, interactive
 npx datocms projects:list [hint] --json    # agent discovers siteId
 npx datocms link --site-id=<ID> [--organization-id=<ID>]   # agent links
@@ -75,7 +75,7 @@ later is painful.
 **Detection hints** (do not rely on `which datocms` — the CLI runs via
 `npx`):
 
-- `@datocms/cli` in `package.json` devDependencies → CLI available
+- `datocms` in `package.json` devDependencies → CLI available
 - `datocms.config.json` with a `siteId` on the active profile → linked
 - `npx datocms whoami` succeeds → OAuth session active
 - none of the above → drive the bootstrap above
@@ -291,7 +291,7 @@ imports, or you want to rerun by filename).
 
 ```ts
 // tmp/scripts/publish-drafts.ts
-import type { Client } from '@datocms/cli/lib/cma-client-node';
+import type { Client } from 'datocms/lib/cma-client-node';
 // Optional typed project schema — run once next to the script:
 //   npx datocms schema:generate ./datocms-schema.ts
 // import * as Schema from './datocms-schema';
@@ -317,7 +317,7 @@ Rules of thumb:
   disk, no project prerequisites.
 - **file-mode when a heredoc hurts**: long script, nested quoting, local
   helper imports, or you want to rerun the file by name. Requires
-  `@datocms/cli` reachable in `node_modules` from the file's directory;
+  `datocms` reachable in `node_modules` from the file's directory;
   place the file in a gitignored scratch dir (`tmp/scripts/`, `scratch/`,
   `~/scratch/dato/`). Prefer a migration for code you want to commit,
   version, and replay across environments, and do not put file-mode
@@ -328,7 +328,7 @@ Rules of thumb:
   `import * as Schema from './datocms-schema'`. In stdin-mode `Schema.*`
   is ambient — no generation needed.
 - **Import path matters for promotion**: file-mode imports `Client` from
-  `@datocms/cli/lib/cma-client-node` — the same import migrations use, so
+  `datocms/lib/cma-client-node` — the same import migrations use, so
   a file-mode script can be promoted into a migration with a plain `mv`
   into `migrations/` (signature matches too).
 - **Redirect `2>/dev/null`** when piping stdin-mode stdout into `jq`.
@@ -375,7 +375,7 @@ consult the **datocms-cli** skill.
 
 Before presenting the final code:
 
-1. **Project-awareness bootstrap** — Confirm the repo has `@datocms/cli` installed and the project is linked (`datocms.config.json` with a `siteId`, `npx datocms whoami` succeeds). If not, the final proposal must include the install + login + link sequence before any CMA operation. For interactive / one-off tasks the deliverable should be a `cma:call` / `cma:script` invocation (shapes in Step 4), not a `buildClient()` script that requires a token in `.env`. Only when the code will run unattended (CI, server-side app, long-lived automation) should a token-in-env solution be presented — and in that case the token must have CMA access enabled and the role permissions the task needs. Schema changes require a role with `can_edit_schema: true`.
+1. **Project-awareness bootstrap** — Confirm the repo has the `datocms` npm package installed and the project is linked (`datocms.config.json` with a `siteId`, `npx datocms whoami` succeeds). If not, the final proposal must include the install + login + link sequence before any CMA operation. For interactive / one-off tasks the deliverable should be a `cma:call` / `cma:script` invocation (shapes in Step 4), not a `buildClient()` script that requires a token in `.env`. Only when the code will run unattended (CI, server-side app, long-lived automation) should a token-in-env solution be presented — and in that case the token must have CMA access enabled and the role permissions the task needs. Schema changes require a role with `can_edit_schema: true`.
 2. **Environment targeting** — If working with a sandbox, ensure the `environment` config option is set
 3. **Error handling** — Ensure `ApiError` is caught at appropriate boundaries
 4. **Pagination** — If the solution iterates a collection that could exceed a single page, prefer `listPagedIterator()`

@@ -1,6 +1,6 @@
 # CMA Type Generation Setup
 
-This reference covers generating TypeScript types from your DatoCMS schema for type-safe CMA record operations using `@datocms/cli`.
+This reference covers generating TypeScript types from your DatoCMS schema for type-safe CMA record operations using `datocms`.
 
 The generated types are useful for **both** CMA API styles:
 
@@ -21,10 +21,10 @@ Default to the simplified API. Reach for raw methods only when the task explicit
 ## Install
 
 ```bash
-npm install --save-dev @datocms/cli dotenv-cli
+npm install --save-dev datocms dotenv-cli
 ```
 
-`@datocms/cli` provides the `datocms schema:generate` command. `dotenv-cli` loads your `.env` file so the API token is available to the script.
+`datocms` provides the `datocms schema:generate` command. `dotenv-cli` loads your `.env` file so the API token is available to the script.
 
 ---
 
@@ -33,7 +33,7 @@ npm install --save-dev @datocms/cli dotenv-cli
 Add to `package.json` scripts:
 
 ```json
-"generate-cma-types": "dotenv -c -- bash -c 'npx @datocms/cli schema:generate src/lib/datocms/cma-types.ts --api-token=$DATOCMS_CMA_TOKEN'"
+"generate-cma-types": "dotenv -c -- bash -c 'npx datocms schema:generate src/lib/datocms/cma-types.ts --api-token=$DATOCMS_CMA_TOKEN'"
 ```
 
 Then run `npm run generate-cma-types` to produce the types file. Re-run after model/field changes.
@@ -49,10 +49,10 @@ Then run `npm run generate-cma-types` to produce the types file. Re-run after mo
 | SvelteKit | `PRIVATE_DATOCMS_CMA_TOKEN` | `src/lib/datocms/cma-types.ts` | `PRIVATE_` prefix for server-side env |
 | Nuxt | `NUXT_DATOCMS_CMA_TOKEN` | `lib/datocms/cma-types.ts` | No `src/` prefix; remaps to `DATOCMS_API_TOKEN` inline |
 
-The Nuxt script remaps its env var inline because `@datocms/cli` expects `DATOCMS_API_TOKEN` by default when `--api-token` is not passed:
+The Nuxt script remaps its env var inline because `datocms` expects `DATOCMS_API_TOKEN` by default when `--api-token` is not passed:
 
 ```json
-"generate-cma-types": "dotenv -c -- bash -c 'DATOCMS_API_TOKEN=$NUXT_DATOCMS_CMA_TOKEN npx @datocms/cli schema:generate lib/datocms/cma-types.ts'"
+"generate-cma-types": "dotenv -c -- bash -c 'DATOCMS_API_TOKEN=$NUXT_DATOCMS_CMA_TOKEN npx datocms schema:generate lib/datocms/cma-types.ts'"
 ```
 
 ---

@@ -1,7 +1,7 @@
 ---
 name: datocms-cli
 description: >-
-  Work with the DatoCMS CLI tool (@datocms/cli) for command-line migrations,
+  Work with the DatoCMS CLI tool (datocms) for command-line migrations,
   schema type generation, direct one-off CMA calls, typed one-off TypeScript
   CMA scripts, environment operations, deployment workflows, and
   multi-project profile syncing. Use when users ask for datocms CLI commands
@@ -21,7 +21,7 @@ description: >-
 
 # DatoCMS CLI Skill
 
-You are an expert at using the DatoCMS CLI (`@datocms/cli`). Follow these steps in order. Do not skip steps.
+You are an expert at using the DatoCMS CLI (`datocms`). Follow these steps in order. Do not skip steps.
 
 ---
 
@@ -33,14 +33,14 @@ broad detection below. Re-inspect only when a question cannot be answered
 from prior context.
 
 **CLI + link is a required bootstrap for any repo that interfaces with a
-DatoCMS project.** `@datocms/cli` installed + `datocms login` + `datocms
+DatoCMS project.** The `datocms` npm package installed + `datocms login` + `datocms
 link` is how the agent gets visibility into the live project (models,
 fields, ids, record state). Missing → fix first, same as `git init` or
 `npm install`.
 
 ### Detection (do not rely on `which datocms` — the CLI runs via `npx`)
 
-1. `@datocms/cli` in `package.json` devDependencies → CLI available. If missing, install it (`npm install --save-dev @datocms/cli`) — never fall back to pasted tokens or manual Dashboard steps.
+1. `datocms` in `package.json` devDependencies → CLI available. If missing, install it (`npm install --save-dev datocms`) — never fall back to pasted tokens or manual Dashboard steps.
 2. `datocms.config.json` with a `siteId` on the active profile → linked. If missing, drive the bootstrap below.
 3. `npx datocms whoami` succeeds → OAuth session active.
 4. `migrations/` directory → migrations already scaffolded.
@@ -225,7 +225,7 @@ Write commands and scripts following these mandatory rules:
 - When generating migration file content, use the **exact function signatures** from the reference files
 - TypeScript: `export default async function(client: Client): Promise<void>`
 - JavaScript: `module.exports = async (client) => {}`
-- Import for TypeScript migrations: `import { Client } from '@datocms/cli/lib/cma-client-node'`
+- Import for TypeScript migrations: `import { Client } from 'datocms/lib/cma-client-node'`
 
 ### File Naming
 - Migration files are automatically named: `{unix_timestamp}_{camelCaseName}.ts|.js`
@@ -263,7 +263,7 @@ Run `npx datocms cma:call --help` for the full list of built-in examples, or `np
 - Use `npx datocms cma:script` when the task needs loops, branching, multiple dependent calls, or typed `Schema.*` records, but the code does not need to live in the repo
 - **stdin-mode** (heredoc / pipe / redirect): top-level await only, ambient `client` and `Schema`, `tsc --noEmit` type-checks before execution, pre-installed packages available. Zero setup
 - **file-mode** (`.ts` file on disk):
-  - Signature: `export default async function (client: Client)` with `Client` imported from `@datocms/cli/lib/cma-client-node` — same import as migrations, so a file-mode script can be promoted with a plain `mv` into `migrations/`.
+  - Signature: `export default async function (client: Client)` with `Client` imported from `datocms/lib/cma-client-node` — same import as migrations, so a file-mode script can be promoted with a plain `mv` into `migrations/`.
   - Validation: no CLI-side typecheck; rely on your editor LSP against your `tsconfig.json`, or an explicit `tsc --noEmit`. Typed `Schema.*` is opt-in via `datocms schema:generate ./datocms-schema.ts`.
   - Placement: gitignored scratch dir (`tmp/scripts/`, `scratch/`). Prefer a migration for anything you want to commit, version, and replay across environments.
 - Redirect `2>/dev/null` when piping stdin-mode stdout into `jq`

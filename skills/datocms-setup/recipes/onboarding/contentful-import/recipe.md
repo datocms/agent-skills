@@ -19,7 +19,7 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 
 1. **Node project** — Check for `package.json`
 2. **Package manager** — See `../../../patterns/MANDATORY_RULES.md`.
-3. **Bootstrap state** — Confirm `@datocms/cli` is installed and the active
+3. **Bootstrap state** — Confirm the `datocms` npm package is installed and the active
    profile has a `siteId` (owned by `cli-bootstrap`). If missing, surface
    `cli-bootstrap` as an unmet prerequisite and stop.
 4. **Contentful plugin** — Check `package.json` for
@@ -32,7 +32,7 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 
 - If `package.json` is missing, stop and explain that this setup targets Node
   projects only.
-- If `@datocms/cli` is not installed or the active profile has no `siteId`,
+- If `datocms` is not installed or the active profile has no `siteId`,
   stop and route back to `cli-bootstrap`.
 - If an existing Contentful import helper follows a materially different flow,
   patch it in place by default and only ask if a rewrite would replace working
@@ -76,7 +76,7 @@ Generate only these project changes:
 
 1. **Install missing packages**:
    - `@datocms/cli-plugin-contentful`
-   (`@datocms/cli` is installed by `cli-bootstrap`.)
+   (the `datocms` npm package is installed by `cli-bootstrap`.)
 2. **Patch `.env.example`** so it includes the Contentful provider credentials
    only (no DatoCMS token — `contentful:import` authenticates through the
    linked default profile):
@@ -98,7 +98,7 @@ Generate only these project changes:
   optional
 - The helper must forward extra CLI flags to `contentful:import`
 - The helper must not pass `--autoconfirm` by default
-- Do not install `@datocms/cli` — `cli-bootstrap` owns that
+- Do not install the `datocms` npm package — `cli-bootstrap` owns that
 - Do not add a `DATOCMS_API_TOKEN` placeholder to `.env.example` — the linked
   default profile handles DatoCMS auth for the `datocms contentful:import`
   command

@@ -24,7 +24,7 @@ Silently examine the project:
 Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
 
 1. **Node project** — Check for `package.json`
-2. **Bootstrap state** — Confirm `@datocms/cli` is installed and that the
+2. **Bootstrap state** — Confirm the `datocms` npm package is installed and that the
    active profile has a `siteId` (owned by `cli-bootstrap`). If missing,
    surface `cli-bootstrap` as an unmet prerequisite and stop.
 3. **Existing profiles** — Inspect `datocms.config.json` for a `default`
@@ -40,7 +40,7 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 
 - If `package.json` is missing, stop and explain that this setup targets Node
   projects only.
-- If `@datocms/cli` is not installed or the default profile has no `siteId`,
+- If `datocms` is not installed or the default profile has no `siteId`,
   stop and route back to `cli-bootstrap`.
 - If the request is "add staging/production profiles" and the user really
   means "separate environments of the same project", stop and point them at
@@ -112,7 +112,7 @@ Generate only these project changes:
 
 ## Step 5: Install Dependencies
 
-No new dependencies in this recipe — `@datocms/cli` is installed by
+No new dependencies in this recipe — the `datocms` npm package is installed by
 `cli-bootstrap`.
 
 ---

@@ -22,7 +22,7 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 
 1. **Framework and file layout** — use `../../../references/repo-conventions.md` for supported framework detection and `src/` usage.
 2. **Node project** — Confirm `package.json` exists.
-3. **Bootstrap state** — Confirm `@datocms/cli` is installed and the active
+3. **Bootstrap state** — Confirm the `datocms` npm package is installed and the active
    profile has a `siteId` (owned by `cli-bootstrap`). If missing, surface
    `cli-bootstrap` as an unmet prerequisite and stop.
 4. **Existing script** — Check `package.json` for `generate-cma-types`.
@@ -32,7 +32,7 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 ### Stop conditions
 
 - If the framework cannot be determined, ask the user.
-- If `@datocms/cli` is not installed or the active profile has no `siteId`,
+- If `datocms` is not installed or the active profile has no `siteId`,
   stop and route back to `cli-bootstrap`.
 - If the repo already has a materially different schema-type generation setup,
   inspect and patch it in place by default instead of replacing it.
@@ -84,7 +84,7 @@ Generate only the standalone CMA type-generation setup.
 - Do not configure GraphQL Code Generator
 - Preserve an existing working script name if the repo already uses one, but
   ensure `generate-cma-types` exists
-- Do not install `@datocms/cli` — `cli-bootstrap` owns that
+- Do not install the `datocms` npm package — `cli-bootstrap` owns that
 - Do not install `dotenv-cli` — unnecessary with OAuth-linked profile
 - Do not add any CMA token placeholder to `.env.example` for `schema:generate`.
   `schema:generate` uses the default profile's OAuth resolution.

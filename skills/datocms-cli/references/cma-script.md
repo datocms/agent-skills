@@ -82,7 +82,7 @@ types that will resolve at runtime.
 
 ```ts
 // tmp/scripts/publish-drafts.ts
-import type { Client } from '@datocms/cli/lib/cma-client-node';
+import type { Client } from 'datocms/lib/cma-client-node';
 // Optional typed project schema — run once next to the script:
 //   npx datocms schema:generate ./datocms-schema.ts
 // import * as Schema from './datocms-schema';
@@ -98,7 +98,7 @@ export default async function (client: Client): Promise<void> {
 
 - `export default async function(client: Client)` is required;
   top-level await is rejected in file-mode (use stdin-mode for that).
-- `Client` is imported from `@datocms/cli/lib/cma-client-node` — the
+- `Client` is imported from `datocms/lib/cma-client-node` — the
   same import that migrations use. A file-mode script can be promoted
   into a migration with `mv tmp/scripts/publish-drafts.ts migrations/`
   (signature matches too).
@@ -108,7 +108,7 @@ export default async function (client: Client): Promise<void> {
   client is still usable with generic types.
 - Pre-installed packages are **not** available in file-mode. Install
   what you need into your own `package.json`.
-- Requires `@datocms/cli` reachable in `node_modules` from the file's
+- Requires `datocms` reachable in `node_modules` from the file's
   directory. Place the file in a gitignored scratch dir — typically
   `tmp/scripts/`, `scratch/`, or `~/scratch/dato/`. Prefer a migration
   for code you want to commit, version, and replay across environments,
@@ -244,8 +244,8 @@ npx datocms cma:script tmp/scripts/backfill-slugs.ts --environment=staging
 
 The file must:
 - `export default async function(client: Client)`,
-- import `Client` from `@datocms/cli/lib/cma-client-node`,
-- sit in a directory with `@datocms/cli` resolvable via `node_modules`.
+- import `Client` from `datocms/lib/cma-client-node`,
+- sit in a directory with `datocms` resolvable via `node_modules`.
 
 ---
 

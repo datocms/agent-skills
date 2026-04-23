@@ -20,7 +20,7 @@ Silently examine the project:
 Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
 
 1. **Node project** — Check for `package.json`
-2. **CLI migrations baseline** — Check for `@datocms/cli`,
+2. **CLI migrations baseline** — Check for the `datocms` npm package,
    `datocms.config.json`, and a `migrations/` directory or existing migration
    scripts
 3. **Migration format convention** — Check whether the repo currently defaults

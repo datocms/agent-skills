@@ -228,4 +228,4 @@ The `documents` glob in `graphql.config.ts` controls which files are scanned.
 
 ## CMA Schema Types
 
-For generating TypeScript types for CMA record operations (`@datocms/cli schema:generate`), see the CMA skill's `references/type-generation.md`. If the CMA skill is not installed, ask the user to install it.
+For generating TypeScript types for CMA record operations (`datocms schema:generate`), see the CMA skill's `references/type-generation.md`. If the CMA skill is not installed, ask the user to install it.

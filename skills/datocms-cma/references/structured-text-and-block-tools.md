@@ -515,7 +515,7 @@ You can pass options such as `maxWidth` to control formatting. Pair it with `bui
 
 Long worked scripts for structured text and embedded blocks are maintained in the CMA reference. Fetch the canonical version on demand.
 
-**Prerequisite:** `@datocms/cli` installed (normally bootstrapped per SKILL.md Step 1a). `cma:docs` itself needs *no* login and *no* linked project. If `npx datocms …` errors with "command not found", install the CLI (`npm install --save-dev @datocms/cli`) or invoke on demand with `npx --yes @datocms/cli cma:docs …`.
+**Prerequisite:** the `datocms` npm package installed (normally bootstrapped per SKILL.md Step 1a). `cma:docs` itself needs *no* login and *no* linked project. If `npx datocms …` errors with "command not found", install the CLI (`npm install --save-dev datocms`) or invoke on demand with `npx --yes datocms cma:docs …`.
 
 | Scenario | Command |
 |---|---|

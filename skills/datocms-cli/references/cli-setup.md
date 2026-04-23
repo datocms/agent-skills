@@ -1,6 +1,6 @@
 # CLI Setup
 
-Installation, authentication, project linking, profiles, token resolution, and global flags for `@datocms/cli`.
+Installation, authentication, project linking, profiles, token resolution, and global flags for `datocms`.
 
 ---
 
@@ -18,13 +18,27 @@ Confirm these inputs when they are not already clear:
 Install the CLI in the project and run it locally:
 
 ```bash
-npm install --save-dev @datocms/cli
+npm install --save-dev datocms
 npx datocms --help
 ```
 
 Use local `npx datocms` commands by default so the repo controls the CLI
 version. If the repo already has an established runner style (`pnpm exec`,
 `bunx`, package scripts), keep that convention.
+
+> **Package rename (v4.0.12+).** The CLI is now published as `datocms` on
+> npm. The legacy `@datocms/cli` package still exists as a thin alias that
+> depends on `datocms` and re-exports the same binary and programmatic API
+> (including the `/lib/cma-client-node` deep path), so existing projects
+> keep working unchanged. For any new install, recommendation, or example
+> across this skill set, always use `datocms` (package and import path).
+> If a project already has `@datocms/cli` in `package.json` or in
+> migration imports (`from '@datocms/cli/lib/cma-client-node'`), it is not
+> broken — but the one-line swap to `datocms` is preferred whenever the
+> file is being edited anyway. The `datocms` package name also fixes
+> `npx datocms …` under npm, which previously failed with a misleading
+> "Missing script: datocms" error because npm/npx resolves by package
+> name, not binary name.
 
 ---
 
