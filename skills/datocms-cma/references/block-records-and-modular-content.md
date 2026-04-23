@@ -18,6 +18,7 @@ Worked examples live in the DatoCMS API reference — fetch on demand with `npx 
 | Find a canonical worked example for a specific scenario | `cma:docs` Examples Index |
 | Update a block several levels deep in a tree | Recursive Nesting |
 | Work with a block field that is localized | Localized Block Fields |
+| Know the exact TypeScript type of a field on a given model | Typed usage → From a model marker to a concrete field type |
 | Diagnose why an update is silently wrong | Common Pitfalls |
 
 ---
@@ -162,6 +163,38 @@ Full worked example — mixed add/update/keep/delete/reorder in a single API cal
 ```bash
 npx datocms cma:docs items update --expand "Example: Managing blocks in existing Modular Content fields"
 ```
+
+### Variant: factor the field value into a typed helper
+
+When the array is assembled outside the `create` / `update` call (factory, pipeline step, shared between create and update paths), type the intermediate value by indexing — no field-value types to import, no casts:
+
+```ts
+import { buildBlockRecord, type ApiTypes } from "@datocms/cma-client-node";
+import * as Schema from "./cma-types";
+
+type Sections = ApiTypes.ItemCreateSchema<Schema.Page>["sections"];
+
+function buildLaunchSections(headline: string): Sections {
+  return [
+    buildBlockRecord<Schema.HeroBlock>({
+      item_type: { type: "item_type", id: heroBlockId },
+      headline,
+    }),
+    buildBlockRecord<Schema.TextBlock>({
+      item_type: { type: "item_type", id: textBlockId },
+      body: "Opening paragraph.",
+    }),
+  ];
+}
+
+await client.items.create<Schema.Page>({
+  item_type: { type: "item_type", id: pageModelId },
+  title: "Launch",
+  sections: buildLaunchSections("Welcome"),
+});
+```
+
+The helper's return type and the `sections` field on the create payload are, by construction, the same type — `Sections` is *how* you say "whatever that field expects". See [Typed usage → From a model marker to a concrete field type](#from-a-model-marker-to-a-concrete-field-type).
 
 ---
 
@@ -326,6 +359,52 @@ await client.items.create<Schema.Article>({
 
 In `cma:script` stdin-mode, `Schema.*` is already an **ambient global** inside the CLI workspace — no generation step, no import needed.
 
+#### From a model marker to a concrete field type
+
+`Schema.X` is a branded `ItemTypeDefinition` marker — it describes the model, not the data shape. `Schema.Page['sections']` does **not** resolve to the field type; it is a compile error. To get the exact type of a field, index the client's request / response schemas:
+
+```ts
+import type { ApiTypes } from "@datocms/cma-client-node";
+import * as Schema from "./cma-types";
+
+// Request payloads (build these for create / update)
+type PageCreate = ApiTypes.ItemCreateSchema<Schema.Page>;
+type PageUpdate = ApiTypes.ItemUpdateSchema<Schema.Page>;
+
+// Response payloads (read these from find / list)
+type PageRead       = ApiTypes.Item<Schema.Page>;                 // block fields as ID strings
+type PageReadNested = ApiTypes.ItemInNestedResponse<Schema.Page>; // block fields expanded
+
+// Pick any field — block-bearing or scalar
+type Sections       = PageCreate["sections"];       // blocks restricted to the ones the field's validators allow
+type SectionsNested = PageReadNested["sections"];   // same shape, with blocks expanded on the read side
+type Title          = PageCreate["title"];          // string
+```
+
+This is the universal bridge between generated markers and concrete values. Indexing is the single API surface for field types — the client ships internal per-field-type names, but you never need to import or remember them: every field type falls out of indexing, already parametrized on the right blocks / links for the model.
+
+Typical use: typing an intermediate variable or helper that assembles a field value before handing it to `update`:
+
+```ts
+import { buildBlockRecord, type ApiTypes } from "@datocms/cma-client-node";
+import * as Schema from "./cma-types";
+
+type Sections = ApiTypes.ItemUpdateSchema<Schema.Page>["sections"];
+
+function buildHomepageSections(headline: string): Sections {
+  return [
+    buildBlockRecord<Schema.HeroBlock>({
+      item_type: { id: heroBlockId, type: "item_type" },
+      headline,
+    }),
+  ];
+}
+
+await client.items.update<Schema.Page>(pageId, {
+  sections: buildHomepageSections("Welcome"),
+});
+```
+
 See:
 - `references/type-generation.md` — CMA-side workflow: install, env-var conventions per framework, `AnyBlock` / `AnyModel` unions, raw-API typing
 - `datocms-cli` skill, `references/schema-generate.md` — CLI-side flags (`--environment`, `--item-types`, profile selection)
@@ -456,6 +535,10 @@ For locale-object conventions and helper utilities, see `references/localization
 ---
 
 ## Common Pitfalls
+
+### Indexing `Schema.X` to get a field type
+
+`Schema.Page["sections"]` is a TypeScript error, not the field type. `Schema.*` are branded `ItemTypeDefinition` markers — they parametrize client methods (`create<T>`, `update<T>`, `find<T>`, `buildBlockRecord<T>`); they do not describe the data shape directly. To extract the type of a specific field, go through `ApiTypes.ItemCreateSchema<T>` / `ItemUpdateSchema<T>` / `Item<T>` / `ItemInNestedResponse<T>` and index those. See [Typed usage → From a model marker to a concrete field type](#from-a-model-marker-to-a-concrete-field-type).
 
 ### Forgetting `nested: true` before editing
 

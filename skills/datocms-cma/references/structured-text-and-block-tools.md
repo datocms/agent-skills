@@ -14,6 +14,7 @@ For the *mental model* of blocks (ID/object duality, response modes, the 5 mutat
 | Decide between `block`, `inlineBlock`, `itemLink`, `inlineItem` | Structured Text Embedded Content Types |
 | See a full DAST document with multiple node types assembled | Complete Structured Text Example |
 | Transform the DAST tree (rename headings, replace text, add link attrs) | DAST Tree Manipulation (`datocms-structured-text-utils`) |
+| Know the type a CMA document must match, and whether the tree helpers are type-safe over it | DAST Tree Manipulation → Type compatibility with CMA payloads |
 | Resolve block models or cache schema lookups across a traversal | `SchemaRepository` |
 | Walk every block in a block-bearing value at any depth | Block Traversal Utilities |
 | Debug a record or block payload as a readable tree | `inspectItem()` |
@@ -327,6 +328,40 @@ await client.items.create<Schema.Post>({
 ## DAST Tree Manipulation (`datocms-structured-text-utils`)
 
 For transformations that walk the DAST tree itself — changing heading levels, replacing text, adding link attributes, removing empty paragraphs — use the tree helpers from `datocms-structured-text-utils`. They operate on the raw DAST shape, so you do not have to match node types by hand.
+
+### Type compatibility with CMA payloads
+
+The `content` value you build for `client.items.create<T>` / `update<T>` is **already a `Document`** from `datocms-structured-text-utils` — the CMA client parametrizes that same `Document` internally. Concretely, this means:
+
+- Pass it directly to `mapNodes`, `filterNodes`, `findFirstNode`, `collectNodes`, `forEachNode`, `reduceNodes` — no cast, no adapter.
+- A document round-tripped through `mapNodes` still satisfies the field type, so you transform in place and send it straight back:
+
+```ts
+import type { ApiTypes } from "@datocms/cma-client-node";
+import * as Schema from "./cma-types";
+
+type ArticleContent = ApiTypes.ItemCreateSchema<Schema.Article>["content"];
+
+const transformed = mapNodes(record.content, (node) => { /* ... */ });
+await client.items.update<Schema.Article>(recordId, { content: transformed });
+```
+
+For the indexing pattern that materialized `ArticleContent`, see `references/block-records-and-modular-content.md` → **Typed usage → From a model marker to a concrete field type**.
+
+Inside `isBlock(node)` / `isInlineBlock(node)`, `node.item` narrows to the union `string | { id; attributes; ... } | { attributes; ... }` — which is **the 5 mutation rules expressed as a TypeScript discriminator**:
+
+```ts
+if (isBlock(node)) {
+  const item = node.item;
+  if (typeof item === "string")      { /* keep unchanged */ }
+  else if ("id" in item)             { /* update — id + attributes */ }
+  else                               { /* create — no id */ }
+}
+```
+
+**Do not type `content` with `StructuredText` or `CdaStructuredTextValue` from `datocms-structured-text-utils`.** Those types are the CDA (GraphQL) response shape — `{ value, blocks?, inlineBlocks?, links? }` with `__typename`-tagged records — and are structurally unrelated to what the CMA expects. They belong to read-side CDA code (`@datocms/cda-client`). On the CDA side the tree helpers want a `Document`, so you extract `.value` and narrow with `isDocument` before running them; on the CMA side you skip that step entirely and start from the `content` value itself.
+
+### Walking a DAST tree
 
 ```ts
 import {

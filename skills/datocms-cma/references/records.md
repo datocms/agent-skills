@@ -514,6 +514,26 @@ Input for `client.items.update()`.
 | `meta.has_children` | `boolean \| null` | No | Whether the record has children |
 | _dynamic fields_ | _varies_ | No | Field values keyed by field API key (only changed fields needed) |
 
+#### Extracting a concrete field type
+
+The `_dynamic fields_` row is a placeholder for per-model field values. To materialize a specific field into a concrete TypeScript type — without chasing internal per-field-type names — pass a generated marker (`Schema.X`) as the generic and index the result:
+
+```ts
+import type { ApiTypes } from "@datocms/cma-client-node";
+import * as Schema from "./cma-types";
+
+type BlogPostCreate = ApiTypes.ItemCreateSchema<Schema.BlogPost>;
+type BlogPostUpdate = ApiTypes.ItemUpdateSchema<Schema.BlogPost>;
+type BlogPostRead   = ApiTypes.Item<Schema.BlogPost>;                 // block fields as ID strings
+type BlogPostNested = ApiTypes.ItemInNestedResponse<Schema.BlogPost>; // block fields expanded
+
+type Title   = BlogPostCreate["title"];
+type Content = BlogPostCreate["content"];
+type Cover   = BlogPostCreate["cover_image"];
+```
+
+Full explanation of when to pick each schema (`Create` vs `Update` vs `Item` vs `ItemInNestedResponse`) and why `Schema.X` itself is not indexable: `block-records-and-modular-content.md` → [Typed usage → From a model marker to a concrete field type](block-records-and-modular-content.md#from-a-model-marker-to-a-concrete-field-type).
+
 #### `ApiTypes.ItemInstancesHrefSchema`
 
 Query params for `client.items.list()`.
