@@ -153,5 +153,13 @@
     "boundary_with": [
       "datocms-cli"
     ]
+  },
+  {
+    "query": "just tell me which fields the DatoCMS blog_post model has and whether slug is required — I don't need code, I just want to know the schema",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cli"
+    ]
   }
 ]

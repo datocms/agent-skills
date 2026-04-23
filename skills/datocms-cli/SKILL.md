@@ -2,10 +2,13 @@
 name: datocms-cli
 description: >-
   Work with the DatoCMS CLI tool (datocms) for command-line migrations,
-  schema type generation, direct one-off CMA calls, typed one-off TypeScript
-  CMA scripts, environment operations, deployment workflows, and
-  multi-project profile syncing. Use when users ask for datocms CLI commands
-  or scripts such as migrations:new, migrations:run, schema:generate,
+  schema type generation, schema inspection, direct one-off CMA calls,
+  typed one-off TypeScript CMA scripts, environment operations, deployment
+  workflows, and multi-project profile syncing. Use when users ask for
+  datocms CLI commands or scripts such as migrations:new, migrations:run,
+  schema:generate, schema:inspect (dump models, blocks, fields, validators,
+  appearance, fieldsets, nested blocks, referenced/embedding models for
+  agents or humans to understand the project structure),
   cma:call, cma:docs, cma:script (for ad-hoc typed TypeScript scripts with
   ambient client/Schema globals), migration scaffolding for
   models/fields/blocks, CLI setup with datocms.config.json and profiles,
@@ -68,6 +71,14 @@ now exits cleanly with a suggestion to pass `--site-id`; do not retry
 without it. Same applies when credentials are missing — ask the user to
 run `datocms login` first.
 
+Once the project is linked, use `npx datocms schema:inspect` (optionally
+with a model API key, id, or display name) to learn what the project
+actually contains — models, blocks, fields, validators, fieldsets,
+nested blocks, relationships. This is the right tool any time the agent
+or the user needs generic info about the project structure; reach for it
+before writing mutations, migrations, or CMA code so decisions rest on
+the real schema rather than guesses. See `references/schema-inspect.md`.
+
 ### Authentication policy
 
 - **Interactive task** (publish, delete, fix, backfill, introspect,
@@ -100,6 +111,7 @@ Classify the user's task into one or more categories:
 | **Creating migrations** | Scaffold new migration scripts, autogenerate from environment diffs, custom templates (sub-task of schema changes once the migration approach is chosen) |
 | **Running migrations** | Execute pending migrations, dry-run, fork-and-run, in-place execution |
 | **Schema generation** | Run `schema:generate`, scope output to item types, target a specific environment |
+| **Schema inspection** | Run `schema:inspect` to dump models, blocks, fields, validators, appearance, default values, fieldsets, nested blocks, referenced models, or embedding models — use any time the agent or user needs to understand how the project is structured before writing code or mutations |
 | **Direct CMA calls** | Use `cma:docs` to browse API reference, `cma:call` for a single call with a shape from the docs, `cma:script` for one-off TypeScript logic that needs loops, branching, or typed `Schema.*` types — stdin-mode for heredocs/pipes, file-mode for longer scripts in a gitignored scratch dir |
 | **Environment management** | Fork, promote, rename, destroy, list environments via CLI commands |
 | **Deployment workflow** | Maintenance mode, safe deployment sequences, CI/CD integration |
@@ -195,6 +207,7 @@ Based on the task classification, read the appropriate reference files from the 
 | Creating migrations | `references/creating-migrations.md` |
 | Running migrations | `references/running-migrations.md` |
 | Schema generation | `references/schema-generate.md` |
+| Schema inspection | `references/schema-inspect.md` |
 | Direct CMA calls | `references/direct-cma-calls.md` (for `cma:call`) and/or `references/cma-script.md` (for `cma:script`) |
 | Environment management | `references/environment-commands.md` |
 | Deployment workflow | `references/deployment-workflow.md` |
@@ -240,6 +253,14 @@ Write commands and scripts following these mandatory rules:
 - Use `--item-types` to narrow the output when the user only needs specific models
 - Use `--environment` when the generated types must reflect a sandbox or staging environment
 - Route the follow-up code changes that consume those types to `datocms-cma`
+
+### Schema Inspection
+- Use `npx datocms schema:inspect` any time the agent or user needs project structure information — models, blocks, field definitions, validators, appearance, default values, fieldset grouping, nested blocks, referenced or embedding models
+- No argument dumps every model and block; pass an API key, id, or display name to narrow down (fuzzy fallback when there is no exact match)
+- Defaults to TOON output for agent consumption; add `--json` when piping through `jq`
+- Opt into extra detail selectively with `--include-validators`, `--include-appearance`, `--include-default-values`, `--include-fieldsets`, `--include-nested-blocks`, `--include-referenced-models`, `--include-embedding-models`; use `--fields-details=complete` to include everything at once
+- Restrict to regular models or modular blocks with `--type=models_only` / `--type=blocks_only`; target sandbox schemas with `--environment`
+- Prefer `schema:inspect` over composing `cma:call item_types list` + `fields list` by hand — it already resolves fieldsets, nested blocks, and embedding models in one call
 
 ### Direct CMA Calls
 - Use `npx datocms cma:docs <resource> <action>` to look up endpoint details (request body, parameters, examples) before constructing a command

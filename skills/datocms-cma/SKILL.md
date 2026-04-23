@@ -85,6 +85,16 @@ only for runtimes that cannot use OAuth: CI, server-side application code,
 cron, webhooks, shared repo scripts. Even there, the agent still needs
 CLI + link during development for project visibility.
 
+**Learning the project's shape.** Once linked, run
+`npx datocms schema:inspect` (optionally with a model API key, id, or
+display name) to see the real models, blocks, fields, validators,
+fieldsets, nested blocks, and relationships — TOON output by default,
+`--json` for `| jq`. Use this any time the agent or user needs to
+understand the project structure before writing code, choosing the right
+field for a mutation, or deciding which model to query. Prefer it to
+composing `cma:call item_types list` / `fields list` by hand. Reference:
+`../datocms-cli/references/schema-inspect.md`.
+
 **Red flag:** if you are about to say "paste a CMA token" or "add
 `DATOCMS_CMA_TOKEN=...` to `.env`" for a task the user is running
 interactively, stop. The right answer is the bootstrap above + the

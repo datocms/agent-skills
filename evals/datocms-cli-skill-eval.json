@@ -190,5 +190,38 @@
     "boundary_with": [
       "datocms-cma"
     ]
+  },
+  {
+    "query": "can you show me how the blog_post model is structured in my DatoCMS project? I need to know which fields it has and whether any of them are required",
+    "should_trigger": true
+  },
+  {
+    "query": "list all the models and blocks in my DatoCMS project from the command line so I can see what's there",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to dump the full schema of a DatoCMS model from the CLI, including validators, appearance, and how fields are grouped into fieldsets",
+    "should_trigger": true
+  },
+  {
+    "query": "which DatoCMS models embed the my_block modular block? I need to find every page that uses it before I change the block's fields",
+    "should_trigger": true
+  },
+  {
+    "query": "what does the article model on DatoCMS look like, including every block that can be nested inside it?",
+    "should_trigger": true
+  },
+  {
+    "query": "Use datocms-cli to inspect the author model and tell me which models reference it via link or structured_text fields.",
+    "should_trigger": true,
+    "query_mode": "explicit"
+  },
+  {
+    "query": "before I write a CMA script that updates DatoCMS product records, I need to know exactly which fields the product model has and which ones have required validators",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
   }
 ]
