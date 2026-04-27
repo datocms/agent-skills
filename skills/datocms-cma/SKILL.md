@@ -208,8 +208,8 @@ Based on the task classification, read the appropriate reference files from the 
 - `Schema operations` → `references/schema.md`
 - `Filtering & querying` → `references/filtering-and-pagination.md`
 - `Localization` → `references/localization.md`
-- `Blocks & modular content` → `references/block-records-and-modular-content.md`
-- `Structured text & block tooling` → `references/structured-text-and-block-tools.md`
+- `Blocks & modular content` → `references/editing-records.md`
+- `Structured text & block tooling` → `references/editing-records.md`
 - `Environment operations` → `references/environments.md`
 - `Webhook & deploy operations` → `references/webhooks-and-triggers.md`
 - `Access control` → `references/access-control.md`
@@ -225,8 +225,7 @@ Based on the task classification, read the appropriate reference files from the 
 **Load cross-cutting references when needed:**
 - If the task involves localized fields in any context → also load `references/localization.md`
 - If the task uses `raw*()` methods, generated CMA types, advanced client behavior, or platform limits → also load `references/client-types-and-behaviors.md`
-- If the task involves modular content or single-block fields → also load `references/block-records-and-modular-content.md`
-- If the task involves DAST structured text, `SchemaRepository`, `inspectItem()`, or block traversal utilities → also load `references/structured-text-and-block-tools.md`
+- If the task involves modular content, single-block fields, DAST structured text, block traversal, or any per-locale backfill → also load `references/editing-records.md`
 - If the task involves listing many records → also load `references/filtering-and-pagination.md`
 - If the task is a migration script → also load `references/migration-patterns.md` plus whatever domain refs are needed
 - If the task involves video upload subtitles/tracks or upload tag management → also load `references/upload-tracks-and-tags.md`

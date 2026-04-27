@@ -1,0 +1,21 @@
+{
+  "name": "agent-skills-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Dev-only npm package powering the e2e harness for the DatoCMS agent skills repo. Not shipped — the plugin itself is declared in .claude-plugin/plugin.json.",
+  "scripts": {
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@datocms/cma-client-node": "^5.4.7",
+    "@datocms/dashboard-client": "^5.4.3",
+    "@types/node": "^22.19.17",
+    "concurrent-promise-queue": "^1.0.10",
+    "datocms": "^4.0.14",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

@@ -3,3 +3,7 @@ __pycache__/
 local/
 .agents/skills/skill-creator/
 skills-lock.json
+node_modules/
+tmp/
+.env
+.env.local

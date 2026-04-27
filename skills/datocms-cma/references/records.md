@@ -432,7 +432,7 @@ Array of file objects (same shape as single file):
 
 ### Modular Content, Structured Text, Single Block
 
-These are complex field types — see `references/block-records-and-modular-content.md` and `references/structured-text-and-block-tools.md`.
+These are complex field types — see `references/editing-records.md`.
 
 ---
 
@@ -532,7 +532,7 @@ type Content = BlogPostCreate["content"];
 type Cover   = BlogPostCreate["cover_image"];
 ```
 
-Full explanation of when to pick each schema (`Create` vs `Update` vs `Item` vs `ItemInNestedResponse`) and why `Schema.X` itself is not indexable: `block-records-and-modular-content.md` → [Typed usage → From a model marker to a concrete field type](block-records-and-modular-content.md#from-a-model-marker-to-a-concrete-field-type).
+Pick `Create` for `client.items.create()` payloads, `Update` for `client.items.update()` patches (most fields optional), `Item` for default `client.items.find()` reads (block fields as ID strings), `ItemInNestedResponse` for `nested: true` reads (block fields expanded). `Schema.X` itself is a phantom marker — not directly indexable.
 
 #### `ApiTypes.ItemInstancesHrefSchema`
 
