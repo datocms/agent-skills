@@ -72,7 +72,7 @@ In that case, ask:
 Read only these references:
 
 - `../../../../datocms-cma/references/client-types-and-behaviors.md`
-- `../../../../datocms-cma/references/webhooks-and-triggers.md`
+- `../../../../datocms-cma/references/resource-gotchas.md` (§ Build triggers)
 - `../../../../datocms-cma/references/access-control.md`
 
 Also inspect these bundled assets only when generating files:

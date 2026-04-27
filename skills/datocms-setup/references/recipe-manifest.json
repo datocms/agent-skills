@@ -543,7 +543,7 @@
       "shared_references": [
         "../datocms-cma/references/access-control.md",
         "../datocms-cma/references/client-types-and-behaviors.md",
-        "../datocms-cma/references/webhooks-and-triggers.md"
+        "../datocms-cma/references/resource-gotchas.md"
       ],
       "assets": [],
       "scripts": [
@@ -583,7 +583,7 @@
       "shared_references": [
         "../datocms-cma/references/access-control.md",
         "../datocms-cma/references/client-types-and-behaviors.md",
-        "../datocms-cma/references/webhooks-and-triggers.md",
+        "../datocms-cma/references/resource-gotchas.md",
         "../datocms-frontend-integrations/references/astro.md",
         "../datocms-frontend-integrations/references/nextjs.md",
         "../datocms-frontend-integrations/references/nuxt.md",

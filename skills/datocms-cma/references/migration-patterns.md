@@ -2,6 +2,8 @@
 
 Covers common scripting patterns for data migrations, bulk operations, upload migrations, field type migrations, and resumable migration patterns.
 
+> For endpoint shapes of any resource the script touches, consult `npx datocms cma:docs <resource> <action> --types-depth 2` (raise the depth or use `--expand-types` for deeper nested types). This file covers the migration script boilerplate, idempotent loops, progress reporting, and bulk-operation patterns — not the per-endpoint payload.
+
 ## Quick Navigation
 
 - [Migration Script Boilerplate](#migration-script-boilerplate)

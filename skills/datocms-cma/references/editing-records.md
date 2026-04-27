@@ -2,6 +2,8 @@
 
 Mutating record fields — block-bearing fields (Modular Content `rich_text`, Single Block `single_block`, Structured Text `structured_text` with `block` / `inlineBlock` nodes) and localized fields, plus adding a locale and backfilling per-locale values.
 
+> For endpoint shapes of `items.*` (find / list / update / create / publish / …), consult `npx datocms cma:docs items <action> --types-depth 2` (raise the depth or use `--expand-types` for deeper nested types). This file owns the workflow: peek-then-mutate ordering, typed guards, the structured-text path 1→2→3 invariant.
+
 Do peek + mutate in ONE script. No top-level `return` — wrap in `if (cur.body) { ... }`. Always pass `Schema.X` as the generic to typed helpers; never hand-roll JSON:API.
 
 ## Workflow

@@ -69,7 +69,7 @@ In that case, ask:
 Read only these references:
 
 - `../../../../datocms-cma/references/client-types-and-behaviors.md`
-- `../../../../datocms-cma/references/webhooks-and-triggers.md`
+- `../../../../datocms-cma/references/resource-gotchas.md` (§ Webhooks)
 - `../../../../datocms-cma/references/access-control.md`
 
 If a supported framework is present and a local receiver should be scaffolded,

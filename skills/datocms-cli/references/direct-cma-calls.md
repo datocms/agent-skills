@@ -62,7 +62,8 @@ npx datocms cma:call <RESOURCE> <METHOD> [...pathArgs] [--data '...'] [--params 
 ### `cma:docs` — Browse full API reference
 
 Use `cma:docs` to get detailed, up-to-date documentation about any CMA
-endpoint directly in the terminal:
+endpoint directly in the terminal. Always reflects the installed client
+version — never stale.
 
 ```bash
 # List all available resources
@@ -71,16 +72,45 @@ npx datocms cma:docs
 # Describe a resource and its actions
 npx datocms cma:docs items
 
-# Describe a specific action with request/response examples
+# Describe a specific action — description, HTTP, client method signatures
 npx datocms cma:docs items create
 
-# Expand a collapsed details section for more info
+# Expand a collapsed example section
 npx datocms cma:docs items create --expand "Example: Basic example"
+
+# Inline TypeScript declarations for every reachable referenced type
+npx datocms cma:docs items create --expand-types "*"
+
+# Inline declarations for specific named types only (repeatable)
+npx datocms cma:docs items create --expand-types ItemCreateSchema
+
+# Surface a deeper "Not expanded" type list (default depth: 2)
+npx datocms cma:docs items create --types-depth 4
 ```
 
+| Flag | Description |
+|---|---|
+| `--expand <summary>` | Expand a collapsed `<details>` section by its summary text (repeatable) |
+| `--expand-types <name>` | Inline full TS declarations for referenced types. Pass `*` for everything reachable, or specific type names (repeatable) |
+| `--types-depth <n>` | Walk depth for the "Not expanded" type list when `--expand-types` is omitted (default 2) |
+
+**Resource names are camelCase** in `cma:docs`, matching the JS client surface:
+`itemTypes` (not `item_types`), `scheduledPublication`, `uploadSmartTags`,
+`buildTriggers`, `auditLogEvents`, etc. Same camelCase appears on the client
+(`client.itemTypes.create`, `client.scheduledPublication.create`, …). When
+unsure, run `npx datocms cma:docs` with no args to list every resource.
+
+When the task is to write a typed mutation
+(`buildBlockRecord<Schema.X>`, `client.items.create<Schema.X>`, etc.),
+consider passing `--types-depth 2` (or higher) to surface a deeper
+"Not expanded" type list, or `--expand-types <SpecificType>` to inline
+a single declaration. Reach for `--expand-types "*"` only as a last
+resort — its output is verbose.
+
 This is the recommended way to look up endpoint details — request body
-schemas, required fields, query parameters, and response shapes — before
-constructing a `cma:call` command or writing CMA client code.
+schemas, required fields, query parameters, response shapes, and TS
+signatures — before constructing a `cma:call` command or writing CMA
+client code.
 
 ### `cma:call --help` — Quick resource/method listing
 

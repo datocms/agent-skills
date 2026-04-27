@@ -9,7 +9,7 @@ Load this reference when the task uses `raw*()` methods, generated CMA types, ad
   - [Raw Method Examples](#raw-method-examples)
   - [When to Use Raw vs Simplified](#when-to-use-raw-vs-simplified)
 - [Type System](#type-system)
-  - [Type Directory](#type-directory)
+  - [Looking up a specific type](#looking-up-a-specific-type)
 - [Automatic Behaviors](#automatic-behaviors)
 - [Technical Limits](#technical-limits)
 - [Getting Site Information](#getting-site-information)
@@ -187,29 +187,11 @@ Many methods accept an optional generic `D extends ItemTypeDefinition` for per-m
 
 **Legacy aliases:** `SimpleSchemaTypes = ApiTypes`, `SchemaTypes = RawApiTypes`. Prefer `ApiTypes` and `RawApiTypes` in new code.
 
-See `references/type-generation.md` for generating the schema types file itself.
+See `references/type-generation.md` for generating the project's `cma-types.ts` (the `Schema.X` markers used as generics throughout this skill).
 
-### Type Directory
+### Looking up a specific type
 
-Type properties are documented in full in each domain-specific reference file. This avoids loading all types when only a specific domain is needed.
-
-**Important:** Type properties are based on `@datocms/cma-client@5.x`. Properties may differ on other versions. The installed package's `.d.ts` files are the source of truth.
-
-| Type | Reference File |
-|------|---------------|
-| `Item`, `ItemCreateSchema`, `ItemUpdateSchema`, `ItemInstancesHrefSchema`, `ItemPublishSchema`, `ItemUnpublishSchema`, `ItemVersion`, bulk schemas | `references/records.md` |
-| `Upload`, `UploadCreateSchema`, `UploadUpdateSchema`, `UploadRequest`, `UploadCollection`, bulk schemas | `references/uploads.md` |
-| `ItemType`, `ItemTypeCreateSchema`, `Field`, `FieldCreateSchema`, `Fieldset`, `FieldsetCreateSchema` | `references/schema.md` |
-| `Role`, `RoleCreateSchema`, `AccessToken`, `User`, `SiteInvitation`, `SsoUser`, `SsoGroup`, `SsoSettings`, `Account` | `references/access-control.md` |
-| `Webhook`, `WebhookCreateSchema`, `WebhookCall`, `BuildTrigger`, `BuildTriggerCreateSchema`, `BuildEvent` | `references/webhooks-and-triggers.md` |
-| `Environment`, `EnvironmentForkSchema`, `EnvironmentRenameSchema` | `references/environments.md` |
-| `ScheduledPublication`, `ScheduledUnpublishing`, `Workflow`, `WorkflowCreateSchema` | `references/scheduling.md` |
-| `Site`, `SiteUpdateSchema`, `MaintenanceMode`, `PublicInfo`, `WhiteLabelSettings`, `SubscriptionLimit`, `SubscriptionFeature`, `DailyUsage`, `UsageCounter` | `references/project-settings-and-usage.md` |
-| `MenuItem`, `MenuItemCreateSchema`, `SchemaMenuItem`, `SchemaMenuItemCreateSchema` | `references/dashboard-and-schema-menus.md` |
-| `Plugin`, `PluginCreateSchema` | `references/plugins.md` |
-| `ItemTypeFilter`, `UploadFilter` + create/update schemas | `references/saved-filters.md` |
-| `UploadTrack`, `UploadTag`, `UploadSmartTag` | `references/upload-tracks-and-tags.md` |
-| `JobResult`, `SearchResult`, `AuditLogEvent` | `references/async-jobs-and-search.md` |
+For the exact, up-to-date shape of any `ApiTypes.*` / `RawApiTypes.*` type, run `npx datocms cma:docs <resource> <action>`. To inline a specific type declaration, consider `--expand-types <TypeName>` (e.g. `--expand-types ItemCreateSchema`); to walk a deeper "Not expanded" type list without inlining everything, consider `--types-depth 2` or higher. Reach for `--expand-types "*"` only as a last resort — its output is verbose. For the full command surface, load the **datocms-cli** skill and read `../../datocms-cli/references/direct-cma-calls.md` § cma:docs — that is the single source of truth.
 
 ---
 
@@ -222,25 +204,6 @@ When `autoRetry` is `true` (the default), the client automatically retries 429 r
 ### Transient Error Retry
 
 Transient server errors (5xx with `transient: true`) are also retried automatically when `autoRetry` is enabled.
-
-### Async Job Polling
-
-Some operations return an async job under the hood. The client automatically polls `client.jobResults.find()` until the job completes and then returns the final result.
-
-Common async-job operations include:
-
-- `client.environments.fork()`
-- `client.environments.destroy()`
-- `client.itemTypes.update()`
-- `client.itemTypes.destroy()`
-- `client.fields.create()`
-- `client.fields.update()`
-- `client.fields.destroy()`
-- `client.items.duplicate()`
-- `client.items.bulkPublish()`
-- `client.items.bulkUnpublish()`
-- `client.items.bulkDestroy()`
-- `client.items.bulkMoveToStage()`
 
 ---
 

@@ -1,397 +1,65 @@
 # Filtering and Pagination
 
-Covers querying patterns for listing records: pagination, filtering by fields, text search, sorting, and efficient counting.
+Covers querying patterns for listing records: pagination, filtering, sorting, counting.
 
-## Quick Navigation
+> For endpoint shapes, payload attributes, and TS signatures, consult `npx datocms cma:docs items instances --types-depth 2` (raise the depth or use `--expand-types ToItemHrefSchemaField` for the per-field-type filter operators, or `--expand-types FieldTypeToHrefFilter` for the operator-to-field-type map). For other paginated resources, swap the resource: `cma:docs uploads instances --types-depth 2`, `cma:docs webhookCalls instances --types-depth 2`, etc. This file only covers what the docs don't carry.
 
-- [Pagination Basics](#pagination-basics)
-- [`listPagedIterator()` — Auto-Pagination](#listpagediterator--auto-pagination)
-- [Filtering Records](#filtering-records)
-- [Field-Specific Filters](#field-specific-filters)
-- [Meta Filters](#meta-filters)
-- [Sorting](#sorting)
-- [Getting Total Count](#getting-total-count)
-- [Locale-Specific Filtering](#locale-specific-filtering)
-- [Complete Example: Advanced Querying](#complete-example-advanced-querying)
+## Always use `listPagedIterator`
 
----
-
-## Pagination Basics
-
-The CMA uses offset/limit pagination. A single `list()` call returns one page of results.
-
-```ts
-const firstPage = await client.items.list({
-  filter: { type: "blog_post" },
-  page: { offset: 0, limit: 20 },
-});
-```
-
-| Parameter | Type | Default | Max |
-|---|---|---|---|
-| `page.offset` | `number` | `0` | — |
-| `page.limit` | `number` | `30` | `500` (`30` when `nested: true`) |
-
-**Important:** Never manually implement pagination loops. Always use `listPagedIterator()`.
-
----
-
-## `listPagedIterator()` — Auto-Pagination
-
-The recommended way to iterate over all records in a collection:
-
-```ts
-for await (const record of client.items.listPagedIterator({
-  filter: { type: "blog_post" },
-})) {
-  console.log(record.id, record.title);
-}
-```
-
-This automatically fetches pages sequentially, yielding one record at a time.
-
-### Iterator Options
-
-Pass a second argument to control concurrency and page size:
+Every paginated resource (`items`, `uploads`, `webhookCalls`, `buildEvents`, `itemVersions`) exposes `listPagedIterator()` alongside `list()`. Reach for the iterator unconditionally — manual offset/limit loops are an anti-pattern: they are easy to get wrong (off-by-one, infinite loop on empty pages, no resilience to mid-iteration deletions) and you do not need them.
 
 ```ts
 for await (const record of client.items.listPagedIterator(
-  {
-    filter: { type: "blog_post" },
-    order_by: "_created_at_DESC",
-  },
-  {
-    concurrency: 5,  // Fetch 5 pages in parallel
-    perPage: 100,    // 100 records per page
-  },
-)) {
-  console.log(record.title);
-}
+  { filter: { type: "blog_post" } },
+  { perPage: 100, concurrency: 5 },
+)) { /* ... */ }
 ```
 
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `concurrency` | `number` | `1` | Number of concurrent page fetches (1–10). Higher values fetch faster but consume rate limits faster. |
-| `perPage` | `number` | `30` | Records per page (max 500). |
+### `concurrency` — the one rule that matters
 
-**When to use high concurrency:** Read-only scripts that need to fetch thousands of records quickly. Use `concurrency: 1` when the loop also performs writes (to avoid burning rate limit budget).
+Default is `1` (sequential). Higher values fetch pages in parallel — great for read-only scans, dangerous when the loop body writes.
 
-**Important:** When using `nested: true` in query params, the maximum page size drops to **30** (from the usual 500). The iterator respects this automatically, but be aware it will require more page fetches for large collections.
+- **Read-only loop** (export, count, audit): set `concurrency: 5`–`10`. Pages arrive faster, the rate limiter still protects you (60 req / 3s).
+- **Loop that writes** (backfill, transformation): leave `concurrency: 1`. Each iteration's read + write spends two requests against the budget; parallel fetches just race the writes for the same budget and burn it faster, often hitting 429s without going faster overall.
 
-### Collecting Results into an Array
+### Page size cap with `nested: true`
+
+`perPage` defaults to 30, max 500. **But** when the query includes `nested: true` (Modular Content / Structured Text / Single Block returned as full payloads), the API caps page size at **30**. The iterator handles this transparently — but it means a 5,000-record nested scan does ~167 round-trips instead of 10. Plan timeouts and progress logging accordingly.
+
+### Audit log is the exception
+
+`client.auditLogEvents` uses cursor pagination (not offset/limit) and has no `listPagedIterator`. See `references/resource-gotchas.md` § Audit log events for the `rawQuery` + `meta.next_token` loop.
+
+## Filter combinations that bite
+
+The `filter` object accepts `ids`, `type`, `query`, `fields`, `only_valid`, but not all combinations are valid. The errors here are runtime-only — TypeScript will not catch them:
+
+- `filter.fields` (model-specific fields) and `order_by` on a field require a **single** `filter.type` value. Comma-separated multi-type filters disallow them.
+- `filter.ids` cannot be combined with `filter.type` or `filter.fields` (model-specific). It can be combined with meta-field filters like `_published_at`, `_status`.
+- For block models, only `filter.type` works — `query`, `filter.fields`, and `filter.ids` are rejected.
+
+When listing records, **always set `filter.type`**. Without it you get every record across every model, including blocks — almost never what you want.
+
+## Full-text search lag
+
+`filter.query` runs against a search index that lags writes by ~30 seconds. Newly created or updated records won't appear in `query` results immediately. Don't read-back via `query` in tests or workflows that just wrote — either filter on `_created_at`/`ids` instead, or wait.
+
+When using `filter.query`, sort by `order_by: "_rank_DESC"` to get relevance ordering — the default order is undefined for text search.
+
+## Counting without fetching
+
+The simplified `list()` drops the JSON:API envelope, so the total count is not exposed. Use `rawList` with `page.limit: 0`:
 
 ```ts
-const allPosts = [];
-
-for await (const post of client.items.listPagedIterator({
+const { meta } = await client.items.rawList({
   filter: { type: "blog_post" },
-})) {
-  allPosts.push(post);
-}
-```
-
-### Paginated Resources
-
-Most resources with `list()` also have `listPagedIterator()`:
-
-- `client.items.listPagedIterator()`
-- `client.uploads.listPagedIterator()`
-- `client.webhookCalls.listPagedIterator()`
-- `client.buildEvents.listPagedIterator()`
-- `client.itemVersions.listPagedIterator()`
-
-Resources with small collections (models, fields, roles, webhooks, etc.) only have `list()` which returns all items at once.
-
-**Note:** `client.auditLogEvents` uses cursor-based pagination, not offset/limit. See `references/async-jobs-and-search.md` for full audit log query documentation including event types, filters, and cursor-based pagination patterns.
-
----
-
-## Filtering Records
-
-### By Model Type
-
-```ts
-// By model api_key
-const posts = await client.items.list({
-  filter: { type: "blog_post" },
+  page: { limit: 0 },
 });
-
-// By model ID
-const posts = await client.items.list({
-  filter: { type: "model_123" },
-});
-
-// Multiple model types (comma-separated)
-const mixed = await client.items.list({
-  filter: { type: "blog_post,news_article" },
-});
+const total = meta.total_count;
 ```
 
-**Important:** Always specify `filter.type` when listing records. Without it, you get records from all models mixed together. Note: `filter.fields` and `order_by` require a single `filter.type` — they cannot be used with comma-separated multi-type filters.
+This is the canonical zero-read count — no records fetched, just the count header. See `references/client-types-and-behaviors.md` § Raw vs Simplified.
 
-### By Text Search
+## Filtering with typed schemas
 
-Full-text search across all text fields:
-
-```ts
-const results = await client.items.list({
-  filter: {
-    type: "blog_post",
-    query: "search term",
-  },
-});
-```
-
-**Important:** New or updated content has a ~30-second indexing delay before appearing in `query` text search results. Don't rely on immediate text search after creating/updating records.
-
-### By Specific Record IDs
-
-```ts
-const records = await client.items.list({
-  filter: {
-    type: "blog_post",
-    ids: "record-1,record-2,record-3",
-  },
-});
-```
-
----
-
-## Field-Specific Filters
-
-Filter by specific field values using `filter.fields`:
-
-```ts
-const records = await client.items.list({
-  filter: {
-    type: "blog_post",
-    fields: {
-      title: { matches: { pattern: "tutorial", case_sensitive: false } },
-      published_date: { gt: "2024-01-01" },
-    },
-  },
-});
-```
-
-### Filter Operators by Field Type
-
-#### String / Text / Slug
-
-| Operator | Description | Example |
-|---|---|---|
-| `eq` | Equals | `{ eq: "exact value" }` |
-| `neq` | Not equals | `{ neq: "value" }` |
-| `matches` | Pattern match | `{ matches: { pattern: "hello", case_sensitive: false } }` |
-| `not_matches` | Does not match | `{ not_matches: { pattern: "hello" } }` |
-| `exists` | Has any value | `{ exists: true }` |
-| `not_exists` | Has no value | `{ not_exists: true }` |
-
-#### Integer / Float
-
-| Operator | Description | Example |
-|---|---|---|
-| `eq` | Equals | `{ eq: 42 }` |
-| `neq` | Not equals | `{ neq: 42 }` |
-| `lt` | Less than | `{ lt: 100 }` |
-| `lte` | Less than or equal | `{ lte: 100 }` |
-| `gt` | Greater than | `{ gt: 0 }` |
-| `gte` | Greater than or equal | `{ gte: 0 }` |
-| `exists` / `not_exists` | Null check | `{ exists: true }` |
-
-#### Date / DateTime
-
-| Operator | Description | Example |
-|---|---|---|
-| `eq` | Equals | `{ eq: "2024-01-15" }` |
-| `neq` | Not equals | `{ neq: "2024-01-15" }` |
-| `lt` | Before | `{ lt: "2024-06-01" }` |
-| `lte` | Before or on | `{ lte: "2024-06-01" }` |
-| `gt` | After | `{ gt: "2024-01-01" }` |
-| `gte` | On or after | `{ gte: "2024-01-01" }` |
-| `exists` / `not_exists` | Null check | `{ exists: true }` |
-
-#### Boolean
-
-| Operator | Description | Example |
-|---|---|---|
-| `eq` | Equals | `{ eq: true }` |
-
-#### Link (single record reference)
-
-| Operator | Description | Example |
-|---|---|---|
-| `eq` | Links to specific record | `{ eq: "record-id" }` |
-| `neq` | Does not link to | `{ neq: "record-id" }` |
-| `exists` / `not_exists` | Has/doesn't have a link | `{ exists: true }` |
-
-#### Links (multiple record references)
-
-| Operator | Description | Example |
-|---|---|---|
-| `any_in` | Contains any of | `{ any_in: ["id-1", "id-2"] }` |
-| `all_in` | Contains all of | `{ all_in: ["id-1", "id-2"] }` |
-| `eq` | Exact set match | `{ eq: ["id-1", "id-2"] }` |
-| `not_in` | Contains none of | `{ not_in: ["id-1"] }` |
-| `exists` / `not_exists` | Has/doesn't have links | `{ exists: true }` |
-
-#### File / Gallery
-
-| Operator | Description | Example |
-|---|---|---|
-| `exists` / `not_exists` | Has/doesn't have file(s) | `{ exists: true }` |
-
----
-
-## Meta Filters
-
-Filter by record metadata:
-
-```ts
-const records = await client.items.list({
-  filter: {
-    type: "blog_post",
-    fields: {
-      _status: { eq: "published" },          // "draft", "updated", "published"
-      _created_at: { gt: "2024-01-01" },
-      _updated_at: { gt: "2024-06-01" },
-      _published_at: { gt: "2024-01-01" },
-      _is_valid: { eq: true },               // Only valid records
-    },
-  },
-});
-```
-
-| Meta field | Operators | Values |
-|---|---|---|
-| `_status` | `eq`, `neq` | `"draft"`, `"updated"`, `"published"` |
-| `_created_at` | `eq`, `lt`, `lte`, `gt`, `gte` | ISO 8601 datetime string |
-| `_updated_at` | `eq`, `lt`, `lte`, `gt`, `gte` | ISO 8601 datetime string |
-| `_published_at` | `eq`, `lt`, `lte`, `gt`, `gte`, `exists`, `not_exists` | ISO 8601 datetime string |
-| `_is_valid` | `eq` | `true`, `false` |
-| `_first_published_at` | `eq`, `lt`, `lte`, `gt`, `gte`, `exists`, `not_exists` | ISO 8601 datetime string |
-
-### Filter Only Valid Records
-
-```ts
-const validRecords = await client.items.list({
-  filter: {
-    type: "blog_post",
-    only_valid: "true",
-  },
-});
-```
-
----
-
-## Sorting
-
-Sort records using `order_by`:
-
-```ts
-const records = await client.items.list({
-  filter: { type: "blog_post" },
-  order_by: "published_date_DESC",
-});
-```
-
-### Sort Format
-
-`order_by` accepts a string: `"field_api_key_DIRECTION"` where direction is `ASC` or `DESC`.
-
-```ts
-// Sort by a field
-order_by: "title_ASC"
-order_by: "published_date_DESC"
-order_by: "position_ASC"
-
-// Sort by meta fields
-order_by: "_created_at_DESC"
-order_by: "_updated_at_DESC"
-order_by: "_published_at_DESC"
-order_by: "_first_published_at_ASC"
-
-// Sort by relevance (when using text search)
-order_by: "_rank_DESC"
-```
-
-### Multiple Sort Fields
-
-Pass a comma-separated string:
-
-```ts
-order_by: "published_date_DESC,title_ASC"
-```
-
----
-
-## Getting Total Count
-
-To get just the count without fetching records, set `page.limit: 0`:
-
-```ts
-const response = await client.items.rawList({
-  filter: { type: "blog_post" },
-  page: { offset: 0, limit: 0 },
-});
-
-const totalCount = response.meta.total_count;
-```
-
-**Important:** Use `rawList()` (not `list()`) when you only need the count, because the simplified `list()` does not expose `meta.total_count` directly.
-
----
-
-## Locale-Specific Filtering
-
-Filter by locale when querying localized fields:
-
-```ts
-const records = await client.items.list({
-  filter: {
-    type: "blog_post",
-    fields: {
-      title: { matches: { pattern: "ciao" } },
-    },
-  },
-  locale: "it",
-});
-```
-
----
-
-## Complete Example: Advanced Querying
-
-```ts
-import { buildClient } from "@datocms/cma-client-node";
-
-const client = buildClient({
-  apiToken: process.env.DATOCMS_API_TOKEN!,
-});
-
-async function advancedQuery() {
-  // Find all published blog posts from 2024, sorted by date
-  let count = 0;
-
-  for await (const post of client.items.listPagedIterator(
-    {
-      filter: {
-        type: "blog_post",
-        fields: {
-          _status: { eq: "published" },
-          published_date: { gte: "2024-01-01" },
-        },
-      },
-      order_by: "published_date_DESC",
-      nested: true,
-    },
-    { perPage: 100, concurrency: 3 },
-  )) {
-    count++;
-    console.log(`${count}. ${post.title} (${post.published_date})`);
-  }
-
-  console.log(`Total: ${count} posts`);
-}
-
-advancedQuery().catch(console.error);
-```
+`items.list<Schema.Article>` (and `listPagedIterator<Schema.Article>`) constrain `filter.fields` keys to that model's actual fields, and constrain `order_by` to its sortable fields. Without the generic, those keys are `string` and typos compile silently. If the project has generated `Schema` markers, always pass them — see `references/type-generation.md`.

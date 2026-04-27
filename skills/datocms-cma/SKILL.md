@@ -196,31 +196,45 @@ loaded first.
 
 ## Step 3: Load References
 
-Based on the task classification, read the appropriate reference files from the `references/` directory next to this skill file. Prefer section-level reads inside long references by using each file's Quick Navigation section first. Only load what is relevant.
+Two documentation sources are available — pick the right one for the question:
+
+1. **`npx datocms cma:docs <resource> <action>`** is the live, always-up-to-date source for endpoint shapes, payload attributes, validators, and client TypeScript signatures. Always reflects the installed client version — never stale. **Use it as the default for every "what does this endpoint accept / return" question.**
+2. **The reference files in this directory** carry opinionated mental models, decision trees, cross-cutting workflows, and pattern ordering invariants — things `cma:docs` doesn't know. **Use them for the "how should I approach this" questions.**
+
+> **`cma:docs` is a CLI command — its full surface (flags, naming convention, when to pass `--expand-types`) lives in the sibling skill.** Load the **datocms-cli** skill and read `../datocms-cli/references/direct-cma-calls.md` § cma:docs the first time this skill needs to consult endpoint documentation. That file is the single source of truth for the command; do not re-derive the flags from this skill.
+
+When writing typed code (`buildBlockRecord<Schema.X>`, `client.items.create<Schema.X>`, …), consider passing `--types-depth 2` (or higher) to surface a deeper "Not expanded" type list, or `--expand-types <SpecificType>` to inline a single declaration. Reach for `--expand-types "*"` only as a last resort — its output is verbose.
 
 **Always load:**
 - `references/client-setup-and-errors.md` — Package choice, client setup, token/environment config, error handling
 
-**Load per category:**
+**Routing per task category — same two-step routine for every row:**
 
-- `Content operations` → `references/records.md`
-- `Upload operations` → `references/uploads.md`
-- `Schema operations` → `references/schema.md`
-- `Filtering & querying` → `references/filtering-and-pagination.md`
-- `Localization` → `references/localization.md`
-- `Blocks & modular content` → `references/editing-records.md`
-- `Structured text & block tooling` → `references/editing-records.md`
-- `Environment operations` → `references/environments.md`
-- `Webhook & deploy operations` → `references/webhooks-and-triggers.md`
-- `Access control` → `references/access-control.md`
-- `Scheduling` → `references/scheduling.md`
-- `Migration & scripting` → `references/migration-patterns.md`
-- `Type generation` → `references/type-generation.md`
-- `Dashboard & schema menu management` → `references/dashboard-and-schema-menus.md`
-- `Plugin management` → `references/plugins.md`
-- `Project settings & usage` → `references/project-settings-and-usage.md`
-- `Saved filters` → `references/saved-filters.md`
-- `Audit & debugging` → `references/async-jobs-and-search.md`
+1. Run `npx datocms cma:docs <resource> <action>` to fetch the live endpoint shape, payload attributes, and TS signatures.
+2. **Then load the reference listed below** for the workflow, mental model, ordering invariants, and gotchas `cma:docs` doesn't carry.
+
+Each reference opens with a reminder of the specific `cma:docs <resource>` to consult — never re-derive endpoint shapes from prose, always pull them live.
+
+| Task category | Reference |
+|---|---|
+| Content operations | `references/records.md` |
+| Upload operations | `references/uploads.md` |
+| Schema operations | `references/schema.md` |
+| Filtering & querying | `references/filtering-and-pagination.md` |
+| Localization | `references/localization.md` |
+| Blocks & modular content | `references/editing-records.md` |
+| Structured text & block tooling | `references/editing-records.md` |
+| Environment operations | `references/environments.md` |
+| Access control | `references/access-control.md` |
+| Migration & scripting | `references/migration-patterns.md` |
+| Type generation | `references/type-generation.md` |
+| Project settings & usage | `references/project-settings-and-usage.md` |
+| Webhook & deploy operations | `references/resource-gotchas.md` § Webhooks / Build triggers |
+| Scheduling | `references/resource-gotchas.md` § Scheduling / Workflows |
+| Dashboard & schema menu management | `references/resource-gotchas.md` § Dashboard and schema menus |
+| Plugin management | `references/resource-gotchas.md` § Plugins |
+| Saved filters | `references/resource-gotchas.md` § Saved filters |
+| Audit & debugging | `references/resource-gotchas.md` § Async job results / CMA search results / Audit log events |
 
 **Load cross-cutting references when needed:**
 - If the task involves localized fields in any context → also load `references/localization.md`
@@ -228,7 +242,7 @@ Based on the task classification, read the appropriate reference files from the 
 - If the task involves modular content, single-block fields, DAST structured text, block traversal, or any per-locale backfill → also load `references/editing-records.md`
 - If the task involves listing many records → also load `references/filtering-and-pagination.md`
 - If the task is a migration script → also load `references/migration-patterns.md` plus whatever domain refs are needed
-- If the task involves video upload subtitles/tracks or upload tag management → also load `references/upload-tracks-and-tags.md`
+- If the task involves video upload subtitles/tracks or upload tag management → also load `references/resource-gotchas.md` § Upload tracks and tags
 - If the task involves maintenance mode before a migration → also load `references/project-settings-and-usage.md`
 - If the task involves checking subscription limits before bulk operations → also load `references/project-settings-and-usage.md`
 

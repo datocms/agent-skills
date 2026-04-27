@@ -2,6 +2,8 @@
 
 Covers working with localized field values and the normalized field value utilities.
 
+> For endpoint shapes that touch localized fields, consult `npx datocms cma:docs items <action> --types-depth 2` and `cma:docs site update --types-depth 2` (raise the depth or use `--expand-types` for deeper nested types). This file covers the per-locale value shape, `all_locales_required` semantics, and the partial-vs-full-update rule for localized fields.
+
 ## Quick Navigation
 
 - [Localized vs Non-Localized Values](#localized-vs-non-localized-values)
