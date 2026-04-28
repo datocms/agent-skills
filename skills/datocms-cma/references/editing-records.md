@@ -4,7 +4,7 @@ Mutating record fields — block-bearing fields (Modular Content `rich_text`, Si
 
 > For endpoint shapes of `items.*` (find / list / update / create / publish / …), consult `npx datocms cma:docs items <action> --types-depth 2` (raise the depth or use `--expand-types` for deeper nested types). This file owns the workflow: peek-then-mutate ordering, typed guards, the structured-text path 1→2→3 invariant.
 
-Do peek + mutate in ONE script. No top-level `return` — wrap in `if (cur.body) { ... }`. Always pass `Schema.X` as the generic to typed helpers; never hand-roll JSON:API.
+Do peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.body) { ... }`. Always pass `Schema.X` as the generic to typed helpers; never hand-roll JSON:API.
 
 ## Workflow
 
@@ -36,14 +36,14 @@ Without the generic, `client.items.find(id)` returns the bare CMA shape: every f
 
 ```ts
 // BAD — fields untyped, guards inert, spread requires manual cast
-const cur = await client.items.find(id);
-cur.title;          // unknown
-cur.question;       // unknown — { ...cur.question, es: "..." } is a type error
+const currentItem = await client.items.find(id);
+currentItem.title;          // unknown
+currentItem.question;       // unknown — { ...currentItem.question, es: "..." } is a type error
 
 // GOOD — fields typed end to end
-const cur = await client.items.find<Schema.FaqEntry>(id);
-cur.title;          // string | null
-cur.question;       // Record<string, string | null>
+const currentItem = await client.items.find<Schema.FaqEntry>(id);
+currentItem.title;          // string | null
+currentItem.question;       // Record<string, string | null>
 ```
 
 In `cma:script` **stdin-mode** `Schema.*` is **ambient** — no import, no `schema:generate`, no `tsconfig` change. Just call `await client.items.find<Schema.FaqEntry>(id)` and the marker resolves. If TS reports `Cannot find name 'Schema'` you are in file-mode, where you must run `npx datocms schema:generate ./datocms-schema.ts` and `import * as Schema from "./datocms-schema"`.
@@ -138,27 +138,27 @@ await client.items.update<Schema.LandingPage>(page.id, { sections });
 
 ```ts
 await client.items.update<Schema.Product>(id, {
-  hero: buildBlockRecord<Schema.Hero>({ id: cur.hero!.id, headline: "X" }), // edit
+  hero: buildBlockRecord<Schema.Hero>({ id: currentItem.hero!.id, headline: "X" }), // edit
 });
 await client.items.update<Schema.Product>(id, { hero: null }); // remove
 await client.items.update<Schema.Product>(id, { // duplicate
-  hero: await duplicateBlockRecord<Schema.Hero>(cur.hero!, repo),
+  hero: await duplicateBlockRecord<Schema.Hero>(currentItem.hero!, repo),
 });
 ```
 
 ## Structured text (`structured_text`)
 
-Wrap in `if (cur.content) { ... }`. Pass the **original response** into `mapNodes` / `parse`.
+Wrap in `if (currentItem.content) { ... }`. Pass the **original response** into `mapNodes` / `parse`.
 
 The paths below are listed in canonical pipeline order: read top to bottom, apply only the ones you need, end with a single `client.items.update`.
 
-1. **Prose-level rewrite** (rephrase paragraphs, restructure lists, reorder/delete blocks, add/remove marks on substrings — `**strong**`, `*em*`, `==highlight==`, `++underline++`, `~~strike~~`, `` `code` `` — autolink emails/URLs as `[text](url)` or `[text](mailto:…)`, swap inline link targets, anything expressible as a text edit on the dastdown serialization) → `serialize` to dastdown, edit text, `parse(text, cur.content)` rehydrates blocks by id. Output type follows `cur.content`; untouched blocks pass through as the same object reference. **Use this even when the equivalent AST change would require splitting a span into many siblings — `parse` does the split for you.**
-2. **Mass-replacement / uniform AST surgery** (e.g. add `?utm=x` to every link, swap a domain on every span, normalize every heading level, mutate every block of a given type) → run `mapNodes` over the current document. If path 1 ran, feed it that result; otherwise feed `cur.content`.
+1. **Prose-level rewrite** (rephrase paragraphs, restructure lists, reorder/delete blocks, add/remove marks on substrings — `**strong**`, `*em*`, `==highlight==`, `++underline++`, `~~strike~~`, `` `code` `` — autolink emails/URLs as `[text](url)` or `[text](mailto:…)`, swap inline link targets, anything expressible as a text edit on the dastdown serialization) → `serialize` to dastdown, edit text, `parse(text, currentItem.content)` rehydrates blocks by id. Output type follows `currentItem.content`; untouched blocks pass through as the same object reference. **Use this even when the equivalent AST change would require splitting a span into many siblings — `parse` does the split for you.**
+2. **Mass-replacement / uniform AST surgery** (e.g. add `?utm=x` to every link, swap a domain on every span, normalize every heading level, mutate every block of a given type) → run `mapNodes` over the current document. If path 1 ran, feed it that result; otherwise feed `currentItem.content`.
 3. **Create / duplicate / modify a block's fields** → cannot be done in dastdown (it only encodes ids). Run as a separate AST step **after** paths 1 and 2, on their output, using `buildBlockRecord` / `duplicateBlockRecord` / `findFirstNode`, then update.
 
-**Why this order is mandatory:** path 1 uses `cur.content` as a lookup table for `<block id="…"/>` — a block created or rewritten via path 2/3 before the round-trip would either be missing from the lookup (and `parse` would throw) or get its mutation silently overwritten by the rehydration. Path 1 first, then path 2 on its result, then path 3 on top.
+**Why this order is mandatory:** path 1 uses `currentItem.content` as a lookup table for `<block id="…"/>` — a block created or rewritten via path 2/3 before the round-trip would either be missing from the lookup (and `parse` would throw) or get its mutation silently overwritten by the rehydration. Path 1 first, then path 2 on its result, then path 3 on top.
 
-`isBlockWithItemOfType` / `isInlineBlockWithItemOfType` narrow `node.item` to `BlockInNestedResponse<Schema.X>` automatically — no manual cast, no runtime id check. They work inside `mapNodes`/`findFirstNode` callbacks as long as `cur.content` carries the schema generic (i.e. you called `client.items.find<Schema.M>`).
+`isBlockWithItemOfType` / `isInlineBlockWithItemOfType` narrow `node.item` to `BlockInNestedResponse<Schema.X>` automatically — no manual cast, no runtime id check. They work inside `mapNodes`/`findFirstNode` callbacks as long as `currentItem.content` carries the schema generic (i.e. you called `client.items.find<Schema.M>`).
 
 Two call styles, same narrowing: curried `isBlockWithItemOfType(ID)` returns a predicate (use it with `findFirstNode` / `findAllNodes` / `Array#filter`); direct `isBlockWithItemOfType(ID, node)` checks a node inline (use it inside an `if`).
 
@@ -171,17 +171,17 @@ Do NOT add a generic keep-as-id catch-all (`"item" in node`, `node.type === "blo
 ```ts
 import { parse, serialize } from "datocms-structured-text-dastdown";
 
-const cur = await client.items.find<Schema.Article>(id, { nested: true });
+const currentItem = await client.items.find<Schema.Article>(id, { nested: true });
 
-if (cur.content) {
-  const text = serialize(cur.content);
+if (currentItem.content) {
+  const text = serialize(currentItem.content);
   const edited = /* … LLM / regex / diff-merge on `text` … */ text;
 
-  // `content` keeps the static type of `cur.content` and reuses the original
+  // `content` keeps the static type of `currentItem.content` and reuses the original
   // `item` object for every block/inlineBlock whose id survives the edit.
-  const content = parse(edited, cur.content);
+  const content = parse(edited, currentItem.content);
 
-  await client.items.update<Schema.Article>(cur.id, { content });
+  await client.items.update<Schema.Article>(currentItem.id, { content });
 }
 ```
 
@@ -228,13 +228,13 @@ const CTA_ID    = "d-CHYg-rShOt3kiL6ZN1yA" as const;
 const MENTION_ID= "VGXgXav9SwG5P48frGrFxA" as const;
 const WARN_ID   = "Hh3vSyvnQE2nViJ3jq7CBQ" as const;
 
-const cur = await client.items.find<Schema.Article>(id, { nested: true });
+const currentItem = await client.items.find<Schema.Article>(id, { nested: true });
 const repo = new SchemaRepository(client);
 
-if (cur.content) {
+if (currentItem.content) {
   type Body = NonNullable<ApiTypes.ItemUpdateSchema<Schema.Article>["content"]>;
 
-  let content = mapNodes(cur.content, (node) => {
+  let content = mapNodes(currentItem.content, (node) => {
     if (isInlineBlockWithItemOfType(MENTION_ID, node)) {                  // EDIT inline
       return { ...node, item: buildBlockRecord<Schema.Mention>({
         id: node.item.id, url: node.item.attributes.url + "?utm=x",
@@ -266,7 +266,7 @@ if (cur.content) {
   )!;
 
   // findFirstNode composes directly with the typed guard.
-  const found = findFirstNode(cur.content, isBlockWithItemOfType(WARN_ID));
+  const found = findFirstNode(currentItem.content, isBlockWithItemOfType(WARN_ID));
   if (found) {
     content.document.children.push({
       type: "block",
@@ -280,15 +280,15 @@ if (cur.content) {
     children: [{ type: "span", value: "Updated" }],
   });
 
-  await client.items.update<Schema.Article>(cur.id, { content });
+  await client.items.update<Schema.Article>(currentItem.id, { content });
 }
 ```
 
-Appends to `content.document.children` happen AFTER `mapNodes`. For duplication, find the source via `findFirstNode` on the **original** `cur.content`.
+Appends to `content.document.children` happen AFTER `mapNodes`. For duplication, find the source via `findFirstNode` on the **original** `currentItem.content`.
 
 ### Path 3 — block creation / modification on top of paths 1–2
 
-Same pattern regardless of which upstream path you ran: the result is a `Document<B, IB>` whose `content.document.children` you can mutate in place before update — push a freshly-built block, or `findFirstNode` on the **original** `cur.content` to source a record for duplication. Path 2's example shows this pattern at its tail (append paragraph, duplicate `WARN_ID`); apply the same calls if you only ran path 1.
+Same pattern regardless of which upstream path you ran: the result is a `Document<B, IB>` whose `content.document.children` you can mutate in place before update — push a freshly-built block, or `findFirstNode` on the **original** `currentItem.content` to source a record for duplication. Path 2's example shows this pattern at its tail (append paragraph, duplicate `WARN_ID`); apply the same calls if you only ran path 1.
 
 ## Localized fields and adding a locale
 
@@ -299,10 +299,10 @@ await client.site.update({ locales: ["en", "it", "es"] });
 
 const items = await client.items.list({ filter: { type: "faq_entry" }, version: "current" });
 for (const it of items) {
-  const cur = await client.items.find<Schema.FaqEntry>(it.id);
+  const currentItem = await client.items.find<Schema.FaqEntry>(it.id);
   await client.items.update<Schema.FaqEntry>(it.id, {
-    question: { ...cur.question, es: "..." },
-    answer:   { ...cur.answer,   es: "..." },
+    question: { ...currentItem.question, es: "..." },
+    answer:   { ...currentItem.answer,   es: "..." },
   });
 }
 ```
@@ -310,7 +310,7 @@ for (const it of items) {
 If TS rejects the spread (typically because the per-locale value is nullable and the `Update` shape requires non-null), cast precisely with the request schema rather than reaching for `Record<string, string>`:
 
 ```ts
-question: { ...(cur.question as NonNullable<ApiTypes.ItemUpdateSchema<Schema.FaqEntry>["question"]>), es: "..." },
+question: { ...(currentItem.question as NonNullable<ApiTypes.ItemUpdateSchema<Schema.FaqEntry>["question"]>), es: "..." },
 ```
 
 For block-bearing localized fields the same per-locale shape applies — each locale key holds whatever value the field expects (array of blocks/IDs for `rich_text`, full object or `null` for `single_block`, DAST tree for `structured_text`).
