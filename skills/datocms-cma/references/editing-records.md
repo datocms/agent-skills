@@ -22,7 +22,7 @@ import {
   isBlockOfType, SchemaRepository,
 } from "@datocms/cma-client-node";
 import {
-  mapNodes, filterNodes, findFirstNode,
+  mapNodes, findFirstNode,
   isBlockWithItemOfType, isInlineBlockWithItemOfType,
   isHeading, isParagraph, isSpan, isLink, isItemLink, isInlineItem,
 } from "datocms-structured-text-utils";
@@ -37,13 +37,13 @@ Without the generic, `client.items.find(id)` returns the bare CMA shape: every f
 ```ts
 // BAD — fields untyped, guards inert, spread requires manual cast
 const currentItem = await client.items.find(id);
-currentItem.title;          // unknown
-currentItem.question;       // unknown — { ...currentItem.question, es: "..." } is a type error
+currentItem.title; // unknown
+currentItem.question; // unknown — { ...currentItem.question, es: "..." } is a type error
 
 // GOOD — fields typed end to end
 const currentItem = await client.items.find<Schema.FaqEntry>(id);
-currentItem.title;          // string | null
-currentItem.question;       // Record<string, string | null>
+currentItem.title; // string | null
+currentItem.question; // Record<string, string | null>
 ```
 
 In `cma:script` **stdin-mode** `Schema.*` is **ambient** — no import, no `schema:generate`, no `tsconfig` change. Just call `await client.items.find<Schema.FaqEntry>(id)` and the marker resolves. If TS reports `Cannot find name 'Schema'` you are in file-mode, where you must run `npx datocms schema:generate ./datocms-schema.ts` and `import * as Schema from "./datocms-schema"`.
@@ -123,7 +123,7 @@ for (const b of page.sections) {
     }));
     continue;
   }
-  if (isBlockOfType("TESTIMONIAL_ID", b)) {                       // DUPLICATE
+  if (isBlockOfType("TESTIMONIAL_ID", b)) { // DUPLICATE
     sections.push(b.id);
     sections.push(await duplicateBlockRecord<Schema.Testimonial>(b, repo));
     continue;
@@ -221,7 +221,7 @@ Rules that bite:
 
 ### Path 2 — `mapNodes` (mass-replacement / AST surgery)
 
-**`mapNodes` is strictly 1-to-1 and cannot edit a node's `children`.** If your callback returns a node with a new `children` array, the library silently discards those new children and recurses on the originals. So you can change `marks`, `value`, `url`, `level`, `meta`, `item`, but you cannot split one span into many siblings, wrap a span in a link, insert/remove children, or reorder siblings from inside the callback. If you need that, prefer Path 1 (most span-splitting and autolinking is one regex on the dastdown text).
+**`mapNodes` walks bottom-up. Return `node` (1:1), `node[]` (splatted into parent's `children`, 1:N), or `null`/`undefined` (drop, 1:0); splat/drop at the root throws.** Beyond editing `marks`, `value`, `url`, `level`, `meta`, `item` in place, you can split a span into siblings, wrap a span in a link, drop nodes, or rewrite a parent's `children` from inside the callback — when the mapper sees a node, its descendants are already the transformed ones. Path 1 (regex on dastdown) is still often simpler for bulk span-splitting / autolinking.
 
 ```ts
 const CTA_ID    = "d-CHYg-rShOt3kiL6ZN1yA" as const;
@@ -235,35 +235,34 @@ if (currentItem.content) {
   type Body = NonNullable<ApiTypes.ItemUpdateSchema<Schema.Article>["content"]>;
 
   let content = mapNodes(currentItem.content, (node) => {
-    if (isInlineBlockWithItemOfType(MENTION_ID, node)) {                  // EDIT inline
+    if (isInlineBlockWithItemOfType(MENTION_ID, node)) { // EDIT inline
       return { ...node, item: buildBlockRecord<Schema.Mention>({
         id: node.item.id, url: node.item.attributes.url + "?utm=x",
       }) };
     }
-    if (isBlockWithItemOfType(CTA_ID, node)) {                            // EDIT block
+    if (isBlockWithItemOfType(CTA_ID, node)) { // EDIT block
       return { ...node, item: buildBlockRecord<Schema.Cta>({
         id: node.item.id, button_url: node.item.attributes.button_url + "?utm=x",
       }) };
     }
     if (isHeading(node) && node.level === 1) return { ...node, level: 2 as const };
-    if (isSpan(node)) {                                                    // marks: add/remove decorators
+    if (isSpan(node)) { // marks: add/remove decorators
       const marks = new Set(node.marks ?? []);
-      marks.add("strong");                                                 // 'strong'|'emphasis'|'code'|'underline'|'strikethrough'|'highlight'
+      marks.add("strong"); // 'strong'|'emphasis'|'code'|'underline'|'strikethrough'|'highlight'
       return { ...node, marks: [...marks], value: node.value.replace(/x/g, "y") };
     }
-    if (isLink(node)) {                                                    // link: { url, meta?, children: Span[] }
+    if (isLink(node)) { // link: { url, meta?, children: Span[] }
       return { ...node, url: node.url + "?utm=x", meta: [
         ...(node.meta ?? []).filter((m) => m.id !== "rel"),
         { id: "rel", value: "nofollow" },
       ] };
     }
-    if (isItemLink(node)) return { ...node, item: "NEW_RECORD_ID" };       // itemLink/inlineItem: item is a record id string
-    return node;                                                           // untouched nodes pass through unchanged
+    if (isItemLink(node)) return { ...node, item: "NEW_RECORD_ID" }; // itemLink/inlineItem: item is a record id string
+    if (isParagraph(node) && node.children.every((c) => isSpan(c) && !c.value.trim())) {
+      return null; // 1:0 — bottom-up: spans already transformed; drop the paragraph
+    }
+    return node; // untouched nodes pass through unchanged
   }) as Body;
-
-  content = filterNodes(content, (n) =>
-    !(isParagraph(n) && n.children.every((c) => isSpan(c) && !c.value.trim()))
-  )!;
 
   // findFirstNode composes directly with the typed guard.
   const found = findFirstNode(currentItem.content, isBlockWithItemOfType(WARN_ID));
