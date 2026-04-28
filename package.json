@@ -9,8 +9,8 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@datocms/cma-client-node": "^5.4.9",
-    "@datocms/dashboard-client": "^5.4.9",
+    "@datocms/cma-client-node": "^5.4.11",
+    "@datocms/dashboard-client": "^5.4.11",
     "@types/node": "^22.19.17",
     "concurrent-promise-queue": "^1.0.10",
     "datocms": "^4.0.21",

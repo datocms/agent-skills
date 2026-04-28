@@ -2,7 +2,7 @@
 
 Mutating record fields — block-bearing fields (Modular Content `rich_text`, Single Block `single_block`, Structured Text `structured_text` with `block` / `inlineBlock` nodes) and localized fields, plus adding a locale and backfilling per-locale values.
 
-> For endpoint shapes of `items.*` (find / list / update / create / publish / …), consult `npx datocms cma:docs items <action> --types-depth 2` (raise the depth or use `--expand-types` for deeper nested types). This file owns the workflow: peek-then-mutate ordering, typed guards, the structured-text path 1→2→3 invariant.
+> For endpoint shapes of `items.*` (find / list / update / create / publish / …), consult `npx datocms cma:docs items <action> --types-depth 2` (raise the depth or use `--expand-types` for deeper nested types). This file owns the workflow: peek-then-mutate ordering, typed guards, the structured-text Pass 1 → Pass 2 → root-append invariant.
 
 Do peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.body) { ... }`. Always pass `Schema.X` as the generic to typed helpers; never hand-roll JSON:API.
 
@@ -22,7 +22,7 @@ import {
   isBlockOfType, SchemaRepository,
 } from "@datocms/cma-client-node";
 import {
-  mapNodes, findFirstNode,
+  mapNodes, findFirstNode, reduceNodes,
   isBlockWithItemOfType, isInlineBlockWithItemOfType,
   isHeading, isParagraph, isSpan, isLink, isItemLink, isInlineItem,
 } from "datocms-structured-text-utils";
@@ -75,8 +75,8 @@ Mutation rules in the parent record's `update` call:
 
 | Operation | Payload form |
 |---|---|
-| **Create** a new block | Full object, no `id`, with `relationships.item_type` |
-| **Update** an existing block | Full object with `id` and only changed `attributes`. Omit `relationships.item_type` |
+| **Create** a new block | `buildBlockRecord<Schema.B>({ item_type: { type: "item_type", id }, ...attrs })` — no `id` on the outer object |
+| **Update** an existing block | `buildBlockRecord<Schema.B>({ id, ...changedAttrs })` — only the diff; `item_type` is implicit |
 | **Keep** unchanged | Its ID string |
 | **Delete** | Omit it — remove from the array; set `null` for `single_block` |
 | **Reorder** (modular content) | Place IDs / objects in desired order |
@@ -150,13 +150,17 @@ await client.items.update<Schema.Product>(id, { // duplicate
 
 Wrap in `if (currentItem.content) { ... }`. Pass the **original response** into `mapNodes` / `parse`.
 
-The paths below are listed in canonical pipeline order: read top to bottom, apply only the ones you need, end with a single `client.items.update`.
+The canonical order is **Pass 1 → Pass 2 → root-level appends**. Apply only the steps you need; end with a single `client.items.update`.
 
-1. **Prose-level rewrite** (rephrase paragraphs, restructure lists, reorder/delete blocks, add/remove marks on substrings — `**strong**`, `*em*`, `==highlight==`, `++underline++`, `~~strike~~`, `` `code` `` — autolink emails/URLs as `[text](url)` or `[text](mailto:…)`, swap inline link targets, anything expressible as a text edit on the dastdown serialization) → `serialize` to dastdown, edit text, `parse(text, currentItem.content)` rehydrates blocks by id. Output type follows `currentItem.content`; untouched blocks pass through as the same object reference. **Use this even when the equivalent AST change would require splitting a span into many siblings — `parse` does the split for you.**
-2. **Mass-replacement / uniform AST surgery** (e.g. add `?utm=x` to every link, swap a domain on every span, normalize every heading level, mutate every block of a given type) → run `mapNodes` over the current document. If path 1 ran, feed it that result; otherwise feed `currentItem.content`.
-3. **Create / duplicate / modify a block's fields** → cannot be done in dastdown (it only encodes ids). Run as a separate AST step **after** paths 1 and 2, on their output, using `buildBlockRecord` / `duplicateBlockRecord` / `findFirstNode`, then update.
+1. **Pass 1 — dastdown round-trip.** Text-shaped edits: rephrase paragraphs, restructure lists, reorder/delete blocks, add/remove marks on substrings (`**strong**`, `*em*`, `==highlight==`, `++underline++`, `~~strike~~`, `` `code` ``), autolink emails/URLs as `[text](url)` or `[text](mailto:…)`, swap inline link targets — anything expressible as a text edit on the serialized form. `serialize` to dastdown, edit text, `parse(text, currentItem.content)` rehydrates blocks by id. Output type follows `currentItem.content`; untouched blocks pass through as the same object reference. Blocks are opaque here — only their ids are encoded; can't touch their internals. **Use when the equivalent AST change would require writing a lot of DAST nodes instead of simple markdown — `parse` does the split for you.**
+2. **Pass 2 — single `mapNodes` walk** over Pass 1's result (or `currentItem.content` if you skipped Pass 1). One walk handles both flavors of edit:
+    - **Prose AST surgery** — heading levels, link metas, span splits, drop empty paragraphs, mass-replacement across every link / span / heading.
+    - **Block edits, replacements, and creations at existing slots** — return `{ ...node, item: buildBlockRecord<Schema.B>({ id, ...diff }) }` to edit, `buildBlockRecord<Schema.B>({ item_type, ...attrs })` (no `id`) to swap in a new block at an existing slot, `duplicateBlockRecord<Schema.B>(source, repo)` to clone. Source the duplicate from the **original** tree via `findFirstNode` — `mapNodes` may have rewritten `node.item`, so the post-walk tree is not safe to clone from.
+3. **Post-walk — root-level appends.** `mapNodes` can't splat at the root, so push fresh top-level entries (a new paragraph, `{ type: "block", item: buildBlockRecord(...) }`, a duplicated block) directly into `content.document.children` after the walk.
 
-**Why this order is mandatory:** path 1 uses `currentItem.content` as a lookup table for `<block id="…"/>` — a block created or rewritten via path 2/3 before the round-trip would either be missing from the lookup (and `parse` would throw) or get its mutation silently overwritten by the rehydration. Path 1 first, then path 2 on its result, then path 3 on top.
+**If you can, prefer dastdown instad of AST building/manipulation.** Much less chance of logic or typing errors!
+
+**Why Pass 1 must come first:** `parse` uses `currentItem.content` as the lookup table for `<block id="…"/>` placeholders — a block created or rewritten by Pass 2 first would either be missing from that lookup (and `parse` would throw) or get its mutation silently overwritten by the rehydration.
 
 `isBlockWithItemOfType` / `isInlineBlockWithItemOfType` narrow `node.item` to `BlockInNestedResponse<Schema.X>` automatically — no manual cast, no runtime id check. They work inside `mapNodes`/`findFirstNode` callbacks as long as `currentItem.content` carries the schema generic (i.e. you called `client.items.find<Schema.M>`).
 
@@ -166,7 +170,7 @@ Rule: write a typed-guard branch ONLY for the block/inline-block IDs you actuall
 
 Do NOT add a generic keep-as-id catch-all (`"item" in node`, `node.type === "block" | "inlineBlock"`): once your typed guards have exhausted every block (or inline-block) variant the schema allows for that field, TS narrows the rest of the union and the catch-all becomes a type error (`never`) or dead code. Skip it — `return node` already does the right thing.
 
-### Path 1 — dastdown round-trip (prose-level rewrites)
+### Pass 1 — dastdown round-trip
 
 ```ts
 import { parse, serialize } from "datocms-structured-text-dastdown";
@@ -185,7 +189,7 @@ if (currentItem.content) {
 }
 ```
 
-`parse(text, original)` throws if the edit references a `<block id="…"/>` / `<inlineBlock id="…"/>` whose id is not in `original` — that's the signal to either drop the placeholder or hand off to path 3 to actually create the block. Editing a block's contents through dastdown is impossible (only the id is encoded): use path 3 for that too.
+`parse(text, original)` throws if the edit references a `<block id="…"/>` / `<inlineBlock id="…"/>` whose id is not in `original` — that's the signal to either drop the placeholder or move the block creation to Pass 2. Editing a block's contents through dastdown is impossible (only the id is encoded): Pass 2 owns block-internal edits.
 
 #### dastdown syntax — what's NOT plain markdown
 
@@ -215,13 +219,13 @@ Inline refs: <inlineItem id="…"/>  <inlineBlock id="…"/>
 
 Rules that bite:
 
-- `<block|inlineBlock|inlineItem id="…"/>` and `dato:item/ID`: opaque record refs. Don't invent ids — `parse` throws on unknown `block`/`inlineBlock` ids; use path 3 to create them.
+- `<block|inlineBlock|inlineItem id="…"/>` and `dato:item/ID`: opaque record refs. Don't invent ids — `parse` throws on unknown `block`/`inlineBlock` ids; create them in Pass 2 instead.
 - Mark canonical order outer→inner: `highlight → strikethrough → underline → strong → emphasis → code`; custom marks innermost, alphabetical. Serializer rewrites freely — don't depend on input order.
 - Canonicalization also drops empty spans and coalesces adjacent same-marks spans. `parse(null|undefined)` → `null`; `parse("")` → single empty paragraph.
 
-### Path 2 — `mapNodes` (mass-replacement / AST surgery)
+### Pass 2 — `mapNodes` walk (prose AST + block edits)
 
-**`mapNodes` walks bottom-up. Return `node` (1:1), `node[]` (splatted into parent's `children`, 1:N), or `null`/`undefined` (drop, 1:0); splat/drop at the root throws.** Beyond editing `marks`, `value`, `url`, `level`, `meta`, `item` in place, you can split a span into siblings, wrap a span in a link, drop nodes, or rewrite a parent's `children` from inside the callback — when the mapper sees a node, its descendants are already the transformed ones. Path 1 (regex on dastdown) is still often simpler for bulk span-splitting / autolinking.
+**`mapNodes` walks bottom-up. Return `node` (1:1), `node[]` (splatted into parent's `children`, 1:N), or `null`/`undefined` (drop, 1:0); splat/drop at the root throws.** Beyond editing `marks`, `value`, `url`, `level`, `meta`, `item` in place, you can split a span into siblings, wrap a span in a link, drop nodes, or rewrite a parent's `children` from inside the callback — when the mapper sees a node, its descendants are already the transformed ones. Pass 1 (regex on dastdown) is still often simpler for bulk span-splitting / autolinking.
 
 ```ts
 const CTA_ID    = "d-CHYg-rShOt3kiL6ZN1yA" as const;
@@ -234,7 +238,8 @@ const repo = new SchemaRepository(client);
 if (currentItem.content) {
   type Body = NonNullable<ApiTypes.ItemUpdateSchema<Schema.Article>["content"]>;
 
-  let content = mapNodes(currentItem.content, (node) => {
+  let content: Body = currentItem.content;
+  content = mapNodes(content, (node) => {
     if (isInlineBlockWithItemOfType(MENTION_ID, node)) { // EDIT inline
       return { ...node, item: buildBlockRecord<Schema.Mention>({
         id: node.item.id, url: node.item.attributes.url + "?utm=x",
@@ -258,11 +263,14 @@ if (currentItem.content) {
       ] };
     }
     if (isItemLink(node)) return { ...node, item: "NEW_RECORD_ID" }; // itemLink/inlineItem: item is a record id string
-    if (isParagraph(node) && node.children.every((c) => isSpan(c) && !c.value.trim())) {
-      return null; // 1:0 — bottom-up: spans already transformed; drop the paragraph
+    if (
+      isParagraph(node) &&
+      reduceNodes(node, (acc, n) => isSpan(n) ? acc + n.value.trim() : acc, "").length === 0
+    ) {
+      return null; // 1:0 — reduceNodes descends into links/itemLinks; bottom-up: drop the paragraph
     }
     return node; // untouched nodes pass through unchanged
-  }) as Body;
+  });
 
   // findFirstNode composes directly with the typed guard.
   const found = findFirstNode(currentItem.content, isBlockWithItemOfType(WARN_ID));
@@ -283,11 +291,9 @@ if (currentItem.content) {
 }
 ```
 
-Appends to `content.document.children` happen AFTER `mapNodes`. For duplication, find the source via `findFirstNode` on the **original** `currentItem.content`.
+### Post-walk — root-level appends
 
-### Path 3 — block creation / modification on top of paths 1–2
-
-Same pattern regardless of which upstream path you ran: the result is a `Document<B, IB>` whose `content.document.children` you can mutate in place before update — push a freshly-built block, or `findFirstNode` on the **original** `currentItem.content` to source a record for duplication. Path 2's example shows this pattern at its tail (append paragraph, duplicate `WARN_ID`); apply the same calls if you only ran path 1.
+The example's tail covers the post-walk hook: `content.document.children.push({ type: "paragraph", ... })` for a fresh top-level prose node, and `push({ type: "block", item: await duplicateBlockRecord<Schema.Warn>(found.node.item, repo) })` for a fresh top-level block. `mapNodes` can't splat at the root, so root-level inserts always live here. For duplication, source the donor via `findFirstNode` on the **original** `currentItem.content` — Pass 2 may have rewritten `node.item` on the mapped tree.
 
 ## Localized fields and adding a locale
 
@@ -315,3 +321,17 @@ question: { ...(currentItem.question as NonNullable<ApiTypes.ItemUpdateSchema<Sc
 For block-bearing localized fields the same per-locale shape applies — each locale key holds whatever value the field expects (array of blocks/IDs for `rich_text`, full object or `null` for `single_block`, DAST tree for `structured_text`).
 
 Casting `node.item as BlockInNestedResponse<Schema.X>` after a runtime id check is allowed — but only the manual-discriminator fallback needs it; `isBlockWithItemOfType` / `isInlineBlockWithItemOfType` narrow without a cast.
+
+## Optimistic locking via `meta.current_version`
+
+`update` is **last-write-wins by default**. When two clients update the same record concurrently, the second silently overwrites the first — no error. To get a 409 conflict instead, echo the `meta.current_version` you read back into the update:
+
+```ts
+const before = await client.items.find<Schema.Article>(id);
+await client.items.update<Schema.Article>(id, {
+  title: "new",
+  meta: { current_version: before.meta.current_version },
+});
+```
+
+Reach for this pattern any time the update path is concurrent (multiple workers, retry loops, UI editor sync). The cost is one read per write; the benefit is no silent data loss. Catch `ApiError` and check `e.findError("STALE_ITEM_VERSION")` to retry with a fresh read.

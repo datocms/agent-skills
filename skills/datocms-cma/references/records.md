@@ -19,20 +19,6 @@ Two consequences worth internalizing:
 
 `version: "current" | "published" | "published-or-current"` controls draft vs published view (default `current`). Use `published` when emitting to a public consumer; use `published-or-current` when you want the published if it exists else the current draft (typical for previews).
 
-## Optimistic locking via `meta.current_version`
-
-`update` is **last-write-wins by default**. When two clients update the same record concurrently, the second silently overwrites the first — no error. To get a 409 conflict instead, echo the `meta.current_version` you read back into the update:
-
-```ts
-const before = await client.items.find(id);
-await client.items.update(id, {
-  title: "new",
-  meta: { current_version: before.meta.current_version },
-});
-```
-
-Reach for this pattern any time the update path is concurrent (multiple workers, retry loops, UI editor sync). The cost is one read per write; the benefit is no silent data loss.
-
 ## Selective publish / unpublish
 
 The body is optional — omit it to publish/unpublish the entire record. Pass an object to limit the operation to specific locales or to non-localized content only:
