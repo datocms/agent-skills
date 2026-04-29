@@ -8,7 +8,7 @@ Do peek + mutate in ONE script. No top-level `return` — wrap in `if (currentIt
 
 ## Workflow
 
-1. `schema:inspect <model> --include-nested-blocks` for block IDs.
+1. Inspect the schema model, including nested blocks for block IDs.
 2. `client.items.find<Schema.M>(id, { nested: true })` — the `<Schema.M>` generic is **mandatory**, not optional (see "`Schema.X` is mandatory on every typed call" below). Blocks have `.id`, `.__itemTypeId`, fields under `.attributes` (NOT `block.title`). Every field on `.attributes` is typed as nullable (`string | null`, etc.) regardless of the validator — the generated types reflect what the CMA can transport, not whether `required` is set. Guard against `null` before passing values to APIs that expect a non-nullable type (e.g. `new URL(...)`, string concatenation that would coerce `null` to `"null"`).
 3. Build with `buildBlockRecord<Schema.B>({...})` / `duplicateBlockRecord(...)`.
 4. `client.items.update<Schema.M>(id, { ... })`. Skip unchanged fields.
@@ -158,7 +158,7 @@ The canonical order is **Pass 1 → Pass 2 → root-level appends**. Apply only 
     - **Block edits, replacements, and creations at existing slots** — return `{ ...node, item: buildBlockRecord<Schema.B>({ id, ...diff }) }` to edit, `buildBlockRecord<Schema.B>({ item_type, ...attrs })` (no `id`) to swap in a new block at an existing slot, `duplicateBlockRecord<Schema.B>(source, repo)` to clone. Source the duplicate from the **original** tree via `findFirstNode` — `mapNodes` may have rewritten `node.item`, so the post-walk tree is not safe to clone from.
 3. **Post-walk — root-level appends.** `mapNodes` can't splat at the root, so push fresh top-level entries (a new paragraph, `{ type: "block", item: buildBlockRecord(...) }`, a duplicated block) directly into `content.document.children` after the walk.
 
-**If you can, prefer dastdown instad of AST building/manipulation.** Much less chance of logic or typing errors!
+**If you can, prefer dastdown instad of AST building/manipulation!** Much less chance of logic/typing errors.
 
 **Why Pass 1 must come first:** `parse` uses `currentItem.content` as the lookup table for `<block id="…"/>` placeholders — a block created or rewritten by Pass 2 first would either be missing from that lookup (and `parse` would throw) or get its mutation silently overwritten by the rehydration.
 
@@ -189,11 +189,13 @@ if (currentItem.content) {
 }
 ```
 
+When creating brand new structurede text content, just use `parse("Your **content**")` instead of building DAST manually: much faster.
+
 `parse(text, original)` throws if the edit references a `<block id="…"/>` / `<inlineBlock id="…"/>` whose id is not in `original` — that's the signal to either drop the placeholder or move the block creation to Pass 2. Editing a block's contents through dastdown is impossible (only the id is encoded): Pass 2 owns block-internal edits.
 
 #### dastdown syntax — what's NOT plain markdown
 
-Markdown-identical: `# H1`–`###### H6`, paragraphs, `- ` / `1. ` lists (2-space indent for nesting), `> ` blockquote, ` ```lang ` fences, `---` thematic break, `**strong**` `*emphasis*` `` `code` `` `~~strike~~`, `[text](url)`, `\` escapes. Full spec: `datocms-structured-text-dastdown/SPEC.md`.
+Markdown-identical: `# H1`–`###### H6`, paragraphs, `- ` / `1. ` lists (2-space indent for nesting), `> ` blockquote, ` ```lang ` fences, `---` thematic break, `**strong**` `*emphasis*` `` `code` `` `~~strike~~`, `[text](url)`, `\` escapes.
 
 Everything dastdown adds, in one document:
 
