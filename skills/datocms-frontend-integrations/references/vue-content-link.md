@@ -450,6 +450,19 @@ if (decoded) {
 }
 ```
 
+### `revealStega` (debugging)
+
+Replaces each invisible stega segment with a visible `[STEGA:/editor/...]` marker. Preserves the input shape — strings stay strings, objects/arrays keep their structure. Use this whenever a stega-related bug is suspected, since `console.log` alone shows nothing (the encoding is zero-width Unicode):
+
+```ts
+import { revealStega } from 'vue-datocms';
+
+console.log(revealStega(page.title));        // "Hello[STEGA:/editor/...]"
+console.log(revealStega(graphqlResponse));   // same object shape, markers visible inside strings
+```
+
+See [content-link-concepts.md → When to Strip Stega](./content-link-concepts.md#when-to-strip-stega) for the full rule on when to wrap values in `stripStega()` (string comparisons, SEO/meta, analytics, slug/URL generation, anything other than direct render). Note: DatoCMS `slug` field types are never stega-encoded and don't need stripping.
+
 ---
 
 ## Troubleshooting

@@ -38,6 +38,7 @@ Use only the sections that match the work you actually performed.
   - SvelteKit uses `onNavigateTo` and `currentPath`.
   - Astro uses only its supported props.
 - Structured Text boundaries are present only where the framework expects them.
+- **Stega leakage check.** Every text/string field value coming from the CDA is only used for direct render (text/HTML output). Any non-render use — equality / `includes` / `switch` comparisons, `split` / `replace` / regex, slug or URL generation, SEO meta / `<title>` / Open Graph / JSON-LD, analytics events, webhook or third-party payloads, cache keys, persisted writes, length checks — is wrapped in `stripStega()`. Values whose source field type is the dedicated DatoCMS `slug` field never carry stega and are exempt; for unknown provenance, default to wrapping. When debugging suspected leaks, use `revealStega()` to see the encoding (it's zero-width Unicode and invisible to `console.log`).
 
 ### Real-Time Updates
 

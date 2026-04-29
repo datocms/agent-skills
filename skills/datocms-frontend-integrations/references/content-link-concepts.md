@@ -374,12 +374,14 @@ With this setup:
 
 ## Stega Stripping Utilities
 
-The `@datocms/content-link` package exports two utility functions for working with stega-encoded strings.
+The `@datocms/content-link` package exports three utility functions for working with stega-encoded strings: one to clean (`stripStega`), one to inspect (`decodeStega`), and one to debug (`revealStega`).
+
+Stega leakage into application logic is the single most common source of visual-editing bugs, and the worst part is that it's invisible — the encoding uses zero-width Unicode characters, so `console.log` and visual inspection both lie. These utilities exist because you cannot debug this with the naked eye.
 
 ### Import
 
 ```ts
-import { stripStega, decodeStega } from '@datocms/content-link';
+import { stripStega, decodeStega, revealStega } from '@datocms/content-link';
 ```
 
 ### `stripStega(input)`
@@ -413,24 +415,69 @@ const info = decodeStega(someTextField);
 // Returns: { origin: 'datocms', href: 'https://my-project.admin.datocms.com/...' } or null
 ```
 
+### `revealStega(input)` — debugging
+
+Works on any data type (strings, objects, arrays, full GraphQL responses) and preserves the input shape: strings stay strings, objects/arrays keep their structure — only the encoding inside text values is rewritten from invisible Unicode into a **visible** `[STEGA:/editor/item_types/…]` marker. This is the tool to reach for whenever something stega-related is mysteriously broken: `console.log` shows nothing (the characters are zero-width Unicode), but `revealStega` makes them inspectable.
+
+```ts
+// String in, string out — markers now visible
+console.log(revealStega(page.title));
+// "Hello World[STEGA:/editor/item_types/123/items/456]"
+
+// Object in, object with the same shape out
+console.log(revealStega(graphqlResponse));
+// {
+//   blog: {
+//     title: "Hello World[STEGA:/editor/item_types/123/items/456]",
+//     author: { name: "Alice[STEGA:/editor/item_types/789/items/012]" }
+//   }
+// }
+```
+
+Use it to answer questions like *"is this field stega-encoded?"*, *"which fields in this response carry editing metadata?"*, and *"why is my equality check silently failing?"*.
+
 ### When to Strip Stega
 
-Use `stripStega()` before using text values in any context where invisible characters would cause problems:
+The general rule: stega-encoded values are safe to render directly into text/HTML output (the invisible characters survive intact and power the click-to-edit overlay), but they are **not safe to use in any other code path**. If a value crosses out of "render this as final content" into *any* other use, wrap it in `stripStega()`.
 
-- **String comparisons** — `if (record.slug === 'about')` will fail if `slug` contains stega characters
-- **Search / filtering** — Searching through stega-encoded text produces unexpected results
-- **SEO metadata** — `<meta>` tags, `<title>`, Open Graph values should be clean
-- **Analytics / tracking** — Event names and properties should not contain invisible characters
-- **Slugification / URL generation** — Building URLs from text fields
-- **`textContent` length checks** — Stega characters inflate the length
+The non-render uses to watch for:
+
+- **String comparisons** — `record.slug === 'about'`, `value.includes('foo')`, `switch (status)`. The invisible characters are part of the string, so equality silently fails.
+- **`split` / `replace` / regex** — manipulating the string at all
+- **JSON serialization sent to external systems** — analytics events, third-party APIs, webhooks, structured logs. The invisible bytes survive serialization and contaminate downstream systems.
+- **SEO metadata, `<meta>` tags, `<title>`, Open Graph, JSON-LD** — search engines and social previews see the raw bytes
+- **URL or slug generation** — building hrefs from text values
+- **Analytics / tracking** — event names and properties should be clean
+- **`length` / `textContent` length checks** — stega characters inflate the length
+- **Anything passed to a database, cache key, or persisted store**
 
 ```tsx
-// Example: stripping before using in <meta> tags
+// Render: safe as-is — stega survives, click-to-edit works
+<h1>{page.title}</h1>
+
+// Comparison: must strip — equality fails silently otherwise
+const isHomepage = stripStega(page.slug) === 'home';
+
+// SEO: must strip — invisible bytes leak into <meta>
 <meta name="description" content={stripStega(page.seoDescription)} />
 
-// Example: stripping before a comparison
-const isHomepage = stripStega(page.slug) === 'home';
+// Analytics: must strip — third party would receive invisible chars
+analytics.track('viewed_post', { title: stripStega(post.title) });
 ```
+
+#### Field-type exception: DatoCMS `slug` fields are already clean
+
+The CDA never embeds stega into values from fields whose **DatoCMS field type is `slug`** (the dedicated slug field type, not a regular `string` or `text` field). When a slug field is the source, no `stripStega` is needed — it's a no-op at best and noisy code at worst. Only `string`, `text`, and other text-like fields can carry stega.
+
+This matters when the value's source field type is known. For values whose origin is unclear (a string variable several function-calls deep, props of unknown provenance, anything reflected through generic helpers), default to wrapping in `stripStega()` — it's a cheap idempotent operation and the cost of a missed wrap is silent breakage.
+
+#### Debugging suspected leaks
+
+When something string-related behaves strangely on draft content but works on published content, suspect stega. The diagnostic loop:
+
+1. `console.log(revealStega(value))` to see whether stega is present and where (works on strings, objects, full responses — shape is preserved, encoding becomes visible as `[STEGA:...]` markers)
+2. If yes, trace where the value enters non-render logic and add `stripStega()` at that boundary
+3. Consider whether the field source is a DatoCMS `slug` field — if so, the leak is upstream (somebody else's text field is bleeding in) rather than at this site
 
 ### CSS Alternative (Layout Fix Only)
 
@@ -497,7 +544,13 @@ If the site is not running inside the Web Previews plugin iframe (i.e., opened d
 
 - **Layout issues from stega encoding**: The invisible zero-width characters can cause unexpected letter-spacing or text overflow. Fix with CSS: `[data-datocms-contains-stega] { letter-spacing: 0 !important; }`. Alternatively, use `createController({ stripStega: true })` to permanently remove the encoding from the DOM.
 
-- **Strings broken by invisible characters**: Use `stripStega()` before string comparisons, search operations, SEO metadata, analytics, or any programmatic text processing. Import it from `@datocms/content-link`.
+- **Strings broken by invisible characters**: Use `stripStega()` before string comparisons, search operations, SEO metadata, analytics, or any programmatic text processing. Import it from `@datocms/content-link`. See "When to Strip Stega" above for the full list of non-render uses.
+
+- **Equality check silently fails on draft / works on published**: Classic stega leak. A line like `if (page.slug === 'home')` evaluates to `false` in draft mode because `page.slug` carries invisible stega characters. Confirm with `console.log(revealStega(page))` — if the value shows `[STEGA:...]` markers, wrap the comparison in `stripStega()`. (Note: this should not happen for actual DatoCMS `slug` field types — those never get stega. If a slug-typed field shows stega, file a bug.)
+
+- **`console.log` shows the value looks normal but the code disagrees**: stega characters are zero-width Unicode. `console.log` and the browser dev tools render them invisibly, so the value *looks* identical to the literal you're comparing against while actually being different. Use `revealStega(value)` to reveal the encoding, or check `value.length` against the literal's length.
+
+- **Invisible characters reaching analytics, third-party APIs, or persisted stores**: any value going outside the render path (analytics event properties, webhook payloads, cache keys, database writes, `<meta>` content) must be stripped first. Treat the boundary at the point the value leaves the render layer.
 
 - **Wrong element highlighted (too small click target)**: Use `data-datocms-content-link-group` on a parent element to expand the clickable area. This is especially important for Structured Text fields where the stega span is tiny.
 

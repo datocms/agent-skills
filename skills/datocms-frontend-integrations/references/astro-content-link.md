@@ -308,11 +308,24 @@ const metadata = decodeStega(text);
 // Returns: { origin: string, href: string } | null
 ```
 
+### `revealStega` (debugging)
+
+Replaces each invisible stega segment with a visible `[STEGA:/editor/...]` marker. Preserves the input shape — strings stay strings, objects/arrays keep their structure. Use this whenever a stega-related bug is suspected, since `console.log` alone shows nothing (the encoding is zero-width Unicode):
+
+```js
+import { revealStega } from '@datocms/astro/ContentLink';
+
+console.log(revealStega(page.title));        // "Hello[STEGA:/editor/...]"
+console.log(revealStega(graphqlResponse));   // same object shape, markers visible inside strings
+```
+
 **Use cases:**
 
 - **Meta tags and social sharing**: Use `stripStega()` to clean text before adding to `<meta>` tags
-- **Programmatic text processing**: Remove invisible characters before string operations
-- **Debugging**: Use `decodeStega()` to inspect what editing URLs are embedded in content
+- **Programmatic text processing**: Remove invisible characters before string operations, comparisons, splits, slug/URL generation, analytics, or any non-render use
+- **Debugging**: Use `revealStega()` to see which fields in a GraphQL response carry stega; use `decodeStega()` to inspect a specific editing URL
+
+See [content-link-concepts.md → When to Strip Stega](./content-link-concepts.md#when-to-strip-stega) for the full rule. Note: DatoCMS `slug` field types are never stega-encoded and don't need stripping.
 
 ---
 
