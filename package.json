@@ -9,11 +9,11 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@datocms/cma-client-node": "^5.4.12",
+    "@datocms/cma-client-node": "^5.4.13",
     "@datocms/dashboard-client": "^5.4.9",
     "@types/node": "^22.19.17",
     "concurrent-promise-queue": "^1.0.10",
-    "datocms": "^4.0.22",
+    "datocms": "^4.0.23",
     "dotenv": "^16.4.5",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"

@@ -17,7 +17,7 @@ Do peek + mutate in ONE script. No top-level `return` — wrap in `if (currentIt
 
 ```ts
 import {
-  type ApiTypes, type BlockInNestedResponse,
+  type ApiTypes, type BlockInNestedResponse, type FieldValueInRequest,
   buildBlockRecord, duplicateBlockRecord,
   isBlockOfType, SchemaRepository,
 } from "@datocms/cma-client-node";
@@ -37,6 +37,23 @@ Every generated `Schema.X` is **both a type and a runtime value**. The value sid
 - `Schema.X.REF` — `{ type: "item_type", id } as const`. Use as the `item_type:` value in `buildBlockRecord<Schema.X>({ item_type: Schema.X.REF, … })`.
 
 Reach for these instead of declaring local `const FOO_ID = "…" as const;` literals — guards narrow without a manual `as const`, and refactors / id changes flow from a single source.
+
+## Typing values you build up in code
+
+When you collect a new field value to send back into `client.items.update` — typically rebuilding an array of blocks — type the local variable with `FieldValueInRequest<T, K>`. `T` is **any item-shaped value the CMA returned** (a top-level record OR a nested block); `K` is the field key. Same expression for both:
+
+```ts
+const page = await client.items.find<Schema.LandingPage>(id, { nested: true });
+const sections: NonNullable<FieldValueInRequest<typeof page, "sections">> = [];
+
+for (const section of page.sections) {
+  if (isBlockOfType(Schema.HeroBlock.ID, section)) {
+    const ctas: NonNullable<FieldValueInRequest<typeof section, "ctas">> = []; // same expression, nested block
+  }
+}
+```
+
+Use this in preference to `ApiTypes.ItemUpdateSchema<Schema.X>["foo"]` indexing or the verbose `Parameters<typeof client.items.update<Schema.X>>[1]["foo"]` form — you don't have to restate the model name, and it works uniformly on a nested block's field. `ApiTypes.ItemUpdateSchema<Schema.X>` remains the fallback when you have a model but no read result yet (rare).
 
 ## `Schema.X` is mandatory on every typed call
 
@@ -115,8 +132,7 @@ Two call styles, same narrowing: curried `isBlockOfType(ID)` returns a predicate
 const page = await client.items.find<Schema.LandingPage>(id, { nested: true });
 const repo = new SchemaRepository(client);
 
-type Entry = NonNullable<ApiTypes.ItemUpdateSchema<Schema.LandingPage>["sections"]>[number];
-const sections: Entry[] = [];
+const sections: NonNullable<FieldValueInRequest<typeof page, "sections">> = [];
 
 sections.push(buildBlockRecord<Schema.HeroBlock>({ // ADD
   item_type: Schema.HeroBlock.REF,
@@ -129,6 +145,18 @@ for (const b of page.sections) {
     sections.push(buildBlockRecord<Schema.Cta>({
       id: b.id, button_url: b.attributes.button_url + "?utm=x",
     }));
+    continue;
+  }
+  if (isBlockOfType(Schema.HeroBlock.ID, b)) { // EDIT a nested rich_text on the block
+    const ctas: NonNullable<FieldValueInRequest<typeof b, "ctas">> = [];
+    for (const cta of b.attributes.ctas) {
+      ctas.push(
+        isBlockOfType(Schema.Button.ID, cta) && cta.attributes.label === "Get started"
+          ? buildBlockRecord<Schema.Button>({ id: cta.id, url: "/start-free-trial" })
+          : cta.id, // keep others unchanged → id string
+      );
+    }
+    sections.push(buildBlockRecord<Schema.HeroBlock>({ id: b.id, ctas }));
     continue;
   }
   if (isBlockOfType(Schema.Testimonial.ID, b)) { // DUPLICATE
@@ -242,9 +270,8 @@ const currentItem = await client.items.find<Schema.Article>(id, { nested: true }
 const repo = new SchemaRepository(client);
 
 if (currentItem.content) {
-  type Body = NonNullable<ApiTypes.ItemUpdateSchema<Schema.Article>["content"]>;
-
-  let content: Body = currentItem.content;
+  let content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =
+    currentItem.content;
   content = mapNodes(content, (node) => {
     if (isInlineBlockWithItemOfType(Schema.Mention.ID, node)) { // EDIT inline
       return { ...node, item: buildBlockRecord<Schema.Mention>({
@@ -321,7 +348,7 @@ for (const it of items) {
 If TS rejects the spread (typically because the per-locale value is nullable and the `Update` shape requires non-null), cast precisely with the request schema rather than reaching for `Record<string, string>`:
 
 ```ts
-question: { ...(currentItem.question as NonNullable<ApiTypes.ItemUpdateSchema<Schema.FaqEntry>["question"]>), es: "..." },
+question: { ...(currentItem.question as NonNullable<FieldValueInRequest<typeof currentItem, "question">>), es: "..." },
 ```
 
 For block-bearing localized fields the same per-locale shape applies — each locale key holds whatever value the field expects (array of blocks/IDs for `rich_text`, full object or `null` for `single_block`, DAST tree for `structured_text`).
