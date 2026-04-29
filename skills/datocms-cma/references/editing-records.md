@@ -21,6 +21,9 @@ import {
   buildBlockRecord, duplicateBlockRecord,
   isBlockOfType, SchemaRepository,
 } from "@datocms/cma-client-node";
+
+All structured-text related utilities have a different import!
+
 import {
   mapNodes, findFirstNode, reduceNodes,
   isBlockWithItemOfType, isInlineBlockWithItemOfType,
@@ -28,7 +31,12 @@ import {
 } from "datocms-structured-text-utils";
 ```
 
-Declare ID literals with `as const` so guards see the literal type.
+Every generated `Schema.X` is **both a type and a runtime value**. The value side exposes two typed constants:
+
+- `Schema.X.ID` — the model/block id as a literal-typed string. Use anywhere you'd otherwise hard-code an id (`isBlockOfType`, `isBlockWithItemOfType`, `isInlineBlockWithItemOfType`, `__itemTypeId === …`, `findFirstNode(…, isBlockWithItemOfType(…))`).
+- `Schema.X.REF` — `{ type: "item_type", id } as const`. Use as the `item_type:` value in `buildBlockRecord<Schema.X>({ item_type: Schema.X.REF, … })`.
+
+Reach for these instead of declaring local `const FOO_ID = "…" as const;` literals — guards narrow without a manual `as const`, and refactors / id changes flow from a single source.
 
 ## `Schema.X` is mandatory on every typed call
 
@@ -75,7 +83,7 @@ Mutation rules in the parent record's `update` call:
 
 | Operation | Payload form |
 |---|---|
-| **Create** a new block | `buildBlockRecord<Schema.B>({ item_type: { type: "item_type", id }, ...attrs })` — no `id` on the outer object |
+| **Create** a new block | `buildBlockRecord<Schema.B>({ item_type: Schema.B.REF, ...attrs })` — no `id` on the outer object |
 | **Update** an existing block | `buildBlockRecord<Schema.B>({ id, ...changedAttrs })` — only the diff; `item_type` is implicit |
 | **Keep** unchanged | Its ID string |
 | **Delete** | Omit it — remove from the array; set `null` for `single_block` |
@@ -111,19 +119,19 @@ type Entry = NonNullable<ApiTypes.ItemUpdateSchema<Schema.LandingPage>["sections
 const sections: Entry[] = [];
 
 sections.push(buildBlockRecord<Schema.HeroBlock>({ // ADD
-  item_type: { type: "item_type", id: "HERO_ID" },
+  item_type: Schema.HeroBlock.REF,
   headline: "New",
 }));
 
 for (const b of page.sections) {
-  if (b.__itemTypeId === "OLD_HERO_ID") continue; // REMOVE
-  if (isBlockOfType("CTA_ID", b)) { // EDIT — fields on .attributes
+  if (b.__itemTypeId === Schema.OldHero.ID) continue; // REMOVE
+  if (isBlockOfType(Schema.Cta.ID, b)) { // EDIT — fields on .attributes
     sections.push(buildBlockRecord<Schema.Cta>({
       id: b.id, button_url: b.attributes.button_url + "?utm=x",
     }));
     continue;
   }
-  if (isBlockOfType("TESTIMONIAL_ID", b)) { // DUPLICATE
+  if (isBlockOfType(Schema.Testimonial.ID, b)) { // DUPLICATE
     sections.push(b.id);
     sections.push(await duplicateBlockRecord<Schema.Testimonial>(b, repo));
     continue;
@@ -230,10 +238,6 @@ Rules that bite:
 **`mapNodes` walks bottom-up. Return `node` (1:1), `node[]` (splatted into parent's `children`, 1:N), or `null`/`undefined` (drop, 1:0); splat/drop at the root throws.** Beyond editing `marks`, `value`, `url`, `level`, `meta`, `item` in place, you can split a span into siblings, wrap a span in a link, drop nodes, or rewrite a parent's `children` from inside the callback — when the mapper sees a node, its descendants are already the transformed ones. Pass 1 (regex on dastdown) is still often simpler for bulk span-splitting / autolinking.
 
 ```ts
-const CTA_ID    = "d-CHYg-rShOt3kiL6ZN1yA" as const;
-const MENTION_ID= "VGXgXav9SwG5P48frGrFxA" as const;
-const WARN_ID   = "Hh3vSyvnQE2nViJ3jq7CBQ" as const;
-
 const currentItem = await client.items.find<Schema.Article>(id, { nested: true });
 const repo = new SchemaRepository(client);
 
@@ -242,12 +246,12 @@ if (currentItem.content) {
 
   let content: Body = currentItem.content;
   content = mapNodes(content, (node) => {
-    if (isInlineBlockWithItemOfType(MENTION_ID, node)) { // EDIT inline
+    if (isInlineBlockWithItemOfType(Schema.Mention.ID, node)) { // EDIT inline
       return { ...node, item: buildBlockRecord<Schema.Mention>({
         id: node.item.id, url: node.item.attributes.url + "?utm=x",
       }) };
     }
-    if (isBlockWithItemOfType(CTA_ID, node)) { // EDIT block
+    if (isBlockWithItemOfType(Schema.Cta.ID, node)) { // EDIT block
       return { ...node, item: buildBlockRecord<Schema.Cta>({
         id: node.item.id, button_url: node.item.attributes.button_url + "?utm=x",
       }) };
@@ -275,7 +279,7 @@ if (currentItem.content) {
   });
 
   // findFirstNode composes directly with the typed guard.
-  const found = findFirstNode(currentItem.content, isBlockWithItemOfType(WARN_ID));
+  const found = findFirstNode(currentItem.content, isBlockWithItemOfType(Schema.Warn.ID));
   if (found) {
     content.document.children.push({
       type: "block",
