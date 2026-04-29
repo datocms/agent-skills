@@ -89,6 +89,9 @@ The function returns an `E2ETestOutcome` with `attempts`, `toolCallNames`,
   full wipe with `E2E_CLEANUP_FORCE=1`.
 - Projects are destroyed on every run. Set `E2E_KEEP_PROJECT=1` in the
   environment to skip teardown when debugging a failing run.
+- Override the model for all cases with `E2E_MODEL=<id>` (e.g.
+  `E2E_MODEL=claude-sonnet-4-6 npm run test:e2e`). Per-case `model` overrides
+  still win.
 - The harness uses a fresh temp dir as `cwd` for the Claude subprocess to
   avoid contamination from any `CLAUDE.md` in the repo. The repo's `skills/`
   tree is mirrored into that temp dir under `.claude/skills/` so local skills

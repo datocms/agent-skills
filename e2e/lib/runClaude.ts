@@ -79,7 +79,7 @@ export async function runClaude(
 		"--verbose",
 		"--no-session-persistence",
 		"--model",
-		options.model ?? "claude-opus-4-6",
+		options.model ?? process.env.E2E_MODEL ?? "claude-opus-4-6",
 	];
 
 	const child = spawn("claude", args, {
