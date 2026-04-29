@@ -53,7 +53,17 @@ for (const section of page.sections) {
 }
 ```
 
-Use this in preference to `ApiTypes.ItemUpdateSchema<Schema.X>["foo"]` indexing or the verbose `Parameters<typeof client.items.update<Schema.X>>[1]["foo"]` form — you don't have to restate the model name, and it works uniformly on a nested block's field. `ApiTypes.ItemUpdateSchema<Schema.X>` remains the fallback when you have a model but no read result yet (rare).
+When no value is in scope yet — typing a helper or a function parameter that *builds* a payload from scratch — pass the model marker as the first argument instead:
+
+```ts
+type Sections = NonNullable<FieldValueInRequest<Schema.LandingPage, "sections">>;
+
+function buildLaunchSections(headline: string): Sections {
+  return [buildBlockRecord<Schema.HeroBlock>({ item_type: Schema.HeroBlock.REF, headline })];
+}
+```
+
+Use this in preference to `ApiTypes.ItemUpdateSchema<Schema.X>["foo"]` indexing or the verbose `Parameters<typeof client.items.update<Schema.X>>[1]["foo"]` form — you don't have to restate the model name in the value-based form, and on a nested block's field the same expression just works.
 
 ## `Schema.X` is mandatory on every typed call
 
