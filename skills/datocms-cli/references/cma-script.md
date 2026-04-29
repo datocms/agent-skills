@@ -164,10 +164,7 @@ install step — they live inside the CLI workspace:
 - `@datocms/cma-client-node`
 - `datocms-html-to-structured-text`
 - `datocms-structured-text-utils`
-- `datocms-structured-text-to-plain-text`
-- `datocms-structured-text-to-html-string`
-- `datocms-structured-text-to-markdown`
-- `parse5`
+- `datocms-structured-text-dastdown`
 
 In **file-mode**, the CLI does not manage your dependencies — install
 whatever you need into the `package.json` that covers your scratch
