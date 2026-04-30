@@ -87,7 +87,10 @@ fields.create(modelId, {
 
 For project-wide global SEO (default OG image, sitewide twitter handle,
 etc.), use a `singleton: true` "Site settings" model with `seo` and
-other fields directly on it.
+other fields directly on it. See `model-configuration.md` § singleton
+for the lifecycle, and `field-configuration.md` § "Require specific
+SEO sub-fields" for `required_seo_fields` / `title_length` /
+`description_length`.
 
 ## Pattern 4 — Frameless single_block (the "shared field set")
 
@@ -121,7 +124,9 @@ publish date) shared across `BlogPost`, `NewsArticle`, and
 2. On each consumer model, add a `single_block` field that:
    - allows **only** that block model
    - has the **required** validation active
-   - uses the **Frameless** presentation mode
+   - uses the **Frameless** presentation mode (set
+     `appearance.editor: "frameless_single_block"` — see
+     `field-configuration.md` § single_block)
 
 The frameless presentation hides the Modular Content frame in the
 editor — the block's fields render inline as if they were defined
@@ -174,7 +179,9 @@ use a model with `tree: true`. DatoCMS gives you parent/child and
 sortable position out of the box — no need to model `parent` as a
 self-reference manually.
 
-See `taxonomy-classification.md` for the full taxonomy guide.
+See `taxonomy-classification.md` for the full taxonomy guide and
+`model-configuration.md` § Behaviour — ordering for how `tree`
+interacts with `sortable` / `ordering_field` / `ordering_meta`.
 
 ## Pattern 6 — Fieldsets for grouping
 

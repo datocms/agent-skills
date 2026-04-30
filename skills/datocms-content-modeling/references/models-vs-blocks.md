@@ -52,7 +52,8 @@ inform the decision avoids dead-ends later.
   `tree`, `draft_mode_active`, `draft_saving_active`, `singleton`, and
   `inverse_relationships_enabled` must all be `false` on block models.
   This is enforced by the API. Anything that needs those flags has to
-  be a model.
+  be a model. For what each flag actually does, see
+  `model-configuration.md` § Behaviour.
 
 ## Hard limits — they force the model decision
 
@@ -179,7 +180,7 @@ The product stays canonical; the page-specific tweak is local. See
   one page.
 - **Forcing a tree, sortable, or singleton requirement onto a block.**
   The API will reject it. If the content needs those flags, it's a
-  model.
+  model. See `model-configuration.md` for what each flag changes.
 - **Trying to reference a block from another record.** Blocks aren't
   link targets. If another record needs to point at this content,
   promote it to a model.

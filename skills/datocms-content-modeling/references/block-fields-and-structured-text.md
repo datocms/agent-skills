@@ -23,6 +23,10 @@ scales with locales.
 - **Exactly one of something? → `single_block`.** SEO, hero, address,
   any "the X for this record" slot. Avoid using a 1-element `rich_text`
   to fake this — `single_block` is purpose-built and queries simpler.
+  When the goal is to share a *field set* across many models, use the
+  required + frameless variant — see `content-reuse.md` § Pattern 4
+  (frameless single_block) and `field-configuration.md` § single_block
+  for the appearance setting.
 
 ### Anti-patterns
 
@@ -52,7 +56,10 @@ or record links. Wire each one explicitly. For "no embedded blocks at
 all" set the array to `[]` rather than omitting the validator.
 
 For full validator shapes and cascade-strategy detail, see
-`../../datocms-cma/references/schema.md`.
+`../../datocms-cma/references/schema.md`. For the editor parameters
+that govern which `nodes` / `marks` / `heading_levels` editors can
+produce in a `structured_text` field, see `field-configuration.md`
+§ structured_text editor parameters.
 
 ## DAST node cheatsheet
 

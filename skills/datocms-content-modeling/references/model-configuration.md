@@ -21,6 +21,22 @@ The UI vs SEO-fallback split is the trap: `title_field` and
 `presentation_title_field` *look* similar but live in different worlds.
 See § "Don't confuse `title_field` with `presentation_title_field`."
 
+## Reserved model `api_key` values
+
+The following identifiers are reserved and **cannot be used as a
+model's `api_key`** — they collide with the GraphQL CDA's built-in
+`Site` query surface (`_site`, `_allItems`, etc.) and the API will
+reject them at create time:
+
+```
+id, find, site, environment, available_locales, item_types,
+single_instance_item_types, collection_item_types, items_of_type,
+model
+```
+
+Pick a different `api_key` (for example `model_definition` instead of
+`model`, `place` instead of `site`).
+
 ## Field-reference attributes need a two-step create
 
 Before going through the camps: many of these attributes
@@ -141,6 +157,26 @@ mutually exclusive in practice — sortable means *manual* order, while
 the ordering_* set means *automatic* order. Block models must have
 all three off.
 
+### Allowed field types for `ordering_field` and `ordering_meta`
+
+`ordering_field` only accepts fields of these types — anything else
+(text, structured_text, link, file, json, color, etc.) is rejected:
+
+```
+string, date, date_time, integer, float, boolean
+```
+
+`ordering_meta` only accepts these record-meta timestamps:
+
+```
+created_at, updated_at, first_published_at, published_at
+```
+
+If the natural sort key isn't one of the orderable field types,
+either add a sibling field of an allowed type (e.g. a `priority`
+integer alongside a free-form `notes` text) or fall back to manual
+`sortable: true`.
+
 ---
 
 ## Behaviour — GraphQL surface
@@ -184,6 +220,18 @@ identify a record at a glance — usually the human name, sometimes an
 internal codename. Wire `presentation_image_field` to whichever image
 field gives the clearest preview.
 
+**Allowed field types** (the API rejects anything else):
+
+| Attribute | Accepted field types |
+|---|---|
+| `presentation_title_field` | `string`, `text`, `structured_text`, `slug`, `single_block`, `link`, `date`, `date_time`, `integer`, `float`, `color`, `lat_lon`, `video` |
+| `presentation_image_field` | `file`, `gallery`, `single_block`, `link`, `color`, `date`, `date_time`, `lat_lon`, `video` |
+
+The non-obvious entries are intentional: `link` resolves through to
+the linked record's own presentation fields, and `single_block`
+resolves through to the block's. Pure data fields like `boolean`,
+`json`, `seo`, `rich_text`, and `links` (multi) cannot be used.
+
 ### `collection_appearance`
 
 Either `'compact'` or `'table'`. Controls the density of the model's
@@ -210,11 +258,17 @@ their `presentation_*` siblings but they don't drive the admin UI.
 They feed the **CDA's `_seoMetaTags` GraphQL field** (see
 `../../datocms-cda/references/seo-and-meta.md`):
 
-| Model attr | Fallback for `_seoMetaTags` value | When the fallback kicks in |
-|---|---|---|
-| `title_field` | `<title>`, `og:title`, `twitter:title` | The model has no SEO field, or the SEO field's title is empty |
-| `image_preview_field` | `og:image`, `twitter:image` | SEO field has no image set |
-| `excerpt_field` | `<meta name="description">`, `og:description`, `twitter:description` | SEO field has no description set |
+| Model attr | Fallback for `_seoMetaTags` value | Allowed field types | When the fallback kicks in |
+|---|---|---|---|
+| `title_field` | `<title>`, `og:title`, `twitter:title` | `string` only | The model has no SEO field, or the SEO field's title is empty |
+| `image_preview_field` | `og:image`, `twitter:image` | `file`, `gallery` | SEO field has no image set |
+| `excerpt_field` | `<meta name="description">`, `og:description`, `twitter:description` | `string`, `text`, `structured_text` | SEO field has no description set |
+
+The type allowlists are stricter than for `presentation_*_field`
+because these values feed real `<meta>` tags — `title_field` must be
+plain text (no `slug`, no `text`, no `structured_text`), and
+`excerpt_field` must be something that can be serialized to a string
+description.
 
 ### Always wire these on user-facing models
 

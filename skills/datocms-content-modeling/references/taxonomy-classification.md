@@ -42,7 +42,10 @@ Product.category   (link → Category)
 
 The tree is managed in the DatoCMS UI as an actual tree — drag-and-drop
 reordering, indenting, collapsing. The `parent_id` and `position`
-attributes are first-class on tree records.
+attributes are first-class on tree records. For how `tree: true`
+relates to the other ordering strategies (`sortable`, `ordering_field`,
+`ordering_meta`) and why they're mutually exclusive, see
+`model-configuration.md` § Behaviour — ordering.
 
 **Self-referencing models without `tree: true` are an anti-pattern**
 when the intent is hierarchy. The editor UX is much worse, position
@@ -127,7 +130,10 @@ silently delete every product in it.
 | `on_reference_delete_strategy` | `"fail"` or `"set_to_null"` | Almost never `"delete_references"` for taxonomy — that would delete the products |
 
 For the full validator/cascade reference, see
-`../../datocms-cma/references/schema.md`.
+`../../datocms-cma/references/schema.md`; for where these strategies
+are configured on link / links / structured_text_links validators in
+the modeling guide, see `field-configuration.md` § Constrain links
+between records.
 
 ## Querying taxonomies
 

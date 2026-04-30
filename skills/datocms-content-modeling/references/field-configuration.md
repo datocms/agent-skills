@@ -143,7 +143,11 @@ validators: {
 
 `title_length` / `description_length` show editors a live character
 counter — invaluable because Google truncates around 60/160. Wire
-both on every public-facing model's SEO field.
+both on every public-facing model's SEO field. The SEO field doesn't
+stand alone: when a sub-field is empty, the CDA's `_seoMetaTags`
+falls back to the model's `title_field` / `image_preview_field` /
+`excerpt_field` — see `model-configuration.md` § "SEO fallbacks for
+`_seoMetaTags`".
 
 ### Limit a Modular Content / Structured Text container
 
@@ -281,7 +285,7 @@ set, prefer creating a tag *model* and a `links` field — see
 
 This is a content-reuse decision, not just a UI one. The frameless
 variant is DatoCMS's "shared field set" pattern — see
-`content-reuse.md` § Frameless Single Block.
+`content-reuse.md` § Pattern 4 (Frameless single_block).
 
 Quick version: **frameless** when the block is a transparent way to
 share fields (the editor sees the block's fields as if they were

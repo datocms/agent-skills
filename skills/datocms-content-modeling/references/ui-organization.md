@@ -40,7 +40,8 @@ table of contents.
   click 50 times a day deserves position 1.
 - **Bury rarely-edited config behind a group.** "Site settings" /
   "Redirects" / "Footer links" go inside a "Settings" group, not at
-  the top level.
+  the top level. (These are typically `singleton: true` models — see
+  `model-configuration.md` § singleton.)
 - **Mirror the editorial workflow, not the data model.** If editors
   think "draft → review → publish," the menu can show "Drafts" and
   "Awaiting review" as distinct entries (see saved views below).
@@ -182,6 +183,11 @@ This is the canonical way DatoCMS projects get visual identity in the
 admin UI.
 
 It does **not** work on `field.label`. Don't put emojis on fields.
+The model name is also what shows up in collection views and link
+pickers via `presentation_title_field` /
+`presentation_image_field` — see `model-configuration.md` §
+"presentation_title_field and presentation_image_field" for how the
+admin preview is composed.
 
 ### Inspect the project before suggesting a convention
 

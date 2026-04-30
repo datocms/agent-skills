@@ -83,6 +83,11 @@ fields.create(modelId, {
 The frontend translates `tone: "warning"` into whatever visual style is
 current. Content stays semantic across redesigns.
 
+For the validator + appearance pairing that makes the enum show up as
+a real dropdown (not a free-text input that accidentally accepts bad
+values), see `field-configuration.md` § "Constrain a string to a
+fixed set of values — enum".
+
 ## Don't recreate built-in record meta
 
 Every DatoCMS record exposes a `meta` object with fields that already
