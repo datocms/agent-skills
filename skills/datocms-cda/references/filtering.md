@@ -92,13 +92,13 @@ filter: {
 ### Boolean
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `eq` | `BooleanType` | Exact match (`true` or `false`) |
 
 ### Integer / Float
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `eq` | `IntType` / `FloatType` | Exact match |
 | `neq` | `IntType` / `FloatType` | Not equal (also returns nulls) |
 | `lt` | `IntType` / `FloatType` | Less than |
@@ -110,7 +110,7 @@ filter: {
 ### String (single-line)
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `eq` | `String` | Exact match |
 | `neq` | `String` | Not equal |
 | `in` | `[String]` | One of specified values |
@@ -124,7 +124,7 @@ filter: {
 ### Slug
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `eq` | `String` | Exact match |
 | `neq` | `String` | Not equal |
 | `in` | `[String]` | One of specified values |
@@ -133,7 +133,7 @@ filter: {
 ### Text (multi-paragraph)
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `matches` | `{ pattern: String, caseSensitive: Boolean }` | Regex match |
 | `notMatches` | `{ pattern: String, caseSensitive: Boolean }` | Regex exclusion |
 | `isBlank` | `BooleanType` | Null or empty |
@@ -145,7 +145,7 @@ filter: {
 Format: `"YYYY-MM-DD"`
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `eq` | `Date` | Exact match |
 | `neq` | `Date` | Not equal |
 | `lt` | `Date` | Before |
@@ -159,7 +159,7 @@ Format: `"YYYY-MM-DD"`
 Format: `"YYYY-MM-DDTHH:MM:SS+HH:MM"` (ISO 8601 with timezone)
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `eq` | `DateTime` | Exact match |
 | `neq` | `DateTime` | Not equal |
 | `lt` | `DateTime` | Before |
@@ -175,7 +175,7 @@ Format: `"YYYY-MM-DDTHH:MM:SS+HH:MM"` (ISO 8601 with timezone)
 Values are Upload IDs (strings).
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `eq` | `UploadId` | Exact match |
 | `neq` | `UploadId` | Not equal |
 | `in` | `[UploadId]` | One of specified uploads |
@@ -187,7 +187,7 @@ Values are Upload IDs (strings).
 Values are Upload IDs (strings).
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `eq` | `[UploadId]` | Exact array match |
 | `allIn` | `[UploadId]` | Contains ALL specified uploads |
 | `anyIn` | `[UploadId]` | Contains at least one specified upload |
@@ -199,7 +199,7 @@ Values are Upload IDs (strings).
 Values are Record IDs (strings).
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `eq` | `ItemId` | Exact match |
 | `neq` | `ItemId` | Not equal |
 | `in` | `[ItemId]` | One of specified records |
@@ -211,7 +211,7 @@ Values are Record IDs (strings).
 Values are Record IDs (strings).
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `eq` | `[ItemId]` | Exact array match |
 | `allIn` | `[ItemId]` | Linked to ALL specified records |
 | `anyIn` | `[ItemId]` | Linked to at least one specified record |
@@ -221,7 +221,7 @@ Values are Record IDs (strings).
 ### Geolocation (Lat/Lon)
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `near` | `{ latitude: FloatType, longitude: FloatType, radius: FloatType }` | Within radius (in **meters**) |
 | `exists` | `BooleanType` | Field has a location |
 
@@ -236,31 +236,31 @@ filter: {
 ### Color
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `exists` | `BooleanType` | Field has a color value |
 
 ### JSON
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `exists` | `BooleanType` | Field has a value |
 
 ### SEO
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `exists` | `BooleanType` | Field has SEO data |
 
 ### Video
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `exists` | `BooleanType` | Field has a video |
 
 ### Structured Text
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `matches` | `{ pattern: String, caseSensitive: Boolean }` | Regex match on text content |
 | `notMatches` | `{ pattern: String, caseSensitive: Boolean }` | Regex exclusion |
 | `isBlank` | `BooleanType` | `true` = null or single empty paragraph |
@@ -292,7 +292,7 @@ filter: {
 Available on all models:
 
 | Meta Field | Available Operators |
-|---|---|
+| - | - |
 | `id` | `eq`, `neq`, `in`, `notIn` |
 | `_createdAt` | `eq`, `neq`, `lt`, `lte`, `gt`, `gte`, `exists` |
 | `_updatedAt` | `eq`, `neq`, `lt`, `lte`, `gt`, `gte`, `exists` |
@@ -308,7 +308,7 @@ Available on all models:
 ### Locale Filter
 
 | Meta Field | Available Operators |
-|---|---|
+| - | - |
 | `_locales` | `allIn`, `anyIn`, `notIn` |
 
 ```graphql
@@ -388,6 +388,7 @@ This returns records containing at least one `product` block AND containing no `
 **Breaking change:** When deep filtering is enabled on a Structured Text field, text-based filters move inside a `value` key, and block filters go under a `blocks` key.
 
 **Without** deep filtering enabled:
+
 ```graphql
 filter: {
   structuredTextField: {
@@ -397,6 +398,7 @@ filter: {
 ```
 
 **With** deep filtering enabled:
+
 ```graphql
 filter: {
   structuredTextField: {
@@ -454,7 +456,7 @@ query {
 #### Enum Fields
 
 | Field | Operators | Values |
-|---|---|---|
+| - | - | - |
 | `type` | `eq`, `neq`, `in`, `notIn` | `image`, `video` (unquoted enums) |
 | `resolution` | `eq`, `neq`, `in`, `notIn` | `icon`, `small`, `medium`, `large` |
 | `orientation` | `eq`, `neq` | `landscape`, `portrait`, `square` |
@@ -464,7 +466,7 @@ query {
 Not all upload string fields support the same operators:
 
 | Field | Supported Operators |
-|---|---|
+| - | - |
 | `alt`, `title` | `matches`, `notMatches`, `eq`, `neq`, `in`, `notIn`, `exists` |
 | `mimeType` | `matches`, `notMatches`, `eq`, `neq`, `in`, `notIn` |
 | `author`, `copyright`, `notes` | `matches`, `notMatches`, `exists` |
@@ -475,7 +477,7 @@ Operator value types: `matches`/`notMatches` take `{ pattern: String, caseSensit
 #### Numeric Fields: `height`, `width` (pixels), `size` (bytes)
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `eq` | `IntType` | Exact match |
 | `neq` | `IntType` | Not equal |
 | `gt` | `IntType` | Greater than |
@@ -486,7 +488,7 @@ Operator value types: `matches`/`notMatches` take `{ pattern: String, caseSensit
 #### Array/Tag Fields: `tags`, `smartTags`, `colors`
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `contains` | `String` | Contains the specified value |
 | `allIn` | `[String]` | Contains ALL specified values |
 | `anyIn` | `[String]` | Contains at least one specified value |
@@ -496,7 +498,7 @@ Operator value types: `matches`/`notMatches` take `{ pattern: String, caseSensit
 #### DateTime Fields: `_createdAt`, `_updatedAt`
 
 | Operator | Value Type | Description |
-|---|---|---|
+| - | - | - |
 | `eq` | `DateTime` | Exact match |
 | `neq` | `DateTime` | Not equal |
 | `lt` | `DateTime` | Less than |
@@ -509,7 +511,7 @@ Same minute-truncation gotcha as record DateTime filters.
 #### Special Fields
 
 | Field | Operators | Value Type |
-|---|---|---|
+| - | - | - |
 | `id` | `eq`, `neq`, `in`, `notIn` | `UploadId` |
 | `md5` | `eq`, `neq`, `in`, `notIn` | `String` |
 | `path` | `eq`, `neq`, `in`, `notIn` | `String` |

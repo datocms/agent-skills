@@ -78,6 +78,7 @@ onBeforeItemUpsert(
 ```
 
 `OnBeforeItemUpsertCtx` extends `Ctx` with:
+
 ```
 ctx.scrollToField(path, locale?)  // Scroll to a specific field
 ```

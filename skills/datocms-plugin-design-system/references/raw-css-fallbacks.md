@@ -10,15 +10,11 @@
 - table shell
 - blank slate shell
 
-Use these patterns when `datocms-react-ui` does not expose the exact shell you
-need. These snippets are plugin-safe: they rely on Canvas variables and local
-class names only.
+Use these patterns when `datocms-react-ui` does not expose the exact shell you need. These snippets are plugin-safe: they rely on Canvas variables and local class names only.
 
 ### Canvas variable warning
 
-`--space-unit` is **not** injected by Canvas into plugin iframes. Several
-snippets below use it for CMS-accurate spacing. Add this local definition at
-the top of your plugin CSS to avoid silent `0` values:
+`--space-unit` is **not** injected by Canvas into plugin iframes. Several snippets below use it for CMS-accurate spacing. Add this local definition at the top of your plugin CSS to avoid silent `0` values:
 
 ```css
 :root { --space-unit: 12px; }
@@ -298,8 +294,7 @@ the top of your plugin CSS to avoid silent `0` values:
 }
 ```
 
-Use this only when `VerticalSplit` is unavailable or too rigid for the target
-plugin.
+Use this only when `VerticalSplit` is unavailable or too rigid for the target plugin.
 
 ## 11. Transition defaults
 
@@ -317,9 +312,7 @@ plugin.
 }
 ```
 
-Use `0.2s` and `var(--material-ease)` as the default transition for
-interactive elements. Apply transitions to hover, focus, and state-toggle
-properties only.
+Use `0.2s` and `var(--material-ease)` as the default transition for interactive elements. Apply transitions to hover, focus, and state-toggle properties only.
 
 ## 12. Do not do this in plugins
 

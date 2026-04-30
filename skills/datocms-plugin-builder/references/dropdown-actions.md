@@ -14,7 +14,7 @@ Dropdown actions add custom actions to context menus throughout DatoCMS. Each sc
 ## Five Action Scopes
 
 | Declaration Hook | Execute Hook | Where It Appears |
-|-----------------|-------------|-----------------|
+| - | - | - |
 | `fieldDropdownActions` | `executeFieldDropdownAction` | Individual field dropdown in record form |
 | `itemsDropdownActions` | `executeItemsDropdownAction` | Record collection view (batch select) **and** individual record edit page |
 | `itemFormDropdownActions` | `executeItemFormDropdownAction` | Record editing form top-right actions menu |
@@ -22,6 +22,7 @@ Dropdown actions add custom actions to context menus throughout DatoCMS. Each sc
 | `schemaItemTypeDropdownActions` | `executeSchemaItemTypeDropdownAction` | Schema section (model/block actions) |
 
 **`itemsDropdownActions` vs `itemFormDropdownActions`** — these are easy to confuse:
+
 - **`itemsDropdownActions`** appears in **both** the record collection list view (when users select records) **and** on individual record edit pages. Its execute hook receives an **array** of `Item` objects (even for a single record).
 - **`itemFormDropdownActions`** appears **only** in the record editing form's top-right actions dropdown. Its execute hook receives no items — instead, it has `ctx.formValues`, `ctx.item`, and all item form methods (`setFieldValue`, `saveCurrentItem`, etc.).
 

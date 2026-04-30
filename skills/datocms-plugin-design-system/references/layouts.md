@@ -27,7 +27,7 @@ Use the CMS `Page` rhythm for config screens and simpler pages.
 ### Width guidance from the CMS
 
 | Pattern | Width |
-|---|---|
+| - | - |
 | default page | about `650px` |
 | large page | about `800px` |
 | wide page | about `1200px` |
@@ -54,15 +54,13 @@ Use this order:
 2. short context line if needed
 3. actions
 
-Keep the explainer concise. It should clarify the screen, not become a
-marketing intro.
+Keep the explainer concise. It should clarify the screen, not become a marketing intro.
 
 ## 3. Sections
 
 Primary source: `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Page.css`
 
-The CMS often groups page content into sections separated by generous
-vertical space and a line-led title treatment.
+The CMS often groups page content into sections separated by generous vertical space and a line-led title treatment.
 
 Use sections for:
 
@@ -79,8 +77,7 @@ Use sections for:
 
 ## 4. Full-height shells
 
-Use the `FullHeightScrollingLayout` rhythm for plugin pages that behave more
-like CMS work areas than standard forms.
+Use the `FullHeightScrollingLayout` rhythm for plugin pages that behave more like CMS work areas than standard forms.
 
 Good fits:
 
@@ -95,8 +92,7 @@ Structure:
 - scrollable main content
 - optional bordered footer
 
-Do not stack multiple floating panels inside this shell. Let the shell do the
-structural work.
+Do not stack multiple floating panels inside this shell. Let the shell do the structural work.
 
 ## 5. Toolbars
 
@@ -135,16 +131,13 @@ For a two-pane plugin page:
 - use a neutral divider or border between panes
 - avoid nesting cards inside both panes unless the data truly needs it
 
-If the installed `datocms-react-ui` version does not provide a split helper,
-use raw flex or grid with Canvas variables.
+If the installed `datocms-react-ui` version does not provide a split helper, use raw flex or grid with Canvas variables.
 
 Split-view doc: <https://www.datocms.com/docs/plugin-sdk/sidebars-and-split-views>
 
 ## 7. Responsive considerations
 
-The CMS uses three PostCSS custom media breakpoints: `480px`, `1024px`, and
-`1700px` (mobile-first). These are **not** available in plugin CSS because
-they are PostCSS definitions, not standard `@media` queries.
+The CMS uses three PostCSS custom media breakpoints: `480px`, `1024px`, and `1700px` (mobile-first). These are **not** available in plugin CSS because they are PostCSS definitions, not standard `@media` queries.
 
 Plugins that need responsive behavior should use standard media queries:
 
@@ -153,9 +146,7 @@ Plugins that need responsive behavior should use standard media queries:
 @media (min-width: 1024px) { /* ... */ }
 ```
 
-Most plugin surfaces (sidebar panels, field extensions, modals) are narrow
-enough that breakpoints are rarely needed. When they are, common patterns
-include:
+Most plugin surfaces (sidebar panels, field extensions, modals) are narrow enough that breakpoints are rarely needed. When they are, common patterns include:
 
 - Buttons go full-width on narrow surfaces
 - Toolbar actions stack vertically below `480px`
@@ -172,8 +163,7 @@ Avoid:
 - center-stage promotional copy
 - big color blocks that do not carry state
 
-Default to the same tone as DatoCMS settings and work areas: calm, dense,
-readable, and task-first.
+Default to the same tone as DatoCMS settings and work areas: calm, dense, readable, and task-first.
 
 ## 9. Layout anti-patterns
 

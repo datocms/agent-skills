@@ -1,12 +1,11 @@
 # Plugin Surface Starters
 
-Use this file to choose the first hook pair for a new plugin. Keep the first
-version narrow.
+Use this file to choose the first hook pair for a new plugin. Keep the first version narrow.
 
 ## Surface map
 
 | Need | Start with | Add alongside | Starter notes |
-|---|---|---|---|
+| - | - | - | - |
 | Global plugin settings | `renderConfigScreen` | none | Use plain React state for simple settings. Add form libraries only when the form is genuinely complex. |
 | Field UI replacement or addon | `manualFieldExtensions` or `overrideFieldExtensions` + `renderFieldExtension` | `renderManualFieldExtensionConfigScreen` for configurable manual extensions | Prefer addon when the UI supplements the field. Never use editor mode for modular content, single block, or structured text fields. |
 | Record sidebar panel | `itemFormSidebarPanels` + `renderItemFormSidebarPanel` | none | Use a panel for compact record-side tools. |
@@ -54,5 +53,4 @@ For marketplace plugins:
 - Set a homepage
 - Declare required plugin permissions in `datoCmsPlugin.permissions`
 
-For private plugins, keep metadata minimal and grant permissions in the DatoCMS
-UI when installing the plugin.
+For private plugins, keep metadata minimal and grant permissions in the DatoCMS UI when installing the plugin.

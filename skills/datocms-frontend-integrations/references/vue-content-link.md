@@ -2,7 +2,6 @@
 
 Vue-specific wiring for `vue-datocms` Content Link in Vue and Nuxt projects.
 
-
 ## Contents
 
 - [Shared Concepts](#shared-concepts)
@@ -145,7 +144,7 @@ With options:
 ```
 
 | Option | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `scrollToNearestTarget` | boolean | false | Auto-scroll to nearest editable element if none visible |
 | `hoverOnly` | boolean | false | Only enable on hover-capable devices; touch users can still toggle with Alt/Option |
 
@@ -158,7 +157,7 @@ Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily show click-to-ed
 ## `<ContentLink>` Props
 
 | Prop | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `on-navigate-to` | `(path: string) => void` | — | Callback when Web Previews plugin requests navigation |
 | `current-path` | string | — | Current pathname to sync with Web Previews plugin |
 | `enable-click-to-edit` | `boolean \| { scrollToNearestTarget?: boolean, hoverOnly?: boolean }` | — | Enable click-to-edit overlays persistently |
@@ -189,6 +188,7 @@ const {
 ```
 
 **`enabled` options:**
+
 - `true` (default): Controller active, stega encoding preserved in DOM
 - `false`: Controller disabled
 - `{ stripStega: true }`: Controller active, permanently removes stega encoding from text nodes
@@ -315,7 +315,7 @@ Without the boundary, clicking `page.author` would open the outer group's URL.
 ### Library-Managed Attributes (Automatic)
 
 | Attribute | Description |
-|---|---|
+| - | - |
 | `data-datocms-contains-stega` | Added to elements with stega content (only when `stripStega` is false) |
 | `data-datocms-auto-content-link-url` | Added to elements identified as editable targets; contains the resolved edit URL |
 
@@ -468,19 +468,23 @@ See [content-link-concepts.md → When to Strip Stega](./content-link-concepts.m
 ## Troubleshooting
 
 ### Click-to-edit overlays not appearing
+
 1. Verify `contentLink: 'v1'` and `baseEditingUrl` are set in API calls
 2. Check that `<ContentLink>` is mounted in your component tree
 3. Enable click-to-edit: `:enable-click-to-edit="true"` or hold Alt/Option
 4. Check browser console for errors
 
 ### Navigation not syncing with Web Previews plugin
+
 1. Provide both `on-navigate-to` and `current-path` props
 2. Verify `current-path` updates on route changes
 
 ### StructuredText blocks not clickable
+
 1. Wrap with `data-datocms-content-link-group`
 2. Add `data-datocms-content-link-boundary` to `renderBlock` and `renderInlineBlock`
 
 ### Layout issues from stega encoding
+
 1. Use `strip-stega` prop: `<ContentLink :strip-stega="true" />`
 2. Or CSS fix: `[data-datocms-contains-stega] { letter-spacing: 0 !important; }`

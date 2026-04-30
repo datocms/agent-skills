@@ -1,11 +1,8 @@
 _Internal recipe for `datocms-setup`. Use this file only after the parent skill selects the `blueprint-sync` recipe and queues any prerequisites from `../../../references/recipe-manifest.json`._
 
-
 # DatoCMS Blueprint Sync Setup
 
-You are an expert at configuring one shared DatoCMS migration history across
-multiple projects by using CLI profiles. This recipe adds the minimum profile
-and helper-script scaffolding needed for repeatable multi-project rollout.
+You are an expert at configuring one shared DatoCMS migration history across multiple projects by using CLI profiles. This recipe adds the minimum profile and helper-script scaffolding needed for repeatable multi-project rollout.
 
 Follow these steps in order. Do not skip steps.
 
@@ -19,10 +16,8 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 
 1. **Node project** — Check for `package.json`
 2. **Package manager** — See `../../../patterns/MANDATORY_RULES.md`.
-3. **CLI setup** — Check for the `datocms` npm package, `datocms.config.json`, and a
-   `migrations/` directory or existing migration scripts
-4. **Existing profiles** — Inspect `datocms.config.json` for named profiles and
-   their migrations directories
+3. **CLI setup** — Check for the `datocms` npm package, `datocms.config.json`, and a `migrations/` directory or existing migration scripts
+4. **Existing profiles** — Inspect `datocms.config.json` for named profiles and their migrations directories
 5. **Environment files** — Check `.env.example`, `.env`, and `.env.local`
 6. **Existing helper** — Check for `scripts/datocms-sync-projects.mjs`
 7. **Existing workflow** — Check for `.github/workflows/datocms-sync-projects.yml`
@@ -30,10 +25,8 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 
 ### Stop conditions
 
-- If the project does not already have working CLI migration setup, stop and
-  record `migrations` as a prerequisite and continue after it is applied.
-- If the repo already has a materially different multi-profile scheme, patch it
-  in place instead of normalizing it.
+- If the project does not already have working CLI migration setup, stop and record `migrations` as a prerequisite and continue after it is applied.
+- If the repo already has a materially different multi-profile scheme, patch it in place instead of normalizing it.
 
 ---
 
@@ -66,8 +59,8 @@ Also inspect these bundled assets only when generating files:
 
 Generate only these project changes:
 
-1. **Patch `datocms.config.json`** with the blueprint profile and destination
-   profiles
+1. **Patch `datocms.config.json`** with the blueprint profile and destination profiles
+
 2. **Patch `.env.example`** with one token placeholder per named profile:
 
    ```env
@@ -75,31 +68,26 @@ Generate only these project changes:
    DATOCMS_CLIENT_A_PROFILE_API_TOKEN=your_token_here
    ```
 
-3. **Create or patch `scripts/datocms-sync-projects.mjs`** from
-   `scripts/datocms-sync-projects.mjs`
+3. **Create or patch `scripts/datocms-sync-projects.mjs`** from `scripts/datocms-sync-projects.mjs`
+
 4. **Patch `package.json`** with `datocms:sync:projects`
-5. **Optional GitHub Actions workflow** — If the user opted in, copy and adapt
-   `assets/datocms-sync.github-actions.yml` to
-   `.github/workflows/datocms-sync-projects.yml`
+
+5. **Optional GitHub Actions workflow** — If the user opted in, copy and adapt `assets/datocms-sync.github-actions.yml` to `.github/workflows/datocms-sync-projects.yml`
 
 ### Mandatory rules
 
 - Default every new profile to the same shared `./migrations` directory
-- Preserve existing per-profile migrations directories if the repo already uses
-  them and the user did not ask to change them
+- Preserve existing per-profile migrations directories if the repo already uses them and the user did not ask to change them
 - Use one helper script instead of adding many profile-specific package scripts
 - The helper may support `--dry-run`, `--source=<env>`, `--destination-template=<template>`, `--fast-fork`, and explicit `--force`, but it must not auto-promote by default
 - Do not infer project mappings from external systems or remote APIs
-- Do not create one migrations directory per project unless the repo already
-  follows that pattern
+- Do not create one migrations directory per project unless the repo already follows that pattern
 
 ---
 
 ## Step 5: Install Dependencies
 
-Do not add any new dependencies for this setup unless the repo already depends
-on a helper runtime outside Node built-ins. The bundled helper must work with
-Node built-ins only.
+Do not add any new dependencies for this setup unless the repo already depends on a helper runtime outside Node built-ins. The bundled helper must work with Node built-ins only.
 
 ---
 
@@ -112,8 +100,7 @@ After generating the files, tell the user:
 3. Use `--destination-template` or `--source` only when the rollout needs something other than the default pattern
 4. Promote destination environments manually after review
 5. Whether the result is `scaffolded` or `production-ready`
-6. Optional follow-up recipe id: `migration-release-workflow` when they want a
-   promote-included release helper for a single project
+6. Optional follow-up recipe id: `migration-release-workflow` when they want a promote-included release helper for a single project
 
 Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including an explicit `Unresolved placeholders` section.
 
@@ -124,8 +111,7 @@ Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, i
 Before presenting the result, verify:
 
 1. `datocms.config.json` contains the requested named profiles
-2. New profiles default to one shared `./migrations` directory unless an
-   existing different convention was preserved
+2. New profiles default to one shared `./migrations` directory unless an existing different convention was preserved
 3. `.env.example` contains token placeholders for each named profile
 4. `scripts/datocms-sync-projects.mjs` exists
 5. `package.json` contains `datocms:sync:projects`

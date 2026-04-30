@@ -2,7 +2,6 @@
 
 This reference contains the exact code patterns for implementing draft mode in an Astro project with DatoCMS. Sections are organized by feature — always follow `## Core`, then follow optional sections only for features the user selected.
 
-
 ## Contents
 
 - [Core](#core)
@@ -68,6 +67,7 @@ export const GET: APIRoute = (event) => {
 ```
 
 Key points:
+
 - Uses `astro:env/server` for environment variables (type-safe env access)
 - Uses `event.redirect(url, 307)` for redirects (Astro's API context method)
 - Exports `GET` as an `APIRoute`
@@ -179,6 +179,7 @@ export function draftModeHeaders(): HeadersInit {
 ```
 
 Key points:
+
 - JWT payload is `{ enabled: true }` (same as SvelteKit)
 - Cookie name from `astro:env/client`, JWT secret from `astro:env/server`
 - `partitioned: true` is spread with a cast `as AstroCookieSetOptions` because Astro's cookie types may not include `partitioned` yet
@@ -257,6 +258,7 @@ export function isRelativeUrl(path: string) {
 ```
 
 Key points:
+
 - Astro does NOT have a built-in `json()` response helper, so we define our own using `new Response(JSON.stringify(...))`
 - Same `withCORS`, `handleUnexpectedError`, `isRelativeUrl` pattern as other frameworks
 
@@ -352,6 +354,7 @@ export default defineConfig({
 ```
 
 Key points:
+
 - `output: 'server'` — Required for API routes to work (Astro defaults to static)
 - `env.schema` — Defines type-safe env vars with `envField.string()`
   - `context: 'server'` + `access: 'secret'` → only available server-side via `astro:env/server`
@@ -371,11 +374,13 @@ DRAFT_MODE_COOKIE_NAME=               # Cookie name, e.g. "datocms-draft-mode"
 ### Core Dependencies
 
 Required (install if missing):
+
 - `jsonwebtoken` — For signing/verifying JWT cookies
 - `@types/jsonwebtoken` — TypeScript types (dev dependency)
 - `serialize-error` — For serializing error objects
 
 Optional for Web Previews helpers:
+
 - `@datocms/cma-client` — For `RawApiTypes`
 
 ---
@@ -456,6 +461,7 @@ export const POST: APIRoute = async ({ url, request }) => {
 ```
 
 Key points:
+
 - **Astro uses `itemType.attributes.api_key`** (the model's API key string like `'blog_post'`), NOT the model ID. This differs from Next.js/Nuxt/SvelteKit which use the numeric model ID — the `api_key` approach is preferred because it is human-readable and stable across environments
 - Uses the custom `json()` helper from utils
 
@@ -497,6 +503,7 @@ export function recordToWebsiteRoute(
 ```
 
 Key points:
+
 - **Switches on API key strings** (e.g., `'page'`, `'blog_post'`), NOT model IDs
 - This is different from Next.js, Nuxt, and SvelteKit which use model IDs
 
@@ -798,6 +805,7 @@ const data = await executeQuery(myQuery, {
 ```
 
 Key points:
+
 - Only renders the `QueryListener` when draft mode is enabled
 - Automatically injects `token`, `includeDrafts`, `excludeInvalid`
 - The `Props` type omits these fields so callers cannot override them

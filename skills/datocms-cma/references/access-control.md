@@ -21,7 +21,7 @@ The complete computed permission set (own + inherited via `inherits_permissions_
 Top-level enum on a role, **not** a per-permission flag:
 
 | Value | Effect |
-|---|---|
+| - | - |
 | `"all"` | Every environment, primary + sandboxes |
 | `"primary_only"` | Primary only |
 | `"sandbox_only"` | Any sandbox, never primary |

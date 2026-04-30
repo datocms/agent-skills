@@ -39,7 +39,7 @@ The SDK supports 40+ hooks in total. Here is every hook, grouped by category:
 ### Declaration Hooks (return data, no DOM access)
 
 | Hook | Purpose |
-|------|---------|
+| - | - |
 | `manualFieldExtensions` | Declare field extensions users can install on fields |
 | `overrideFieldExtensions` | Programmatically force field extensions onto fields |
 | `itemFormSidebarPanels` | Declare collapsible panels in the record editing sidebar |
@@ -66,7 +66,7 @@ The SDK supports 40+ hooks in total. Here is every hook, grouped by category:
 ### Render Hooks (render UI into iframes)
 
 | Hook | Frame Type | Purpose |
-|------|-----------|---------|
+| - | - | - |
 | `renderFieldExtension` | `SelfResizingPluginFrameCtx` | Render a field extension |
 | `renderManualFieldExtensionConfigScreen` | `SelfResizingPluginFrameCtx` | Render per-field config for a configurable extension |
 | `renderItemFormSidebarPanel` | `SelfResizingPluginFrameCtx` | Render a collapsible sidebar panel |
@@ -87,7 +87,7 @@ Frame types determine iframe sizing behavior: `SelfResizingPluginFrameCtx` auto-
 ### Lifecycle Hooks (no UI, run in hidden iframe)
 
 | Hook | Purpose |
-|------|---------|
+| - | - |
 | `onBoot` | Plugin initialization, parameter migration, integrity checks |
 | `onBeforeItemUpsert` | Before a record is saved — can block the save |
 | `onBeforeItemsPublish` | Before publishing records — can block |
@@ -97,7 +97,7 @@ Frame types determine iframe sizing behavior: `SelfResizingPluginFrameCtx` auto-
 ### Execute Hooks (triggered by dropdown action clicks, no UI)
 
 | Hook | Purpose |
-|------|---------|
+| - | - |
 | `executeFieldDropdownAction` | Run when a field dropdown action is clicked |
 | `executeItemsDropdownAction` | Run when a record dropdown action is clicked |
 | `executeItemFormDropdownAction` | Run when a record form dropdown action is clicked |
@@ -139,6 +139,7 @@ connect({
 ## The `Canvas` Wrapper
 
 Every rendered component **must** be wrapped in `<Canvas ctx={ctx}>`. Canvas:
+
 - Injects CSS custom properties for theming (accent color, font, spacing)
 - Starts the auto-resizer (for self-resizing frames)
 - Provides context via `useCtx()` hook
@@ -195,15 +196,18 @@ For hooks that use `ImposedSizePluginFrameCtx` (pages, full-width sidebars, insp
 Render hooks receive one of two frame context types:
 
 ### `SelfResizingPluginFrameCtx`
+
 For components embedded within the DatoCMS page (field extensions, sidebar panels, config screen, modals, asset sources, outlets, upload sidebar panels). The iframe auto-resizes to fit content.
 
 **Additional sizing utilities available:**
+
 - `ctx.startAutoResizer()` — auto-resize on DOM changes (Canvas does this for you)
 - `ctx.stopAutoResizer()` — stop auto-resizing
 - `ctx.updateHeight(newHeight?)` — manually set height
 - `ctx.setHeight(number)` — set exact iframe height
 
 ### `ImposedSizePluginFrameCtx`
+
 For full-screen contexts (pages, full-width sidebars, inspectors). DatoCMS controls the iframe size — no auto-resize.
 
 ## Base Context Properties (available in ALL hooks)
@@ -371,11 +375,13 @@ try {
 Icons can be specified in two ways:
 
 ### FontAwesome string
+
 ```ts
 icon: 'calendar'  // FontAwesome icon name (without "fa-" prefix)
 ```
 
 ### Custom SVG
+
 ```ts
 icon: {
   type: 'svg',
@@ -385,6 +391,7 @@ icon: {
 ```
 
 For content area sidebar items, emojis are also supported:
+
 ```ts
 icon: { type: 'emoji', emoji: '📅' }
 ```
@@ -415,7 +422,7 @@ When plugin parameters evolve over time (e.g., adding new settings, restructurin
 Declaration hooks tell DatoCMS _what_ exists. Render hooks tell it _how_ to display it. They are paired by ID:
 
 | Declaration Hook | Render Hook | ID Parameter |
-|-----------------|-------------|-------------|
+| - | - | - |
 | `manualFieldExtensions` | `renderFieldExtension` | `fieldExtensionId` |
 | `itemFormSidebarPanels` | `renderItemFormSidebarPanel` | `sidebarPaneId` |
 | `itemFormSidebars` | `renderItemFormSidebar` | `sidebarId` |
@@ -540,29 +547,21 @@ if (item) {
 
 Inside `<Canvas>`, DatoCMS injects CSS custom properties that match the project's theme. Use these instead of hardcoded colors to keep your plugin visually consistent:
 
-**Text:**
-`--base-body-color`, `--light-body-color`, `--placeholder-body-color`
+**Text:** `--base-body-color`, `--light-body-color`, `--placeholder-body-color`
 
-**UI surfaces:**
-`--light-bg-color`, `--lighter-bg-color`, `--disabled-bg-color`
+**UI surfaces:** `--light-bg-color`, `--lighter-bg-color`, `--disabled-bg-color`
 
-**Borders:**
-`--border-color`, `--darker-border-color`
+**Borders:** `--border-color`, `--darker-border-color`
 
-**Semantic colors:**
-`--alert-color`, `--warning-color`, `--warning-bg-color`, `--notice-color`, `--add-color`, `--remove-color`
+**Semantic colors:** `--alert-color`, `--warning-color`, `--warning-bg-color`, `--notice-color`, `--add-color`, `--remove-color`
 
-**Project theme (set by DatoCMS admins):**
-`--accent-color`, `--primary-color`, `--light-color`, `--dark-color`
+**Project theme (set by DatoCMS admins):** `--accent-color`, `--primary-color`, `--light-color`, `--dark-color`
 
-**Typography:**
-`--base-font-family`, `--monospaced-font-family`, `--font-size-xxs`, `--font-size-xs`, `--font-size-s`, `--font-size-m`, `--font-size-l`, `--font-size-xl`, `--font-size-xxl`, `--font-size-xxxl`, `--font-weight-bold`
+**Typography:** `--base-font-family`, `--monospaced-font-family`, `--font-size-xxs`, `--font-size-xs`, `--font-size-s`, `--font-size-m`, `--font-size-l`, `--font-size-xl`, `--font-size-xxl`, `--font-size-xxxl`, `--font-weight-bold`
 
-**Spacing:**
-`--spacing-s`, `--spacing-m`, `--spacing-l`, `--spacing-xl`, `--spacing-xxl`, `--spacing-xxxl` (and negative variants `--negative-spacing-*`)
+**Spacing:** `--spacing-s`, `--spacing-m`, `--spacing-l`, `--spacing-xl`, `--spacing-xxl`, `--spacing-xxxl` (and negative variants `--negative-spacing-*`)
 
-**Animation:**
-`--material-ease`, `--inertial-ease`
+**Animation:** `--material-ease`, `--inertial-ease`
 
 ```tsx
 // Example: use theme-consistent styles

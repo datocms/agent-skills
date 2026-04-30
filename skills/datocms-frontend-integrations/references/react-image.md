@@ -4,7 +4,6 @@ React components for progressive/responsive images from DatoCMS, designed to wor
 
 See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, best practices, and layout modes.
 
-
 ## Contents
 
 - [`<SRCImage />` vs `<Image />`](#srcimage-vs-image-)
@@ -20,7 +19,7 @@ See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, be
 ## `<SRCImage />` vs `<Image />`
 
 | | `<SRCImage />` | `<Image />` |
-|---|---|---|
+| - | - | - |
 | Component type | React Server Component | Client Component |
 | JS footprint | None (zero JS) | Has JS bundle |
 | HTML output | Single `<picture>` element | Multiple wrapper elements around `<picture>` |
@@ -29,6 +28,7 @@ See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, be
 | Transparency | Not recommended if image has alpha channel (placeholder stays behind) | Safe for transparent images |
 
 **When to use which:**
+
 - Use `<SRCImage />` by default — zero JS, simpler output, works as RSC
 - Use `<Image />` when you need crossfade effects, custom lazy-loading thresholds, or images with transparency
 
@@ -65,7 +65,7 @@ function BlogPost({ data }) {
 ## `<SRCImage />` Props
 
 | Prop | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `data` | `ResponsiveImage` | **(required)** | Response from `responsiveImage` GraphQL query |
 | `pictureClassName` | string | null | Additional className for root `<picture>` tag |
 | `pictureStyle` | CSS properties | null | Additional CSS for root `<picture>` tag |
@@ -81,7 +81,7 @@ function BlogPost({ data }) {
 ## `<Image />` Props
 
 | Prop | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `data` | `ResponsiveImage` | **(required)** | Response from `responsiveImage` GraphQL query |
 | `layout` | `'intrinsic' \| 'fixed' \| 'responsive' \| 'fill'` | `"intrinsic"` | Layout behavior as viewport changes size |
 | `fadeInDuration` | integer | 500 | Duration (ms) of fade-in transition on load |

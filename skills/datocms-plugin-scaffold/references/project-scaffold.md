@@ -377,8 +377,7 @@ Output goes to `dist/`. The `dist/index.html` is the entry point DatoCMS loads.
 
 ## After Scaffold: first release checklist
 
-Once the first local build works, check the official plugin lifecycle docs that
-match the next step:
+Once the first local build works, check the official plugin lifecycle docs that match the next step:
 
 - **Additional permissions** — if the plugin needs new capabilities such as `currentUserAccessToken`
 - **Publishing to Marketplace** — if the plugin will be public
@@ -396,11 +395,13 @@ When the plugin is ready:
 DatoCMS can install plugins directly from npm using the `datocms-plugin` keyword.
 
 **Requirements**:
+
 - Package name **must** start with `datocms-plugin-`
 - `keywords` array **must** contain `"datocms-plugin"`
 - `homepage` **must** be set to the plugin's project URL (e.g., GitHub repo)
 - All paths in `dist/index.html` must be **relative** (the `base: './'` in vite.config.ts handles this)
 
 **Optional marketplace assets** (add to `datoCmsPlugin` in package.json):
+
 - `previewImage`: path to an MP4 or image showing the plugin in action
 - `coverImage`: path to a cover image for the marketplace listing

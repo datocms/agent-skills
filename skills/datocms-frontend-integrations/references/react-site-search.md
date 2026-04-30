@@ -4,7 +4,6 @@ React hook for building a [DatoCMS Site Search](https://www.datocms.com/docs/sit
 
 See `site-search-concepts.md` for shared initialization options, state behavior, and loading patterns.
 
-
 ## Contents
 
 - [Installation](#installation)
@@ -72,7 +71,7 @@ function SearchWidget() {
 See `site-search-concepts.md` for shared options. React additionally supports:
 
 | Option | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `highlightMatch` | `(match, key, context: 'title' \| 'bodyExcerpt') => ReactNode` | `(text, key) => <mark key={key}>{text}</mark>` | Custom match highlighting |
 | `initialState.query` | string | `''` | Initial search query |
 | `initialState.locale` | string | `null` | Initial locale filter |

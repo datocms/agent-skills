@@ -27,7 +27,7 @@ The API token should be a read-only token with Site Search permissions.
 ## Initialization Options
 
 | Option | Type | Required | Default | Description |
-|---|---|---|---|---|
+| - | - | - | - | - |
 | `client` | CMA Client instance | Yes | — | Instance from `buildClient()` of `@datocms/cma-client-browser` |
 | `searchIndexId` | string | Yes | — | Search index ID from the DatoCMS dashboard |
 | `fuzzySearch` | boolean | No | `false` | Enable approximate matching |

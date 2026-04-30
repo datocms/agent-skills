@@ -19,6 +19,7 @@ Pick a descriptive label for the run. Default to today's date if none provided.
 **Step 1 — Classify:**
 
 For Claude Code:
+
 ```bash
 python3 evals/scripts/run_claude_trigger_eval.py \
   --repo-root . \
@@ -27,6 +28,7 @@ python3 evals/scripts/run_claude_trigger_eval.py \
 ```
 
 For Codex:
+
 ```bash
 python3 evals/scripts/run_codex_trigger_eval.py \
   --repo-root . \

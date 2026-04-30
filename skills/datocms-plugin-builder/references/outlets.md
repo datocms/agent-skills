@@ -37,17 +37,20 @@ renderItemFormOutlet(itemFormOutletId: string, ctx: RenderItemFormOutletCtx): vo
 A `SelfResizingPluginFrameCtx` (auto-resizing iframe) with all item form properties and methods.
 
 **Additional properties:**
+
 ```
 ctx.itemFormOutletId  // string — the outlet ID being rendered
 ```
 
 **Item form properties:**
+
 ```
 ctx.locale, ctx.item, ctx.itemType, ctx.formValues, ctx.itemStatus,
 ctx.isSubmitting, ctx.isFormDirty, ctx.blocksAnalysis
 ```
 
 **Item form methods:**
+
 ```
 ctx.setFieldValue(path, value)
 ctx.toggleField(path, show)
@@ -163,6 +166,7 @@ renderItemCollectionOutlet(
 A `SelfResizingPluginFrameCtx` (auto-resizing iframe). Does NOT have item form methods (there's no single record being edited).
 
 **Additional properties:**
+
 ```
 ctx.itemCollectionOutletId  // string — the outlet ID being rendered
 ctx.itemType                // ItemType — the model whose collection is displayed

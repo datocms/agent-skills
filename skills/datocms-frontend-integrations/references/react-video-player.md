@@ -4,7 +4,6 @@ See `video-player-concepts.md` for the shared GraphQL query, video field definit
 
 React component for DatoCMS/Mux video streaming, designed to work with the `video` GraphQL query.
 
-
 ## Contents
 
 - [Installation](#installation)
@@ -46,13 +45,13 @@ function BlogPost({ data }) {
 `<VideoPlayer />` accepts all [MuxPlayer props](https://github.com/muxinc/elements/blob/main/packages/mux-player-react/REFERENCE.md) plus `data`:
 
 | Prop | Type | Required | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `data` | `Video` object | Yes | Response from DatoCMS `video` GraphQL query |
 
 ### Default Prop Differences from `<MuxPlayer />`
 
 | Prop | `<VideoPlayer />` Default | `<MuxPlayer />` Default | Notes |
-|---|---|---|---|
+| - | - | - | - |
 | `disableCookies` | `true` | `false` | Privacy-first by default |
 | `disableTracking` | `true` | `false` | No analytics unless opted in |
 | `preload` | `"metadata"` | varies | Optimal UX with saved bandwidth |
@@ -83,4 +82,3 @@ function CustomPlayer({ videoData }) {
   return <MuxPlayer {...props} />;
 }
 ```
-

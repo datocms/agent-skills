@@ -35,8 +35,7 @@ Use grouped titles sparingly. A flat list is often better.
 
 ## 2. Tabs
 
-Tabs are acceptable for a small set of peer views. Use them when the content
-belongs on the same screen and users switch frequently.
+Tabs are acceptable for a small set of peer views. Use them when the content belongs on the same screen and users switch frequently.
 
 Avoid tabs when a vertical section flow would be clearer.
 
@@ -57,8 +56,7 @@ Tables in the CMS are left-aligned, border-led, and compact.
 - bottom borders for row separation
 - white cells and limited surface decoration
 
-Use tables for structured comparison or operational lists. Use simple stacked
-rows for lighter metadata views.
+Use tables for structured comparison or operational lists. Use simple stacked rows for lighter metadata views.
 
 ## 4. Lists and summary rows
 
@@ -89,8 +87,7 @@ Bad blank slate content:
 
 ## 6. Notices and info blocks
 
-Use a notice or info block when users need contextual guidance that should
-stay attached to the screen.
+Use a notice or info block when users need contextual guidance that should stay attached to the screen.
 
 ### Notice
 
@@ -98,8 +95,7 @@ Use a muted surface block when the message is informative or transitional.
 
 ### Info block
 
-Use a highlighted left-edge treatment for stronger guidance, warnings, or
-multi-line contextual details.
+Use a highlighted left-edge treatment for stronger guidance, warnings, or multi-line contextual details.
 
 Keep both compact. If the message becomes a tutorial, move it elsewhere.
 

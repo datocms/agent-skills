@@ -2,7 +2,6 @@
 
 Svelte-specific wiring for `@datocms/svelte` Content Link in Svelte and SvelteKit projects.
 
-
 ## Contents
 
 - [Shared Concepts](#shared-concepts)
@@ -107,7 +106,7 @@ With options:
 ```
 
 | Option | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `scrollToNearestTarget` | boolean | false | Auto-scroll to nearest editable element if none visible |
 | `hoverOnly` | boolean | false | Only enable on hover-capable devices; touch users can still toggle with Alt/Option |
 
@@ -120,7 +119,7 @@ Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily show click-to-ed
 ## `<ContentLink />` Props
 
 | Prop | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `onNavigateTo` | `(path: string) => void` | — | Callback when Web Previews plugin requests navigation |
 | `currentPath` | string | — | Current pathname to sync with Web Previews plugin |
 | `enableClickToEdit` | `boolean \| ClickToEditOptions` | — | Enable click-to-edit overlays persistently |
@@ -198,7 +197,7 @@ Without the boundary, clicking `page.author` would open the outer group's URL.
 ### Library-Managed Attributes (Automatic)
 
 | Attribute | Description |
-|---|---|
+| - | - |
 | `data-datocms-contains-stega` | Added to elements with stega content (only when `stripStega` is false) |
 | `data-datocms-auto-content-link-url` | Added to elements identified as editable targets; contains the resolved edit URL |
 
@@ -350,19 +349,23 @@ See [content-link-concepts.md → When to Strip Stega](./content-link-concepts.m
 ## Troubleshooting
 
 ### Click-to-edit overlays not appearing
+
 1. Verify `contentLink: 'v1'` and `baseEditingUrl` are set in API calls
 2. Check that `<ContentLink />` is mounted in your component tree
 3. Enable click-to-edit: `<ContentLink enableClickToEdit={true} />` or hold Alt/Option
 4. Check browser console for errors
 
 ### Navigation not syncing with Web Previews plugin
+
 1. Provide both `onNavigateTo` and `currentPath` props
 2. Verify `currentPath` updates on navigation (use `page.url.pathname` in SvelteKit)
 
 ### StructuredText blocks not clickable
+
 1. Wrap with `data-datocms-content-link-group`
 2. Add `data-datocms-content-link-boundary` to block, inline block, and inline item components
 
 ### Layout issues from stega encoding
+
 1. Use `stripStega` prop: `<ContentLink stripStega={true} />`
 2. Or CSS fix: `[data-datocms-contains-stega] { letter-spacing: 0 !important; }`

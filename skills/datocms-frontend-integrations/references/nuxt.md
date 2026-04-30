@@ -2,7 +2,6 @@
 
 This reference contains the exact code patterns for implementing draft mode in a Nuxt project with DatoCMS. Sections are organized by feature — always follow `## Core`, then follow optional sections only for features the user selected.
 
-
 ## Contents
 
 - [Core](#core)
@@ -70,6 +69,7 @@ export default eventHandler(async (event) => {
 ```
 
 Key points:
+
 - Uses Nuxt auto-imports: `eventHandler`, `getQuery`, `useRuntimeConfig`, `sendRedirect`, `createError`
 - Uses `url` as the redirect parameter name (not `redirect` like other frameworks)
 - Token comes from `useRuntimeConfig().secretApiToken`
@@ -174,6 +174,7 @@ export function draftModeHeaders(): HeadersInit {
 ```
 
 Key points:
+
 - The JWT payload contains the actual draft CDA token (`datocmsDraftContentCdaToken`). This is decoded on the client to use for real-time subscriptions.
 - Uses `setCookie`, `deleteCookie`, `getCookie` from Nuxt/H3 auto-imports
 - Cookie options: `partitioned: true`, `secure: true`, `sameSite: 'none'`
@@ -237,6 +238,7 @@ export function isRelativeUrl(path: string): boolean {
 ```
 
 Key points:
+
 - Uses `createError` from Nuxt auto-imports (H3)
 - Error handling uses `throw createError()` instead of returning a Response (Nuxt pattern)
 - The `ensureHttpMethods` helper validates HTTP methods
@@ -265,6 +267,7 @@ export function useDraftMode() {
 ```
 
 Key points:
+
 - Decodes the JWT cookie on the client side to extract the draft CDA token
 - Returns `false` if no cookie or invalid JWT
 - Returns the decoded payload (with `datocmsDraftContentCdaToken`) if valid
@@ -319,6 +322,7 @@ export async function useQuery<Result, Variables>(
 ```
 
 Key points:
+
 - Uses `buildRequestInit` from `@datocms/cda-client` with Nuxt's `useFetch`
 - Token switching: draft token from decoded JWT cookie, published token from public runtime config
 - Returns the data directly (no real-time subscription in core version)
@@ -348,6 +352,7 @@ export default defineNuxtConfig({
 ```
 
 Key points:
+
 - Private config keys are set by `NUXT_` prefixed env vars
 - Public config keys are set by `NUXT_PUBLIC_` prefixed env vars
 
@@ -364,12 +369,14 @@ NUXT_PUBLIC_DRAFT_MODE_COOKIE_NAME=                  # Cookie name, e.g. "datocm
 ### Core Dependencies
 
 Required (install if missing):
+
 - `jsonwebtoken` — For signing/verifying JWT cookies
 - `@types/jsonwebtoken` — TypeScript types (dev dependency)
 - `serialize-error` — For serializing error objects
 - `jwt-decode` — For decoding JWT on the client side (used in `useDraftMode` composable)
 
 Optional for Web Previews helpers:
+
 - `@datocms/cma-client` — For `RawApiTypes` and `ApiTypes`
 
 ---
@@ -460,6 +467,7 @@ export default eventHandler(async (event) => {
 ```
 
 Key points:
+
 - Uses `readBody` to parse the request body (Nuxt auto-import)
 - Uses `getRequestURL(event)` for the base URL
 - Uses `url` as the redirect query parameter (matching the enable/disable endpoints)
@@ -504,8 +512,9 @@ export function recordToWebsiteRoute(
 ```
 
 Key points:
+
 - Nuxt passes `itemTypeId` as a separate parameter (from `itemType.id` in the request body)
-- Switches on model ID strings (not api_key)
+- Switches on model ID strings (not api\_key)
 
 ### Nuxt Config CORS Addition
 
@@ -819,6 +828,7 @@ export async function useQuery<Result, Variables>(
 ```
 
 Key points:
+
 - When draft mode is ON and running client-side, uses `useQuerySubscription` from `vue-datocms`
 - When draft mode is OFF or running server-side, returns data directly
 

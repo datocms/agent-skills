@@ -1,13 +1,13 @@
 # Environment Commands
 
-Managing DatoCMS environments (sandboxes) and making direct CMA calls from the
-CLI.
+Managing DatoCMS environments (sandboxes) and making direct CMA calls from the CLI.
 
 ---
 
 ## Inputs to confirm before running commands
 
 Confirm these inputs when they are not already clear:
+
 - exact environment ids involved
 - whether the target is disposable
 - whether the action is read-only, destructive, or promotion-related
@@ -33,8 +33,7 @@ Create a new sandbox environment by forking an existing one:
 npx datocms environments:fork <SOURCE_ENVIRONMENT_ID> <NEW_ENVIRONMENT_ID>
 ```
 
-Run `npx datocms environments:fork --help` for all flags (including `--fast`
-and `--force`).
+Run `npx datocms environments:fork --help` for all flags (including `--fast` and `--force`).
 
 ### Examples
 
@@ -71,8 +70,7 @@ npx datocms environments:promote staging
 
 ## cma:call (Environment-Specific Usage)
 
-For one-off environment operations from the terminal, `cma:call` can target
-environments directly:
+For one-off environment operations from the terminal, `cma:call` can target environments directly:
 
 ```bash
 # List all environments
@@ -86,8 +84,6 @@ npx datocms cma:call items list --environment=staging
 npx datocms cma:call item_types list --environment=my-feature
 ```
 
-> **Prefer the dedicated CLI commands** (`environments:fork`, `environments:promote`,
-> etc.) over `cma:call environments` — they have better flags and output.
+> **Prefer the dedicated CLI commands** (`environments:fork`, `environments:promote`, etc.) over `cma:call environments` — they have better flags and output.
 
-For full `cma:call` documentation — all resources, methods, flags, pagination,
-JSON5 syntax, and scripting patterns — see `references/direct-cma-calls.md`.
+For full `cma:call` documentation — all resources, methods, flags, pagination, JSON5 syntax, and scripting patterns — see `references/direct-cma-calls.md`.

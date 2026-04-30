@@ -23,9 +23,7 @@ disable-model-invocation: true
 
 # DatoCMS Setup
 
-This is the single public setup entrypoint for DatoCMS project scaffolding.
-Keep the public surface small, inspect the repo first, and load only the
-internal recipe files needed for the user's requested outcome.
+This is the single public setup entrypoint for DatoCMS project scaffolding. Keep the public surface small, inspect the repo first, and load only the internal recipe files needed for the user's requested outcome.
 
 ## Workflow
 

@@ -1,15 +1,13 @@
 # Connect Conventions Reference
 
-Load this file before `sdk-architecture.md` when the task only needs hook wiring
-or render-surface conventions.
+Load this file before `sdk-architecture.md` when the task only needs hook wiring or render-surface conventions.
 
 ## Quick checklist
 
 - Inspect the existing `connect()` call before changing hooks.
 - Keep exactly one top-level `connect()` call.
 - Reuse the current file layout unless a new file keeps the patch smaller.
-- Update declaration, render, and execute pairs together when a surface needs
-  both sides.
+- Update declaration, render, and execute pairs together when a surface needs both sides.
 - Import `'datocms-react-ui/styles.css'` once in the entry file.
 - Reuse one shared `render()` helper.
 - Wrap rendered UI in `<Canvas ctx={ctx}>`.
@@ -21,7 +19,7 @@ or render-surface conventions.
 ## Hook pair map
 
 | Surface | Declaration / trigger side | Render / execute side |
-|---|---|---|
+| - | - | - |
 | Field extension | `manualFieldExtensions` or `overrideFieldExtensions` | `renderFieldExtension` |
 | Manual field extension config | `manualFieldExtensions` with `configurable: true` | `renderManualFieldExtensionConfigScreen` |
 | Sidebar panel | `itemFormSidebarPanels` | `renderItemFormSidebarPanel` |
@@ -66,8 +64,7 @@ Use `<Canvas ctx={ctx} noAutoResizer>` for imposed-size surfaces:
 
 ## When to load the larger architecture reference
 
-Load `references/sdk-architecture.md` only when you need deeper SDK details,
-such as:
+Load `references/sdk-architecture.md` only when you need deeper SDK details, such as:
 
 - base `ctx` methods or repositories beyond the touched surface
 - plugin CMA usage details

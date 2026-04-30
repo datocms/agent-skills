@@ -24,7 +24,7 @@ query {
 Each element in the array:
 
 | Field | Type | Description |
-|---|---|---|
+| - | - | - |
 | `tag` | `String` | HTML tag name (e.g., `"meta"`, `"title"`, `"link"`) |
 | `attributes` | `MetaTagAttributes` | Key-value pairs for tag attributes (e.g., `{ "property": "og:title", "content": "Hello" }`) |
 | `content` | `String` | Inner content of the tag (for elements like `<title>`) |
@@ -67,7 +67,7 @@ query {
 ```
 
 | Variant | Description |
-|---|---|
+| - | - |
 | `icon` | Standard favicon tags |
 | `appleTouchIcon` | Apple touch icon tags |
 | `msApplication` | Microsoft application tile tags |
@@ -145,7 +145,7 @@ query {
 ```
 
 | Field | Type | Description |
-|---|---|---|
+| - | - | - |
 | `title` | `String` | SEO title override |
 | `description` | `String` | Meta description override |
 | `image` | `Upload` | Social sharing image |

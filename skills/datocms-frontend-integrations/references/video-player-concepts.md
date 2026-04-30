@@ -28,7 +28,7 @@ query {
 ## Video Object Fields
 
 | Field | Type | Required | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `muxPlaybackId` | string | Yes | Identifies the video to stream from Mux CDN |
 | `title` | string | No | Displayed in the player overlay |
 | `width` | integer | No | Video width (used with `height` for `aspectRatio` style) |
@@ -43,7 +43,7 @@ query {
 All DatoCMS video player components override upstream Mux player defaults to be privacy-first:
 
 | Setting | DatoCMS Default | Mux Default |
-|---|---|---|
+| - | - | - |
 | Cookies | Disabled | Enabled |
 | Tracking/Analytics | Disabled | Enabled |
 | Preload | `"metadata"` | Varies |
@@ -63,7 +63,7 @@ Video playback analytics are **disabled by default**. To enable:
 ## Peer Dependencies
 
 | Framework | Player package |
-|---|---|
+| - | - |
 | React | `@mux/mux-player-react` |
 | Vue | `@mux/mux-player` (web component) |
 | Svelte | `@mux/mux-player` (web component) |

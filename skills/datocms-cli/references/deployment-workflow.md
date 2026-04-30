@@ -7,6 +7,7 @@ Maintenance mode, safe deployment sequences, and CI/CD integration.
 ## Inputs to confirm before running commands
 
 Confirm these inputs when they are not already clear:
+
 - CLI profile to use
 - destination environment naming convention
 - whether maintenance mode is acceptable for this release
@@ -26,14 +27,12 @@ npx datocms maintenance:on
 Flags:
 
 | Flag | Type | Description |
-|---|---|---|
+| - | - | - |
 | `--force` | boolean | Activate even if users are currently editing records |
 
-When maintenance mode is active, the DatoCMS editing interface is locked and
-editors cannot make content changes.
+When maintenance mode is active, the DatoCMS editing interface is locked and editors cannot make content changes.
 
-Use `--force` only as an explicit override when you understand that active
-editing sessions may be interrupted.
+Use `--force` only as an explicit override when you understand that active editing sessions may be interrupted.
 
 ### Turn off maintenance mode
 
@@ -64,8 +63,7 @@ npx datocms environments:promote release-v2
 npx datocms maintenance:off
 ```
 
-If editors are active and the team intentionally accepts the risk, you can add
-`--force` to the maintenance step.
+If editors are active and the team intentionally accepts the risk, you can add `--force` to the maintenance step.
 
 ### Why This Order Matters
 
@@ -154,8 +152,7 @@ jobs:
         if: always()
 ```
 
-Add `--force` to the maintenance step only when the release process explicitly
-accepts the active-editor risk.
+Add `--force` to the maintenance step only when the release process explicitly accepts the active-editor risk.
 
 ### Key CI/CD Considerations
 

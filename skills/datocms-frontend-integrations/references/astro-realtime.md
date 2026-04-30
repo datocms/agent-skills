@@ -6,7 +6,6 @@ Astro component for live content reloads via DatoCMS's [Real-time Updates API](h
 
 See `realtime-concepts.md` for shared initialization options and the `fetcher` gotcha.
 
-
 ## Contents
 
 - [Setup](#setup)
@@ -138,7 +137,7 @@ See `realtime-concepts.md` for the full options table. `<QueryListener />` accep
 ## Key Differences from React, Vue, and Svelte
 
 | Feature | React / Vue / Svelte | Astro |
-|---|---|---|
+| - | - | - |
 | Mechanism | Live data update in place | Page reload on content change |
 | Component/hook | `useQuerySubscription` / `querySubscription` | `<QueryListener />` |
 | State management | Returns reactive `data`, `error`, `status` | No client state — server re-renders on reload |

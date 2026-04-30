@@ -2,7 +2,6 @@
 
 This reference covers core concepts that apply to all frameworks when implementing draft mode for DatoCMS.
 
-
 ## Contents
 
 - [Overview](#overview)
@@ -24,6 +23,7 @@ Draft mode allows content editors to preview unpublished content on the frontend
 - **Draft Content CDA Token** — Used in draft mode, returns draft (unpublished) content alongside published content
 
 When an editor enables draft mode, the frontend:
+
 1. Receives a request at the **enable endpoint** with a secret token
 2. Sets a **draft mode cookie** (framework-specific mechanism)
 3. Redirects to the content page
@@ -166,6 +166,7 @@ function handleUnexpectedError(error: unknown) {
 ```
 
 This pattern:
+
 1. Logs the error
 2. Serializes the error into a response-safe shape with `serialize-error`
 
@@ -180,7 +181,7 @@ If a companion feature later adds direct DatoCMS client calls, you can extend th
 All frameworks need these core environment variables (names vary by framework):
 
 | Variable | Description | Where to find it |
-|---|---|---|
+| - | - | - |
 | Published Content CDA Token | Read-only token for published content | DatoCMS → Settings → API tokens → Create with "Published" access |
 | Draft Content CDA Token | Read-only token for draft content | DatoCMS → Settings → API tokens → Create with "Include drafts" checked |
 | Secret API Token | Shared secret for endpoint authentication | Generate with `openssl rand -hex 32` |
@@ -196,13 +197,16 @@ Next.js does NOT need the JWT secret or cookie name variables because it uses th
 For frameworks without a built-in draft mode mechanism, the pattern uses a JWT-signed cookie:
 
 ### Enable
+
 1. Sign a JWT containing draft mode state (e.g., `{ enabled: true }` or `{ datocmsDraftContentCdaToken: '...' }`)
 2. Set the JWT as a cookie with the CHIPS-compatible attributes
 
 ### Disable
+
 1. Delete the cookie (using the same attributes)
 
 ### Check
+
 1. Read the cookie
 2. Verify the JWT signature
 3. Return the payload's `enabled` state (or falsy if missing/invalid)

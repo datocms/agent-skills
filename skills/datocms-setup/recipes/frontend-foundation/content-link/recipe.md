@@ -1,6 +1,5 @@
 _Internal recipe for `datocms-setup`. Use this file only after the parent skill selects the `content-link` recipe and queues any prerequisites from `../../../references/recipe-manifest.json`._
 
-
 # DatoCMS Content Link Setup
 
 You are an expert at setting up DatoCMS Content Link — click-to-edit overlays that let editors click any element on the draft site to jump directly to the corresponding field in DatoCMS.
@@ -85,13 +84,14 @@ If neither ambiguity applies, proceed directly.
 Read the relevant reference files. Load only what is needed.
 
 **Always load:**
+
 - `../../../../datocms-frontend-integrations/references/visual-editing-concepts.md`
 - `../../../../datocms-frontend-integrations/references/content-link-concepts.md`
 
 **Load per framework — focus on the `## Content Link (Optional)` section:**
 
 | Framework | Reference file |
-|---|---|
+| - | - |
 | Next.js | `../../../../datocms-frontend-integrations/references/nextjs.md` |
 | Nuxt | `../../../../datocms-frontend-integrations/references/nuxt.md` |
 | SvelteKit | `../../../../datocms-frontend-integrations/references/sveltekit.md` |
@@ -100,7 +100,7 @@ Read the relevant reference files. Load only what is needed.
 **Load the framework-appropriate component reference:**
 
 | Framework | Component reference |
-|---|---|
+| - | - |
 | Next.js (React) | `../../../../datocms-frontend-integrations/references/react-content-link.md` |
 | Nuxt (Vue) | `../../../../datocms-frontend-integrations/references/vue-content-link.md` |
 | SvelteKit | `../../../../datocms-frontend-integrations/references/svelte-content-link.md` |
@@ -118,6 +118,7 @@ Modify the existing `executeQuery` wrapper to add DatoCMS Content Link support w
 - If the repo already uses Vercel visual-editing headers, do not keep both systems active at once
 
 **Environment variable for `baseEditingUrl`:**
+
 - Next.js: `DATOCMS_BASE_EDITING_URL`
 - Nuxt: `NUXT_PUBLIC_DATOCMS_BASE_EDITING_URL`
 - SvelteKit: `PRIVATE_DATOCMS_BASE_EDITING_URL`
@@ -132,27 +133,32 @@ Read the existing `executeQuery` file first, then make targeted modifications.
 Generate or patch the Content Link component with framework-specific router integration:
 
 ### Next.js (React)
+
 - Create or patch a `ContentLink` client component that wraps the DatoCMS implementation
 - Wire `onNavigateTo` to Next.js `router.push()`
 - Wire `currentPath` to `usePathname()`
 - Prefer a touch-safe default such as `enableClickToEdit={{ hoverOnly: true }}` unless the repo already uses a different convention
 
 ### Nuxt (Vue)
+
 - Create or patch a `ContentLink` component using `vue-datocms`
 - Wire `on-navigate-to` to `navigateTo()`
 - Wire `current-path` to `useRoute().path`
 
 ### SvelteKit
+
 - Create or patch a `ContentLink` component using `@datocms/svelte`
 - Wire `onNavigateTo` to `goto`
 - Wire `currentPath` to `$page.url.pathname`
 
 ### Astro
+
 - Use `<ContentLink />` from `@datocms/astro/ContentLink`
 - Keep the Astro API limited to the documented props
 - Do not add React-style router props
 
 ### Root layout placement
+
 - Add `<ContentLink />` to the root layout only when draft mode is active
 - Reuse the existing preview shell if one already exists
 
@@ -193,7 +199,7 @@ This is required for DatoCMS Web Previews / side-by-side visual editing.
 Install missing packages:
 
 | Package | When |
-|---|---|
+| - | - |
 | `@datocms/content-link` | Always (if not already installed) |
 
 The framework-specific component library (`react-datocms`, `vue-datocms`, `@datocms/svelte`, `@datocms/astro`) should already be installed or will be installed here if missing.
@@ -231,12 +237,15 @@ Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, i
 ## Mandatory rules for all generated code
 
 ### TypeScript
+
 Follow the TypeScript rules in `../../../patterns/MANDATORY_RULES.md`.
 
 ### File conflicts
+
 Follow the file conflict rules in `../../../patterns/MANDATORY_RULES.md`.
 
 ### Overlay exclusivity
+
 Never enable DatoCMS Content Link and Vercel Content Link overlays simultaneously.
 
 ---

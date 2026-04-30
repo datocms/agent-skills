@@ -3,6 +3,7 @@
 This repo now includes a model-agnostic loop for improving skill trigger quality.
 
 It follows the same pattern described in [Anthropic's skill-iteration article](https://claude.com/blog/improving-skill-creator-test-measure-and-refine-agent-skills):
+
 1. Test with curated trigger/non-trigger prompts.
 2. Measure with stable metrics (recall, precision, F1, false negatives/positives).
 3. Refine skill descriptions, then re-test and compare.
@@ -45,8 +46,7 @@ You can verify the local docs, metadata, and routing invariants at any time with
 python3 evals/scripts/validate_skill_repo.py --repo-root .
 ```
 
-That validator now also checks that every shipped skill has a canonically named eval
-fixture and that the checked-in baseline result filenames match canonical skill names.
+That validator now also checks that every shipped skill has a canonically named eval fixture and that the checked-in baseline result filenames match canonical skill names.
 
 Before publishing, run the same validator with the clean-tree gate enabled:
 
@@ -54,8 +54,7 @@ Before publishing, run the same validator with the clean-tree gate enabled:
 python3 evals/scripts/validate_skill_repo.py --repo-root . --require-clean-git
 ```
 
-When you need to confirm that checked-in root result rows still match their
-canonical fixtures exactly, enable the opt-in freshness gate:
+When you need to confirm that checked-in root result rows still match their canonical fixtures exactly, enable the opt-in freshness gate:
 
 ```bash
 python3 evals/scripts/validate_skill_repo.py \
@@ -75,15 +74,16 @@ python3 evals/scripts/run_codex_trigger_eval.py \
   --output-dir evals/results/adHocRuns/2026-03-06-candidate/raw
 ```
 
-The runner auto-discovers every public `SKILL.md` in `skills/` and expects a
-matching `evals/<skill-name>-skill-eval.json` fixture for each one.
+The runner auto-discovers every public `SKILL.md` in `skills/` and expects a matching `evals/<skill-name>-skill-eval.json` fixture for each one.
 
 Fixture metadata guidelines:
+
 - Use `query_mode: implicit` for natural-language routing cases.
 - Use `query_mode: explicit` when the user directly names the target skill.
 - Use `query_mode: overlap` plus `boundary_with` when a prompt intentionally sits on a skill boundary.
 
 `datocms-setup-router-eval.json` uses a separate contract:
+
 - `query`
 - `should_route`
 - `expected_recipes` (fully expanded prerequisite-first recipe ids; no bundle aliases)
@@ -92,6 +92,7 @@ Fixture metadata guidelines:
 - optional `notes`
 
 Important output contract for each query result:
+
 - `query`
 - `should_trigger`
 - `query_mode`
@@ -124,9 +125,7 @@ python3 evals/scripts/run_claude_trigger_eval.py \
   --source combined
 ```
 
-The Claude Code runner executes in a temporary neutral working directory with
-`--setting-sources user` so project-local tool settings do not leak into the
-classification prompt.
+The Claude Code runner executes in a temporary neutral working directory with `--setting-sources user` so project-local tool settings do not leak into the classification prompt.
 
 To score the deterministic setup router fixture itself:
 
@@ -149,15 +148,14 @@ python3 evals/scripts/analyze_trigger_results.py \
 
 Analyze the canonical current snapshot:
 
-  ```bash
-  python3 evals/scripts/analyze_trigger_results.py \
-  --results-dir evals/results \
-  --output-json evals/results/analysis.json \
-  --output-markdown evals/results/analysis.md
-  ```
+```bash
+python3 evals/scripts/analyze_trigger_results.py \
+--results-dir evals/results \
+--output-json evals/results/analysis.json \
+--output-markdown evals/results/analysis.md
+```
 
-When `evals/results/manifest.json` is present, the analysis report includes the
-published current-result coverage.
+When `evals/results/manifest.json` is present, the analysis report includes the published current-result coverage.
 
 ### 3) Refine
 
@@ -171,6 +169,7 @@ python3 evals/scripts/generate_refinement_briefs.py \
 ```
 
 Refinement rule of thumb:
+
 - Edit frontmatter `description` first (small deltas).
 - Re-run evals before touching the body of `SKILL.md`.
 

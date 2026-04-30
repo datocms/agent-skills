@@ -24,7 +24,7 @@ Default is `1` (sequential). Higher values fetch pages in parallel — great for
 
 ### Page size cap with `nested: true`
 
-`perPage` defaults to 30, max 500. **But** when the query includes `nested: true` (Modular Content / Structured Text / Single Block returned as full payloads), the API caps page size at **30**. The iterator handles this transparently — but it means a 5,000-record nested scan does ~167 round-trips instead of 10. Plan timeouts and progress logging accordingly.
+`perPage` defaults to 30, max 500. **But** when the query includes `nested: true` (Modular Content / Structured Text / Single Block returned as full payloads), the API caps page size at **30**. The iterator handles this transparently — but it means a 5,000-record nested scan does \~167 round-trips instead of 10. Plan timeouts and progress logging accordingly.
 
 ### Audit log is the exception
 
@@ -42,7 +42,7 @@ When listing records, **always set `filter.type`**. Without it you get every rec
 
 ## Full-text search lag
 
-`filter.query` runs against a search index that lags writes by ~30 seconds. Newly created or updated records won't appear in `query` results immediately. Don't read-back via `query` in tests or workflows that just wrote — either filter on `_created_at`/`ids` instead, or wait.
+`filter.query` runs against a search index that lags writes by \~30 seconds. Newly created or updated records won't appear in `query` results immediately. Don't read-back via `query` in tests or workflows that just wrote — either filter on `_created_at`/`ids` instead, or wait.
 
 When using `filter.query`, sort by `order_by: "_rank_DESC"` to get relevance ordering — the default order is undefined for text search.
 

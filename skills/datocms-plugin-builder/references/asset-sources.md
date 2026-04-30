@@ -33,11 +33,13 @@ renderAssetSource(assetSourceId: string, ctx: RenderAssetSourceCtx): void
 A `SelfResizingPluginFrameCtx` (auto-resizing) with:
 
 **Additional properties:**
+
 ```
 ctx.assetSourceId  // string — the asset source ID being rendered
 ```
 
 **Additional methods:**
+
 ```
 ctx.select(newUpload)  // Select an asset to upload into DatoCMS
 ```

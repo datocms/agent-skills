@@ -1,6 +1,5 @@
 _Internal recipe for `datocms-setup`. Use this file only after the parent skill selects the `realtime` recipe and queues any prerequisites from `../../../references/recipe-manifest.json`._
 
-
 # DatoCMS Real-Time Updates Setup
 
 You are an expert at setting up DatoCMS real-time content updates. This recipe generates the components and patterns needed for live content streaming in draft mode, so editors see content changes without page reload.
@@ -27,7 +26,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
    - Nuxt: `server/api/draft-mode/enable.ts`
    - SvelteKit: `src/routes/api/draft-mode/enable/+server.ts`
    - Astro: `src/pages/api/draft-mode/enable/index.ts` or `src/pages/api/draft-mode/enable.ts`
-
 
 3. **Content Link setup** — Check if Content Link is configured (look for `contentLink: 'v1'` in the `executeQuery` wrapper). If Content Link is set up, the real-time subscription options should include `contentLink` and `baseEditingUrl` as well.
 
@@ -71,12 +69,13 @@ Otherwise, proceed directly.
 Read the relevant reference files. Load only what is needed.
 
 **Always load:**
+
 - `../../../../datocms-frontend-integrations/references/realtime-concepts.md`
 
 **Load per framework — focus on the `## Real-Time Updates (Optional)` section:**
 
 | Framework | Reference file |
-|---|---|
+| - | - |
 | Next.js | `../../../../datocms-frontend-integrations/references/nextjs.md` |
 | Nuxt | `../../../../datocms-frontend-integrations/references/nuxt.md` |
 | SvelteKit | `../../../../datocms-frontend-integrations/references/sveltekit.md` |
@@ -85,7 +84,7 @@ Read the relevant reference files. Load only what is needed.
 **Load the framework-appropriate component reference:**
 
 | Framework | Component reference |
-|---|---|
+| - | - |
 | Next.js (React) | `../../../../datocms-frontend-integrations/references/react-realtime.md` |
 | Nuxt (Vue) | `../../../../datocms-frontend-integrations/references/vue-realtime.md` |
 | SvelteKit | `../../../../datocms-frontend-integrations/references/svelte-realtime.md` |
@@ -114,6 +113,7 @@ Generate two files in `src/lib/datocms/realtime/` (or `lib/datocms/realtime/` if
 ### Nuxt (Vue)
 
 Generate a usage pattern/example showing how to use `useQuerySubscription` composable from `vue-datocms`:
+
 - Wrap existing page data fetching with the composable
 - Pass `includeDrafts`, `excludeInvalid`, and the draft CDA token
 - If Content Link is configured: pass `contentLink` and `baseEditingUrl`
@@ -122,6 +122,7 @@ Generate a usage pattern/example showing how to use `useQuerySubscription` compo
 ### SvelteKit
 
 Generate a usage pattern/example showing how to use `querySubscription` store from `@datocms/svelte`:
+
 - Create a Svelte store with `querySubscription()`
 - Access with `$subscription` syntax
 - Use `$: ({ data, error, status } = $subscription)` for reactive destructuring
@@ -131,6 +132,7 @@ Generate a usage pattern/example showing how to use `querySubscription` store fr
 ### Astro
 
 Generate a usage pattern/example showing how to use `<QueryListener />` from `@datocms/astro/QueryListener`:
+
 - Import from `@datocms/astro/QueryListener` (subpath import)
 - `<QueryListener />` triggers page reload on content changes (NOT live data like React/Vue/Svelte)
 - Options must match the `executeQuery` options (token, includeDrafts, excludeInvalid)
@@ -140,23 +142,28 @@ Generate a usage pattern/example showing how to use `<QueryListener />` from `@d
 ### Mandatory rules for all generated code
 
 #### Subscription options
+
 - Pass the draft CDA token (not the published token) for real-time subscriptions
 - Always include `includeDrafts: true` and `excludeInvalid: true`
 - If Content Link is configured, include `contentLink: 'v1'` and `baseEditingUrl`
 
 #### TypeScript
+
 Follow the TypeScript rules in `../../../patterns/MANDATORY_RULES.md`.
 
 #### Env var conventions
+
 Follow the env conventions in `../../../patterns/MANDATORY_RULES.md`.
 
 Recipe-specific env var names:
+
 - Next.js: `DATOCMS_DRAFT_CONTENT_CDA_TOKEN`
 - Nuxt: `useRuntimeConfig().datocms.draftContentCdaToken`
 - SvelteKit: `PRIVATE_DATOCMS_DRAFT_CONTENT_CDA_TOKEN`
 - Astro: draft CDA token from `astro:env/server`
 
 #### File conflicts
+
 Follow the file conflict rules in `../../../patterns/MANDATORY_RULES.md`.
 
 ---
@@ -166,7 +173,7 @@ Follow the file conflict rules in `../../../patterns/MANDATORY_RULES.md`.
 Install missing packages:
 
 | Package | When |
-|---|---|
+| - | - |
 | `react-datocms` | Next.js (if not already installed) |
 | `vue-datocms` | Nuxt (if not already installed) |
 | `@datocms/svelte` | SvelteKit (if not already installed) |

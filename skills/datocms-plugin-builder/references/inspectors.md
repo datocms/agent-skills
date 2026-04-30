@@ -65,6 +65,7 @@ renderInspector(inspectorId: string, ctx: RenderInspectorCtx): void
 An `ImposedSizePluginFrameCtx` — DatoCMS controls the iframe size (**no auto-resize**).
 
 **Additional properties:**
+
 ```
 ctx.inspectorId        // string — the inspector ID being rendered
 ctx.highlightedItemId  // string | undefined — the record ID currently highlighted by the user
@@ -72,6 +73,7 @@ ctx.location           // { pathname, search, hash } — current page location
 ```
 
 **Additional methods:**
+
 ```
 ctx.setInspectorMode(mode, options?)        // Switch the right-side panel mode
 ctx.setInspectorItemListData(data)          // Set which records appear in the item list mode
@@ -87,6 +89,7 @@ type InspectorMode =
 ```
 
 **Options:**
+
 ```ts
 {
   ignoreIfUnsavedChanges?: boolean;  // If true, mode change is skipped when
@@ -120,6 +123,7 @@ renderInspectorPanel(panelId: string, ctx: RenderInspectorPanelCtx): void
 An `ImposedSizePluginFrameCtx` — DatoCMS controls the iframe size (**no auto-resize**).
 
 **Additional properties:**
+
 ```
 ctx.panelId     // string — the panel ID being rendered
 ctx.parameters  // Record<string, unknown> — from setInspectorMode() or initialInspectorPanel

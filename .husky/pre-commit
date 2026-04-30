@@ -8,7 +8,7 @@ cd "$repo_root"
 staged_md=$(git diff --cached --name-only --diff-filter=ACMR | { grep '\.md$' || true; })
 if [[ -n "$staged_md" ]]; then
   echo "$staged_md" | xargs npx --no-install remark --output --quiet
-  echo "$staged_md" | xargs git add
+  echo "$staged_md" | xargs git add -f
 fi
 
 # Find skills with staged changes (any file under skills/<name>/ except agents/, which is excluded from zips).

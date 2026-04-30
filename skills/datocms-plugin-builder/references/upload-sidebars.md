@@ -57,6 +57,7 @@ renderUploadSidebarPanel(
 A `SelfResizingPluginFrameCtx` (auto-resizing iframe) with:
 
 **Additional properties:**
+
 ```
 ctx.sidebarPaneId  // string — the panel ID being rendered
 ctx.parameters     // Record<string, unknown> — from the declaration
@@ -160,6 +161,7 @@ renderUploadSidebar(sidebarId: string, ctx: RenderUploadSidebarCtx): void
 An `ImposedSizePluginFrameCtx` — DatoCMS controls the iframe size (**no auto-resize**).
 
 **Additional properties:**
+
 ```
 ctx.sidebarId    // string — the sidebar ID being rendered
 ctx.parameters   // Record<string, unknown>

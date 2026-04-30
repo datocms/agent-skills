@@ -86,18 +86,21 @@ renderItemFormSidebarPanel(
 A `SelfResizingPluginFrameCtx` (auto-resizing) with item form properties and methods.
 
 **Additional properties:**
+
 ```
 ctx.sidebarPaneId   // string — the panel ID being rendered
 ctx.parameters      // Record<string, unknown> — from the declaration
 ```
 
 **Item form properties (same as field extensions):**
+
 ```
 ctx.locale, ctx.item, ctx.itemType, ctx.formValues, ctx.itemStatus,
 ctx.isSubmitting, ctx.isFormDirty, ctx.blocksAnalysis
 ```
 
 **Item form methods:**
+
 ```
 ctx.setFieldValue(path, value)
 ctx.toggleField(path, show)
@@ -243,6 +246,7 @@ renderItemFormSidebar(
 `RenderItemFormSidebarCtx` is an `ImposedSizePluginFrameCtx` with item form properties/methods.
 
 **Additional properties:**
+
 ```
 ctx.sidebarId    // string — the sidebar ID being rendered
 ctx.parameters   // Record<string, unknown>

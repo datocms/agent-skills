@@ -2,7 +2,6 @@
 
 This reference contains the exact code patterns for implementing draft mode in a Next.js App Router project with DatoCMS. Sections are organized by feature — always follow `## Core`, then follow optional sections only for features the user selected.
 
-
 ## Contents
 
 - [Core](#core)
@@ -75,6 +74,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 ```
 
 Key points:
+
 - Uses Next.js built-in `draftMode()` from `next/headers`
 - No JWT needed — Next.js manages the `__prerender_bypass` cookie
 - Must call `makeDraftModeWorkWithinIframes()` after enable/disable to add `partitioned: true`
@@ -123,6 +123,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 ```
 
 Key points:
+
 - No token validation on disable (safe because it only reduces access)
 - Still validates the redirect URL to prevent open redirects
 
@@ -256,6 +257,7 @@ type ExecuteQueryOptions<Variables> = {
 ```
 
 Key points:
+
 - Uses Next.js `force-cache` with tag-based invalidation
 - The `cacheTag` can be used with `revalidateTag('datocms')` in a webhook handler
 - Switches between published and draft tokens based on `includeDrafts`
@@ -271,6 +273,7 @@ SECRET_API_TOKEN=                       # Shared secret for endpoint auth
 ### Core Dependencies
 
 Required (install if missing):
+
 - `serialize-error` — For serializing error objects in API responses
 
 ---
@@ -350,6 +353,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 ```
 
 Key points:
+
 - Uses `deserializeRawItem` from `@datocms/rest-client-utils` to convert the raw item before passing to `recordToWebsiteRoute`
 - The request body contains `item` (the record) and `locale`
 - The Next.js version does NOT receive `itemType` in the body — it uses `item.__itemTypeId` instead
@@ -456,8 +460,6 @@ type ExecuteQueryOptions<Variables> = {
 Create a client component that initializes Content Link with routing support for the Web Previews Visual tab.
 
 > **Alternative:** The `react-datocms` package also exports a declarative `<ContentLink>` component (see `react-content-link.md`). The imperative `createController` approach below gives more control over lifecycle and routing; the `<ContentLink>` component is simpler for basic setups.
-
-
 
 **File:** `src/components/ContentLink.tsx`
 
@@ -793,6 +795,7 @@ Granular per-record cache invalidation using DatoCMS cache tags. This replaces t
 ### When to Use
 
 Use cache tags when:
+
 - The site has many pages and full-site revalidation is too slow or wasteful
 - You want per-record or per-query granularity in cache invalidation
 - You are deploying on Vercel or any platform that supports Next.js `revalidateTag()`
@@ -876,6 +879,7 @@ type ExecuteQueryOptions<Variables> = {
 ```
 
 Key points:
+
 - When `queryId` is provided: uses `rawExecuteQuery` with `returnCacheTags: true`, reads the `x-cache-tags` header, persists the mapping to DB, and tags the fetch with `[queryId]`
 - When `queryId` is omitted: falls back to the simple `cacheTag = 'datocms'` approach (no DB interaction, no raw query)
 - Wrapped in React `cache()` to deduplicate identical calls within a single request

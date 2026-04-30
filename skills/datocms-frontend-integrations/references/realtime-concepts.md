@@ -37,7 +37,7 @@ Most commonly used in draft mode only, where the real-time subscription is enabl
 Each framework has a dedicated library that wraps the SSE subscription:
 
 | Framework | Package | API |
-|---|---|---|
+| - | - | - |
 | React / Next.js | `react-datocms` | `useQuerySubscription` hook |
 | SvelteKit | `@datocms/svelte` | `querySubscription` store |
 | Nuxt (Vue) | `vue-datocms` | `useQuerySubscription` composable |
@@ -70,7 +70,7 @@ Render: display data (auto-updates on changes)
 All framework implementations accept the same core options:
 
 | Option | Type | Required | Default | Description |
-|---|---|---|---|---|
+| - | - | - | - | - |
 | `enabled` | boolean | No | `true` | Whether the subscription is active |
 | `query` | string \| `TypedDocumentNode` | Yes | — | The GraphQL query to subscribe to |
 | `token` | string | Yes | — | DatoCMS API token |
@@ -92,7 +92,7 @@ All framework implementations accept the same core options:
 ## Connection Status
 
 | Status | Description |
-|---|---|
+| - | - |
 | `connecting` | Subscription channel is trying to connect |
 | `connected` | Channel is open, receiving live updates |
 | `closed` | Channel permanently closed due to fatal error (e.g., invalid query) |
@@ -102,7 +102,7 @@ All framework implementations accept the same core options:
 ## Error Object
 
 | Property | Type | Description |
-|---|---|---|
+| - | - | - |
 | `code` | string | Error code (e.g., `INVALID_QUERY`) |
 | `message` | string | Human-friendly error description |
 | `response` | Object | Raw response from endpoint (if available) |

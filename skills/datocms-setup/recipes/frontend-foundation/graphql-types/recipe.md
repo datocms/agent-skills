@@ -1,6 +1,5 @@
 _Internal recipe for `datocms-setup`. Use this file only after the parent skill selects the `graphql-types` recipe and queues any prerequisites from `../../../references/recipe-manifest.json`._
 
-
 # DatoCMS GraphQL Type Generation Setup
 
 You are an expert at setting up TypeScript type generation for DatoCMS GraphQL queries. This recipe configures only CDA query typing. It does not configure CMA schema types.

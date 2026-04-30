@@ -2,7 +2,6 @@
 
 Astro-specific wiring for `@datocms/astro/ContentLink`. Unlike React, Vue, and Svelte, Astro auto-detects navigation and does not require router props.
 
-
 ## Contents
 
 - [Shared Concepts](#shared-concepts)
@@ -96,7 +95,7 @@ With options:
 ```
 
 | Option | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `scrollToNearestTarget` | boolean | false | Auto-scroll to nearest editable element if none visible |
 | `hoverOnly` | boolean | false | Only enable on hover-capable devices; touch users can still toggle with Alt/Option |
 
@@ -109,7 +108,7 @@ Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily show click-to-ed
 ## `<ContentLink />` Props
 
 | Prop | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `enableClickToEdit` | `boolean \| { scrollToNearestTarget?: boolean; hoverOnly?: boolean }` | — | Enable click-to-edit overlays persistently |
 | `stripStega` | boolean | `false` | Strip stega-encoded invisible characters from text content |
 
@@ -186,7 +185,7 @@ Without the boundary, clicking `page.author` would open the outer group's URL.
 ### Library-Managed Attributes (Automatic)
 
 | Attribute | Description |
-|---|---|
+| - | - |
 | `data-datocms-contains-stega` | Added to elements with stega content (only when `stripStega` is false) |
 | `data-datocms-auto-content-link-url` | Added to elements identified as editable targets; contains the resolved edit URL |
 
@@ -332,6 +331,7 @@ See [content-link-concepts.md → When to Strip Stega](./content-link-concepts.m
 ## Troubleshooting
 
 ### Click-to-edit overlays not appearing
+
 1. Verify `contentLink: 'v1'` and `baseEditingUrl` are set in API calls
 2. Check that `<ContentLink />` is mounted in your layout
 3. Enable click-to-edit: `<ContentLink enableClickToEdit={true} />` or hold Alt/Option
@@ -339,14 +339,17 @@ See [content-link-concepts.md → When to Strip Stega](./content-link-concepts.m
 5. Ensure you're viewing draft content (Content Link metadata is only included for draft content)
 
 ### Navigation not syncing in Web Previews plugin
+
 1. Verify you're running inside the plugin's iframe
 2. Ensure `<ContentLink />` is in a layout that persists across page navigations
 3. Check browser console for iframe communication errors
 
 ### StructuredText blocks not clickable
+
 1. Wrap with `data-datocms-content-link-group`
 2. Add `data-datocms-content-link-boundary` to block, inline block, and inline record components
 
 ### Layout issues from stega encoding
+
 1. Use `stripStega` prop: `<ContentLink stripStega={true} />`
 2. Or CSS fix: `[data-datocms-contains-stega] { letter-spacing: 0 !important; }`

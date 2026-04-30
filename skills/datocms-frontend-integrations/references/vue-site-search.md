@@ -4,7 +4,6 @@ Vue 3 composable for building a [DatoCMS Site Search](https://www.datocms.com/do
 
 See `site-search-concepts.md` for shared initialization options, state behavior, and loading patterns.
 
-
 ## Contents
 
 - [Installation](#installation)
@@ -67,7 +66,7 @@ const { state, error, data } = useSiteSearch({
 See `site-search-concepts.md` for shared options. Vue additionally supports:
 
 | Option | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `initialState.query` | string | `''` | Initial search query |
 | `initialState.locale` | string | `null` | Initial locale filter |
 | `initialState.page` | number | `0` | Initial page number |

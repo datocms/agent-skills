@@ -36,7 +36,7 @@ query {
 ### `responsiveImage` Fields
 
 | Field | Type | Description |
-|---|---|---|
+| - | - | - |
 | `src` | `String` | The fallback image URL |
 | `srcSet` | `String` | HTML5 `srcSet` attribute for multiple resolutions |
 | `webpSrcSet` | `String` | `srcSet` in WebP format for supporting browsers |
@@ -56,7 +56,7 @@ query {
 DatoCMS supports **all** imgix URL API parameters. Common ones:
 
 | Parameter | Type | Description |
-|---|---|---|
+| - | - | - |
 | `w` | `Int` | Width |
 | `h` | `Int` | Height |
 | `fit` | `ImgixParamsFit` | Resize mode: `crop`, `clip`, `fill`, `max`, `min`, `scale` |
@@ -82,7 +82,7 @@ responsiveImage(
 
 **Warning:** Using `trim`, `padding`, or `rotation` imgix parameters causes the API to return incorrect `width` and `height` values. You must manually calculate and override these in your frontend.
 
-**Advanced imgix transformations** (text overlays, face detection cropping, color space, auto-enhance, red-eye removal, etc.) are all supported. See the full imgix URL API reference at https://docs.imgix.com/apis/url for the complete list of parameters.
+**Advanced imgix transformations** (text overlays, face detection cropping, color space, auto-enhance, red-eye removal, etc.) are all supported. See the full imgix URL API reference at <https://docs.imgix.com/apis/url> for the complete list of parameters.
 
 ---
 
@@ -91,8 +91,8 @@ responsiveImage(
 Several placeholder strategies are available directly on file/upload fields (not inside `responsiveImage`):
 
 | Field | Type | Description |
-|---|---|---|
-| `blurUpThumb` | `String` | Data URL of a tiny blurred thumbnail (~20px wide) |
+| - | - | - |
+| `blurUpThumb` | `String` | Data URL of a tiny blurred thumbnail (\~20px wide) |
 | `blurhash` | `String` | BlurHash encoding (compact placeholder) |
 | `thumbhash` | `String` | ThumbHash encoding (higher quality than blurhash) |
 | `colors` | `[ColorField]` | Dominant colors. Each has a `hex` field. |
@@ -159,7 +159,7 @@ All upload/file GraphQL types implement the `FileFieldInterface` interface (anal
 All fields available on a file/upload field:
 
 | Field | Type | Description |
-|---|---|---|
+| - | - | - |
 | `id` | `UploadId` | Internal DatoCMS upload ID |
 | `url` | `String` | The asset URL (on imgix CDN for images) |
 | `format` | `String` | File extension (e.g., `"jpg"`, `"png"`, `"pdf"`) |
@@ -223,7 +223,7 @@ query {
 ### Video Fields
 
 | Field | Type | Description |
-|---|---|---|
+| - | - | - |
 | `muxPlaybackId` | `String` | Mux playback ID (use with Mux Player or HLS.js) |
 | `streamingUrl` | `String` | HLS streaming URL (`https://stream.mux.com/{id}.m3u8`) |
 | `mp4Url(res: ResolutionEnum)` | `String` | Direct MP4 URL. `res`: `high`, `medium`, or `low` |
@@ -243,7 +243,7 @@ query {
 ### Framework Video Players
 
 | Framework | Package | Component |
-|---|---|---|
+| - | - | - |
 | React | `react-datocms` | `<VideoPlayer>` |
 | Vue | `vue-datocms` | `<VideoPlayer>` |
 | Svelte | `@datocms/svelte` | `<VideoPlayer>` |

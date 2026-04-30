@@ -1,12 +1,11 @@
 # Schema Generation
 
-Generate TypeScript schema definitions directly from the CLI. Use this when the
-task is the command invocation itself or when the user needs to scope the
-generated file to a specific environment or set of item types.
+Generate TypeScript schema definitions directly from the CLI. Use this when the task is the command invocation itself or when the user needs to scope the generated file to a specific environment or set of item types.
 
 ## Inputs to confirm before running commands
 
 Confirm these inputs when they are not already clear:
+
 - output file path
 - full schema vs narrowed `--item-types`
 - target environment when sandbox-specific types are needed

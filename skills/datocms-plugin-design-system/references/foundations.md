@@ -9,8 +9,7 @@
 - native-feel heuristics
 - implementation defaults for plugin code
 
-Use this file first for every restyle. It contains the decisions that make a
-plugin read as “DatoCMS” before any component choice.
+Use this file first for every restyle. It contains the decisions that make a plugin read as “DatoCMS” before any component choice.
 
 ## Typography
 
@@ -26,13 +25,12 @@ Primary sources:
 - Monospace: `var(--monospaced-font-family)`
 - Default body text size: `var(--font-size-m)`
 
-Do not introduce an unrelated font stack for plugin UI. Let Canvas supply the
-same font family the CMS uses.
+Do not introduce an unrelated font stack for plugin UI. Let Canvas supply the same font family the CMS uses.
 
 ### Canonical font sizes
 
 | Token | Approx px | Typical use |
-|---|---:|---|
+| - | -: | - |
 | `--font-size-xxs` | 11 | tiny badges and compact metadata |
 | `--font-size-xs` | 12 | field meta, small labels |
 | `--font-size-s` | 14 | hints, secondary metadata |
@@ -42,22 +40,17 @@ same font family the CMS uses.
 | `--font-size-xxl` | 25 | occasional big headings |
 | `--font-size-xxxl` | 30 | page titles |
 
-Page titles in the CMS often go larger than the token scale with custom CSS.
-Plugins should only do that for true page headers, not for panels or modals.
+Page titles in the CMS often go larger than the token scale with custom CSS. Plugins should only do that for true page headers, not for panels or modals.
 
 ### Font weight
 
-`--font-weight-bold` resolves to `500`, not the browser default `700`. Use
-this token for all bold text to match the CMS typographic weight.
+`--font-weight-bold` resolves to `500`, not the browser default `700`. Use this token for all bold text to match the CMS typographic weight.
 
 ## Spacing scale
 
 Primary source: `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/_css-variables.css`
 
-`--space-unit` is `12px` in the CMS but is **not injected by Canvas** into
-plugin iframes. Plugins receive the computed tokens (`--spacing-s` through
-`--spacing-xxxl`) but not `--space-unit` itself. If you need it in raw CSS,
-define it locally:
+`--space-unit` is `12px` in the CMS but is **not injected by Canvas** into plugin iframes. Plugins receive the computed tokens (`--spacing-s` through `--spacing-xxxl`) but not `--space-unit` itself. If you need it in raw CSS, define it locally:
 
 ```css
 :root { --space-unit: 12px; }
@@ -66,7 +59,7 @@ define it locally:
 Most plugin-safe spacing is built from the token scale below.
 
 | Token | Approx px | Typical use |
-|---|---:|---|
+| - | -: | - |
 | `--spacing-s` | 6 | label/hint gaps, compact inline separation |
 | `--spacing-m` | 12 | default inner spacing |
 | `--spacing-l` | 24 | form field gaps, card padding, page padding on smaller shells |
@@ -127,8 +120,7 @@ Primary sources:
 - Input focus: `border-color 0.2s var(--material-ease)`
 - Dropdown/popover: fade in with `opacity 0.2s var(--material-ease)`
 
-Only animate hover, focus, and state-toggle properties. Do not animate layout
-shifts or reflows.
+Only animate hover, focus, and state-toggle properties. Do not animate layout shifts or reflows.
 
 ## Color system
 
@@ -163,13 +155,11 @@ Canvas exposes:
 
 And `ctx.theme` gives the same values as runtime data.
 
-Use theme colors as accents, not as a reason to repaint the whole plugin.
-The CMS still reads primarily as neutral surfaces + structured borders.
+Use theme colors as accents, not as a reason to repaint the whole plugin. The CMS still reads primarily as neutral surfaces + structured borders.
 
 ### OKLCH and derived colors
 
-DatoCMS uses OKLCH internally for color manipulation. Plugins should use
-`color-mix(in oklch, ...)` for derived colors:
+DatoCMS uses OKLCH internally for color manipulation. Plugins should use `color-mix(in oklch, ...)` for derived colors:
 
 ```css
 .focusRing {
@@ -191,25 +181,17 @@ For simple transparency, use the `-rgb-components` suffix variants instead:
 
 ## What Canvas actually injects
 
-Source: `datocms-react-ui/src/generateStyleFromCtx/index.ts` and
-`datocms-react-ui/src/Canvas/index.tsx`.
+Source: `datocms-react-ui/src/generateStyleFromCtx/index.ts` and `datocms-react-ui/src/Canvas/index.tsx`.
 
-Not every CMS CSS variable is available inside a `<Canvas>` plugin iframe.
-The lists below are authoritative.
+Not every CMS CSS variable is available inside a `<Canvas>` plugin iframe. The lists below are authoritative.
 
 ### Available inside Canvas
 
-**Colors:** `--base-body-color`, `--light-body-color`,
-`--placeholder-body-color`, `--light-bg-color`, `--lighter-bg-color`,
-`--disabled-bg-color`, `--border-color`, `--darker-border-color`,
-`--alert-color`, `--warning-color`, `--notice-color`, `--warning-bg-color`,
-`--add-color`, `--remove-color`
+**Colors:** `--base-body-color`, `--light-body-color`, `--placeholder-body-color`, `--light-bg-color`, `--lighter-bg-color`, `--disabled-bg-color`, `--border-color`, `--darker-border-color`, `--alert-color`, `--warning-color`, `--notice-color`, `--warning-bg-color`, `--add-color`, `--remove-color`
 
-**Theme:** `--primary-color`, `--accent-color`, `--light-color`,
-`--dark-color`, `--semi-transparent-accent-color`
+**Theme:** `--primary-color`, `--accent-color`, `--light-color`, `--dark-color`, `--semi-transparent-accent-color`
 
-**Typography:** `--base-font-family`, `--monospaced-font-family`,
-`--font-weight-bold`, all `--font-size-*` tokens
+**Typography:** `--base-font-family`, `--monospaced-font-family`, `--font-weight-bold`, all `--font-size-*` tokens
 
 **Spacing:** all `--spacing-*` and `--negative-spacing-*` tokens
 
@@ -219,21 +201,18 @@ The lists below are authoritative.
 
 ### NOT available (CMS-only)
 
-These variables exist in the CMS but Canvas does **not** inject them into
-plugin iframes:
+These variables exist in the CMS but Canvas does **not** inject them into plugin iframes:
 
 - `--space-unit`, `--px-to-rem`, `--cursive-font-family`, `--muted-color`
 - `--backdrop-color`, `--backdrop-linear-gradient`
 - `--slate-margin`, `--slate-list-margin`, `--slate-panel-box-shadow`
 - `--base-distance-for-subtle-decoration-elements`
 
-Using a CMS-only variable in plugin CSS will silently resolve to its initial
-value (usually `0` or empty), producing broken layouts with no error.
+Using a CMS-only variable in plugin CSS will silently resolve to its initial value (usually `0` or empty), producing broken layouts with no error.
 
 ## Theme bridging pattern
 
-Use Canvas variables first. Only mirror `ctx.theme` into custom vars when you
-need a local token name.
+Use Canvas variables first. Only mirror `ctx.theme` into custom vars when you need a local token name.
 
 ```tsx
 import type { CSSProperties } from 'react';

@@ -271,6 +271,7 @@ visitNormalizedFieldValues(
 ### Complete List of Async Variants
 
 Every function above has an async counterpart:
+
 - `mapNormalizedFieldValuesAsync()`
 - `filterNormalizedFieldValuesAsync()`
 - `someNormalizedFieldValuesAsync()`

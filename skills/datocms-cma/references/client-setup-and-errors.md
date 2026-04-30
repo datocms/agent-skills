@@ -16,7 +16,7 @@ This reference is always loaded. It covers package selection, `buildClient()` se
 ## Package Selection
 
 | Package | Runtime | When to use |
-|---|---|---|
+| - | - | - |
 | `@datocms/cma-client` | Universal | Recommended for most cases. Works anywhere with native `fetch`. Only provide `fetchFn` if the runtime lacks it. |
 | `@datocms/cma-client-node` | Node.js | Use when you need Node.js upload helpers such as `createFromLocalFile()` or `createFromUrl()`. |
 | `@datocms/cma-client-browser` | Browser | Use when you need browser upload helpers such as `createFromFileOrBlob()`. |
@@ -44,7 +44,7 @@ const client = buildClient({
 ### Common `ClientConfigOptions`
 
 | Option | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `apiToken` | `string \| null` | — | Required. Use a CMA-capable token with the permissions your task needs. |
 | `environment` | `string` | — | Targets a sandbox environment. Omit to use the primary environment. |
 | `requestTimeout` | `number` | `30000` | Timeout in milliseconds per request. |
@@ -65,7 +65,7 @@ const client = buildClient({
 ## Common Resources
 
 | Resource | Property | Common operations |
-|---|---|---|
+| - | - | - |
 | Records | `client.items` | CRUD, publish, unpublish, bulk operations |
 | Uploads | `client.uploads` | CRUD, bulk tag/destroy, references |
 | Models | `client.itemTypes` | CRUD, duplicate, referencing |
@@ -127,7 +127,7 @@ try {
 **Useful `ApiError` members:**
 
 | Property | Type | Description |
-|---|---|---|
+| - | - | - |
 | `request` | `{ url, method, headers, body? }` | The failed request |
 | `response` | `{ status, statusText, headers, body? }` | The API response |
 | `errors` | `ErrorEntity[]` | Parsed DatoCMS error entities |

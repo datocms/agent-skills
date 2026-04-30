@@ -1,6 +1,5 @@
 _Internal recipe for `datocms-setup`. Use this file only after the parent skill selects the `draft-mode` recipe and queues any prerequisites from `../../../references/recipe-manifest.json`._
 
-
 # DatoCMS Draft Mode Setup
 
 You are an expert at setting up DatoCMS draft mode for frontend frameworks. This recipe generates all files needed for draft mode: enable/disable endpoints, utilities, and an `executeQuery` wrapper with dual-token switching.
@@ -53,12 +52,13 @@ If you do ask, make it one concise question, put the recommended/default path fi
 Read the relevant reference files. Load only what is needed.
 
 **Always load:**
+
 - `../../../../datocms-frontend-integrations/references/draft-mode-concepts.md`
 
 **Load per framework — focus on the `## Core` section:**
 
 | Framework | Reference file |
-|---|---|
+| - | - |
 | Next.js | `../../../../datocms-frontend-integrations/references/nextjs.md` |
 | Nuxt | `../../../../datocms-frontend-integrations/references/nuxt.md` |
 | SvelteKit | `../../../../datocms-frontend-integrations/references/sveltekit.md` |
@@ -83,17 +83,20 @@ Create all files following the patterns in the loaded references. Generate:
 ### Mandatory rules for all generated code
 
 #### Security
+
 - All secrets come from environment variables — never hardcode them
 - Validate the `SECRET_API_TOKEN` query parameter on the enable endpoint
 - No authentication required on the disable endpoint
 - Use `isRelativeUrl()` to validate redirect URLs and prevent open redirect vulnerabilities
 
 #### Cookie Attributes
+
 - `partitioned: true` — Required for CHIPS (third-party cookie partitioning)
 - `sameSite: 'none'` — Required because DatoCMS loads the preview in an iframe
 - `secure: true` — Required when `sameSite` is `'none'`
 
 #### Framework-Specific Patterns
+
 - Use the framework's native env access pattern:
   - Next.js: `process.env`
   - Nuxt: `useRuntimeConfig()`
@@ -103,18 +106,22 @@ Create all files following the patterns in the loaded references. Generate:
 - Non-Next.js frameworks: use `jose` for JWT signing/verification of the draft mode cookie
 
 #### TypeScript
+
 Follow the TypeScript rules in `../../../patterns/MANDATORY_RULES.md`.
 
 #### Env var naming conventions
+
 Follow the env conventions in `../../../patterns/MANDATORY_RULES.md`.
 
 Recipe-specific env var names:
+
 - Next.js: `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`, `DATOCMS_DRAFT_CONTENT_CDA_TOKEN`, `SECRET_API_TOKEN`, `DRAFT_MODE_SECRET`
 - Nuxt: `NUXT_DATOCMS_DRAFT_CONTENT_CDA_TOKEN`, `NUXT_SECRET_API_TOKEN`
 - SvelteKit: `PRIVATE_DATOCMS_DRAFT_CONTENT_CDA_TOKEN`, `PRIVATE_SECRET_API_TOKEN`
 - Astro: `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`, `DATOCMS_DRAFT_CONTENT_CDA_TOKEN`, `SECRET_API_TOKEN`, `DRAFT_MODE_SECRET`
 
 #### File conflicts
+
 Follow the file conflict rules in `../../../patterns/MANDATORY_RULES.md`.
 
 ---
@@ -124,7 +131,7 @@ Follow the file conflict rules in `../../../patterns/MANDATORY_RULES.md`.
 Install missing packages:
 
 | Package | When |
-|---|---|
+| - | - |
 | `@datocms/cda-client` | Always (if not already installed) |
 | `serialize-error` | Always (if not already installed) |
 | `jose` | Non-Next.js frameworks only (for JWT signing) |
@@ -138,6 +145,7 @@ Use the project's package manager (see `../../../patterns/MANDATORY_RULES.md`).
 Add placeholder values to `.env.example` (create if it doesn't exist) and `.env.local` (or `.env` depending on framework convention):
 
 ### Next.js
+
 ```
 DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN=your_published_token_here
 DATOCMS_DRAFT_CONTENT_CDA_TOKEN=your_draft_token_here
@@ -146,6 +154,7 @@ DRAFT_MODE_SECRET=run_openssl_rand_hex_32
 ```
 
 ### Nuxt
+
 ```
 NUXT_DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN=your_published_token_here
 NUXT_DATOCMS_DRAFT_CONTENT_CDA_TOKEN=your_draft_token_here
@@ -154,6 +163,7 @@ NUXT_DRAFT_MODE_SECRET=run_openssl_rand_hex_32
 ```
 
 ### SvelteKit
+
 ```
 PRIVATE_DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN=your_published_token_here
 PRIVATE_DATOCMS_DRAFT_CONTENT_CDA_TOKEN=your_draft_token_here
@@ -162,6 +172,7 @@ PRIVATE_DRAFT_MODE_SECRET=run_openssl_rand_hex_32
 ```
 
 ### Astro
+
 ```
 DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN=your_published_token_here
 DATOCMS_DRAFT_CONTENT_CDA_TOKEN=your_draft_token_here

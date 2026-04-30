@@ -7,6 +7,7 @@ Installation, authentication, project linking, profiles, token resolution, and g
 ## Inputs to confirm before running commands
 
 Confirm these inputs when they are not already clear:
+
 - whether the user wants OAuth-based auth (`login` + `link`, best practice) or env-var-based auth
 - which profile ids are needed
 - whether the repo should preserve an existing migrations convention or create a new shared one
@@ -22,23 +23,9 @@ npm install --save-dev datocms
 npx datocms --help
 ```
 
-Use local `npx datocms` commands by default so the repo controls the CLI
-version. If the repo already has an established runner style (`pnpm exec`,
-`bunx`, package scripts), keep that convention.
+Use local `npx datocms` commands by default so the repo controls the CLI version. If the repo already has an established runner style (`pnpm exec`, `bunx`, package scripts), keep that convention.
 
-> **Package rename (v4.0.12+).** The CLI is now published as `datocms` on
-> npm. The legacy `@datocms/cli` package still exists as a thin alias that
-> depends on `datocms` and re-exports the same binary and programmatic API
-> (including the `/lib/cma-client-node` deep path), so existing projects
-> keep working unchanged. For any new install, recommendation, or example
-> across this skill set, always use `datocms` (package and import path).
-> If a project already has `@datocms/cli` in `package.json` or in
-> migration imports (`from '@datocms/cli/lib/cma-client-node'`), it is not
-> broken — but the one-line swap to `datocms` is preferred whenever the
-> file is being edited anyway. The `datocms` package name also fixes
-> `npx datocms …` under npm, which previously failed with a misleading
-> "Missing script: datocms" error because npm/npx resolves by package
-> name, not binary name.
+> **Package rename (v4.0.12+).** The CLI is now published as `datocms` on npm. The legacy `@datocms/cli` package still exists as a thin alias that depends on `datocms` and re-exports the same binary and programmatic API (including the `/lib/cma-client-node` deep path), so existing projects keep working unchanged. For any new install, recommendation, or example across this skill set, always use `datocms` (package and import path). If a project already has `@datocms/cli` in `package.json` or in migration imports (`from '@datocms/cli/lib/cma-client-node'`), it is not broken — but the one-line swap to `datocms` is preferred whenever the file is being edited anyway. The `datocms` package name also fixes `npx datocms …` under npm, which previously failed with a misleading "Missing script: datocms" error because npm/npx resolves by package name, not binary name.
 
 ---
 
@@ -52,9 +39,7 @@ CLI v4 uses **OAuth-based authentication** as the best practice.
 npx datocms login
 ```
 
-Opens the browser for OAuth authentication. If port 7651 is in use, falls
-back to a manual copy-paste flow. Re-running `login` replaces existing
-credentials.
+Opens the browser for OAuth authentication. If port 7651 is in use, falls back to a manual copy-paste flow. Re-running `login` replaces existing credentials.
 
 ### Log out
 
@@ -76,10 +61,7 @@ Shows the email, name, and company of the currently authenticated account.
 
 ## Listing Accessible Projects
 
-Use `projects:list` to discover the projects the authenticated account
-can reach across personal account and organizations. Read-only,
-OAuth-only (no `--api-token`, no `--profile` — it never touches the
-CMA, only the Dashboard API).
+Use `projects:list` to discover the projects the authenticated account can reach across personal account and organizations. Read-only, OAuth-only (no `--api-token`, no `--profile` — it never touches the CMA, only the Dashboard API).
 
 ```bash
 # List all projects (capped to --limit, default 20)
@@ -100,6 +82,7 @@ npx datocms projects:list blog --json
 ```
 
 Search behavior:
+
 1. **Exact match first** — if the query equals an `id`, `name` (case-insensitive), or full `domain` (case-insensitive), only those matches are returned.
 2. **Fuzzy match otherwise** — scores against project name and short domain (custom domain or `internal_subdomain`). `.admin.datocms.com` is excluded from fuzzy matching.
 3. Results sorted by score, capped to `--limit`. **Always returns a list, never a single "best" guess.**
@@ -126,16 +109,13 @@ SITE_ID=$(npx datocms projects:list blog --json | jq -r '.[0].id')
 npx datocms link --site-id=$SITE_ID
 ```
 
-Only safe to auto-pick `.[0]` when the agent has high confidence the
-query matches a single project (or the result has length 1). On
-ambiguity, surface the list to the user and let them choose.
+Only safe to auto-pick `.[0]` when the agent has high confidence the query matches a single project (or the result has length 1). On ambiguity, surface the list to the user and let them choose.
 
 ---
 
 ## Linking a Project
 
-Use `link` to connect the current directory to a DatoCMS project and
-configure its profile.
+Use `link` to connect the current directory to a DatoCMS project and configure its profile.
 
 ```bash
 # Interactive: pick workspace + project, configure profile
@@ -153,11 +133,11 @@ npx datocms link --profile=staging --site-id=12345
 ```
 
 `link` combines authentication and profile configuration:
+
 1. Authenticates via OAuth (reuses existing credentials when present)
 2. Picks a project — interactively when no `--site-id` is passed, otherwise non-interactively
 3. Stores the project's `siteId` (and `organizationId`) in the profile
-4. Configures migration directory, model API key, log level, etc.
-   (auto-defaulted in non-TTY)
+4. Configures migration directory, model API key, log level, etc. (auto-defaulted in non-TTY)
 
 ### Interactive vs non-interactive behavior
 
@@ -166,13 +146,9 @@ npx datocms link --profile=staging --site-id=12345
 - **No `--site-id` in non-TTY** → fails fast with a suggestion to pass `--site-id=<ID>` (use `projects:list` to discover it) or run in an interactive terminal.
 - **No `--site-id` in TTY** → interactive picker (workspace selection + project search prompt).
 
-Alternatively, instead of linking to a project, you can choose to authenticate
-via an API token environment variable during the interactive `link` flow.
+Alternatively, instead of linking to a project, you can choose to authenticate via an API token environment variable during the interactive `link` flow.
 
-Run `npx datocms link --help` for all available flags (`--profile`,
-`--log-level`, `--migrations-dir`, `--migrations-model`,
-`--migrations-template`, `--migrations-tsconfig`, `--organization-id`,
-`--site-id`).
+Run `npx datocms link --help` for all available flags (`--profile`, `--log-level`, `--migrations-dir`, `--migrations-model`, `--migrations-template`, `--migrations-tsconfig`, `--organization-id`, `--site-id`).
 
 ### Unlink a project
 
@@ -218,7 +194,7 @@ The CLI uses `datocms.config.json` in the project root. Structure:
 ### Profile Config Properties
 
 | Property | Type | Description |
-|---|---|---|
+| - | - | - |
 | `siteId` | `string` | DatoCMS project ID (set by `link` when using OAuth) |
 | `organizationId` | `string` | Organization ID (set by `link` for org projects) |
 | `apiTokenEnvName` | `string` | Custom env var name for the API token (overrides default naming convention) |
@@ -240,8 +216,7 @@ The CLI decides **which profile configuration to use** in this order:
 2. `DATOCMS_PROFILE=<id>` in the environment
 3. `default` profile in `datocms.config.json`
 
-Use `DATOCMS_PROFILE` when multiple commands in the same shell should share the
-same non-default profile.
+Use `DATOCMS_PROFILE` when multiple commands in the same shell should share the same non-default profile.
 
 ---
 
@@ -250,11 +225,8 @@ same non-default profile.
 Once the active profile is known, the CLI resolves the API token in this order:
 
 1. **`--api-token` flag** — passed directly on the command line
-2. **Linked project** — if the profile has a `siteId` (set by `link`), the CLI
-   uses OAuth credentials to fetch the project's API token via the Dashboard API.
-   Requires a prior `datocms login`.
-3. **Environment variable for the active profile** — uses the `apiTokenEnvName`
-   from the profile config, or falls back to the default naming convention:
+2. **Linked project** — if the profile has a `siteId` (set by `link`), the CLI uses OAuth credentials to fetch the project's API token via the Dashboard API. Requires a prior `datocms login`.
+3. **Environment variable for the active profile** — uses the `apiTokenEnvName` from the profile config, or falls back to the default naming convention:
    - default profile: `DATOCMS_API_TOKEN`
    - named profile `staging`: `DATOCMS_STAGING_PROFILE_API_TOKEN`
 
@@ -274,9 +246,7 @@ DATOCMS_STAGING_PROFILE_API_TOKEN=your_staging_token
 
 ## Global Flags
 
-Run `npx datocms <command> --help` to see available flags. CMA-based commands
-support flags such as `--api-token`, `--profile`, `--log-level`, `--log-mode`,
-and `--json`.
+Run `npx datocms <command> --help` to see available flags. CMA-based commands support flags such as `--api-token`, `--profile`, `--log-level`, `--log-mode`, and `--json`.
 
 ### Log Mode Details
 

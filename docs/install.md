@@ -1,8 +1,6 @@
 # Install Guide
 
-Use the root [README](../README.md#install) for the fast local install commands.
-This page keeps the deeper variants that are useful once you want something
-other than the default "install the full set into my local skills folder".
+Use the root [README](../README.md#install) for the fast local install commands. This page keeps the deeper variants that are useful once you want something other than the default "install the full set into my local skills folder".
 
 ## When To Use This Page
 
@@ -14,9 +12,7 @@ other than the default "install the full set into my local skills folder".
 
 ## Claude Code Plugin Install
 
-This repo ships both `.claude-plugin/marketplace.json` (marketplace registry)
-and `.claude-plugin/plugin.json` (plugin manifest), so it can be installed as
-a Claude Code plugin. This is the recommended approach for Claude Code users.
+This repo ships both `.claude-plugin/marketplace.json` (marketplace registry) and `.claude-plugin/plugin.json` (plugin manifest), so it can be installed as a Claude Code plugin. This is the recommended approach for Claude Code users.
 
 ```bash
 # Add the marketplace (once)
@@ -30,11 +26,10 @@ Skills are namespaced as `/datocms:<skill-name>` (e.g. `/datocms:datocms-cda`).
 
 ### Installation Scopes
 
-Plugins can be installed at three scopes, each with different visibility and
-persistence:
+Plugins can be installed at three scopes, each with different visibility and persistence:
 
 | Scope | Flag | Where it lives | Who sees it | Version-controlled? |
-|-------|------|---------------|-------------|---------------------|
+| - | - | - | - | - |
 | **User** (default) | `--scope user` | `~/.claude/plugins/` | You, in every project | No |
 | **Project** | `--scope project` | `.claude/plugins/` in the project root | Everyone who clones the repo | Yes |
 | **Local** | `--scope local` | `.claude/plugins/` in the project root (gitignored) | Only you, only in this project | No |
@@ -54,28 +49,22 @@ persistence:
 
 **Which scope should I use?**
 
-- **Individual developer**: Use `user` (default). The DatoCMS skills are
-  available in every project without any per-project setup.
-- **Team standardization**: Use `project`. Every teammate who clones the repo
-  gets the DatoCMS skills automatically.
+- **Individual developer**: Use `user` (default). The DatoCMS skills are available in every project without any per-project setup.
+- **Team standardization**: Use `project`. Every teammate who clones the repo gets the DatoCMS skills automatically.
 - **Trying it out**: Use `local`. You can experiment without committing anything.
 
 ### Updates
 
-Plugins are **cached locally** after installation. When the plugin is updated
-upstream (new commit + version bump in `plugin.json`), users need to update
-their local copy.
+Plugins are **cached locally** after installation. When the plugin is updated upstream (new commit + version bump in `plugin.json`), users need to update their local copy.
 
-**Auto-update:** For third-party marketplaces (like this one), auto-update is
-disabled by default. To enable it:
+**Auto-update:** For third-party marketplaces (like this one), auto-update is disabled by default. To enable it:
 
 1. Run `/plugin` to open the plugin manager
 2. Go to the **Marketplaces** tab
 3. Select the `datocms-skills` marketplace
 4. Choose **Enable auto-update**
 
-Once enabled, Claude Code refreshes marketplace data at startup and prompts
-you to run `/reload-plugins` when updates are available.
+Once enabled, Claude Code refreshes marketplace data at startup and prompts you to run `/reload-plugins` when updates are available.
 
 **Manual update:**
 
@@ -87,10 +76,7 @@ claude plugin update datocms@datocms-skills
 /reload-plugins
 ```
 
-**Important:** If the plugin version number in `plugin.json` has not changed,
-Claude Code considers the cached copy up to date and will not fetch changes.
-Plugin authors must bump the version in `.claude-plugin/plugin.json` for
-updates to propagate.
+**Important:** If the plugin version number in `plugin.json` has not changed, Claude Code considers the cached copy up to date and will not fetch changes. Plugin authors must bump the version in `.claude-plugin/plugin.json` for updates to propagate.
 
 ### Local Development
 
@@ -108,10 +94,7 @@ After making changes, reload without restarting:
 
 ## Codex Plugin Install
 
-This repo ships `.codex-plugin/plugin.json` and a repo-scoped marketplace entry
-at `.agents/plugins/marketplace.json`, so it can be installed as a local Codex
-plugin directly from the repo. This is the recommended approach for Codex users
-working on or validating this repository.
+This repo ships `.codex-plugin/plugin.json` and a repo-scoped marketplace entry at `.agents/plugins/marketplace.json`, so it can be installed as a local Codex plugin directly from the repo. This is the recommended approach for Codex users working on or validating this repository.
 
 Inside a Codex session from this repo, open the plugin picker:
 
@@ -119,27 +102,17 @@ Inside a Codex session from this repo, open the plugin picker:
 /plugins
 ```
 
-Choose the **DatoCMS Local Plugins** marketplace and install `datocms`. All 9
-skills are bundled into the plugin automatically. If the repo marketplace is
-not visible yet, restart Codex and open `/plugins` again.
+Choose the **DatoCMS Local Plugins** marketplace and install `datocms`. All 9 skills are bundled into the plugin automatically. If the repo marketplace is not visible yet, restart Codex and open `/plugins` again.
 
 ### Updates
 
-The repo marketplace points to the local repo for development. After changing
-plugin files, restart Codex and reinstall or refresh the local plugin if the
-cached copy has not updated yet.
+The repo marketplace points to the local repo for development. After changing plugin files, restart Codex and reinstall or refresh the local plugin if the cached copy has not updated yet.
 
-For published distribution, keep the plugin version in
-`.codex-plugin/plugin.json` bumped whenever you want downstream installs to
-pick up changes.
+For published distribution, keep the plugin version in `.codex-plugin/plugin.json` bumped whenever you want downstream installs to pick up changes.
 
 ### Fallback: `$skill-installer`
 
-If the Plugin Directory is not available or you prefer manual control, use the
-`$skill-installer` approach described in the
-[README](../README.md#codex-fallback--skill-installer). The `$skill-installer`
-copies skill files into `~/.codex/skills/` as frozen snapshots with no
-auto-update.
+If the Plugin Directory is not available or you prefer manual control, use the `$skill-installer` approach described in the [README](../README.md#codex-fallback--skill-installer). The `$skill-installer` copies skill files into `~/.codex/skills/` as frozen snapshots with no auto-update.
 
 ## Single-Skill Install
 
@@ -155,13 +128,11 @@ mkdir -p "$skills_dir"
 ln -sfn "$repo_root/skills/datocms-cda" "$skills_dir/datocms-cda"
 ```
 
-The folder names inside `skills/` match each skill's `name:` field, so the repo
-path and the canonical skill name stay aligned.
+The folder names inside `skills/` match each skill's `name:` field, so the repo path and the canonical skill name stay aligned.
 
 ## Detached Snapshot Install
 
-If you want a copy that still works after the repo is moved or deleted, copy the
-skill folders instead of symlinking them.
+If you want a copy that still works after the repo is moved or deleted, copy the skill folders instead of symlinking them.
 
 Example:
 
@@ -185,5 +156,4 @@ cp -R "$repo_root/skills/datocms-cda/." "$skills_dir/datocms-cda"
 - `skills/datocms-plugin-scaffold`
 - `skills/datocms-setup`
 
-`datocms-setup` already contains its internal recipes, shared references, and
-recipe-local scripts/assets, so there is no second setup bundle to install.
+`datocms-setup` already contains its internal recipes, shared references, and recipe-local scripts/assets, so there is no second setup bundle to install.

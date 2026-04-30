@@ -1,6 +1,5 @@
 _Internal recipe for `datocms-setup`. Use this file only after the parent skill selects the `site-search` recipe and queues any prerequisites from `../../../references/recipe-manifest.json`._
 
-
 # DatoCMS Site Search Setup
 
 You are an expert at setting up DatoCMS Site Search. This recipe combines Dato project provisioning with local frontend wiring so the project ends up with a working search route, explicit search-index wiring, and a least-privilege token story.
@@ -69,7 +68,7 @@ Read only what is needed:
 Then load the framework-appropriate search UI reference:
 
 | Stack | Reference |
-|---|---|
+| - | - |
 | React / Next.js | `../../../../datocms-frontend-integrations/references/react-site-search.md` |
 | Vue / Nuxt | `../../../../datocms-frontend-integrations/references/vue-site-search.md` |
 | SvelteKit / Astro / unsupported UI stack | `../../../../datocms-frontend-integrations/references/site-search-api.md` |

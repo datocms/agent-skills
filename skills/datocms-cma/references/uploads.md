@@ -9,12 +9,12 @@ Covers asset management: file uploads, metadata, collections (folders), referenc
 The CMA upload surface looks confusingly large because the same logical operation has different ergonomics per runtime:
 
 | Runtime | What you have | Use |
-|---|---|---|
+| - | - | - |
 | Node.js (`@datocms/cma-client-node`) | A local path or an HTTP URL | `createFromLocalFile({ localPath })` / `createFromUrl({ url })` |
 | Browser (`@datocms/cma-client-browser`) | A `File` or `Blob` | `createFromFileOrBlob({ file })` |
 | Edge / no convenience available | Anything | The 3-step raw flow (below) |
 
-The *FromLocalFile / FromUrl / FromFileOrBlob* helpers do all three steps below in one call (request signed URL, PUT to S3, create the upload record). Reach for them by default; only fall back to the raw flow when the runtime's helper isn't available.
+The _FromLocalFile / FromUrl / FromFileOrBlob_ helpers do all three steps below in one call (request signed URL, PUT to S3, create the upload record). Reach for them by default; only fall back to the raw flow when the runtime's helper isn't available.
 
 `updateFromLocalFile(id, { localPath })` / `updateFromUrl(id, { url })` / `updateFromFileOrBlob(id, { file })` replace the underlying file of an existing upload while keeping its id and metadata — useful for in-place asset rotation.
 
@@ -37,8 +37,7 @@ The `createFromLocalFile` / `createFromUrl` / `createFromFileOrBlob` schemas ext
   - `REQUESTING_UPLOAD_URL` (one-shot): fetching the signed URL.
   - `DOWNLOADING_FILE` (only `createFromUrl`, repeated with `progress` 0–100): downloading the source URL locally before pushing to S3.
   - `UPLOADING_FILE` (repeated, `progress` 0–100): pushing to S3.
-  - `CREATING_UPLOAD_OBJECT` (one-shot): registering the upload record.
-  Use it to drive UI progress bars or to log long uploads.
+  - `CREATING_UPLOAD_OBJECT` (one-shot): registering the upload record. Use it to drive UI progress bars or to log long uploads.
 - The returned promise is a `CancelablePromise<Upload>` — call `.cancel()` to abort an in-flight upload (e.g., from a UI cancel button or when shutting down a worker mid-job).
 
 ## Metadata: defaults vs per-use overrides

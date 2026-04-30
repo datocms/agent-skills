@@ -2,7 +2,6 @@
 
 This reference contains the exact code patterns for implementing draft mode in a SvelteKit project with DatoCMS. Sections are organized by feature — always follow `## Core`, then follow optional sections only for features the user selected.
 
-
 ## Contents
 
 - [Core](#core)
@@ -68,6 +67,7 @@ export const GET: RequestHandler = (event) => {
 ```
 
 Key points:
+
 - Uses `$env/dynamic/private` for environment variables
 - Uses SvelteKit's `redirect(307, url)` for redirects
 - Exports `GET` as a `RequestHandler`
@@ -180,6 +180,7 @@ export function draftModeHeaders(): HeadersInit {
 ```
 
 Key points:
+
 - JWT payload is `{ enabled: true }` (simpler than Nuxt, which stores the draft token in the JWT)
 - Private env vars from `$env/dynamic/private`, public from `$env/dynamic/public`
 - Cookie options type includes `& { path: string }` because SvelteKit's cookie API requires `path`
@@ -251,6 +252,7 @@ export function isRelativeUrl(path: string): boolean {
 ```
 
 Key points:
+
 - Uses `json()` from `@sveltejs/kit` instead of `NextResponse.json()` or raw `Response`
 - Same `withCORS`, `handleUnexpectedError`, `isRelativeUrl` pattern as other frameworks
 
@@ -315,17 +317,20 @@ PUBLIC_DRAFT_MODE_COOKIE_NAME=                  # Cookie name, e.g. "datocms-dra
 ```
 
 SvelteKit convention:
+
 - `PRIVATE_` prefix → only available server-side (`$env/dynamic/private`)
 - `PUBLIC_` prefix → available on both server and client (`$env/dynamic/public`)
 
 ### Core Dependencies
 
 Required (install if missing):
+
 - `jsonwebtoken` — For signing/verifying JWT cookies
 - `@types/jsonwebtoken` — TypeScript types (dev dependency)
 - `serialize-error` — For serializing error objects
 
 Optional for Web Previews helpers:
+
 - `@datocms/cma-client` — For `RawApiTypes`
 
 ---
@@ -406,6 +411,7 @@ export const POST: RequestHandler = async ({ url, request }) => {
 ```
 
 Key points:
+
 - Receives `itemType` in the body and passes `itemType.id` to `recordToWebsiteRoute`
 - Uses `redirect` as the query parameter name (same as Next.js)
 
@@ -759,6 +765,7 @@ export async function load(event) {
 ```
 
 Key points:
+
 - When draft mode is OFF: returns `{ enabled: false, initialData: data }` — no subscription, just static data
 - When draft mode is ON: returns full subscription config including serialized `query` (via `print()` from `graphql`), `token`, `variables`
 - Uses `@datocms/svelte`'s `querySubscription` store on the client

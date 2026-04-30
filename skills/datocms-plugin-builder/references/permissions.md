@@ -1,7 +1,6 @@
 # Permissions
 
-Use this reference when a plugin change adds, removes, or depends on a DatoCMS
-plugin permission.
+Use this reference when a plugin change adds, removes, or depends on a DatoCMS plugin permission.
 
 ## Core rules
 
@@ -12,15 +11,13 @@ plugin permission.
 
 ## `currentUserAccessToken`
 
-Use `currentUserAccessToken` only when the plugin must call the CMA directly
-from the iframe. Pair it with:
+Use `currentUserAccessToken` only when the plugin must call the CMA directly from the iframe. Pair it with:
 
 1. the package.json permission
 2. a runtime null check
 3. a user-visible fallback when the token is unavailable
 
-For private plugins, remember the plugin permissions tab in DatoCMS still needs
-to allow the capability for the installed plugin.
+For private plugins, remember the plugin permissions tab in DatoCMS still needs to allow the capability for the installed plugin.
 
 ## Verification
 

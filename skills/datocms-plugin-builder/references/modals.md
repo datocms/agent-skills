@@ -23,7 +23,7 @@ const result = await ctx.openModal({
 ### Width Options
 
 | Value | Description |
-|-------|------------|
+| - | - |
 | `'s'` | Small modal |
 | `'m'` | Medium modal |
 | `'l'` | Large modal |
@@ -42,12 +42,14 @@ renderModal(modalId: string, ctx: RenderModalCtx): void
 A `SelfResizingPluginFrameCtx` (auto-resizing) with:
 
 **Additional properties:**
+
 ```
 ctx.modalId     // string — the modal ID
 ctx.parameters  // Record<string, unknown> — from openModal()
 ```
 
 **Additional methods:**
+
 ```
 ctx.resolve(returnValue)  // Close the modal and return value to openModal()
 ```

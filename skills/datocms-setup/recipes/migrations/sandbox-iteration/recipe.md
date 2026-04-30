@@ -1,11 +1,8 @@
 _Internal recipe for `datocms-setup`. Use this file only after the parent skill selects the `sandbox-iteration` recipe and queues any prerequisites from `../../../references/recipe-manifest.json`._
 
-
 # DatoCMS Sandbox Iteration Setup
 
-You are an expert at setting up a lean local sandbox-reset workflow for DatoCMS
-CLI migrations. This recipe adds one helper script and one package wrapper for
-the common destroy, refork, rerun loop used during migration development.
+You are an expert at setting up a lean local sandbox-reset workflow for DatoCMS CLI migrations. This recipe adds one helper script and one package wrapper for the common destroy, refork, rerun loop used during migration development.
 
 Follow these steps in order. Do not skip steps.
 
@@ -19,19 +16,14 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 
 1. **Node project** — Check for `package.json`
 2. **Package manager** — See `../../../patterns/MANDATORY_RULES.md`.
-3. **CLI migrations baseline** — Check for the `datocms` npm package,
-   `datocms.config.json`, and a `migrations/` directory or existing migration
-   scripts
+3. **CLI migrations baseline** — Check for the `datocms` npm package, `datocms.config.json`, and a `migrations/` directory or existing migration scripts
 4. **Existing helper** — Check for `scripts/datocms-reset-sandbox.mjs`
 5. **Existing scripts** — Check `package.json` for `datocms:sandbox:reset`
 
 ### Stop conditions
 
-- If the project does not already have working CLI migration setup, stop and
-  record `migrations` as a prerequisite and continue after it is applied.
-- If an existing sandbox-reset helper follows a materially different workflow,
-  patch it in place by default and only ask if a rewrite would replace working
-  behavior.
+- If the project does not already have working CLI migration setup, stop and record `migrations` as a prerequisite and continue after it is applied.
+- If an existing sandbox-reset helper follows a materially different workflow, patch it in place by default and only ask if a rewrite would replace working behavior.
 
 ---
 
@@ -43,8 +35,7 @@ Follow the zero-question default and question-format rules in `../../../patterns
 
 If you do ask, make it one concise question, put the recommended/default path first, and explain whether skipping it will leave placeholders, ownership, or project-specific values unresolved.
 
-Only ask if an existing sandbox-reset helper materially conflicts with the lean
-reset-and-rerun flow.
+Only ask if an existing sandbox-reset helper materially conflicts with the lean reset-and-rerun flow.
 
 ---
 
@@ -67,8 +58,7 @@ Also inspect this bundled asset only when generating files:
 
 Generate only these project changes:
 
-1. **Create or patch `scripts/datocms-reset-sandbox.mjs`** from
-   `scripts/datocms-reset-sandbox.mjs`
+1. **Create or patch `scripts/datocms-reset-sandbox.mjs`** from `scripts/datocms-reset-sandbox.mjs`
 2. **Patch `package.json`** with `datocms:sandbox:reset`
 
 ### Required behavior
@@ -78,8 +68,7 @@ The helper script must:
 1. Accept explicit runtime arguments for the sandbox environment id
 2. Accept an optional source environment id and optional profile flag
 3. Destroy the target sandbox if it already exists
-4. Fork from the requested source environment, or resolve the primary
-   environment when no source is provided
+4. Fork from the requested source environment, or resolve the primary environment when no source is provided
 5. Optionally rerun migrations in place on the sandbox
 6. Never promote an environment
 7. Never toggle maintenance mode
@@ -87,8 +76,7 @@ The helper script must:
 ### Mandatory rules
 
 - Use Node built-ins only in the helper script
-- Keep environment ids and profiles runtime-configurable instead of hardcoding
-  repo-specific values
+- Keep environment ids and profiles runtime-configurable instead of hardcoding repo-specific values
 - Allow the helper to skip the migration rerun when explicitly requested
 - Do not add CI files, promotion logic, or maintenance-mode logic
 - Do not add more than one helper script for this setup
@@ -97,8 +85,7 @@ The helper script must:
 
 ## Step 5: Install Dependencies
 
-Do not add any dependencies for this setup beyond the existing CLI baseline.
-The helper must work with Node built-ins only.
+Do not add any dependencies for this setup beyond the existing CLI baseline. The helper must work with Node built-ins only.
 
 ---
 
@@ -107,10 +94,8 @@ The helper must work with Node built-ins only.
 After generating the files, tell the user:
 
 1. Use the helper against disposable sandbox environments only
-2. Run it once with migrations enabled and once with `--skip-migrations` so
-   they understand both modes
-3. Keep production rollout separate by using
-   `datocms-setup` for `migration-release-workflow`
+2. Run it once with migrations enabled and once with `--skip-migrations` so they understand both modes
+3. Keep production rollout separate by using `datocms-setup` for `migration-release-workflow`
 
 ---
 

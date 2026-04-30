@@ -34,7 +34,7 @@ query {
 ### Filtering by Locale Availability
 
 | Operator | Description |
-|---|---|
+| - | - |
 | `allIn` | Records with ALL specified locales present |
 | `anyIn` | Records with at least one specified locale |
 | `notIn` | Records lacking all specified locales |
@@ -137,6 +137,7 @@ query {
 ```
 
 Returns:
+
 ```json
 [
   { "locale": "en", "value": "Hello!" },

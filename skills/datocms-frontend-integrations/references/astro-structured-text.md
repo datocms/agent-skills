@@ -2,7 +2,6 @@
 
 Astro component for rendering DatoCMS [Structured Text (DAST)](https://www.datocms.com/docs/structured-text/dast) fields. Unlike React (render props with `renderBlock`), Vue (`h()` render functions), or Svelte (predicate-component tuples), Astro uses **`__typename`-keyed objects** with separate `.astro` component files.
 
-
 ## Contents
 
 - [Setup](#setup)
@@ -158,7 +157,7 @@ const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
 ### Props Received by Custom Components (via `Astro.props`)
 
 | Prop type | Prop name | Description |
-|---|---|---|
+| - | - | - |
 | `blockComponents` | `{ block }` | The block record data |
 | `inlineBlockComponents` | `{ block }` | The inline block record data |
 | `inlineRecordComponents` | `{ record }` | The inline record data |
@@ -295,7 +294,7 @@ import Strong from '~/components/Strong.astro';
 ### Available Marks
 
 | Mark | Default HTML tag | Description |
-|---|---|---|
+| - | - | - |
 | `'strong'` | `<strong>` | Bold text |
 | `'emphasis'` | `<em>` | Italic text |
 | `'underline'` | `<u>` | Underlined text |
@@ -338,7 +337,7 @@ import { StructuredText, ensureValidStructuredTextProps } from '@datocms/astro/S
 ## Props Reference
 
 | Prop | Type | Required | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `data` | `StructuredText \| DastNode` | Yes | The structured text field value from DatoCMS |
 | `blockComponents` | `Record<string, AstroComponent>` | Only if document has `block` nodes | Object keyed by `__typename` of blocks to render |
 | `inlineBlockComponents` | `Record<string, AstroComponent>` | Only if document has `inlineBlock` nodes | Object keyed by `__typename` of inline blocks to render |

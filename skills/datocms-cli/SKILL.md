@@ -30,16 +30,10 @@ You are an expert at using the DatoCMS CLI (`datocms`). Follow these steps in or
 
 ## Step 1: Detect Context
 
-If the project context is already established in this conversation (CLI
-package, config file, token, migrations directory, TypeScript setup), skip
-broad detection below. Re-inspect only when a question cannot be answered
-from prior context.
+If the project context is already established in this conversation (CLI package, config file, token, migrations directory, TypeScript setup), skip broad detection below. Re-inspect only when a question cannot be answered from prior context.
 
-**CLI + link is a required bootstrap for any repo that interfaces with a
-DatoCMS project.** The `datocms` npm package installed + `datocms login` + `datocms
-link` is how the agent gets visibility into the live project (models,
-fields, ids, record state). Missing → fix first, same as `git init` or
-`npm install`.
+**CLI + link is a required bootstrap for any repo that interfaces with a DatoCMS project.** The `datocms` npm package installed + `datocms login` + `datocms
+link` is how the agent gets visibility into the live project (models, fields, ids, record state). Missing → fix first, same as `git init` or `npm install`.
 
 ### Detection (do not rely on `which datocms` — the CLI runs via `npx`)
 
@@ -60,36 +54,16 @@ npx datocms link --site-id=<ID> [--organization-id=<ID>]   # agent links
 ```
 
 **Always confirm the target project with the user before running `datocms
-link`**, even when `projects:list` returns a single candidate. Show the
-candidate(s) (name, id, organization) and wait for an explicit yes. Do not
-treat "only one result" as consent — the user may have access to a project
-they did not mean to wire to this repo, and fixing a mis-linked project
-later is painful.
+link`**, even when `projects:list` returns a single candidate. Show the candidate(s) (name, id, organization) and wait for an explicit yes. Do not treat "only one result" as consent — the user may have access to a project they did not mean to wire to this repo, and fixing a mis-linked project later is painful.
 
-`datocms link` without `--site-id` requires a terminal. In non-TTY it
-now exits cleanly with a suggestion to pass `--site-id`; do not retry
-without it. Same applies when credentials are missing — ask the user to
-run `datocms login` first.
+`datocms link` without `--site-id` requires a terminal. In non-TTY it now exits cleanly with a suggestion to pass `--site-id`; do not retry without it. Same applies when credentials are missing — ask the user to run `datocms login` first.
 
-Once the project is linked, use `npx datocms schema:inspect` (optionally
-with a model API key, id, or display name) to learn what the project
-actually contains — models, blocks, fields, validators, fieldsets,
-nested blocks, relationships. This is the right tool any time the agent
-or the user needs generic info about the project structure; reach for it
-before writing mutations, migrations, or CMA code so decisions rest on
-the real schema rather than guesses. See `references/schema-inspect.md`.
+Once the project is linked, use `npx datocms schema:inspect` (optionally with a model API key, id, or display name) to learn what the project actually contains — models, blocks, fields, validators, fieldsets, nested blocks, relationships. This is the right tool any time the agent or the user needs generic info about the project structure; reach for it before writing mutations, migrations, or CMA code so decisions rest on the real schema rather than guesses. See `references/schema-inspect.md`.
 
 ### Authentication policy
 
-- **Interactive task** (publish, delete, fix, backfill, introspect,
-  etc.): OAuth via `login` + `link` is the mechanism. Never ask the user
-  to paste a token or add `DATOCMS_CMA_TOKEN=...` to `.env` for this
-  case.
-- **Unattended execution** (CI, cron, server-side app, shared scripts
-  without an OAuth session): CMA-enabled token via env var. Read-only
-  CDA tokens (`DATOCMS_READONLY_API_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`)
-  will not work — flag that a separate CMA-enabled token is needed. The
-  agent itself still needs CLI + link at development time for visibility.
+- **Interactive task** (publish, delete, fix, backfill, introspect, etc.): OAuth via `login` + `link` is the mechanism. Never ask the user to paste a token or add `DATOCMS_CMA_TOKEN=...` to `.env` for this case.
+- **Unattended execution** (CI, cron, server-side app, shared scripts without an OAuth session): CMA-enabled token via env var. Read-only CDA tokens (`DATOCMS_READONLY_API_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`) will not work — flag that a separate CMA-enabled token is needed. The agent itself still needs CLI + link at development time for visibility.
 
 **Token resolution order the CLI uses:**
 
@@ -105,7 +79,7 @@ the real schema rather than guesses. See `references/schema-inspect.md`.
 Classify the user's task into one or more categories:
 
 | Category | Examples |
-|---|---|
+| - | - |
 | **CLI setup** | Install CLI, authenticate (`login`/`logout`/`whoami`), discover accessible projects (`projects:list`), link/unlink projects (`link`/`unlink`), configure profiles, `datocms.config.json` |
 | **Schema changes** | Add, modify, or remove models, fields, fieldsets, or block models — via a migration script (default) or a direct CMA operation against a chosen environment |
 | **Creating migrations** | Scaffold new migration scripts, autogenerate from environment diffs, custom templates (sub-task of schema changes once the migration approach is chosen) |
@@ -123,64 +97,39 @@ Classify the user's task into one or more categories:
 
 ## Step 2.5: Collect Critical Inputs Before You Commit To Commands
 
-Do **not** skip questions merely because the category is obvious. Skip follow-up
-questions **only if** the request already includes the critical inputs for the
-relevant category, or the repo inspection answers them safely.
+Do **not** skip questions merely because the category is obvious. Skip follow-up questions **only if** the request already includes the critical inputs for the relevant category, or the repo inspection answers them safely.
 
-Ask the **minimum targeted question set** needed to avoid flattening a real
-workflow decision.
+Ask the **minimum targeted question set** needed to avoid flattening a real workflow decision.
 
 ### Category-specific inputs live in the reference files
 
-Each category reference loaded in Step 3 opens with an **"Inputs to confirm
-before running commands"** section — that is the per-category equivalent of
-this step. Do not skip loading the reference for the task's category: it
-carries the workflow decisions this step is designed to protect. If you
-skip it, you skip the checklist.
+Each category reference loaded in Step 3 opens with an **"Inputs to confirm before running commands"** section — that is the per-category equivalent of this step. Do not skip loading the reference for the task's category: it carries the workflow decisions this step is designed to protect. If you skip it, you skip the checklist.
 
 ### Schema changes — decide the approach with the user
 
-DatoCMS schema operations fall into four buckets. The choice of approach
-is not automatic — ask the user when the bucket is not obvious from the
-request, because reversibility and workflow preference matter more than
-which tool performs the mutation.
+DatoCMS schema operations fall into four buckets. The choice of approach is not automatic — ask the user when the bucket is not obvious from the request, because reversibility and workflow preference matter more than which tool performs the mutation.
 
 | Situation | What it covers | Approach |
-|---|---|---|
+| - | - | - |
 | **Destructive schema change** | DROP a field, DROP a model, `bulk_destroy` records, lossy `field_type` changes (e.g. `string → json`, `json → string`, anything that discards stored values) | **Migration** via `datocms-cli` (`migrations:new`), against a forked sandbox first. Never run these against a primary environment without explicit, repeated user confirmation. |
 | **Reversible schema change** | Add a field, add a model or block, rename a field, toggle `required`, add or tighten a validation, reorder fieldsets | **Ask the user.** Both approaches are safe; pick by preference and context. Lean to a migration (`datocms-cli`) when the repo already uses a migrations workflow or the user is on a secondary branch — reviewable, reproducible. Direct mutation (`cma:call`, `cma:script` stdin-mode, or `cma:script` file-mode) is fine for quick iteration on a sandbox. Default to migration only when the user has no preference AND the repo shows migration conventions (`migrations/` directory, prior migration commits). |
 | **User-requested one-off** | Phrases like "quickly, without a migrations workflow", "just patch this", "one-off", "don't scaffold migrations for this" | **Honor the opt-out.** Use direct mutation via `cma:call` (single call with shape from `cma:docs`) or `cma:script` (stdin-mode for loops/multi-step, file-mode when the script is long enough that a heredoc hurts). Do not re-suggest migrations unless the change turns out to be a destructive schema change. |
 | **Content operation** | Publish, unpublish, delete individual records, fix slugs, bulk update a field value, re-tag uploads | No migration needed. Prefer `cma:call` for a single call; `cma:script` stdin-mode for loops, pagination, or multi-step logic; `cma:script` file-mode only when a heredoc becomes painful. Code that needs to be committed and replayed across environments is a migration (`datocms-cli`), not **datocms-cma**. |
 
-Regardless of which skill is loaded, the **question to ask the user is
-the same** for a reversible schema change: *"Do you want this as a
-reviewable migration, or a direct mutation against a sandbox?"* The
-answer determines which skill owns the follow-up — not which skill was
-loaded first.
+Regardless of which skill is loaded, the **question to ask the user is the same** for a reversible schema change: _"Do you want this as a reviewable migration, or a direct mutation against a sandbox?"_ The answer determines which skill owns the follow-up — not which skill was loaded first.
 
 **Cross-skill routing.**
-- Destructive schema changes and the migration branch of a reversible
-  schema change are this skill's core: `migrations:new`,
-  `migrations:run`, fork-and-run, safe deployment. Stay here and load
-  `creating-migrations.md` + `running-migrations.md`.
-- User-requested one-offs, content operations, and the direct-mutation
-  branch of a reversible schema change are better covered by
-  **datocms-cma**. Switch when the user has opted out of migrations,
-  when the task is a content mutation (publish, delete, fix), or when
-  the user wants a `cma:script` or a checked-in `buildClient()` script.
-  The handoff is loading the sibling skill's references — do not
-  bounce the user.
-- Unattended runtime code (CI, app server, webhook, long-lived
-  automation) is a separate scenario — that is where a checked-in
-  `buildClient()` script belongs, and **datocms-cma** owns that
-  pattern.
+
+- Destructive schema changes and the migration branch of a reversible schema change are this skill's core: `migrations:new`, `migrations:run`, fork-and-run, safe deployment. Stay here and load `creating-migrations.md` + `running-migrations.md`.
+- User-requested one-offs, content operations, and the direct-mutation branch of a reversible schema change are better covered by **datocms-cma**. Switch when the user has opted out of migrations, when the task is a content mutation (publish, delete, fix), or when the user wants a `cma:script` or a checked-in `buildClient()` script. The handoff is loading the sibling skill's references — do not bounce the user.
+- Unattended runtime code (CI, app server, webhook, long-lived automation) is a separate scenario — that is where a checked-in `buildClient()` script belongs, and **datocms-cma** owns that pattern.
 
 ### Destructive and production-sensitive confirmations
 
-Destructive schema changes always require these confirmations; the list
-below also covers non-schema destructive commands.
+Destructive schema changes always require these confirmations; the list below also covers non-schema destructive commands.
 
 If context is missing, ask for explicit confirmation before proposing final commands for:
+
 - `environments:destroy`
 - `environments:promote`
 - imports into a non-obviously disposable target
@@ -198,12 +147,13 @@ If context is missing, ask for explicit confirmation before proposing final comm
 Based on the task classification, read the appropriate reference files from the `references/` directory next to this skill file. Only load what is relevant.
 
 **Always load:**
+
 - `references/cli-setup.md` — Installation, configuration, profiles, global flags, token resolution
 
 **Load per category:**
 
 | Task category | Reference file |
-|---|---|
+| - | - |
 | Creating migrations | `references/creating-migrations.md` |
 | Running migrations | `references/running-migrations.md` |
 | Schema generation | `references/schema-generate.md` |
@@ -216,6 +166,7 @@ Based on the task classification, read the appropriate reference files from the 
 | CLI plugin management | `references/cli-plugin-management.md` |
 
 **Load cross-cutting references when needed:**
+
 - If creating + running migrations together -> load both `creating-migrations.md` and `running-migrations.md`
 - If schema generation is followed by typed CMA code changes -> also load `datocms-cma` guidance for consuming the generated types
 - If a direct CMA call grows beyond a one-off command -> switch to `datocms-cma` for reusable code
@@ -230,31 +181,37 @@ Based on the task classification, read the appropriate reference files from the 
 Write commands and scripts following these mandatory rules:
 
 ### Command Prefix
+
 - Respect the repo's existing package-manager execution style when one is already established (`npm run ...`, `pnpm exec ...`, `bunx ...`)
 - Otherwise default to `npx datocms` so the local CLI version is used
 - Example: `npx datocms migrations:new "add blog model" --ts`
 
 ### Migration File Templates
+
 - When generating migration file content, use the **exact function signatures** from the reference files
 - TypeScript: `export default async function(client: Client): Promise<void>`
 - JavaScript: `module.exports = async (client) => {}`
 - Import for TypeScript migrations: `import { Client } from 'datocms/lib/cma-client-node'`
 
 ### File Naming
+
 - Migration files are automatically named: `{unix_timestamp}_{camelCaseName}.ts|.js`
 - Do not manually create migration files — always use `npx datocms migrations:new`
 
 ### Migration Script Bodies
+
 - For the CMA API calls inside migration scripts (creating models, fields, records, uploads), defer to the **datocms-cma** reference patterns
 - The `client` parameter in migrations is the same CMA client from `@datocms/cma-client-node`
 
 ### Schema Generation
+
 - Use `npx datocms schema:generate <filename>` to generate TypeScript schema definitions
 - Use `--item-types` to narrow the output when the user only needs specific models
 - Use `--environment` when the generated types must reflect a sandbox or staging environment
 - Route the follow-up code changes that consume those types to `datocms-cma`
 
 ### Schema Inspection
+
 - Use `npx datocms schema:inspect` any time the agent or user needs project structure information — models, blocks, field definitions, validators, appearance, default values, fieldset grouping, nested blocks, referenced or embedding models
 - No argument dumps every model and block; pass an API key, id, or display name to narrow down (fuzzy fallback when there is no exact match)
 - Defaults to TOON output for agent consumption; add `--json` when piping through `jq`
@@ -263,6 +220,7 @@ Write commands and scripts following these mandatory rules:
 - Prefer `schema:inspect` over composing `cma:call item_types list` + `fields list` by hand — it already resolves fieldsets, nested blocks, and embedding models in one call
 
 ### Direct CMA Calls
+
 - Use `npx datocms cma:docs <resource> <action>` to look up endpoint details (request body, parameters, examples) before constructing a command
 - Use `npx datocms cma:call <resource> <method> [...pathArgs]` for single-method ad-hoc CMA operations
 - Pass request bodies with `--data '{...}'` and query parameters with `--params '{...}'`
@@ -292,12 +250,14 @@ Run `npx datocms cma:call --help` for the full list of built-in examples, or `np
 - **Schema changes:** default to scaffolding a migration. Only propose `cma:call` or `cma:script` for schema mutations after the user has explicitly opted out of the migration workflow, and never propose a direct schema mutation against a primary-like environment without an explicit confirmation from the user
 
 ### CLI Plugin Commands
+
 - Use `npx datocms plugins:available` to discover official CLI plugins before installing
 - Use `npx datocms plugins:add <PLUGIN>` to install a CLI plugin by npm package name or GitHub URL
 - Use `npx datocms plugins:link <PATH>` only for local plugin development
 - These commands manage CLI extensions, not DatoCMS project plugins — route project plugin work to **datocms-plugin-builder**
 
 ### Environment Safety
+
 - Always specify `--source` when running migrations to be explicit about the target
 - Use `--dry-run` first to preview changes before applying
 - Prefer fork-and-run (default) over `--in-place` for production environments
@@ -326,7 +286,7 @@ Before presenting the final commands or scripts:
 This skill covers **CLI commands, flags, configuration, workflows, and migration file scaffolding**. If the task involves any of the following, activate the companion skill:
 
 | Condition | Route to |
-|---|---|
+| - | - |
 | CMA API calls inside migration script bodies (records, schema, uploads) | **datocms-cma** |
 | Programmatic environment management via `client.environments.*` in code | **datocms-cma** |
 | Consuming generated schema types inside application code or reusable scripts | **datocms-cma** |

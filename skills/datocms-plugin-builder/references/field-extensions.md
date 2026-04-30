@@ -181,6 +181,7 @@ renderFieldExtension(fieldExtensionId: string, ctx: RenderFieldExtensionCtx): vo
 This is a `SelfResizingPluginFrameCtx` (auto-resizing iframe) with these additional properties and methods:
 
 **Field-specific properties:**
+
 ```
 ctx.fieldExtensionId    // string — the extension ID being rendered
 ctx.parameters          // Record<string, unknown> — extension parameters
@@ -192,6 +193,7 @@ ctx.disabled            // boolean — whether the field is disabled
 ```
 
 **Item form properties:**
+
 ```
 ctx.locale              // string — currently active locale
 ctx.item                // Item | null — the record (null for new records)
@@ -204,6 +206,7 @@ ctx.blocksAnalysis      // { usage: { total, nonLocalized, perLocale }, maximumP
 ```
 
 **Item form methods:**
+
 ```
 ctx.setFieldValue(path, value)     // Set a field value
 ctx.toggleField(path, show)        // Show/hide a field
@@ -215,6 +218,7 @@ ctx.itemToFormValues(item)         // Convert API Item to form state
 ```
 
 **Sizing utilities (SelfResizing):**
+
 ```
 ctx.startAutoResizer()   // Auto-resize on DOM changes (Canvas does this)
 ctx.stopAutoResizer()
@@ -441,6 +445,7 @@ renderManualFieldExtensionConfigScreen(
 ```
 
 Context properties:
+
 ```
 ctx.fieldExtensionId  // string
 ctx.parameters        // Record<string, unknown> — current params

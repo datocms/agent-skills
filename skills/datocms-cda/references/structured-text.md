@@ -9,7 +9,7 @@ Covers querying structured text fields: the three sub-fields (`value`, `blocks`,
 Structured text fields return an object with up to four sub-fields:
 
 | Sub-field | Description |
-|---|---|
+| - | - |
 | `value` | The DAST (DatoCMS Abstract Syntax Tree) JSON document — contains the text structure |
 | `blocks` | Array of embedded block records (referenced by `block` nodes in DAST) |
 | `links` | Array of linked records (referenced by `itemLink` and `inlineItem` nodes in DAST) |
@@ -85,7 +85,7 @@ The `value` field contains a JSON object following the DAST (DatoCMS Abstract Sy
 ### DAST Node Types
 
 | Node Type | Children | Description |
-|---|---|---|
+| - | - | - |
 | `root` | paragraph, heading, list, code, blockquote, block, thematicBreak | Document root — every DAST document starts with this |
 | `paragraph` | span, link, itemLink, inlineItem, inlineBlock | Text paragraph |
 | `span` | — (leaf) | Text content. Has `value` (string) and optional `marks` array |
@@ -106,7 +106,7 @@ The `value` field contains a JSON object following the DAST (DatoCMS Abstract Sy
 The `span` node's `marks` array can contain:
 
 | Mark | Description |
-|---|---|
+| - | - |
 | `"strong"` | Bold text |
 | `"emphasis"` | Italic text |
 | `"underline"` | Underlined text |
@@ -202,7 +202,7 @@ inlineBlocks {
 DatoCMS provides `<StructuredText>` components for popular frameworks that handle DAST rendering automatically:
 
 | Framework | Package | Component |
-|---|---|---|
+| - | - | - |
 | React | `react-datocms` | `<StructuredText>` |
 | Vue | `vue-datocms` | `<StructuredText>` |
 | Svelte | `@datocms/svelte` | `<StructuredText>` |
@@ -211,7 +211,7 @@ DatoCMS provides `<StructuredText>` components for popular frameworks that handl
 For non-framework contexts (search indexing, emails, APIs), use these utility packages:
 
 | Package | Output |
-|---|---|
+| - | - |
 | `datocms-structured-text-to-plain-text` | Plain text string |
 | `datocms-structured-text-to-html-string` | HTML string |
 | `datocms-structured-text-to-dom-nodes` | DOM nodes |

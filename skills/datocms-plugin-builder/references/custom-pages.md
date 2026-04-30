@@ -133,6 +133,7 @@ contentAreaSidebarItems(
 ```
 
 Note: `ContentAreaSidebarItem` supports emoji icons in addition to FontAwesome/SVG:
+
 ```ts
 icon: { type: 'emoji', emoji: '📊' }
 ```
@@ -167,6 +168,7 @@ renderPage(pageId: string, ctx: RenderPageCtx): void
 An `ImposedSizePluginFrameCtx` — the page fills the full screen. DatoCMS controls the iframe size (**no auto-resize**).
 
 **Additional properties:**
+
 ```
 ctx.pageId    // string — the page ID being rendered
 ctx.location  // { pathname: string; search: string; hash: string }

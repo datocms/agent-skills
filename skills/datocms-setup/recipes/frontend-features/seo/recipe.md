@@ -1,11 +1,8 @@
 _Internal recipe for `datocms-setup`. Use this file only after the parent skill selects the `seo` recipe and queues any prerequisites from `../../../references/recipe-manifest.json`._
 
-
 # DatoCMS SEO Setup
 
-You are an expert at wiring DatoCMS SEO metadata into existing frontend
-projects. This recipe focuses on data-layer and head-rendering integration. It
-does not create or edit Dato schema in v1.
+You are an expert at wiring DatoCMS SEO metadata into existing frontend projects. This recipe focuses on data-layer and head-rendering integration. It does not create or edit Dato schema in v1.
 
 See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
 
@@ -20,23 +17,17 @@ Silently examine the project:
 Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
 
 1. **Framework** — detect Next.js, Nuxt, SvelteKit, or Astro
-2. **Dato query layer** — inspect any shared `executeQuery` wrapper, GraphQL
-   query files, generated GraphQL helpers, or page-level data loaders
-3. **Head integration** — inspect `generateMetadata`, `useHead`, layout head
-   components, or existing SEO utilities
-4. **Installed Dato UI packages** — check for `react-datocms`, `vue-datocms`,
-   `@datocms/svelte`, and `@datocms/astro`
-5. **Public URL config** — inspect env files for a framework-appropriate public
-   site URL
-6. **Content Link state** — detect whether Content Link / stega encoding is
-   already configured, because SEO string logic may need `stripStega()`
+2. **Dato query layer** — inspect any shared `executeQuery` wrapper, GraphQL query files, generated GraphQL helpers, or page-level data loaders
+3. **Head integration** — inspect `generateMetadata`, `useHead`, layout head components, or existing SEO utilities
+4. **Installed Dato UI packages** — check for `react-datocms`, `vue-datocms`, `@datocms/svelte`, and `@datocms/astro`
+5. **Public URL config** — inspect env files for a framework-appropriate public site URL
+6. **Content Link state** — detect whether Content Link / stega encoding is already configured, because SEO string logic may need `stripStega()`
 7. **Shared lib folder** — determine the correct place for reusable URL helpers
 
 ### Stop conditions
 
 - If the framework cannot be determined, ask the user.
-- If the repo already has a strong SEO abstraction, patch it in place by default
-  instead of replacing it.
+- If the repo already has a strong SEO abstraction, patch it in place by default instead of replacing it.
 
 ---
 
@@ -48,8 +39,7 @@ Follow the zero-question default and question-format rules in `../../../patterns
 
 If you do ask, make it one concise question, put the recommended/default path first, and explain whether skipping it will leave placeholders, ownership, or project-specific values unresolved.
 
-Only ask if the project already has multiple competing metadata systems and it
-is unclear which one owns the final page head output.
+Only ask if the project already has multiple competing metadata systems and it is unclear which one owns the final page head output.
 
 ---
 
@@ -73,8 +63,7 @@ Use only the framework-specific SEO reference that matches the project.
 
 ## Step 4: Generate Code
 
-Generate the minimum SEO integration that makes Dato the source of truth for
-page metadata.
+Generate the minimum SEO integration that makes Dato the source of truth for page metadata.
 
 ### Required project changes
 
@@ -91,8 +80,7 @@ page metadata.
    - Nuxt -> `useHead(toHead(...))`
    - SvelteKit -> `@datocms/svelte` `<Head />`
    - Astro -> `@datocms/astro/Seo`
-5. **Preserve existing route ownership** — patch page or layout files in place
-   instead of creating a second metadata path
+5. **Preserve existing route ownership** — patch page or layout files in place instead of creating a second metadata path
 
 ### Shared helper path
 
@@ -116,18 +104,14 @@ Only add the variable if it does not already exist.
 - Do not mutate Dato schema in this setup
 - Use `_seoMetaTags` and Dato fallbacks instead of inventing manual SEO fields
 - Combine page SEO tags with favicon tags before rendering them
-- Canonical URLs must come from `buildCanonicalUrl()`, not string concatenation
-  spread across pages
-- If Content Link is active and metadata logic reads stega-encoded strings, use
-  `stripStega()` before string comparisons or canonical-path construction
+- Canonical URLs must come from `buildCanonicalUrl()`, not string concatenation spread across pages
+- If Content Link is active and metadata logic reads stega-encoded strings, use `stripStega()` before string comparisons or canonical-path construction
 - Patch existing metadata systems in place instead of adding parallel head logic
 
 ### Output status
 
-- Report `scaffolded` if the public site URL is still a placeholder or if the
-  query integration remains partially wired
-- Report `production-ready` only when page SEO tags, favicon tags, and
-  canonical URL helpers are all fully wired with real env values
+- Report `scaffolded` if the public site URL is still a placeholder or if the query integration remains partially wired
+- Report `production-ready` only when page SEO tags, favicon tags, and canonical URL helpers are all fully wired with real env values
 
 ---
 
@@ -152,5 +136,4 @@ Before presenting the result, verify:
 4. The framework-specific metadata renderer is correct for the detected stack
 5. The public site URL uses the framework's public env convention
 6. Content Link / stega strings are stripped before SEO string logic when needed
-7. The result is `scaffolded` if the site URL or query wiring remains
-   placeholder-driven
+7. The result is `scaffolded` if the site URL or query wiring remains placeholder-driven

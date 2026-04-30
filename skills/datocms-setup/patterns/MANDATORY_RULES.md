@@ -36,7 +36,7 @@ These rules apply to every datocms-setup recipe. They are not repeated in indivi
 ## Framework Environment Variable Conventions
 
 | Framework | Public prefix | Server-only | File |
-|---|---|---|---|
+| - | - | - | - |
 | Next.js | `NEXT_PUBLIC_` | no prefix | `.env.local` |
 | Nuxt | `NUXT_PUBLIC_` (runtime) | `NUXT_` (runtime) | `.env` |
 | SvelteKit | `PUBLIC_` | no prefix | `.env` |
@@ -62,21 +62,16 @@ Always install DatoCMS packages as regular dependencies (not devDependencies) un
 
 ## Zero Questions Default
 
-Ask zero questions by default for straightforward frontend rendering or
-foundation setup when the repo already answers the important decisions.
-Proceed with sensible defaults and call out assumptions.
+Ask zero questions by default for straightforward frontend rendering or foundation setup when the repo already answers the important decisions. Proceed with sensible defaults and call out assumptions.
 
-For operational recipes — especially migrations, imports into existing targets,
-and platform automation that can affect production workflows — ask the minimum
-clarification set needed when the repo cannot safely answer the critical
-questions.
+For operational recipes — especially migrations, imports into existing targets, and platform automation that can affect production workflows — ask the minimum clarification set needed when the repo cannot safely answer the critical questions.
 
 Only ask when a safe implementation is blocked by something the repo cannot answer, such as:
+
 - Missing model-to-route mappings required for correctness
 - Ambiguous existing setup where patching the wrong file would break things
 - Missing external service credentials that have no reasonable default
-- Operational choices the repo cannot infer safely, such as release profiles,
-  destructive importer tolerance, or whether to preserve an existing CLI convention
+- Operational choices the repo cannot infer safely, such as release profiles, destructive importer tolerance, or whether to preserve an existing CLI convention
 
 ---
 
@@ -90,9 +85,7 @@ Only ask when a safe implementation is blocked by something the repo cannot answ
 
 ### Structured questions (Claude Code)
 
-When the `AskUserQuestion` tool is available, use it instead of inline prose for
-every user-facing question. Map each decision point to a separate question with
-discrete options:
+When the `AskUserQuestion` tool is available, use it instead of inline prose for every user-facing question. Map each decision point to a separate question with discrete options:
 
 - Use a short `header` (max 12 chars) that names the decision, e.g. `"Edit mode"`, `"Realtime"`, `"Index shape"`
 - List 2-4 concrete options with a `label` and a one-sentence `description`
@@ -129,6 +122,4 @@ questions: [
 
 ### Fallback (Codex / non-interactive)
 
-When `AskUserQuestion` is not available, present the same choices as a
-numbered list in plain text. Keep the same structure: label the recommended
-default, describe what each option does, and state what happens on skip.
+When `AskUserQuestion` is not available, present the same choices as a numbered list in plain text. Keep the same structure: label the recommended default, describe what each option does, and state what happens on skip.

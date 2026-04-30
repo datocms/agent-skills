@@ -1,12 +1,8 @@
 _Internal recipe for `datocms-setup`. Use this file only after the parent skill selects the `responsive-images` recipe and queues any prerequisites from `../../../references/recipe-manifest.json`._
 
-
 # DatoCMS Responsive Images Setup
 
-You are an expert at wiring DatoCMS responsive images into existing frontend
-projects. This recipe creates or patches one shared Dato image wrapper,
-normalizes `responsiveImage(...)` query shapes, and patches a real usage site
-when the repo already exposes an image field.
+You are an expert at wiring DatoCMS responsive images into existing frontend projects. This recipe creates or patches one shared Dato image wrapper, normalizes `responsiveImage(...)` query shapes, and patches a real usage site when the repo already exposes an image field.
 
 See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
 
@@ -21,23 +17,16 @@ Silently examine the project:
 Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
 
 1. **Framework** — detect Next.js, Nuxt, SvelteKit, or Astro
-2. **UI package** — inspect `package.json` for `react-datocms`,
-   `vue-datocms`, `@datocms/svelte`, and `@datocms/astro`
-3. **Existing Dato query utility** — inspect the shared query wrapper and Dato
-   helper folder
-4. **Existing image usage** — search for `responsiveImage`, `coverImage`,
-   `heroImage`, `seoImage`, and current wrapper components
-5. **File layout** — detect `src/` vs non-`src/`, plus any existing
-   `lib/datocms`, `components/datocms`, or similar shared area
-6. **Typed query context** — preserve gql.tada or GraphQL Code Generator usage
-   if the repo already has it
+2. **UI package** — inspect `package.json` for `react-datocms`, `vue-datocms`, `@datocms/svelte`, and `@datocms/astro`
+3. **Existing Dato query utility** — inspect the shared query wrapper and Dato helper folder
+4. **Existing image usage** — search for `responsiveImage`, `coverImage`, `heroImage`, `seoImage`, and current wrapper components
+5. **File layout** — detect `src/` vs non-`src/`, plus any existing `lib/datocms`, `components/datocms`, or similar shared area
+6. **Typed query context** — preserve gql.tada or GraphQL Code Generator usage if the repo already has it
 
 ### Stop conditions
 
-- If the framework cannot be determined, ask the user which supported stack
-  they are using.
-- If the repo already has a materially different image abstraction, patch it in
-  place by default instead of replacing it wholesale.
+- If the framework cannot be determined, ask the user which supported stack they are using.
+- If the repo already has a materially different image abstraction, patch it in place by default instead of replacing it wholesale.
 
 ---
 
@@ -49,8 +38,7 @@ Follow the zero-question default and question-format rules in `../../../patterns
 
 If you do ask, make it one concise question, put the recommended/default path first, and explain whether skipping it will leave placeholders, ownership, or project-specific values unresolved.
 
-Only ask if the repo exposes multiple competing image abstractions and it is
-unclear which one owns the rendered output.
+Only ask if the repo exposes multiple competing image abstractions and it is unclear which one owns the rendered output.
 
 ---
 
@@ -64,17 +52,16 @@ Read only these references:
 Then load the matching framework references:
 
 | Framework | Reference |
-|---|---|
+| - | - |
 | Next.js / React | `../../../../datocms-frontend-integrations/references/react-image.md` |
 | Nuxt / Vue | `../../../../datocms-frontend-integrations/references/vue-image.md` |
 | SvelteKit | `../../../../datocms-frontend-integrations/references/svelte-image.md` |
 | Astro | `../../../../datocms-frontend-integrations/references/astro-image.md` |
 
-If the repo has no shared Dato query utility yet, also inspect the matching
-framework guidance used by the CDA client baseline:
+If the repo has no shared Dato query utility yet, also inspect the matching framework guidance used by the CDA client baseline:
 
 | Framework | Reference |
-|---|---|
+| - | - |
 | Next.js | `../../../../datocms-frontend-integrations/references/nextjs.md` |
 | Nuxt | `../../../../datocms-frontend-integrations/references/nuxt.md` |
 | SvelteKit | `../../../../datocms-frontend-integrations/references/sveltekit.md` |
@@ -95,29 +82,22 @@ Generate the smallest reusable responsive-image setup that fits the repo.
    - Astro -> `@datocms/astro`
 2. **Create or patch the shared Dato query utility**
    - If one already exists, patch it in place
-   - If none exists, create the same thin published-content CDA baseline used by
-     the setup bundle's CDA client setup
+   - If none exists, create the same thin published-content CDA baseline used by the setup bundle's CDA client setup
 3. **Create one shared Dato image wrapper**
    - Reuse the repo's existing Dato helper area
    - If none exists, place it under the Dato lib folder:
      - with `src/`: `src/lib/datocms/DatoImage.*`
      - without `src/`: `lib/datocms/DatoImage.*`
-     - Nuxt may also use `components/datocms/DatoImage.vue` when that better
-       matches the repo's structure
+     - Nuxt may also use `components/datocms/DatoImage.vue` when that better matches the repo's structure
 4. **Patch one obvious query or component usage**
-   - Prefer an existing hero, cover, card, or SEO image field that is already
-     rendered on the site
-   - If no safe target exists, create only the shared wrapper and report
-     `scaffolded`
+   - Prefer an existing hero, cover, card, or SEO image field that is already rendered on the site
+   - If no safe target exists, create only the shared wrapper and report `scaffolded`
 
 ### Wrapper defaults
 
-- **React / Next.js:** default to `<SRCImage />`; support an opt-in path to
-  `<Image />` only for transparency, crossfade, or custom intersection tuning
-- **Vue / Nuxt:** default to `<NakedImage>`; support an opt-in path to
-  `<Image>`
-- **SvelteKit:** default to `<NakedImage />`; support an opt-in path to
-  `<Image />`
+- **React / Next.js:** default to `<SRCImage />`; support an opt-in path to `<Image />` only for transparency, crossfade, or custom intersection tuning
+- **Vue / Nuxt:** default to `<NakedImage>`; support an opt-in path to `<Image>`
+- **SvelteKit:** default to `<NakedImage />`; support an opt-in path to `<Image />`
 - **Astro:** wrap the native `@datocms/astro/Image` component only
 
 ### Required query shape
@@ -135,8 +115,7 @@ responsiveImage(imgixParams: { auto: format }) {
 }
 ```
 
-Add `sizes` only when the rendered component needs it. Prefer omitting `srcSet`
-unless the project clearly needs explicit CDN-generated variants.
+Add `sizes` only when the rendered component needs it. Prefer omitting `srcSet` unless the project clearly needs explicit CDN-generated variants.
 
 ### Mandatory rules
 
@@ -148,15 +127,12 @@ unless the project clearly needs explicit CDN-generated variants.
   - Vue -> `picture-class`, `img-class`, `src-set-candidates`
   - Svelte / Astro -> `pictureClass`, `imgClass`, `srcSetCandidates`
 - Astro imports must use `@datocms/astro/Image`, never `@datocms/astro`
-- Patch existing query ownership in place instead of adding a parallel query
-  path
+- Patch existing query ownership in place instead of adding a parallel query path
 
 ### Output status
 
-- Report `scaffolded` if only the wrapper was created, if no real image field
-  was patched, or if the query shape still contains placeholders
-- Report `production-ready` only when a concrete Dato image field renders
-  through the shared wrapper with no unresolved responsive-image TODOs
+- Report `scaffolded` if only the wrapper was created, if no real image field was patched, or if the query shape still contains placeholders
+- Report `production-ready` only when a concrete Dato image field renders through the shared wrapper with no unresolved responsive-image TODOs
 
 ---
 
@@ -166,10 +142,8 @@ After generating the files, tell the user:
 
 1. Which image field was patched, if any
 2. Which wrapper component was created and where
-3. Whether the repo is still `scaffolded` because a real field integration was
-   not safe to patch automatically
-4. Whether a thin shared CDA query utility had to be created as part of the
-   setup
+3. Whether the repo is still `scaffolded` because a real field integration was not safe to patch automatically
+4. Whether a thin shared CDA query utility had to be created as part of the setup
 
 ---
 

@@ -9,6 +9,7 @@ Covers common scripting patterns for data migrations, bulk operations, upload mi
 Migrations are run interactively (a developer is watching the terminal) or in CI logs — in both cases a silent script is a broken script. Without progress output the operator can't tell whether the run is still working, stuck on a single record, or hitting rate limits.
 
 Every migration should emit `console.log` at:
+
 - **Start** — what's about to happen, target environment, count of items if known up-front
 - **Each major step** — one line per phase ("Fetching all blog posts…", "Updating slugs…")
 - **Inside long loops** — every N items (e.g. `if (processed % 50 === 0)`), include counts and any error tally

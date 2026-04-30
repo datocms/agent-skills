@@ -43,7 +43,7 @@ Then run `npm run generate-cma-types` to produce the types file. Re-run after mo
 **Framework env var conventions:**
 
 | Framework | Env var name | Output path | Notes |
-|---|---|---|---|
+| - | - | - | - |
 | Next.js | `DATOCMS_CMA_TOKEN` | `src/lib/datocms/cma-types.ts` | — |
 | Astro | `DATOCMS_CMA_TOKEN` | `src/lib/datocms/cma-types.ts` | — |
 | SvelteKit | `PRIVATE_DATOCMS_CMA_TOKEN` | `src/lib/datocms/cma-types.ts` | `PRIVATE_` prefix for server-side env |

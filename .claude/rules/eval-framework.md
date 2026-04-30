@@ -14,7 +14,7 @@ paths:
 
 ## Result Output
 
-- Default classification threshold: `0.5` (trigger_rate >= 0.5 = predicted trigger)
+- Default classification threshold: `0.5` (trigger\_rate >= 0.5 = predicted trigger)
 - Ad hoc runs go in `evals/results/adHocRuns/<date>-<label>/`
 - Historical baselines go in `evals/results/historicalRuns/`
 - Two eval tracks: Claude Code (`run_claude_trigger_eval.py`) and Codex (`run_codex_trigger_eval.py`)

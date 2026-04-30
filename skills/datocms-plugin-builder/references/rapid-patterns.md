@@ -48,8 +48,7 @@ Keep the asset source as the primary surface.
 4. Resolve a small payload back.
 5. Finish with `ctx.select()` from the asset source flow.
 
-Use a modal for focused choices like metadata, crop mode, or source-specific options.
-Do not turn the asset source into a multi-screen mini app.
+Use a modal for focused choices like metadata, crop mode, or source-specific options. Do not turn the asset source into a multi-screen mini app.
 
 Prefer `ctx.select()` over raw CMA upload creation when the job is simply “pick a file and create an upload”.
 
@@ -65,8 +64,7 @@ Keep the sidebar responsible for the current upload context.
 4. Resolve the minimal result back to the sidebar.
 5. Apply the update, then show a notice or refresh path if needed.
 
-Prefer a panel for informational or single-action UI.
-Use a full upload sidebar only when the interaction is truly tool-like.
+Prefer a panel for informational or single-action UI. Use a full upload sidebar only when the interaction is truly tool-like.
 
 See `upload-sidebars.md` and `modals.md`.
 

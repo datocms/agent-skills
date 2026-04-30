@@ -1,7 +1,6 @@
 # Repo Layout
 
-The root [README](../README.md#repo-layout) shows the short shape of the repo.
-This page explains why the folders are split this way.
+The root [README](../README.md#repo-layout) shows the short shape of the repo. This page explains why the folders are split this way.
 
 ## Canonical Tree
 

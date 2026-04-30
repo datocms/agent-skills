@@ -22,12 +22,14 @@ renderConfigScreen(ctx: RenderConfigScreenCtx): void
 A `SelfResizingPluginFrameCtx<'renderConfigScreen'>` — auto-resizing iframe with all base properties and methods.
 
 **Key properties:**
+
 ```
 ctx.plugin.attributes.parameters  // Current global plugin parameters
 ctx.currentRole.meta.final_permissions.can_edit_schema  // Permission check
 ```
 
 **Key methods:**
+
 ```
 ctx.updatePluginParameters(params)  // Save new parameters
 ```

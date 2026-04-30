@@ -49,6 +49,7 @@ const title = ctx.formValues.title as string;
 ```
 
 **When to use `readFieldValue` vs `ctx.fieldPath`:**
+
 - **Field extensions** have `ctx.fieldPath` which already includes the locale — use `get(ctx.formValues, ctx.fieldPath)` from `lodash-es`
 - **Everything else** (sidebar panels, outlets, dropdown execute hooks) — use `readFieldValue` with `ctx.locale`
 
@@ -160,7 +161,7 @@ For simple use cases (reading/writing top-level block fields), the examples abov
 ### Key differences
 
 | Aspect | Slate (formValues) | DAST (API) |
-|--------|-------------------|------------|
+| - | - | - |
 | Root wrapper | No `root` node — value is directly an array | Wrapped in `{ schema, document: { type: "root", children } }` |
 | Text nodes | `{ text: "..." }` | `{ type: "span", value: "..." }` |
 | Marks | Boolean keys on node: `{ text: "bold", strong: true }` | Array: `{ marks: ["strong"], value: "bold" }` |

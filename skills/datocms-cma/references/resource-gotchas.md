@@ -4,7 +4,7 @@ For the resources below, the routine CRUD surface (payload shapes, attributes, v
 
 > **For the `cma:docs` command itself** (flags, naming convention, when to pass `--expand-types`, etc.), load the **datocms-cli** skill and read `../../datocms-cli/references/direct-cma-calls.md` § cma:docs. That is the single source of truth for the command surface.
 
-This file is an index of *what is not obvious from `cma:docs` alone* — gotchas, runtime semantics, cross-cutting patterns. Do not duplicate signatures here.
+This file is an index of _what is not obvious from `cma:docs` alone_ — gotchas, runtime semantics, cross-cutting patterns. Do not duplicate signatures here.
 
 ---
 

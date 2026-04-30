@@ -14,9 +14,7 @@ description: >-
 
 # DatoCMS Plugin Design System
 
-This skill turns plugin UI work into native-feeling DatoCMS UI work. Use it
-when the main problem is visual fit, structure, density, or styling — not when
-the main problem is wiring hooks or scaffolding a new plugin.
+This skill turns plugin UI work into native-feeling DatoCMS UI work. Use it when the main problem is visual fit, structure, density, or styling — not when the main problem is wiring hooks or scaffolding a new plugin.
 
 Typical requests this skill should own:
 
@@ -54,8 +52,7 @@ Typical requests this skill should own:
    - its local CSS or CSS module
    - `package.json` only if component availability is unclear
 
-Ask nothing unless the repo cannot tell which surface or plugin repo is being
-changed.
+Ask nothing unless the repo cannot tell which surface or plugin repo is being changed.
 
 ## Step 2: Choose the implementation path
 
@@ -63,10 +60,10 @@ Use the narrowest path that keeps the result native.
 
 ### A. Public component path first
 
-Choose this when `datocms-react-ui` already exposes the control or layout
-primitive you need.
+Choose this when `datocms-react-ui` already exposes the control or layout primitive you need.
 
 Prefer it for:
+
 - `Canvas`
 - form wrappers and grouped settings
 - standard fields
@@ -80,35 +77,32 @@ Prefer it for:
 
 ### B. Raw React + CSS fallback
 
-Choose this when the public package does not expose the needed layout or when
-exact CMS composition matters more than a near match.
+Choose this when the public package does not expose the needed layout or when exact CMS composition matters more than a near match.
 
 Use raw code for:
+
 - page shells that need CMS-like spacing but not a full custom component library
 - list and table wrappers plus lightweight summary rows
 - special empty states or info blocks
-- split or two-pane layouts when the installed UI package version does not
-  provide a fitting primitive
+- split or two-pane layouts when the installed UI package version does not provide a fitting primitive
 - surface-specific wrappers that only need theme variables and clean CSS
 
-Do not import private CMS styles or private CMS class names into plugins.
-Recreate the structure with plugin-local CSS using Canvas variables.
+Do not import private CMS styles or private CMS class names into plugins. Recreate the structure with plugin-local CSS using Canvas variables.
 
 ## Step 3: Load the minimum references
 
 Always start with:
+
 - `references/foundations.md`
 - `references/datocms-react-ui-bridge.md`
 
-Load `references/source-map.md` only when the public docs plus the current
-plugin code are not enough and you need local visual calibration from a CMS
-checkout.
+Load `references/source-map.md` only when the public docs plus the current plugin code are not enough and you need local visual calibration from a CMS checkout.
 
 Then load only the touched reference:
+
 - layout or page structure -> `references/layouts.md`
 - forms, settings screens, controls -> `references/forms-and-controls.md`
-- tabs, dropdowns, tables, notices, blank slates ->
-  `references/navigation-feedback-and-data-display.md`
+- tabs, dropdowns, tables, notices, blank slates -> `references/navigation-feedback-and-data-display.md`
 - hook-specific screen shape and sizing -> `references/plugin-surfaces.md`
 - raw CSS implementation -> `references/raw-css-fallbacks.md`
 
@@ -121,19 +115,17 @@ Keep these guardrails:
 - Match DatoCMS density before inventing layout.
 - Use project theme variables from `<Canvas>` instead of hardcoded brand colors.
 - Prefer 1px borders, 3-5px radii, and subtle shadow only where the CMS uses it.
-- Keep page widths, toolbar heights, section spacing, and form rhythm close to
-  the CMS source of truth.
+- Keep page widths, toolbar heights, section spacing, and form rhythm close to the CMS source of truth.
 - Use one primary action per section or screen.
 - Keep destructive actions isolated.
 - Use labels above controls, hints below, and concise error text.
 - Favor sections, toolbars, sidebars, and tables over decorative cards.
-- Avoid hero blocks, KPI grids, ornamental copy, oversized rounded corners,
-  heavy gradients, and dashboard filler.
+- Avoid hero blocks, KPI grids, ornamental copy, oversized rounded corners, heavy gradients, and dashboard filler.
 - Keep custom CSS local to the plugin and variable-driven.
-- If a public component is close but incomplete, compose around it instead of
-  replacing all controls.
+- If a public component is close but incomplete, compose around it instead of replacing all controls.
 
 When a user asks for a plugin UI that “looks native”, optimize in this order:
+
 1. structure
 2. spacing
 3. typography
@@ -149,6 +141,7 @@ Run the smallest useful verification in the target plugin repo:
 - or the nearest existing typecheck or build command
 
 Then name the one manual UI check that matters most for the surface:
+
 - config screen -> spacing, section grouping, primary action placement
 - page -> toolbar or header rhythm and scroll behavior
 - sidebar panel -> density and collapsed or open behavior
@@ -160,8 +153,7 @@ Then name the one manual UI check that matters most for the surface:
 ## Cross-skill routing
 
 - New plugin project or new plugin folder -> `datocms-plugin-scaffold`
-- Existing plugin feature work, hook wiring, parameter logic, or surface
-  behavior -> `datocms-plugin-builder`
+- Existing plugin feature work, hook wiring, parameter logic, or surface behavior -> `datocms-plugin-builder`
 - Mixed tasks are normal:
   - use this skill for native DatoCMS UI choices
   - pair with scaffold or builder for hook wiring or project setup

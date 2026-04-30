@@ -95,6 +95,7 @@ content {
 ```
 
 Result:
+
 ```json
 {
   "content": [
@@ -119,6 +120,7 @@ hero {
 ```
 
 Result:
+
 ```json
 {
   "hero": {
@@ -131,6 +133,7 @@ Result:
 ```
 
 Or `null` if no block is set:
+
 ```json
 {
   "hero": null

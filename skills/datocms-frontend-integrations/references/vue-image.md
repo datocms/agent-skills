@@ -4,7 +4,6 @@ Vue 3 components for progressive/responsive images from DatoCMS, designed to wor
 
 See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, best practices, and layout modes.
 
-
 ## Contents
 
 - [`<datocms-naked-image>` vs `<datocms-image>`](#datocms-naked-image-vs-datocms-image)
@@ -20,7 +19,7 @@ See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, be
 ## `<datocms-naked-image>` vs `<datocms-image>`
 
 | | `<datocms-naked-image>` | `<datocms-image>` |
-|---|---|---|
+| - | - | - |
 | JS footprint | Minimum (native lazy loading) | Has JS bundle |
 | HTML output | Single `<picture>` element | Multiple wrapper elements around `<picture>` |
 | Lazy loading | Native `loading="lazy"` | `IntersectionObserver` (customizable thresholds) |
@@ -28,6 +27,7 @@ See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, be
 | Transparency | Not recommended if image has alpha channel (placeholder stays behind) | Safe for transparent images |
 
 **When to use which:**
+
 - Use `<datocms-naked-image>` by default — minimal JS, simpler output
 - Use `<datocms-image>` when you need crossfade effects, custom lazy-loading thresholds, or images with transparency
 
@@ -89,7 +89,7 @@ const props = defineProps<{ data: any }>();
 ## `<datocms-naked-image>` Props
 
 | Prop | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `data` | `ResponsiveImage` | **(required)** | Response from `responsiveImage` GraphQL query |
 | `picture-class` | string | null | Additional CSS class for root `<picture>` tag |
 | `picture-style` | CSS properties | null | Additional CSS for root `<picture>` tag |
@@ -103,13 +103,13 @@ const props = defineProps<{ data: any }>();
 ### Events
 
 | Event | Description |
-|---|---|
+| - | - |
 | `@load` | Emitted when the image has finished loading |
 
 ### Exposed Public Properties
 
 | Property | Type | Description |
-|---|---|---|
+| - | - | - |
 | `imageRef` | `HTMLImageElement` | `ref()` to the img node |
 
 ---
@@ -117,7 +117,7 @@ const props = defineProps<{ data: any }>();
 ## `<datocms-image>` Props
 
 | Prop | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `data` | `ResponsiveImage` | **(required)** | Response from `responsiveImage` GraphQL query |
 | `layout` | `'intrinsic' \| 'fixed' \| 'responsive' \| 'fill'` | `"intrinsic"` | Layout behavior as viewport changes size |
 | `fade-in-duration` | integer | 500 | Duration (ms) of fade-in transition on load |
@@ -139,13 +139,13 @@ const props = defineProps<{ data: any }>();
 ### Events
 
 | Event | Description |
-|---|---|
+| - | - |
 | `@load` | Emitted when the image has finished loading |
 
 ### Exposed Public Properties
 
 | Property | Type | Description |
-|---|---|---|
+| - | - | - |
 | `rootRef` | `HTMLDivElement` | `ref()` to the root node |
 | `imageRef` | `HTMLImageElement` | `ref()` to the img node |
 

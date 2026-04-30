@@ -4,7 +4,6 @@ Astro component for progressive/responsive images from DatoCMS, designed to work
 
 See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, and best practices.
 
-
 ## Contents
 
 - [Setup](#setup)
@@ -81,7 +80,7 @@ const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
 ## `<Image />` Props
 
 | Prop | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `data` | `ResponsiveImage` | **(required)** | Response from `responsiveImage` GraphQL query |
 | `pictureClass` | string | null | Additional CSS class for root `<picture>` tag |
 | `pictureStyle` | CSS properties | null | Additional CSS for root `<picture>` tag |
@@ -98,7 +97,7 @@ const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
 ## Key Differences from React and Svelte
 
 | Feature | React | Svelte | Astro |
-|---|---|---|---|
+| - | - | - | - |
 | Components | `<SRCImage />` (zero JS) + `<Image />` (crossfade) | `<NakedImage />` (minimal JS) + `<Image />` (crossfade) | Single `<Image />` (zero JS) |
 | Import | `from 'react-datocms'` | `from '@datocms/svelte'` | `from '@datocms/astro/Image'` |
 | Layout modes | `intrinsic`, `fixed`, `responsive`, `fill` | `intrinsic`, `fixed`, `responsive`, `fill` | Not applicable (native `<picture>`) |

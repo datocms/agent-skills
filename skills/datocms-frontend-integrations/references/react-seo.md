@@ -4,7 +4,6 @@ See `seo-concepts.md` for the shared GraphQL query shape and tag concatenation p
 
 Utilities for rendering SEO meta tags, social share tags, and favicons from DatoCMS's `_seoMetaTags` and `faviconMetaTags` GraphQL queries.
 
-
 ## Contents
 
 - [GraphQL Queries](#graphql-queries)
@@ -144,7 +143,7 @@ export const meta: MetaFunction = ({ data: { post } }) => {
 ## Utility Summary
 
 | Utility | Output | Use Case |
-|---|---|---|
+| - | - | - |
 | `renderMetaTags()` | React elements | react-helmet, React 19+ |
 | `renderMetaTagsToString()` | HTML string | Server-side rendering |
 | `toNextMetadata()` | `Metadata` object | Next.js `generateMetadata` |

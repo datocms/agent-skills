@@ -1,12 +1,11 @@
 # Skill Catalog
 
-The root [README](../README.md#public-skills) is the short version. This page
-keeps the fuller catalog and the internal setup matrix.
+The root [README](../README.md#public-skills) is the short version. This page keeps the fuller catalog and the internal setup matrix.
 
 ## Core Skills
 
 | Skill | Repo path | Scope |
-|---|---|---|
+| - | - | - |
 | `datocms-plugin-builder` | `skills/datocms-plugin-builder` | Patch and maintain existing DatoCMS plugins |
 | `datocms-plugin-design-system` | `skills/datocms-plugin-design-system` | Design or restyle DatoCMS plugin UI so it feels native to DatoCMS |
 | `datocms-plugin-scaffold` | `skills/datocms-plugin-scaffold` | Scaffold new DatoCMS plugin projects |
@@ -33,16 +32,14 @@ $datocms-plugin-scaffold scaffold a new sidebar panel plugin for this project
 $datocms-setup install content link in this project
 ```
 
-`datocms-frontend-integrations` and `datocms-setup` are the two public skills
-that are most important to call explicitly when you want deterministic routing.
+`datocms-frontend-integrations` and `datocms-setup` are the two public skills that are most important to call explicitly when you want deterministic routing.
 
 ## Internal Setup Recipes
 
-`datocms-setup` is the public setup entrypoint. It owns the following internal
-recipe groups:
+`datocms-setup` is the public setup entrypoint. It owns the following internal recipe groups:
 
 | Group | Internal recipe ids | Notes |
-|---|---|---|
+| - | - | - |
 | `frontend-foundation` | `cda-client`, `draft-mode`, `web-previews`, `content-link`, `realtime`, `cache-tags`, `graphql-types` | Query baseline, previews, visual editing, live preview, cache invalidation, typed queries |
 | `frontend-features` | `responsive-images`, `structured-text`, `video-player`, `site-search`, `seo`, `robots-sitemaps` | Rendering and discovery add-ons layered on top of the foundation |
 | `migrations` | `migrations`, `migration-release-workflow`, `blueprint-sync`, `sandbox-iteration`, `cli-profiles`, `migration-autogenerate` | Schema workflow, release, and environment tooling |
@@ -57,9 +54,7 @@ recipe groups:
 
 ## Explicit Prompt Examples
 
-Call `datocms-setup` explicitly, then describe the outcome in plain language.
-For Content Link, prompts like these should route to the `content-link` recipe
-and queue `draft-mode` first when needed:
+Call `datocms-setup` explicitly, then describe the outcome in plain language. For Content Link, prompts like these should route to the `content-link` recipe and queue `draft-mode` first when needed:
 
 ```text
 $datocms-setup install content link in this project

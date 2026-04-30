@@ -27,13 +27,11 @@ The CMS default field stack is simple:
 - error or hint below
 - about `var(--spacing-l)` between fields
 
-Keep labels aligned and predictable. Do not switch between left labels, top
-labels, and inline labels unless the control truly requires it.
+Keep labels aligned and predictable. Do not switch between left labels, top labels, and inline labels unless the control truly requires it.
 
 ## 2. Labels and helper text
 
-Labels should be short and concrete. Use helper text only when the field
-needs clarification.
+Labels should be short and concrete. Use helper text only when the field needs clarification.
 
 ### Good helper text
 
@@ -47,8 +45,7 @@ needs clarification.
 - sales copy
 - vague reassurance
 
-Secondary text should usually use `var(--light-body-color)` and
-`var(--font-size-s)`.
+Secondary text should usually use `var(--light-body-color)` and `var(--font-size-s)`.
 
 ## 3. Validation
 
@@ -90,8 +87,7 @@ Use grouped sections for settings that belong together. Public component path:
 - `FieldGroup`
 - `Section`
 
-If you use `react-final-form`, alias its `Form` import to avoid colliding
-with the `datocms-react-ui` `Form` component.
+If you use `react-final-form`, alias its `Form` import to avoid colliding with the `datocms-react-ui` `Form` component.
 
 ## 6. Inline vs block controls
 
@@ -103,8 +99,7 @@ Inline controls are good for:
 - compact numeric settings
 - paired URL prefix/suffix inputs
 
-Use input groups for prefixed and suffixed values rather than inventing a
-separate visual treatment.
+Use input groups for prefixed and suffixed values rather than inventing a separate visual treatment.
 
 ## 7. Config screen action placement
 
@@ -158,12 +153,8 @@ Raw fallback path:
 
 ### Accessibility
 
-Use the native `disabled` attribute on form elements. For non-form elements
-that appear disabled, use `aria-disabled="true"` and prevent interaction in
-the click handler.
+Use the native `disabled` attribute on form elements. For non-form elements that appear disabled, use `aria-disabled="true"` and prevent interaction in the click handler.
 
 ## 10. Destructive areas
 
-Destructive actions should usually live in a separated section with one clear
-explanation. If the CMS source uses a highlighted or destructive treatment,
-copy the restraint, not just the color.
+Destructive actions should usually live in a separated section with one clear explanation. If the CMS source uses a highlighted or destructive treatment, copy the restraint, not just the color.

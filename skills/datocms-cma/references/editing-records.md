@@ -92,9 +92,9 @@ Same rule applies to `client.items.update<Schema.X>`, `client.items.create<Schem
 Every read endpoint returning records accepts `nested: true` (`items.find`, `items.list`, `items.listPagedIterator`, `items.references`, `uploads.references`).
 
 | Default mode | Nested mode (`nested: true`) |
-| --- | --- |
+| - | - |
 | Block fields return ID strings | Block fields return full objects with `.attributes` |
-| Max page size 500 | Max page size 30 (iterators auto-adjust → ~16× more page fetches) |
+| Max page size 500 | Max page size 30 (iterators auto-adjust → \~16× more page fetches) |
 | Counting, listing, "do these exist?" | Any read you intend to mutate or display |
 
 Forgetting `nested: true` is #1 cause of broken update payloads — mapping over array of strings produces garbage. Block fields are only field type that change shape between two modes; asset fields + record-link fields always return IDs.
@@ -109,7 +109,7 @@ Inside any block-bearing value — request OR response — block can appear in t
 Mutation rules in parent record's `update` call:
 
 | Operation | Payload form |
-| --- | --- |
+| - | - |
 | **Create** a new block | `buildBlockRecord<Schema.B>({ item_type: Schema.B.REF, ...attrs })` — no `id` on the outer object |
 | **Update** an existing block | `buildBlockRecord<Schema.B>({ id, ...changedAttrs })` — only the diff; `item_type` is implicit |
 | **Keep** unchanged | Its ID string |
@@ -121,7 +121,7 @@ Mutation rules in parent record's `update` call:
 Top-level value is `{ schema: "dast", document: { type: "root", children: [...] } }`. Children allowed per node — violations produce API errors:
 
 | Node | Allowed children |
-| --- | --- |
+| - | - |
 | `root` | `paragraph`, `heading`, `list`, `code`, `blockquote`, `block`, `thematicBreak` |
 | `paragraph`, `heading` | `span`, `link`, `itemLink`, `inlineItem`, `inlineBlock` |
 | `list` | `listItem` |

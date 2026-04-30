@@ -9,7 +9,7 @@ paths:
 
 All setup recipes must follow the mandatory rules:
 
-@skills/datocms-setup/patterns/MANDATORY_RULES.md
+@skills/datocms-setup/patterns/MANDATORY\_RULES.md
 
 ## Routing
 

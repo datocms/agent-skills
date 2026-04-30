@@ -8,13 +8,11 @@
 - when to fall back to raw React and CSS
 - version-sensitive areas
 
-Use this file when the question is “which public primitive should carry this
-UI?” instead of “how does the CMS look?”
+Use this file when the question is “which public primitive should carry this UI?” instead of “how does the CMS look?”
 
 ## Public-first decision rule
 
-Prefer `datocms-react-ui` when the component exists and the required visual
-shape is already close to the CMS.
+Prefer `datocms-react-ui` when the component exists and the required visual shape is already close to the CMS.
 
 Fall back to raw code when:
 
@@ -25,7 +23,7 @@ Fall back to raw code when:
 ## Mapping table
 
 | Design need | Public component path | Raw fallback |
-|---|---|---|
+| - | - | - |
 | Theme + base CSS vars | `Canvas` | none; always use `Canvas` |
 | Standard settings form | `Form` + `FieldGroup` + field components | local form wrapper with CSS Modules |
 | Text input | `TextField` | native `<input>` |
@@ -49,7 +47,7 @@ Fall back to raw code when:
 **Not available in `datocms-react-ui`:**
 
 | Design need | Recommendation |
-|---|---|
+| - | - |
 | Tabs / tabbed navigation | Use `ButtonGroup` for tab-like selection, or build a custom tab bar with Canvas CSS variables |
 | Data table | Build with raw `<table>` using Canvas spacing and border tokens |
 | Toast / notification | Build with local component using Canvas color tokens |
@@ -57,7 +55,7 @@ Fall back to raw code when:
 ### Hooks
 
 | Hook | Purpose |
-|---|---|
+| - | - |
 | `useCtx()` | Access the plugin context (`ctx`) from deeply nested components inside `<Canvas>`. Avoids prop-drilling for theme data, site info, permissions, etc. |
 | `useClickOutside` | Detect clicks outside a ref element — useful for closing custom dropdowns or popovers |
 | `useMediaQuery` | React to viewport size changes for responsive plugin layouts |
@@ -66,29 +64,25 @@ Fall back to raw code when:
 
 ### Canvas
 
-Required for every plugin surface. It handles theme variables and normal
-frame behavior.
+Required for every plugin surface. It handles theme variables and normal frame behavior.
 
 Doc: <https://www.datocms.com/docs/plugin-sdk/react-datocms-ui>
 
 ### Section
 
-Reach for `Section` before building a custom grouped box. It already matches
-DatoCMS section hierarchy, including highlighted and collapsible variants.
+Reach for `Section` before building a custom grouped box. It already matches DatoCMS section hierarchy, including highlighted and collapsible variants.
 
 Doc: <https://www.datocms.com/docs/plugin-sdk/section>
 
 ### Toolbar
 
-Use public toolbar primitives for page-like work areas. They keep title,
-stack, and action rhythm aligned with the CMS.
+Use public toolbar primitives for page-like work areas. They keep title, stack, and action rhythm aligned with the CMS.
 
 Doc: <https://www.datocms.com/docs/plugin-sdk/toolbar>
 
 ### Button and ButtonGroup
 
-Use these for primary, muted, and negative action hierarchy plus segmented
-selection.
+Use these for primary, muted, and negative action hierarchy plus segmented selection.
 
 Docs:
 
@@ -103,15 +97,13 @@ Doc: <https://www.datocms.com/docs/plugin-sdk/dropdown>
 
 ### SidebarPanel
 
-Use the public `SidebarPanel` when a plugin panel needs standard disclosure
-behavior and native internal padding.
+Use the public `SidebarPanel` when a plugin panel needs standard disclosure behavior and native internal padding.
 
 Doc: <https://www.datocms.com/docs/plugin-sdk/sidebar-panel>
 
 ### VerticalSplit
 
-Use `VerticalSplit` for page-like two-pane tools, inspectors, and larger
-sidebars when the public component is available in the installed version.
+Use `VerticalSplit` for page-like two-pane tools, inspectors, and larger sidebars when the public component is available in the installed version.
 
 Doc: <https://www.datocms.com/docs/plugin-sdk/sidebars-and-split-views>
 
@@ -139,8 +131,7 @@ Fall back when the problem is mostly:
 
 ## Version-sensitive areas
 
-Some layout primitives vary more across `datocms-react-ui` versions than the
-core fields and buttons do. For split views or more specialized shells:
+Some layout primitives vary more across `datocms-react-ui` versions than the core fields and buttons do. For split views or more specialized shells:
 
 1. inspect the installed package version
 2. use the public helper if it exists and reads naturally

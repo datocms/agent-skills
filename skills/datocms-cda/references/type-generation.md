@@ -7,7 +7,7 @@ This reference covers setting up TypeScript type generation for fully typed Dato
 ## Which Approach?
 
 | | gql.tada | GraphQL Code Generator |
-|---|---|---|
+| - | - | - |
 | **Best for** | New projects, simpler setups | Existing codegen pipelines, `.graphql` file workflows |
 | **Query style** | `graphql()` tagged template in `.ts` files | Queries in `.graphql` files or inline with codegen |
 | **Fragment style** | Fragment masking via `readFragment()` + `FragmentOf<>` | Fragment masking via `getFragmentData()` + `FragmentType<>` |
@@ -56,7 +56,7 @@ Add to `compilerOptions.plugins`:
 **Framework differences:**
 
 | Framework | Plugin name | Output path |
-|---|---|---|
+| - | - | - |
 | Next.js | `gql.tada/ts-plugin` | `./src/lib/datocms/graphql-env.d.ts` |
 | Astro | `gql.tada/ts-plugin` | `./src/lib/datocms/graphql-env.d.ts` |
 | SvelteKit | `@0no-co/graphqlsp` | `./src/lib/datocms/graphql-env.d.ts` |
@@ -108,7 +108,7 @@ Run `npm run generate-schema && npm run generate-output` in CI before `tsc` or t
 ### Key Exports
 
 | Export | Purpose |
-|---|---|
+| - | - |
 | `graphql` | Tagged template function — wraps queries and fragments for type inference |
 | `readFragment` | Unmasks a fragment result to access its typed data |
 | `FragmentOf<typeof fragment>` | Type of a masked fragment reference (used in component props) |
@@ -193,7 +193,7 @@ Add to `package.json` scripts:
 ### Generated Output
 
 | File | Contents |
-|---|---|
+| - | - |
 | `graphql/types/graphql.ts` | All TypeScript types for your schema |
 | `graphql/types/gql.ts` | `graphql()` function for typed document nodes |
 | `graphql/types/fragment-masking.ts` | `getFragmentData()` and `FragmentType` helpers |
@@ -202,7 +202,7 @@ Add to `package.json` scripts:
 ### Key Imports
 
 | Import | Source | Purpose |
-|---|---|---|
+| - | - | - |
 | `graphql` | `graphql/types/gql` | Wraps `.graphql` content into `TypedDocumentNode` |
 | `getFragmentData` | `graphql/types/fragment-masking` | Unmasks a fragment result to access typed data |
 | `FragmentType<typeof fragment>` | `graphql/types/fragment-masking` | Type of a masked fragment reference (used in component props) |

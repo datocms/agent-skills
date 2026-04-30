@@ -7,6 +7,7 @@ Executing pending migration scripts with `migrations:run`.
 ## Inputs to confirm before running commands
 
 Confirm these inputs when they are not already clear:
+
 - source environment
 - fork-and-run vs `--in-place`
 - dry-run first vs real execution
@@ -27,7 +28,7 @@ Runs migration scripts that have not been executed yet.
 ### Flags
 
 | Flag | Type | Description |
-|---|---|---|
+| - | - | - |
 | `--source=<env>` | string | Environment to fork from (defaults to primary) |
 | `--destination=<env>` | string | Name for the new forked environment (exclusive with `--in-place`) |
 | `--in-place` | boolean | Run in the source environment without forking (exclusive with `--destination`) |

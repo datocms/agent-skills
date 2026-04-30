@@ -2,7 +2,6 @@
 
 Svelte component for rendering DatoCMS [Structured Text (DAST)](https://www.datocms.com/docs/structured-text/dast) fields.
 
-
 ## Contents
 
 - [Basic Usage](#basic-usage)
@@ -273,7 +272,7 @@ Available type guards: `isHeading`, `isCode`, `isParagraph`, `isList`, `isListIt
 Each node type in a Structured Text document has specific properties available in custom components:
 
 | Node Type | Type Guard | Key Properties |
-|---|---|---|
+| - | - | - |
 | Root | `isRoot` | `children` |
 | Paragraph | `isParagraph` | `children`, `style` (optional custom style) |
 | Heading | `isHeading` | `children`, `level` (1–6), `style` (optional) |
@@ -350,7 +349,7 @@ const html = toHtml(data.blogPost.content, {
 ## Props Reference
 
 | Prop | Type | Required | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `data` | `StructuredText \| DastNode` | Yes | The structured text field value from DatoCMS |
 | `components` | `PredicateComponentTuple[]` | Only if document has `block`, `inlineBlock`, `inlineItem`, or `itemLink` nodes | Array of `[predicate, SvelteComponent]` tuples for custom rendering |
 

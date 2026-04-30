@@ -4,7 +4,6 @@ Svelte components for progressive/responsive images from DatoCMS, designed to wo
 
 See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, best practices, and layout modes.
 
-
 ## Contents
 
 - [`<NakedImage />` vs `<Image />`](#nakedimage-vs-image-)
@@ -21,7 +20,7 @@ See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, be
 ## `<NakedImage />` vs `<Image />`
 
 | | `<NakedImage />` | `<Image />` |
-|---|---|---|
+| - | - | - |
 | JS footprint | Minimum (native lazy loading) | Has JS bundle |
 | HTML output | Single `<picture>` element | Multiple wrapper elements around `<picture>` |
 | Lazy loading | Native `loading="lazy"` | `IntersectionObserver` (customizable thresholds) |
@@ -29,6 +28,7 @@ See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, be
 | Transparency | Not recommended if image has alpha channel (placeholder stays behind) | Safe for transparent images |
 
 **When to use which:**
+
 - Use `<NakedImage />` by default — minimal JS, simpler output
 - Use `<Image />` when you need crossfade effects, custom lazy-loading thresholds, or images with transparency
 
@@ -73,7 +73,7 @@ See `image-concepts.md` for the full query, field definitions, and best practice
 ## `<NakedImage />` Props
 
 | Prop | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `data` | `ResponsiveImage` | **(required)** | Response from `responsiveImage` GraphQL query |
 | `pictureClass` | string | null | Additional CSS class for root `<picture>` tag |
 | `pictureStyle` | CSS properties | null | Additional CSS for root `<picture>` tag |
@@ -88,7 +88,7 @@ See `image-concepts.md` for the full query, field definitions, and best practice
 ### Events
 
 | Event | Description |
-|---|---|
+| - | - |
 | `on:load` | Emitted when the image has finished loading |
 
 ---
@@ -96,7 +96,7 @@ See `image-concepts.md` for the full query, field definitions, and best practice
 ## `<Image />` Props
 
 | Prop | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `data` | `ResponsiveImage` | **(required)** | Response from `responsiveImage` GraphQL query |
 | `class` | string | null | Additional CSS class of root node |
 | `style` | string | null | Additional CSS rules for the root node |
@@ -122,7 +122,7 @@ See `image-concepts.md` for the full query, field definitions, and best practice
 ### Events
 
 | Event | Description |
-|---|---|
+| - | - |
 | `on:load` | Emitted when the image has finished loading |
 
 ---

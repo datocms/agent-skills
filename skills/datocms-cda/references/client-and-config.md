@@ -17,7 +17,7 @@ npm install @datocms/cda-client
 ## Core Exports
 
 | Export | Description |
-|---|---|
+| - | - |
 | `executeQuery(query, options)` | Execute a GraphQL query, return the result data |
 | `rawExecuteQuery(query, options)` | Execute a query, return `[Result, Response]` tuple (needed for cache tags) |
 | `executeQueryWithAutoPagination(query, options)` | Fetch collections with `first` > 500 via a single query with aliased selections (see `pagination-and-ordering.md` for complexity implications) |
@@ -40,7 +40,7 @@ const data = await executeQuery(query, {
 ```
 
 | Option | Type | Default | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `token` | `string` | — | **Required.** DatoCMS API token. The library sends it as `Authorization: Bearer <token>`. Must have at least "Access the Content Delivery API" permission enabled. Additionally enable "Access the Content Delivery API in Preview Mode" only if using `includeDrafts: true`. Custom tokens scoped to specific models hide all other models from the GraphQL schema (including introspection). **Note:** Projects created before January 8, 2024 that haven't activated "Improved GraphQL Security" may have different access control behavior. |
 | `includeDrafts` | `boolean` | `false` | Return draft/unpublished content. When enabled, `_status` returns `draft`, `published`, or `updated`. |
 | `excludeInvalid` | `boolean` | `false` | Filter out invalid records and narrow GraphQL types — required fields become non-nullable; asset fields with image validation get non-nullable `focalPoint`/`width`/`height`/`responsiveImage`; video assets get non-nullable `video`. **Recommended for production.** |
@@ -149,7 +149,7 @@ try {
 **`ApiError` properties:**
 
 | Property | Type | Description |
-|---|---|---|
+| - | - | - |
 | `query` | `string` | The GraphQL query that was sent |
 | `options` | `BuildRequestHeadersOptions` | The options used to build the request |
 | `response.status` | `number` | HTTP status code |
@@ -160,6 +160,7 @@ try {
 ### Error Response Structures
 
 **GraphQL query errors** return HTTP 200 with an `errors[]` array (not `data`):
+
 ```json
 {
   "errors": [{
@@ -172,6 +173,7 @@ try {
 ```
 
 **HTTP/API errors** return non-200 status with a structured body:
+
 ```json
 {
   "id": "...",
@@ -198,7 +200,7 @@ When `autoRetry` is `true` (the default), the client automatically retries 429 r
 ## Technical Limits
 
 | Limit | Value |
-|---|---|
+| - | - |
 | Max query complexity | 10,000,000 per query |
 | Rate limit | 40 requests/second, 1,000 requests/minute **per API token** (applies only to non-cached requests — CDN cache hits are not rate-limited) |
 | Max records per page | 500 (use `first` argument) |
@@ -207,12 +209,14 @@ When `autoRetry` is `true` (the default), the client automatically retries 429 r
 | Real-time update connections | 500 concurrent per project |
 
 **Plan-based behavior when limits are exceeded:**
+
 - **Paid plans:** overage charges applied; service continues uninterrupted
 - **Free plans:** service **temporarily disabled** until the next calendar month (unless a credit card is added)
 
 **CDN caching:** All queries are cached by the CDN and selectively invalidated when content changes. Queries exceeding 8 KB gzip-compressed bypass the CDN and hit the origin directly, subject to stricter rate limits. 429 responses can also occur during peak load even within rate limits — `autoRetry` handles this automatically.
 
 **CDN monitoring headers** (in every response):
+
 - `X-Cacheable-On-Cdn` — whether the query is CDN-cached
 - `X-Cacheable-On-Cdn-Query-Length-Limit` — compressed request size in bytes
 
@@ -223,7 +227,7 @@ When `autoRetry` is `true` (the default), the client automatically retries 429 r
 DatoCMS defines custom GraphQL scalars. Use these in GraphQL variable declarations (e.g., `$first: IntType`).
 
 | GraphQL Scalar | TypeScript Type | Description |
-|---|---|---|
+| - | - | - |
 | `BooleanType` | `boolean` | Boolean values |
 | `CustomData` | `Record<string, string>` | Key-value string metadata |
 | `Date` | `string` | ISO 8601 date (e.g., `"2024-01-15"`) |
@@ -242,7 +246,7 @@ DatoCMS defines custom GraphQL scalars. Use these in GraphQL variable declaratio
 In addition to scalars, DatoCMS defines enum types used in query arguments and responses:
 
 | GraphQL Enum | Usage |
-|---|---|
+| - | - |
 | `SiteLocale` | Locale argument values (e.g., `$locale: SiteLocale!`). Values are the project's configured locale codes (e.g., `en`, `it`, `fr`). |
 | `ItemStatus` | Record publication status. Values: `draft`, `published`, `updated` (see `draft-caching-environments.md` for details). |
 
@@ -253,6 +257,7 @@ In addition to scalars, DatoCMS defines enum types used in query arguments and r
 Every query has a complexity cost. The limit is 10,000,000 per query. Response headers `X-Complexity` and `X-Max-Complexity` report the actual cost and your plan's limit.
 
 **Strategies to stay under the limit:**
+
 - Request only the fields you need
 - Use small `first` values when possible
 - Avoid deep filtering unless necessary (each block type adds 1,000,000)

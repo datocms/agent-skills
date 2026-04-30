@@ -4,7 +4,6 @@ See `seo-concepts.md` for the shared GraphQL query shape and tag concatenation p
 
 Astro component for rendering SEO meta tags, social share tags, and favicons from DatoCMS's `_seoMetaTags` and `faviconMetaTags` GraphQL queries. Unlike React's `renderMetaTags()` / `toNextMetadata()`, Vue's `toHead()`, or Svelte's `<Head />`, Astro uses a `<Seo />` component that injects `<title>`, `<meta>`, and `<link>` tags into the document's `<head>`.
 
-
 ## Contents
 
 - [Setup](#setup)
@@ -134,7 +133,7 @@ const htmlString = renderMetaTagsToString([...result.page.seo, ...result.site.fa
 ## Utility Summary
 
 | Utility | Type | Use Case |
-|---|---|---|
+| - | - | - |
 | `<Seo />` | Astro component | Injects `<title>`, `<meta>`, `<link>` tags into `<head>` |
 | `renderMetaTagsToString()` | Function | Server-side HTML string generation |
 

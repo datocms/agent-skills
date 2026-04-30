@@ -1,6 +1,5 @@
 _Internal recipe for `datocms-setup`. Use this file only after the parent skill selects the `web-previews` recipe and queues any prerequisites from `../../../references/recipe-manifest.json`._
 
-
 # DatoCMS Web Previews Setup
 
 You are an expert at setting up the DatoCMS Web Previews plugin integration. This recipe generates a preview-links endpoint that returns draft/published URLs for records, enabling editors to preview content directly from the DatoCMS UI.
@@ -77,13 +76,14 @@ If neither ambiguity applies, proceed directly.
 Read the relevant reference files. Load only what is needed.
 
 **Always load:**
+
 - `../../../../datocms-frontend-integrations/references/visual-editing-concepts.md`
 - `../../../../datocms-frontend-integrations/references/web-previews-concepts.md`
 
 **Load per framework — focus on the `## Web Previews (Optional)` section:**
 
 | Framework | Reference file |
-|---|---|
+| - | - |
 | Next.js | `../../../../datocms-frontend-integrations/references/nextjs.md` |
 | Nuxt | `../../../../datocms-frontend-integrations/references/nuxt.md` |
 | SvelteKit | `../../../../datocms-frontend-integrations/references/sveltekit.md` |
@@ -149,7 +149,7 @@ This handoff is required even when the code is otherwise production-ready.
 Install missing packages only when the selected framework pattern needs them:
 
 | Package | When |
-|---|---|
+| - | - |
 | `@datocms/rest-client-utils` | Next.js only |
 | `@datocms/cma-client` | Only when route generation needs CMA record info types or helper lookups |
 

@@ -12,16 +12,14 @@
 - asset source
 - sizing and theme rules
 
-Use this file after `foundations.md` when the plugin hook determines the UI
-shell more than the visual polish does.
+Use this file after `foundations.md` when the plugin hook determines the UI shell more than the visual polish does.
 
 ## Shared rules
 
 - Wrap every rendered surface in `<Canvas ctx={ctx}>`
 - Import `datocms-react-ui/styles.css` once in the plugin entry file
 - Use `noAutoResizer` only for imposed-size surfaces
-- Use `ctx.updateHeight()` only when async or expanding content defeats the
-  default auto-resizer
+- Use `ctx.updateHeight()` only when async or expanding content defeats the default auto-resizer
 - Use Canvas variables and `ctx.theme` for colors; do not hardcode a separate palette
 
 Useful docs:
@@ -54,9 +52,7 @@ Best fit:
 - list/detail tools
 - broader operational screens
 
-Use either a page shell or a full-height shell depending on content type.
-If the page needs a real two-pane work area, prefer `VerticalSplit` from the
-public design system when available; otherwise use a local flex/grid shell.
+Use either a page shell or a full-height shell depending on content type. If the page needs a real two-pane work area, prefer `VerticalSplit` from the public design system when available; otherwise use a local flex/grid shell.
 
 ### Sizing
 
@@ -71,8 +67,7 @@ Best fit:
 - small metadata groups
 - one or two focused actions
 
-Sidebar panels should stay compact. If they turn into a whole app, move to a
-full sidebar or a page.
+Sidebar panels should stay compact. If they turn into a whole app, move to a full sidebar or a page.
 
 ### Sizing
 
@@ -87,9 +82,7 @@ Best fit:
 - larger editors or preview tools
 - list/detail interactions that still belong beside the main screen
 
-Full sidebars should still feel like side work, not a separate dashboard.
-If the sidebar needs a real split layout, prefer `VerticalSplit` before
-building a custom divider shell.
+Full sidebars should still feel like side work, not a separate dashboard. If the sidebar needs a real split layout, prefer `VerticalSplit` before building a custom divider shell.
 
 ### Sizing
 
@@ -110,16 +103,11 @@ Keep modals narrow in scope and limited in vertical complexity.
 
 - `renderModal` is self-resizing
 - normal `<Canvas ctx={ctx}>`
-- call `ctx.updateHeight()` only when results arrive asynchronously and the
-  initial layout height is clearly wrong
+- call `ctx.updateHeight()` only when results arrive asynchronously and the initial layout height is clearly wrong
 
 ### Backdrops
 
-Plugins should use `ctx.openModal()` to open modals — the CMS handles the
-backdrop overlay automatically. `--backdrop-color` and
-`--backdrop-linear-gradient` are **not** available inside Canvas, so do not
-attempt to build a custom backdrop. If you need a dimming layer within a
-plugin surface for a local popover, use a simple `rgb(0 0 0 / 0.3)` overlay.
+Plugins should use `ctx.openModal()` to open modals — the CMS handles the backdrop overlay automatically. `--backdrop-color` and `--backdrop-linear-gradient` are **not** available inside Canvas, so do not attempt to build a custom backdrop. If you need a dimming layer within a plugin surface for a local popover, use a simple `rgb(0 0 0 / 0.3)` overlay.
 
 ## 6. Outlets
 
@@ -144,8 +132,7 @@ Best fit:
 - split layouts with navigation + detail
 - richer browsing tools
 
-Use `VerticalSplit` when it reads naturally for the interaction and the
-installed `datocms-react-ui` version supports it.
+Use `VerticalSplit` when it reads naturally for the interaction and the installed `datocms-react-ui` version supports it.
 
 ### Sizing
 
@@ -160,8 +147,7 @@ Best fit:
 - focused pickers
 - source-specific metadata steps
 
-Asset sources should feel like efficient work tools. Prefer compact search,
-filters, results, and one clear selection path.
+Asset sources should feel like efficient work tools. Prefer compact search, filters, results, and one clear selection path.
 
 ### Sizing
 
@@ -171,7 +157,7 @@ filters, results, and one clear selection path.
 ## 9. Surface-specific design defaults
 
 | Surface | Default shell | Avoid |
-|---|---|---|
+| - | - | - |
 | Config screen | centered page with sections | metrics dashboard, multi-column vanity layout |
 | Page | toolbar + page/full-height shell | giant intro section |
 | Sidebar panel | compact stack | large cards and oversized headings |

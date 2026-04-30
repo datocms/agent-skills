@@ -1,8 +1,6 @@
 # Robots and Sitemaps for DatoCMS Search
 
-Use this reference when generating `robots.txt`, `sitemap.xml`, sitemap indexes,
-or section-specific crawling rules for DatoCMS-powered sites.
-
+Use this reference when generating `robots.txt`, `sitemap.xml`, sitemap indexes, or section-specific crawling rules for DatoCMS-powered sites.
 
 ## Contents
 
@@ -18,8 +16,7 @@ or section-specific crawling rules for DatoCMS-powered sites.
 DatoCMS Site Search uses its own crawler:
 
 - Default user agent: `DatoCmsSearchBot`
-- Optional per-index suffixes produce user agents like
-  `DatoCmsSearchBotDocs`
+- Optional per-index suffixes produce user agents like `DatoCmsSearchBotDocs`
 - Supported robots directives: `User-agent`, `Allow`, `Disallow`
 - Supported matching helpers: `*` wildcard and `$` end-of-path marker
 - Unsupported: `crawl-delay`, page-level `nofollow`, page-level `noindex`
@@ -27,8 +24,7 @@ DatoCMS Site Search uses its own crawler:
 
 ## Order matters
 
-DatoCMS respects the **first matching** `Allow` or `Disallow` rule for a URL.
-Put every allowed section before a catch-all `Disallow: /`.
+DatoCMS respects the **first matching** `Allow` or `Disallow` rule for a URL. Put every allowed section before a catch-all `Disallow: /`.
 
 Correct pattern:
 
@@ -48,8 +44,7 @@ Disallow: /
 Allow: /docs/
 ```
 
-In the incorrect version, `/docs/` is still blocked because `Disallow: /`
-matches first.
+In the incorrect version, `/docs/` is still blocked because `Disallow: /` matches first.
 
 ## Sitemaps
 
@@ -69,11 +64,9 @@ Sitemap generation rules:
 
 ## User-agent suffixes
 
-Search indexes can define a `user_agent_suffix`. If an index uses the suffix
-`Docs`, the crawler user agent becomes `DatoCmsSearchBotDocs`.
+Search indexes can define a `user_agent_suffix`. If an index uses the suffix `Docs`, the crawler user agent becomes `DatoCmsSearchBotDocs`.
 
-This lets you split large sites into separate search indexes, each with its own
-allowed section:
+This lets you split large sites into separate search indexes, each with its own allowed section:
 
 ```txt
 User-agent: DatoCmsSearchBotDocs
@@ -85,9 +78,7 @@ Allow: /blog/
 Disallow: /
 ```
 
-Only generate suffix-specific groups when the project already uses multiple
-search indexes or the repo clearly exposes distinct public sections that can be
-mapped without guessing.
+Only generate suffix-specific groups when the project already uses multiple search indexes or the repo clearly exposes distinct public sections that can be mapped without guessing.
 
 ## Shared mapping contract
 
@@ -110,20 +101,17 @@ type SitemapSource = {
 };
 ```
 
-If any public model is missing a URL builder or `lastmod` source, keep the setup
-result `scaffolded`.
+If any public model is missing a URL builder or `lastmod` source, keep the setup result `scaffolded`.
 
 ## Framework route shapes
 
 Use the framework's native route mechanism:
 
 | Framework | Robots route | Sitemap route |
-|---|---|---|
+| - | - | - |
 | Next.js App Router | `app/robots.ts` | `app/sitemap.ts` or section-specific route handlers |
 | Nuxt | `server/routes/robots.txt.ts` | `server/routes/sitemap.xml.ts` |
 | SvelteKit | `src/routes/robots.txt/+server.ts` | `src/routes/sitemap.xml/+server.ts` |
 | Astro | `src/pages/robots.txt.ts` | `src/pages/sitemap.xml.ts` |
 
-Prefer framework-native helpers when they exist. Use raw XML/text responses only
-when the framework does not expose a structured metadata route.
-
+Prefer framework-native helpers when they exist. Use raw XML/text responses only when the framework does not expose a structured metadata route.

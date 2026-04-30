@@ -21,10 +21,7 @@ You are an expert at querying the DatoCMS Content Delivery API (CDA) using `@dat
 
 ## Step 1: Detect Context
 
-If the project context is already established in this conversation (client
-package, token variable, framework, type generation setup), skip broad
-detection below. Re-inspect only when a question cannot be answered from
-prior context.
+If the project context is already established in this conversation (client package, token variable, framework, type generation setup), skip broad detection below. Re-inspect only when a question cannot be answered from prior context.
 
 Silently examine the project to determine setup and configuration.
 
@@ -55,7 +52,7 @@ Silently examine the project to determine setup and configuration.
 Classify the user's task into one or more categories:
 
 | Category | Examples |
-|---|---|
+| - | - |
 | **Basic querying** | Fetch records by slug/ID, query single-instance models, list collections |
 | **Filtering** | Filter by field values, AND/OR logic, meta field filters, deep filtering |
 | **Pagination & ordering** | Paginate large collections, sort results, tree/hierarchical queries |
@@ -76,12 +73,13 @@ If the user's request is clear, skip clarifying questions and proceed directly.
 Based on the task classification, read the appropriate reference files from the `references/` directory next to this skill file. **Always** load the core client reference. Only load what is relevant — do not load everything.
 
 **Always load:**
+
 - `references/client-and-config.md` — Client setup, options, error handling, limits, scalars
 
 **Load per category:**
 
 | Task category | Reference file |
-|---|---|
+| - | - |
 | Basic querying (records, collections, meta) | `references/querying-basics.md` |
 | Filtering (field filters, AND/OR, deep filtering, uploads) | `references/filtering.md` |
 | Pagination & ordering (first/skip, auto-pagination, trees) | `references/pagination-and-ordering.md` |
@@ -94,6 +92,7 @@ Based on the task classification, read the appropriate reference files from the 
 | Type generation (gql.tada, graphql-codegen, schema types) | `references/type-generation.md` |
 
 **Load cross-cutting references when needed:**
+
 - If filtering localized fields → also load `references/localization.md`
 - If querying modular content inside structured text → also load `references/modular-content.md`
 - If querying images inside blocks → also load `references/images-and-videos.md`
@@ -107,6 +106,7 @@ Based on the task classification, read the appropriate reference files from the 
 Write the code following these mandatory rules:
 
 ### Client Usage
+
 - **Default to `executeQuery`** from `@datocms/cda-client`, or the repo's existing wrapper around it (not raw `fetch`)
 - Use `buildRequestHeaders()` / `buildRequestInit()` when the framework needs integrated `fetch` handling, request tagging, or custom request plumbing
 - Use **`executeQueryWithAutoPagination`** when fetching more than 500 records
@@ -114,19 +114,23 @@ Write the code following these mandatory rules:
 - Store the API token in an environment variable — never hardcode it
 
 ### GraphQL Queries
+
 - Write queries as **template literal strings** (unless the project uses `TypedDocumentNode` / `gql.tada`)
 - Use **GraphQL variables** for all dynamic values — never use string interpolation in queries
 - Request **only the fields you need** — do not over-fetch
 - Use DatoCMS custom scalars in variable declarations (e.g., `$first: IntType`, `$id: ItemId`)
 
 ### Structured Text
+
 - Always query **all relevant sub-fields** (`value`, `blocks`, `links`, `inlineBlocks`) when the structured text field uses them — omitting any causes silent data loss
 
 ### Error Handling
+
 - Catch `ApiError` from `@datocms/cda-client` at appropriate boundaries
 - Do **not** add custom retry logic — `autoRetry` handles rate limits automatically
 
 ### TypeScript
+
 - Follow the TypeScript strictness rules: no `as unknown as`, no unnecessary `as` casts
 - Let TypeScript infer types wherever possible
 - Use `import type { ... }` for type-only imports
@@ -156,7 +160,7 @@ Before presenting the final code:
 This skill covers **reading content via the GraphQL CDA**. If the task involves any of the following, activate the companion skill:
 
 | Condition | Route to |
-|---|---|
+| - | - |
 | Mutating content, managing schema/uploads/webhooks, writing scripts (including querying records via REST for scripts) | **datocms-cma** |
 | Setting up draft mode endpoints, Web Previews, Content Link, real-time subscriptions, or cache tags in a framework | **datocms-frontend-integrations** |
 | Building a DatoCMS plugin | **datocms-plugin-builder** |

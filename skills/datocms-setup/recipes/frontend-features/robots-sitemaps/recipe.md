@@ -1,11 +1,8 @@
 _Internal recipe for `datocms-setup`. Use this file only after the parent skill selects the `robots-sitemaps` recipe and queues any prerequisites from `../../../references/recipe-manifest.json`._
 
-
 # DatoCMS Robots and Sitemaps Setup
 
-You are an expert at generating `robots.txt` and sitemap outputs for DatoCMS
-frontends. This recipe focuses on crawler-safe route generation, same-domain URL
-output, and deterministic public-route mapping.
+You are an expert at generating `robots.txt` and sitemap outputs for DatoCMS frontends. This recipe focuses on crawler-safe route generation, same-domain URL output, and deterministic public-route mapping.
 
 See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
 
@@ -20,23 +17,17 @@ Silently examine the project:
 Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
 
 1. **Framework** — detect Next.js, Nuxt, SvelteKit, or Astro
-2. **Public site URL config** — inspect env files for a framework-appropriate
-   site URL
-3. **Existing SEO helper** — check whether a shared `public-url` helper already
-   exists from SEO setup
-4. **Existing preview routing** — inspect any `recordToWebsiteRoute`,
-   route-builder helpers, or other public URL mapping utilities
+2. **Public site URL config** — inspect env files for a framework-appropriate site URL
+3. **Existing SEO helper** — check whether a shared `public-url` helper already exists from SEO setup
+4. **Existing preview routing** — inspect any `recordToWebsiteRoute`, route-builder helpers, or other public URL mapping utilities
 5. **Existing robots/sitemap routes** — search for framework-native route files
-6. **Public content sections** — inspect routes and page directories for public
-   sections such as `/blog`, `/docs`, or `/help`
-7. **Search index suffix hints** — inspect existing Site Search env vars or
-   Dato-related docs in the repo for section-specific crawler suffixes
+6. **Public content sections** — inspect routes and page directories for public sections such as `/blog`, `/docs`, or `/help`
+7. **Search index suffix hints** — inspect existing Site Search env vars or Dato-related docs in the repo for section-specific crawler suffixes
 
 ### Stop conditions
 
 - If the framework cannot be determined, ask the user.
-- If the repo already has a materially different sitemap implementation, patch
-  it in place by default instead of rewriting it wholesale.
+- If the repo already has a materially different sitemap implementation, patch it in place by default instead of rewriting it wholesale.
 
 ---
 
@@ -48,8 +39,7 @@ Follow the zero-question default and question-format rules in `../../../patterns
 
 If you do ask, make it one concise question, put the recommended/default path first, and explain whether skipping it will leave placeholders, ownership, or project-specific values unresolved.
 
-Only ask if the repo exposes multiple public sections but their sitemap or
-crawler boundaries cannot be inferred safely from the existing route structure.
+Only ask if the repo exposes multiple public sections but their sitemap or crawler boundaries cannot be inferred safely from the existing route structure.
 
 ---
 
@@ -59,8 +49,7 @@ Read only these references:
 
 - `../../../../datocms-frontend-integrations/references/robots-and-sitemaps.md`
 
-If the repo already has SEO or preview-route helpers, inspect those files
-directly and reuse them instead of loading more references than necessary.
+If the repo already has SEO or preview-route helpers, inspect those files directly and reuse them instead of loading more references than necessary.
 
 ---
 
@@ -79,8 +68,7 @@ Generate framework-native crawler outputs and one shared mapping layer.
    - `lastmod` sources
 3. **Generate framework-native `robots.txt` output**
 4. **Generate framework-native sitemap output**
-5. **Generate a sitemap index only when more than one sitemap document is
-   actually emitted**
+5. **Generate a sitemap index only when more than one sitemap document is actually emitted**
 
 ### Shared mapping rules
 
@@ -102,11 +90,9 @@ Use the same env var as SEO setup:
 
 ### Mandatory crawler rules
 
-- `Allow` directives for Dato crawler sections must appear before
-  `Disallow: /`
+- `Allow` directives for Dato crawler sections must appear before `Disallow: /`
 - Emit a `DatoCmsSearchBot` group even when the site has only one search index
-- Emit suffix-specific groups such as `DatoCmsSearchBotDocs` only when the repo
-  already has multiple indexes or clearly separated sections
+- Emit suffix-specific groups such as `DatoCmsSearchBotDocs` only when the repo already has multiple indexes or clearly separated sections
 - Add `Sitemap:` directives that point to the generated sitemap entrypoint
 - Only emit absolute URLs under the configured public site URL
 - Keep robots and sitemap generation deterministic and free of guessed routes
@@ -124,10 +110,8 @@ Reuse existing file-placement conventions in the repo.
 
 ### Output status
 
-- Report `scaffolded` if the site URL is still a placeholder or any public
-  section lacks a concrete route / `lastmod` mapping
-- Report `production-ready` only when the generated outputs have real URLs,
-  deterministic mappings, and no unresolved crawler TODOs
+- Report `scaffolded` if the site URL is still a placeholder or any public section lacks a concrete route / `lastmod` mapping
+- Report `production-ready` only when the generated outputs have real URLs, deterministic mappings, and no unresolved crawler TODOs
 
 ---
 
@@ -146,11 +130,9 @@ After generating the files, tell the user:
 
 Before presenting the result, verify:
 
-1. `robots.txt` contains ordered `Allow` directives before any catch-all
-   `Disallow: /`
+1. `robots.txt` contains ordered `Allow` directives before any catch-all `Disallow: /`
 2. The generated sitemap contains only same-domain absolute URLs
 3. A sitemap index is generated only when multiple sitemap documents exist
 4. Every public section has an explicit route builder and `lastmod` source
 5. The framework-native route mechanism matches the detected stack
-6. The result is `scaffolded` if the site URL or route mappings remain
-   unresolved
+6. The result is `scaffolded` if the site URL or route mappings remain unresolved

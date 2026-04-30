@@ -30,7 +30,7 @@ query {
 ## ResponsiveImage Object Fields
 
 | Field | Type | Required | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `src` | string | Yes | The `src` attribute for the image |
 | `width` | integer | Yes | The width of the image |
 | `height` | integer | Yes | The height of the image |
@@ -57,7 +57,7 @@ query {
 Components that support layout modes (React `<Image />`, Vue `<datocms-image>`) offer:
 
 | Mode | Behavior |
-|---|---|
+| - | - |
 | `intrinsic` (default) | Scales down for smaller viewports, maintains original dimensions for larger viewports |
 | `fixed` | Dimensions never change (no responsiveness), like native `<img>` |
 | `responsive` | Scales both down and up with viewport |

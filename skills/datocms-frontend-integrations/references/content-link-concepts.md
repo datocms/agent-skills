@@ -2,7 +2,6 @@
 
 This reference covers DatoCMS Content Link — click-to-edit overlays that connect website elements to DatoCMS fields.
 
-
 ## Contents
 
 - [What Content Link Is](#what-content-link-is)
@@ -365,6 +364,7 @@ Record links are standard anchors wrapping text that belongs to the structured t
 ### Result
 
 With this setup:
+
 - Clicking main text (paragraphs, headings, lists) → opens the **structured text field editor**
 - Clicking an embedded block → opens **that block's editor**
 - Clicking an inline record → opens **that inline record's editor**
@@ -434,11 +434,11 @@ console.log(revealStega(graphqlResponse));
 // }
 ```
 
-Use it to answer questions like *"is this field stega-encoded?"*, *"which fields in this response carry editing metadata?"*, and *"why is my equality check silently failing?"*.
+Use it to answer questions like _"is this field stega-encoded?"_, _"which fields in this response carry editing metadata?"_, and _"why is my equality check silently failing?"_.
 
 ### When to Strip Stega
 
-The general rule: stega-encoded values are safe to render directly into text/HTML output (the invisible characters survive intact and power the click-to-edit overlay), but they are **not safe to use in any other code path**. If a value crosses out of "render this as final content" into *any* other use, wrap it in `stripStega()`.
+The general rule: stega-encoded values are safe to render directly into text/HTML output (the invisible characters survive intact and power the click-to-edit overlay), but they are **not safe to use in any other code path**. If a value crosses out of "render this as final content" into _any_ other use, wrap it in `stripStega()`.
 
 The non-render uses to watch for:
 
@@ -548,7 +548,7 @@ If the site is not running inside the Web Previews plugin iframe (i.e., opened d
 
 - **Equality check silently fails on draft / works on published**: Classic stega leak. A line like `if (page.slug === 'home')` evaluates to `false` in draft mode because `page.slug` carries invisible stega characters. Confirm with `console.log(revealStega(page))` — if the value shows `[STEGA:...]` markers, wrap the comparison in `stripStega()`. (Note: this should not happen for actual DatoCMS `slug` field types — those never get stega. If a slug-typed field shows stega, file a bug.)
 
-- **`console.log` shows the value looks normal but the code disagrees**: stega characters are zero-width Unicode. `console.log` and the browser dev tools render them invisibly, so the value *looks* identical to the literal you're comparing against while actually being different. Use `revealStega(value)` to reveal the encoding, or check `value.length` against the literal's length.
+- **`console.log` shows the value looks normal but the code disagrees**: stega characters are zero-width Unicode. `console.log` and the browser dev tools render them invisibly, so the value _looks_ identical to the literal you're comparing against while actually being different. Use `revealStega(value)` to reveal the encoding, or check `value.length` against the literal's length.
 
 - **Invisible characters reaching analytics, third-party APIs, or persisted stores**: any value going outside the render path (analytics event properties, webhook payloads, cache keys, database writes, `<meta>` content) must be stripped first. Treat the boundary at the point the value leaves the render layer.
 
@@ -571,7 +571,7 @@ If the site is not running inside the Web Previews plugin iframe (i.e., opened d
 ## Environment Variables
 
 | Variable | Description | Where to find it |
-|---|---|---|
+| - | - | - |
 | Base Editing URL | DatoCMS editor URL for Content Link | DatoCMS → Settings → Environment settings |
 
 Framework-specific variable names are in each framework reference file.

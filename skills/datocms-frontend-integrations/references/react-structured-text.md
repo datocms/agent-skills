@@ -2,7 +2,6 @@
 
 React component for rendering DatoCMS [Structured Text (DAST)](https://www.datocms.com/docs/structured-text/dast) fields.
 
-
 ## Contents
 
 - [Basic Usage](#basic-usage)
@@ -231,7 +230,7 @@ import { renderMarkRule, StructuredText } from 'react-datocms';
 ### Available Marks
 
 | Mark | Default HTML tag | Description |
-|---|---|---|
+| - | - | - |
 | `'strong'` | `<strong>` | Bold text |
 | `'emphasis'` | `<em>` | Italic text |
 | `'underline'` | `<u>` | Underlined text |
@@ -246,7 +245,7 @@ import { renderMarkRule, StructuredText } from 'react-datocms';
 Each node type in a Structured Text document has specific properties available in `renderNodeRule` callbacks:
 
 | Node Type | Type Guard | Key Properties |
-|---|---|---|
+| - | - | - |
 | Root | `isRoot` | `children` |
 | Paragraph | `isParagraph` | `children`, `style` (optional custom style) |
 | Heading | `isHeading` | `children`, `level` (1–6), `style` (optional) |
@@ -325,7 +324,7 @@ Same customization API as `<StructuredText>` (`renderBlock`, `renderInlineRecord
 ## Props Reference
 
 | Prop | Type | Required | Description |
-|---|---|---|---|
+| - | - | - | - |
 | `data` | `StructuredTextGraphQlResponse \| DastNode` | Yes | The structured text field value from DatoCMS |
 | `renderBlock` | `({ record }) => ReactElement \| null` | Only if document has `block` nodes | Render embedded block records |
 | `renderInlineRecord` | `({ record }) => ReactElement \| null` | Only if document has `inlineItem` nodes | Render inline record references |

@@ -14,6 +14,7 @@ const nested  = await client.items.find<Schema.BlogPost>("id", { nested: true })
 ```
 
 Two consequences worth internalizing:
+
 - Without `nested: true`, you cannot read the contents of a block field — you only have ids. To work with the data you must either re-fetch each block, or refetch the parent record nested.
 - With `nested: true`, the iterator's max page size drops from 500 to 30 (see `references/filtering-and-pagination.md`). Plan for the round-trip cost on large scans.
 
@@ -33,12 +34,14 @@ await client.items.publish(id, {
 Useful when, say, the Italian translator finishes before the German one, and you want EN+IT live now. Without this, the record would either remain unpublished (because some locales aren't ready) or you'd have to lie about field values to satisfy validators.
 
 For tree-model records, `{ recursive: true }` as the third argument auto-cascades:
+
 - `publish` with `recursive: true` auto-publishes any unpublished parents (otherwise you'd hit `UNPUBLISHED_PARENT`).
 - `unpublish` with `recursive: true` auto-unpublishes any published children (otherwise the API refuses to leave dangling published descendants).
 
 ## `validateNew` / `validateExisting` — preflight without commit
 
 Same input shapes as `create` / `update` respectively, but no commit. Throw the same `ApiError` shape on validation failure. Useful when:
+
 - A long script does work between gathering input and committing — fail fast, before the side effects.
 - You want to surface validation errors to a UI without persisting a draft.
 
@@ -93,7 +96,7 @@ Markdown-identical: `# H1`–`###### H6`, paragraphs, `- ` / `1. ` lists (2-spac
 
 Everything dastdown adds, in one document:
 
-```dastdown
+````dastdown
 # Heading {style="display"} ← style trailer on heading line
 
 Paragraph with ==highlight==, ++underline++, custom mark <m k="footnote-ref">x</m>, and span-internal<br/>linebreak.
@@ -104,14 +107,13 @@ Paragraph with ==highlight==, ++underline++, custom mark <m k="footnote-ref">x</
 
 ```js {highlight=[0,2]} ← highlight 0-indexed; no escapes inside fence
 code
-```
+````
 
-Link with meta: [text](https://x.com){rel="nofollow" target="_blank"}
-Record link: [text](dato:item/RECORD_ID){rel="nofollow"}
-Inline refs: <inlineItem id="…"/>  <inlineBlock id="…"/>
+Link with meta: [text](https://x.com){rel="nofollow" target="\_blank"} Record link: [text](dato:item/RECORD_ID){rel="nofollow"} Inline refs: <inlineItem id="…"/>  <inlineBlock id="…"/>
 
 <block id="…"/> ← root-level only, own line
-```
+
+````
 
 Rules that bite:
 
@@ -130,6 +132,6 @@ Every method that returns or accepts a record (`find`, `list`, `create`, `update
 ```ts
 const post = await client.items.find<Schema.BlogPost>(id);          // blocks as ID strings
 const nested = await client.items.find<Schema.BlogPost>(id, { nested: true }); // blocks expanded
-```
+````
 
 To extract the type of a specific field for an intermediate variable, index `ApiTypes.Item<Schema.BlogPost>["field_api_key"]` (or `ApiTypes.ItemInNestedResponse<…>["…"]` when reading nested). For create/update payloads, `ApiTypes.ItemCreateSchema<Schema.BlogPost>` / `ApiTypes.ItemUpdateSchema<Schema.BlogPost>`. See `references/type-generation.md` for the generation step.

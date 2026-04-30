@@ -17,12 +17,13 @@ POST-only, read-only — **no mutations**. All content changes go through the CM
 ## Query Naming Conventions
 
 Model API keys map to GraphQL query names following these rules:
-- Snake_case API keys become camelCase (e.g., `blog_post` → `blogPost`)
+
+- Snake\_case API keys become camelCase (e.g., `blog_post` → `blogPost`)
 - Collection queries use `all` prefix + English plural (e.g., `allBlogPosts`)
 - Meta queries use `_all` prefix + English plural + `Meta` suffix (e.g., `_allBlogPostsMeta`)
 
 | Model API Key | Single Record | Collection | Meta Count |
-|---|---|---|---|
+| - | - | - | - |
 | `blog_post` | `blogPost` | `allBlogPosts` | `_allBlogPostsMeta` |
 | `artist` | `artist` | `allArtists` | `_allArtistsMeta` |
 | `category` | `category` | `allCategories` | `_allCategoriesMeta` |
@@ -129,7 +130,7 @@ query {
 Every record exposes these meta fields (prefixed with underscore):
 
 | Field | Type | Description |
-|---|---|---|
+| - | - | - |
 | `id` | `ItemId` | Unique record identifier |
 | `_createdAt` | `DateTime` | Record creation timestamp |
 | `_updatedAt` | `DateTime` | Last update timestamp |
@@ -194,6 +195,7 @@ const data = await executeQuery(query, {
 ```
 
 **Variable type declarations** use DatoCMS custom scalars where applicable:
+
 - `$first: IntType` — for pagination `first` argument
 - `$skip: IntType` — for pagination `skip` argument
 - `$id: ItemId` — for record ID filters

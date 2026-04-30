@@ -1,15 +1,13 @@
 # Setup Router
 
-Use this file to choose the right internal recipe bundle without loading the
-entire setup tree.
+Use this file to choose the right internal recipe bundle without loading the entire setup tree.
 
 ## Targeted Mode
 
-If the user clearly asks for one of these outcomes, load only that recipe plus
-its prerequisites from `recipe-manifest.json`:
+If the user clearly asks for one of these outcomes, load only that recipe plus its prerequisites from `recipe-manifest.json`:
 
 | Group | Recipe ids | Typical user intents |
-|---|---|---|
+| - | - | - |
 | `frontend-foundation` | `cda-client`, `draft-mode`, `web-previews`, `content-link`, `realtime`, `visual-editing`, `cache-tags`, `graphql-types` | query baseline, previews, website click-to-edit, side-by-side editing, live preview, cache invalidation, typed queries |
 | `frontend-features` | `responsive-images`, `structured-text`, `video-player`, `site-search`, `seo`, `robots-sitemaps` | media rendering, rich text, search, metadata, sitemap wiring |
 | `migrations` | `migrations`, `migration-release-workflow`, `blueprint-sync`, `sandbox-iteration`, `cli-profiles`, `migration-autogenerate` | schema workflow, promotion, shared history, sandbox reset, profiles, diff-based generation |
@@ -18,8 +16,7 @@ its prerequisites from `recipe-manifest.json`:
 
 ## Discovery Mode
 
-Use discovery mode only when the user asks for broad setup such as “set up
-DatoCMS for this project” or mixes several unrelated setup goals.
+Use discovery mode only when the user asks for broad setup such as “set up DatoCMS for this project” or mixes several unrelated setup goals.
 
 ### Stage A — choose the lane
 

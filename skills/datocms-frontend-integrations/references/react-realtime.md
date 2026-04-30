@@ -4,7 +4,6 @@ React hook for live content updates via DatoCMS's [Real-time Updates API](https:
 
 See `realtime-concepts.md` for shared initialization options, connection status values, error object shape, and the `fetcher` gotcha.
 
-
 ## Contents
 
 - [Basic Usage](#basic-usage)

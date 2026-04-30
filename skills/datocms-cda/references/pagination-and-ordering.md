@@ -9,7 +9,7 @@ Covers offset pagination, auto-pagination for large collections, ordering, tree/
 Collection queries accept `first` and `skip` arguments:
 
 | Argument | Type | Default | Maximum |
-|---|---|---|---|
+| - | - | - | - |
 | `first` | `IntType` | 20 | 500 |
 | `skip` | `IntType` | 0 | — |
 
@@ -90,7 +90,7 @@ query {
 ### Orderable Meta Fields
 
 | Meta Field | Example |
-|---|---|
+| - | - |
 | `_createdAt` | `_createdAt_DESC` |
 | `_updatedAt` | `_updatedAt_DESC` |
 | `_publishedAt` | `_publishedAt_DESC` |
@@ -134,6 +134,7 @@ query {
 ```
 
 ### Key Points
+
 - `parent` returns the parent record (or null for root items)
 - `children` returns an array of direct descendants
 - Nest `children` selections to the desired depth
@@ -147,6 +148,7 @@ query {
 Every query has a complexity cost that must stay under **10,000,000**. Response headers `X-Complexity` and `X-Max-Complexity` report the actual and maximum values.
 
 When a query exceeds the complexity limit, the API returns an error:
+
 ```json
 {
   "errors": [{
@@ -158,24 +160,24 @@ When a query exceeds the complexity limit, the API returns an error:
 ### Root Query Costs
 
 | Query Type | Base Cost | Formula |
-|---|---|---|
-| Collection (`allXXX`) | 100 | 100 + (filters x 250) + (sorts x 250) + (page_size x inner_field_costs) |
-| Single record (`xxx`) | 50 | 50 + (filters x 250) + inner_field_costs |
-| Single-instance model | 25 | 25 + inner_field_costs |
-| Meta count (`_allXXXMeta`) | 1,000 | 1,000 + (filters x 250) + inner_field_costs |
-| Inverse relationship | 100 | 100 + (filters x 250) + (sorts x 250) + (page_size x inner_field_costs) |
-| Inverse relationship meta | 1,000 | 1,000 + (filters x 250) + inner_field_costs |
-| `_site` | 10 | 10 + inner_field_costs |
-| Upload collection (`allUploads`) | 100 | 100 + (filters x 250) + (sorts x 250) + (page_size x inner_field_costs) |
-| Single upload (`upload`) | 50 | 50 + (filters x 250) + inner_field_costs |
-| Upload meta (`_allUploadsMeta`) | 1,000 | 1,000 + (filters x 250) + inner_field_costs |
+| - | - | - |
+| Collection (`allXXX`) | 100 | 100 + (filters x 250) + (sorts x 250) + (page\_size x inner\_field\_costs) |
+| Single record (`xxx`) | 50 | 50 + (filters x 250) + inner\_field\_costs |
+| Single-instance model | 25 | 25 + inner\_field\_costs |
+| Meta count (`_allXXXMeta`) | 1,000 | 1,000 + (filters x 250) + inner\_field\_costs |
+| Inverse relationship | 100 | 100 + (filters x 250) + (sorts x 250) + (page\_size x inner\_field\_costs) |
+| Inverse relationship meta | 1,000 | 1,000 + (filters x 250) + inner\_field\_costs |
+| `_site` | 10 | 10 + inner\_field\_costs |
+| Upload collection (`allUploads`) | 100 | 100 + (filters x 250) + (sorts x 250) + (page\_size x inner\_field\_costs) |
+| Single upload (`upload`) | 50 | 50 + (filters x 250) + inner\_field\_costs |
+| Upload meta (`_allUploadsMeta`) | 1,000 | 1,000 + (filters x 250) + inner\_field\_costs |
 
 Default page size for collections is 20. Page size = `first` argument value.
 
 ### Field Type Costs
 
 | Field Type | Cost |
-|---|---|
+| - | - |
 | Standard scalar (string, number, boolean, etc.) | 1 |
 | Single asset field | 5 |
 | Asset gallery | 5 x inner field costs |
@@ -197,7 +199,7 @@ Default page size for collections is 20. Page size = `first` argument value.
 ### Additional Cost Factors
 
 | Factor | Cost |
-|---|---|
+| - | - |
 | Each filter condition | +250 |
 | Each sort field | +250 |
 | Localized field multiplier | (number of project locales) x inner field costs |
@@ -217,6 +219,7 @@ Default page size for collections is 20. Page size = `first` argument value.
 ### Complexity Calculation Examples
 
 **Simple collection query (cost: 140):**
+
 ```graphql
 query {
   allArtists {
@@ -225,9 +228,11 @@ query {
   }
 }
 ```
+
 Breakdown: 100 (collection base) + 20 (default page size) x 2 (inner fields) = 140
 
 **Collection with filters, sorting, and custom page size (cost: 1,175):**
+
 ```graphql
 query {
   allArtists(
@@ -244,9 +249,11 @@ query {
   }
 }
 ```
+
 Breakdown: 100 (base) + 750 (3 filter conditions x 250) + 250 (1 sort x 250) + 25 x 3 (page size x inner fields) = 1,175
 
 **Single record with relational fields (cost: 351):**
+
 ```graphql
 query {
   artist(filter: { id: { eq: "123" } }) {
@@ -272,9 +279,11 @@ query {
   }
 }
 ```
+
 Breakdown: 50 (single record base) + 250 (filter) + 5 + 1 + 5 (photo: asset + url + blurUpThumb) + 10 + 5x1 + 5x2 (structured text: value + links + blocks) + 5x3 (multiple links: movies) = 351
 
 **Deep filtering query (cost: 2,000,890):**
+
 ```graphql
 query {
   allBlogPosts(
@@ -292,4 +301,5 @@ query {
   }
 }
 ```
+
 Breakdown: 100 (base) + 2,000,000 (2 block types x 1,000,000) + 750 (3 filter args x 250) + 20 x 2 (page size x fields) = 2,000,890

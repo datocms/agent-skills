@@ -21,6 +21,7 @@ Always explicitly list every placeholder that remains.
 The implementation is fully functional with no unresolved values. All tokens, routes, model mappings, and configuration are wired to real project values.
 
 This status requires that:
+
 - All environment variables reference real values or are populated
 - All route mappings and model API keys match the actual DatoCMS project
 - No placeholder comments remain in generated code
@@ -43,17 +44,13 @@ When unresolved values remain, always include an explicit `Unresolved placeholde
 
 ## Test it
 
-Every recipe handoff must include a **Test it** section with the smallest
-concrete steps the user can take to verify the setup works. Tailor the steps to
-the recipe and framework. Prefer steps that exercise the real integration
-end-to-end over steps that only check file existence.
+Every recipe handoff must include a **Test it** section with the smallest concrete steps the user can take to verify the setup works. Tailor the steps to the recipe and framework. Prefer steps that exercise the real integration end-to-end over steps that only check file existence.
 
 Examples by recipe category:
 
 ### Frontend foundation recipes (draft-mode, web-previews, content-link, realtime, cache-tags)
 
-- Provide the exact URL the user can open to test the endpoint, e.g.:
-  `http://localhost:3000/api/draft-mode/enable?token=<SECRET_API_TOKEN>&url=/`
+- Provide the exact URL the user can open to test the endpoint, e.g.: `http://localhost:3000/api/draft-mode/enable?token=<SECRET_API_TOKEN>&url=/`
 - State what they should see (redirect to `/` with draft content, cookie set, overlay visible, etc.)
 - For disable: `http://localhost:3000/api/draft-mode/disable?url=/`
 - For cache-tags: "Publish a record in DatoCMS and confirm the page updates within N seconds"

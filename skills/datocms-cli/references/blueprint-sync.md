@@ -1,13 +1,13 @@
 # Blueprint Sync
 
-Keeping one shared DatoCMS migration history in sync across multiple projects by
-using CLI profiles.
+Keeping one shared DatoCMS migration history in sync across multiple projects by using CLI profiles.
 
 ---
 
 ## Inputs to confirm before running commands
 
 Confirm these inputs when they are not already clear:
+
 - existing profile ids that must be preserved
 - whether one shared migrations history already exists
 - whether destination projects were duplicated from the blueprint or otherwise keep aligned entity IDs
@@ -17,21 +17,15 @@ Confirm these inputs when they are not already clear:
 
 ## Core assumption
 
-This flow is safest when destination projects were **duplicated from the
-blueprint project** or are otherwise known to keep entity IDs aligned.
+This flow is safest when destination projects were **duplicated from the blueprint project** or are otherwise known to keep entity IDs aligned.
 
-DatoCMS keeps the same entity IDs when a project is duplicated from a
-blueprint. That alignment is what makes one shared migration history practical.
-If the projects were not duplicated from the same blueprint baseline, confirm
-that ID alignment assumptions still hold before normalizing onto one shared
-migration sequence.
+DatoCMS keeps the same entity IDs when a project is duplicated from a blueprint. That alignment is what makes one shared migration history practical. If the projects were not duplicated from the same blueprint baseline, confirm that ID alignment assumptions still hold before normalizing onto one shared migration sequence.
 
 ---
 
 ## Recommended Shape
 
-Use one `datocms.config.json` with one profile per project and one shared
-`migrations/` directory:
+Use one `datocms.config.json` with one profile per project and one shared `migrations/` directory:
 
 ```json
 {
@@ -61,8 +55,7 @@ Use one `datocms.config.json` with one profile per project and one shared
 }
 ```
 
-This keeps one canonical migration sequence and avoids drift caused by
-per-project migration folders.
+This keeps one canonical migration sequence and avoids drift caused by per-project migration folders.
 
 ---
 
@@ -80,8 +73,7 @@ npx datocms link --profile=client_a
 npx datocms link --profile=client_b
 ```
 
-This stores `siteId` and `organizationId` in each profile. The CLI resolves
-the API token automatically via OAuth credentials.
+This stores `siteId` and `organizationId` in each profile. The CLI resolves the API token automatically via OAuth credentials.
 
 ### Option B: Environment variable (recommended for CI/CD)
 
@@ -145,8 +137,7 @@ npx datocms environments:promote client-b-sync --profile=client_b
 
 ## Automation Guidance
 
-For repeated multi-project rollout, prefer a small local helper script instead
-of expanding `package.json` with many profile-specific scripts.
+For repeated multi-project rollout, prefer a small local helper script instead of expanding `package.json` with many profile-specific scripts.
 
 Recommended behavior for that helper:
 
@@ -157,8 +148,7 @@ Recommended behavior for that helper:
 5. Support `--dry-run`, `--fast-fork`, and explicit `--force`
 6. Print the created environment ids instead of auto-promoting
 
-Do not auto-promote in the sync helper by default. Promotion is a separate
-release decision per project.
+Do not auto-promote in the sync helper by default. Promotion is a separate release decision per project.
 
 ---
 
@@ -166,7 +156,5 @@ release decision per project.
 
 - Preserve an existing shared `migrations.directory` if one already exists
 - Do not replace working custom profile ids
-- Do not create one migrations directory per project unless the repo already
-  follows that pattern and the user explicitly wants to keep it
-- If the repo already has materially different profile conventions, patch in
-  place rather than normalizing everything
+- Do not create one migrations directory per project unless the repo already follows that pattern and the user explicitly wants to keep it
+- If the repo already has materially different profile conventions, patch in place rather than normalizing everything

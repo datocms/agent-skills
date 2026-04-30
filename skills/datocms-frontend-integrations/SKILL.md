@@ -21,18 +21,14 @@ description: >-
 
 # DatoCMS Front-End Integrations Skill
 
-This skill is the shared front-end integration bundle for DatoCMS web projects.
-Prefer `datocms-setup` when the user wants one feature fully scaffolded
-end-to-end. Stay in this skill for:
+This skill is the shared front-end integration bundle for DatoCMS web projects. Prefer `datocms-setup` when the user wants one feature fully scaffolded end-to-end. Stay in this skill for:
 
 - mixed-feature tasks touching multiple front-end concerns
 - framework comparison or API-shape questions
 - partial patching inside an existing custom integration
 - companion-reference loading for another DatoCMS skill
 
-When this skill helps scaffold setup-adjacent work, report the result as
-`scaffolded` when placeholders remain and `production-ready` only when the
-implementation no longer depends on unresolved project-specific values.
+When this skill helps scaffold setup-adjacent work, report the result as `scaffolded` when placeholders remain and `production-ready` only when the implementation no longer depends on unresolved project-specific values.
 
 ## Contents
 
@@ -47,9 +43,7 @@ implementation no longer depends on unresolved project-specific values.
 
 ## Step 1: Detect Context (silent)
 
-If the project context is already established in this conversation (framework,
-UI stack, existing integrations, file structure), skip broad detection below.
-Re-inspect only when a question cannot be answered from prior context.
+If the project context is already established in this conversation (framework, UI stack, existing integrations, file structure), skip broad detection below. Re-inspect only when a question cannot be answered from prior context.
 
 Silently examine the project to determine setup and configuration.
 
@@ -93,7 +87,7 @@ Silently examine the project to determine setup and configuration.
 Classify the user's request into one or more categories:
 
 | Category | When to select |
-|---|---|
+| - | - |
 | **Draft Mode Setup** | Draft cookies, enable/disable endpoints, or draft CDA token switching |
 | **Web Previews Setup** | Preview-links endpoints, route mapping, Visual tab support |
 | **Responsive Images** | Dato image rendering helpers or component selection |
@@ -110,11 +104,10 @@ Multiple categories can apply.
 
 ### Prefer the setup orchestrator for full single-feature scaffolding
 
-If the task is clearly "set up X end-to-end", route to `datocms-setup` instead
-of keeping all work in this bundle:
+If the task is clearly "set up X end-to-end", route to `datocms-setup` instead of keeping all work in this bundle:
 
 | Category | Route |
-|---|---|
+| - | - |
 | Draft Mode Setup | `datocms-setup` for `draft-mode` |
 | Web Previews Setup | `datocms-setup` for `web-previews` |
 | Responsive Images | `datocms-setup` for `responsive-images` |
@@ -147,15 +140,14 @@ Otherwise proceed directly and call out unresolved values instead of stalling.
 
 ## Step 3: Load References
 
-Read only what is needed from the `references/` directory next to this skill.
-Long files include a contents section at the top; preview that first, then load the relevant section.
+Read only what is needed from the `references/` directory next to this skill. Long files include a contents section at the top; preview that first, then load the relevant section.
 
 ### Component concept references
 
 Load the relevant concept file first — it contains shared GraphQL queries, field definitions, and patterns. Then load the framework-specific file for component APIs and props.
 
 | Category | Concept file |
-|---|---|
+| - | - |
 | Responsive Images | `references/image-concepts.md` |
 | Video Player | `references/video-player-concepts.md` |
 | SEO & Meta Tags | `references/seo-concepts.md` |
@@ -181,7 +173,7 @@ Load these for mixed-feature setup work:
 ### React references
 
 | Category | Reference file |
-|---|---|
+| - | - |
 | Responsive Images | `references/react-image.md` |
 | Structured Text Rendering | `references/react-structured-text.md` |
 | Video Player | `references/react-video-player.md` |
@@ -193,7 +185,7 @@ Load these for mixed-feature setup work:
 ### Vue references
 
 | Category | Reference file |
-|---|---|
+| - | - |
 | Responsive Images | `references/vue-image.md` |
 | Structured Text Rendering | `references/vue-structured-text.md` |
 | Video Player | `references/vue-video-player.md` |
@@ -205,7 +197,7 @@ Load these for mixed-feature setup work:
 ### Svelte references
 
 | Category | Reference file |
-|---|---|
+| - | - |
 | Responsive Images | `references/svelte-image.md` |
 | Structured Text Rendering | `references/svelte-structured-text.md` |
 | Video Player | `references/svelte-video-player.md` |
@@ -218,15 +210,14 @@ Use `references/site-search-api.md` for Svelte / SvelteKit site-search work.
 ### Astro references
 
 | Category | Reference file |
-|---|---|
+| - | - |
 | Responsive Images | `references/astro-image.md` |
 | Structured Text Rendering | `references/astro-structured-text.md` |
 | SEO & Meta Tags | `references/astro-seo.md` |
 | Real-Time Updates | `references/astro-realtime.md` |
 | Visual Editing / Content Link | `references/astro-content-link.md` |
 
-Use `references/site-search-api.md` for Astro site-search work. For Astro video,
-use the Mux web component directly or React integration when the project already has it.
+Use `references/site-search-api.md` for Astro site-search work. For Astro video, use the Mux web component directly or React integration when the project already has it.
 
 ### Generic search and crawl references
 
@@ -317,7 +308,7 @@ At minimum, verify:
 Use companion skills when the task leaves this bundle's sweet spot:
 
 | Condition | Route to |
-|---|---|
+| - | - |
 | Full single-feature scaffolding | `datocms-setup` with the matching recipe from Step 2 |
 | Shared CDA client wrapper or `executeQuery` baseline | `datocms-setup` for `cda-client` |
 | Writing or optimizing GraphQL queries for the CDA | `datocms-cda` |

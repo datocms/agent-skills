@@ -9,9 +9,7 @@
 - plugin-facing screens used as visual references
 - official public plugin UI docs
 
-Use the public plugin docs first. Reach for this file only when you need to
-trace a design recommendation back to local CMS implementation details for
-visual calibration.
+Use the public plugin docs first. Reach for this file only when you need to trace a design recommendation back to local CMS implementation details for visual calibration.
 
 ## Local CMS calibration (optional)
 
@@ -21,14 +19,12 @@ These roots are local visual references only:
 - `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles`
 - `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/stories`
 
-Do not import private classes or copy CMS bundles into plugins. Read these
-files only to understand structure, spacing, and visual rhythm, then rebuild
-the same feel with plugin-local code.
+Do not import private classes or copy CMS bundles into plugins. Read these files only to understand structure, spacing, and visual rhythm, then rebuild the same feel with plugin-local code.
 
 ## Foundations
 
 | Area | Source | Use it for |
-|---|---|---|
+| - | - | - |
 | Core tokens | `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/_css-variables.css` | spacing scale, font sizes, body colors, border colors, semantic colors, easing |
 | Base element defaults | `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/_base.css` | text input padding, focus ring, border treatment, body typography, scrollbar behavior |
 | Theme CSS vars | `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/store/subscribers/listenToChangeThemeCssVars.ts` | which theme colors are promoted to CSS custom properties |
@@ -39,7 +35,7 @@ the same feel with plugin-local code.
 ## Layout shells
 
 | Area | Source | Use it for |
-|---|---|---|
+| - | - | - |
 | Page wrapper component | `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/Page/Page.tsx` | max-width variants and page-level composition |
 | Page header and actions | `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/Page/PageHeader.tsx` | title, explainer, action placement |
 | Page sections | `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/Page/PageSection.tsx` | divider-led section titles, collapsible sections |
@@ -52,7 +48,7 @@ the same feel with plugin-local code.
 ## Forms and controls
 
 | Area | Source | Use it for |
-|---|---|---|
+| - | - | - |
 | Field wrapper | `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/form/Field.tsx` | label, hint, error, append-to-field pattern |
 | Label | `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/form/Label.tsx` | required marker, localized icon, inline info affordance |
 | Submit button | `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/form/SubmitButton.tsx` | primary action defaults and loading behavior |
@@ -63,7 +59,7 @@ the same feel with plugin-local code.
 ## Navigation, feedback, and data display
 
 | Area | Source | Use it for |
-|---|---|---|
+| - | - | - |
 | Dropdown component | `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/Dropdown/index.tsx` | trigger and menu composition |
 | Dropdown styles | `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Dropdown.css` | menu density, hover states, group titles |
 | Tabs component | `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/Tabs.tsx` | simple tab shells |
@@ -81,7 +77,7 @@ the same feel with plugin-local code.
 ## Plugin-facing CMS screens worth copying structurally
 
 | Area | Source | Use it for |
-|---|---|---|
+| - | - | - |
 | Marketplace plugin list page | `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/routes/(authenticated)/configuration/plugins/new/index.tsx` | full-height header/search/footer layout |
 | Marketplace sidebar | `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/routes/(authenticated)/configuration/plugins/new/sidebar.tsx` | left-rail grouping and menu density |
 | Plugin form and info panels | `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_PluginForm.css` | plugin settings shells, notices, info cards |
@@ -92,7 +88,7 @@ the same feel with plugin-local code.
 ## Storybook references
 
 | Story | Source | Use it for |
-|---|---|---|
+| - | - | - |
 | Page basics | `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/stories/Page/Basic.story.tsx` | narrow centered content |
 | Header example | `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/stories/Page/WithHeader.story.tsx` | title + explainer + actions |
 | Sections | `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/stories/Page/WithSections.story.tsx` | section spacing and titles |

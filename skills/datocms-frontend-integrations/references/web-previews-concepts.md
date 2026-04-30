@@ -2,7 +2,6 @@
 
 This reference covers the DatoCMS Web Previews plugin and how to integrate it with your frontend.
 
-
 ## Contents
 
 - [What the Web Previews Plugin Is](#what-the-web-previews-plugin-is)

@@ -18,6 +18,7 @@ const data = await executeQuery(query, {
 **Critical gotcha:** The `X-Include-Drafts` header can **only be `true`** — omit it entirely for published content. Setting it to `false` returns an `INVALID_X_INCLUDE_DRAFTS_HEADER` error. The `@datocms/cda-client` handles this correctly (it omits the header when `includeDrafts` is falsy).
 
 When `includeDrafts` is enabled, the `_status` meta field becomes meaningful:
+
 - `published` — the record is published and what you see is the published version
 - `draft` — the record has never been published
 - `updated` — the record is published but has unpublished changes (what you see includes those changes)
@@ -38,6 +39,7 @@ const data = await executeQuery(query, {
 ```
 
 When enabled:
+
 - Records that fail validation rules are excluded from results
 - Fields with "Required" validation become non-nullable in the GraphQL schema (e.g., `String` → `String!`)
 - Asset fields with image transformation validation: `focalPoint`, `width`, `height`, `responsiveImage` become non-nullable
@@ -94,14 +96,14 @@ const cacheTags = response.headers.get("x-cache-tags");
 There are two main approaches to consuming cache tags:
 
 | Approach | How it works | Best for |
-|---|---|---|
+| - | - | - |
 | **CDN-first** | Forward `x-cache-tags` as a response header; CDN purges matching entries on webhook | Static sites behind Netlify, Cloudflare, Fastly, Bunny |
 | **Framework-centric** | Store tags in your app layer (DB or in-memory); webhook handler maps tags → framework cache keys and calls the framework's revalidation API | Next.js (`revalidateTag`) |
 
 **CDN header names by provider:**
 
 | CDN | Header to set on your response |
-|---|---|
+| - | - |
 | Netlify / Cloudflare | `Cache-Tag` |
 | Bunny | `CDN-Tag` |
 | Fastly | `Surrogate-Key` |
@@ -111,6 +113,7 @@ There are two main approaches to consuming cache tags:
 DatoCMS sends a webhook when cache tags need invalidation. Configure it in Project Settings under "Content Delivery API Cache Tags" → "Invalidate" event.
 
 **Webhook payload:**
+
 ```json
 {
   "entity_type": "cda_cache_tags",
@@ -164,7 +167,7 @@ const data = await executeQuery(query, {
 ```
 
 | Option | Description |
-|---|---|
+| - | - |
 | `contentLink: 'vercel-v1'` | Embed Vercel Visual Editing metadata |
 | `contentLink: 'v1'` | Embed generic Content Link metadata |
 | `baseEditingUrl` | The DatoCMS admin URL for your project |

@@ -151,7 +151,7 @@ const rawRecordRelationships = rawRecord.data.relationships;
 ### When to Use Raw vs Simplified
 
 | Scenario | Use |
-|----------|-----|
+| - | - |
 | Standard CRUD operations | Simplified |
 | Need `meta.total_count` without fetching records | Raw (`rawList` with `page.limit: 0`) |
 | Working with generated CMA types on the raw path | Raw |
@@ -210,7 +210,7 @@ Transient server errors (5xx with `transient: true`) are also retried automatica
 ## Technical Limits
 
 | Limit | Value |
-|---|---|
+| - | - |
 | Max record size | 300 KB including nested blocks, excluding assets and linked records |
 | Max blocks per record | 500 |
 | Max nested block depth | 5 levels |

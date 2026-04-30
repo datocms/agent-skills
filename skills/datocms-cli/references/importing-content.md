@@ -6,16 +6,17 @@ WordPress and Contentful import commands.
 
 ## Inputs to confirm before running commands
 
-These importers are best treated as onboarding tools for a **new or disposable**
-DatoCMS target.
+These importers are best treated as onboarding tools for a **new or disposable** DatoCMS target.
 
 Confirm these inputs when they are not already clear:
+
 - whether the target is a disposable/new DatoCMS project or an existing one
 - schema-only first vs full import
 - content-type narrowing needs
 - concurrency / ignore-errors tolerance for large asset sets
 
 If the target is existing or unclear, prefer a staged approach:
+
 - run once **without** `--autoconfirm`
 - consider schema-only or narrowed imports first when the importer supports it
 - call out any destructive schema-reset behavior explicitly
@@ -36,14 +37,11 @@ npm install --save-dev @datocms/cli-plugin-wordpress
 npx datocms wordpress:import [flags]
 ```
 
-Run `npx datocms wordpress:import --help` for all flags. Key flags include
-`--autoconfirm` (skip prompts), `--concurrency` (default: 15), and
-`--ignore-errors`.
+Run `npx datocms wordpress:import --help` for all flags. Key flags include `--autoconfirm` (skip prompts), `--concurrency` (default: 15), and `--ignore-errors`.
 
 ### Destructive behavior
 
-The importer destroys existing WordPress schema (`wp_*` models) in the DatoCMS
-target before recreating it.
+The importer destroys existing WordPress schema (`wp_*` models) in the DatoCMS target before recreating it.
 
 ### Import Steps
 
@@ -66,8 +64,7 @@ npx datocms wordpress:import \
   --wp-password=secret
 ```
 
-Add `--autoconfirm` only when the operator intentionally wants a non-interactive
-run.
+Add `--autoconfirm` only when the operator intentionally wants a non-interactive run.
 
 ---
 
@@ -85,14 +82,11 @@ npm install --save-dev @datocms/cli-plugin-contentful
 npx datocms contentful:import [flags]
 ```
 
-Run `npx datocms contentful:import --help` for all flags. Key flags include
-`--autoconfirm` (skip prompts), `--concurrency` (default: 15), and
-`--ignore-errors`.
+Run `npx datocms contentful:import --help` for all flags. Key flags include `--autoconfirm` (skip prompts), `--concurrency` (default: 15), and `--ignore-errors`.
 
 ### Destructive behavior
 
-The importer destroys existing Contentful-shaped schema in the DatoCMS target
-before recreating it.
+The importer destroys existing Contentful-shaped schema in the DatoCMS target before recreating it.
 
 ### Import Steps
 
@@ -128,5 +122,4 @@ npx datocms contentful:import \
   --only-content-type=blogPost,landingPage,author
 ```
 
-Add `--autoconfirm` only when the operator intentionally wants a non-interactive
-run.
+Add `--autoconfirm` only when the operator intentionally wants a non-interactive run.
