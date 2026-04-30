@@ -55,14 +55,14 @@ fields. Each *use* is an independent instance — no edit propagation
 across parents.
 
 ```
-Block model: callout
+Block model: callout_block
   ├── tone (enum: neutral / warning / success)
   ├── heading
   └── body
 
-Page model.body            (rich_text, allows callout)
-Article model.content      (structured_text, allows callout block-level)
-Landing model.sections     (rich_text, allows callout)
+Page model.body            (rich_text, allows callout_block)
+Article model.content      (structured_text, allows callout_block block-level)
+Landing model.sections     (rich_text, allows callout_block)
 ```
 
 **Use for:** structural shapes that appear all over the project but
@@ -120,7 +120,8 @@ publish date) shared across `BlogPost`, `NewsArticle`, and
 ### How it works
 
 1. Create a block model with the shared fields. Name it for the *role*
-   (`bloggable`, `cardable`, `geolocated`), not for any one consumer.
+   (`bloggable_block`, `cardable_block`, `geolocated_block`), not for
+   any one consumer.
 2. On each consumer model, add a `single_block` field that:
    - allows **only** that block model
    - has the **required** validation active
@@ -135,7 +136,7 @@ directly on the consumer model. From the editor's point of view,
 schema's point of view, they live in one place.
 
 ```
-Block model: bloggable
+Block model: bloggable_block
   ├── title
   ├── author      (link → Author)
   ├── tags        (links → [Tag])
@@ -143,15 +144,15 @@ Block model: bloggable
   └── published_at
 
 BlogPost
-  ├── shared       (single_block → bloggable, required, frameless)
+  ├── shared       (single_block → bloggable_block, required, frameless)
   └── body         (structured_text)
 
 NewsArticle
-  ├── shared       (single_block → bloggable, required, frameless)
+  ├── shared       (single_block → bloggable_block, required, frameless)
   └── summary      (text)
 
 ProductReview
-  ├── shared       (single_block → bloggable, required, frameless)
+  ├── shared       (single_block → bloggable_block, required, frameless)
   └── rating       (integer)
 ```
 
@@ -208,25 +209,30 @@ frameless single-block pattern (Pattern 4) instead.
 
 ## Block-library hygiene anti-patterns
 
-The Blocks Library is project-level, so it accretes. Watch for these:
+The Blocks Library is project-level, so it accretes. The first hygiene
+move is the naming convention — every block model `api_key` ends with
+`_block` (see `models-vs-blocks.md` § "Naming convention"). The rest of
+this section assumes that baseline. Watch for these:
 
 - **Single-use blocks.** A block model used in exactly one parent's
   one field. There's almost no value in the indirection — the fields
   could live on the parent directly. Inline them, or note that this
   block is intentionally page-shaped (e.g. a complex hero only the
   homepage uses).
-- **Near-duplicate blocks.** `hero_blue`, `hero_yellow`, `hero_red`,
-  or `hero_v1`, `hero_v2`. Collapse to one block with a `tone` /
-  `variant` enum field. The frontend maps the variant to design.
-- **Page-shaped block names.** `homepage_hero`, `pricing_page_cta`,
-  `blog_index_header`. The block can't be reused on other pages even
-  when the shape would fit. Rename to the *role* (`hero`, `cta`,
-  `index_header`) and let the frontend customize per page.
-- **God blocks.** A `section` block with 40 optional fields covering
+- **Near-duplicate blocks.** `hero_blue_block`, `hero_yellow_block`,
+  `hero_red_block`, or `hero_v1_block`, `hero_v2_block`. Collapse to
+  one block with a `tone` / `variant` enum field. The frontend maps
+  the variant to design.
+- **Page-shaped block names.** `homepage_hero_block`,
+  `pricing_page_cta_block`, `blog_index_header_block`. The block
+  can't be reused on other pages even when the shape would fit.
+  Rename to the *role* (`hero_block`, `cta_block`,
+  `index_header_block`) and let the frontend customize per page.
+- **God blocks.** A `section_block` with 40 optional fields covering
   every variant the site has ever needed. Editor UX collapses, and
   validation can't enforce which fields belong with which variant.
-  Split into focused blocks (`text_section`, `media_section`,
-  `feature_grid_section`).
+  Split into focused blocks (`text_section_block`,
+  `media_section_block`, `feature_grid_section_block`).
 - **Blocks that would be better as models.** If the same conceptual
   content appears as a block in many parents and editors keep asking
   *"can we reuse the same one?"* — they want a model + Link, not a

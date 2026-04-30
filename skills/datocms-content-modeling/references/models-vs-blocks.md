@@ -106,10 +106,10 @@ move content from blocks-inside-the-parent into models-linked-from-the-parent.
    structural blocks can drop the multiplier dramatically. (This one
    is a container-shape decision — see
    `block-fields-and-structured-text.md`.)
-4. **Audit blocks for over-decomposition.** A "callout" with one text
-   field, a "spacer" block, a "divider" block — every block is paid
-   for in the 600 budget. Consolidate. (Also see `content-reuse.md`
-   for block-library hygiene.)
+4. **Audit blocks for over-decomposition.** A `callout_block` with one
+   text field, a `spacer_block`, a `divider_block` — every block is
+   paid for in the 600 budget. Consolidate. (Also see
+   `content-reuse.md` for block-library hygiene.)
 
 ### Diagnosing existing limit failures
 
@@ -117,6 +117,35 @@ When an existing record fails to save with a size or block-count
 error, the question to ask first is *which field and which locale is
 the worst contributor?* The mitigation usually applies to that one
 locale × field combination, not the whole schema.
+
+## Naming convention: suffix block model `api_key`s with `_block`
+
+A simple rule that pays back daily: **every block model's `api_key`
+ends with `_block`**. `hero_block`, `callout_block`,
+`image_gallery_block`, `featured_product_block`. Block model
+*display names* (`item_type.name`) don't need the suffix — only the
+`api_key`.
+
+Why:
+
+- **Visual distinction in the Blocks Library and GraphQL schema.**
+  Editors browsing the schema instantly see which entries are
+  blocks; developers reading a query see `HeroBlockRecord` and know
+  it's an embedded block, not a standalone model.
+- **No collisions with model `api_key`s.** Without the suffix,
+  `hero` (block) and `hero` (page model) compete for the same name.
+  Suffixing blocks reserves the bare name for actual models.
+- **Cleaner Structured Text validators.** A
+  `structured_text_blocks: { item_types: [...] }` allowlist that
+  only lists `*_block` entries is self-documenting.
+- **Consistency across the project.** New blocks added later
+  follow the same rule without case-by-case judgement.
+
+This convention applies to *all* block models — including the
+shared "frameless" blocks used for the field-set pattern
+(`bloggable_block`, `cardable_block`) and single-use blocks. The
+only blocks named without the suffix are negative examples in this
+documentation that predate the convention.
 
 ## Quick examples
 
@@ -159,7 +188,7 @@ When content is reusable but a specific context needs to tweak it,
 combine a link to the canonical model with override fields in a block.
 
 ```
-block model: featured_product
+block model: featured_product_block
   ├── product            (link → product model)
   ├── override_title     (string, optional)
   └── override_blurb     (text, optional)

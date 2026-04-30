@@ -126,7 +126,7 @@ The container choice has knock-on effects on those limits:
   array of length ≤ 1 — same data shape, slightly more weight in the
   block budget and a worse editor UX. Pick `single_block` when you
   mean "exactly one."
-- **Audit blocks for over-decomposition.** A "spacer" block, a
-  "divider" block, a "callout" with one text field — every block is
-  paid for in the 600 budget. Consolidate aggressive decomposition
-  before reaching for limit increases.
+- **Audit blocks for over-decomposition.** A `spacer_block`, a
+  `divider_block`, a `callout_block` with one text field — every
+  block is paid for in the 600 budget. Consolidate aggressive
+  decomposition before reaching for limit increases.

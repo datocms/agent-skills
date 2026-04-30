@@ -14,7 +14,7 @@ one. A clear menu is part of the schema's contract with its users.
 | **Schema tab menu** | `schema_menu_item` | Developers / schema owners | Item types **and** modular blocks (`kind: "item_type" \| "modular_block"`) |
 
 The split exists because the two audiences need different things.
-Editors don't care that `callout` is a block model — they never see
+Editors don't care that `callout_block` is a block model — they never see
 block records as standalone entities. Developers do care, because
 they're authoring the block model. Mixing them — or leaving both as
 the default flat list — punishes both audiences.
@@ -99,11 +99,12 @@ tree*.
 
 ### Principles
 
-- **Co-locate related blocks** within the blocks tree. `hero`, `cta`,
-  `callout` under a "Page sections" group. `code_sample`, `quote`,
-  `image_with_caption` under "Article inserts." `seo_override`,
-  `social_card` under "Metadata blocks." Without grouping, the Blocks
-  Library is just an alphabetical pile.
+- **Co-locate related blocks** within the blocks tree. `hero_block`,
+  `cta_block`, `callout_block` under a "Page sections" group.
+  `code_sample_block`, `quote_block`, `image_with_caption_block`
+  under "Article inserts." `seo_override_block`, `social_card_block`
+  under "Metadata blocks." Without grouping, the Blocks Library is
+  just an alphabetical pile.
 - **Surface frequently-edited models at the top** of the models tree.
   `Page`, `Article`, `Product` — whatever the team modifies most.
   Bury rarely-touched taxonomy roots and singletons further down.
@@ -117,7 +118,7 @@ tree*.
   group.
 - A stable, rarely-edited singleton like "Site settings" → bottom or
   inside a "Settings" group.
-- A block used everywhere (e.g. `image_with_caption`) → top of its
+- A block used everywhere (e.g. `image_with_caption_block`) → top of its
   block group.
 - A one-off block used by exactly one parent → near that parent's
   model in the schema menu, or inside a "Single-use blocks" group if
@@ -147,13 +148,13 @@ blocks tree in creation order. The fix is awareness at script time:
 ```ts
 // Bulk creation without polluting menus — wire them up after
 await client.itemTypes.create(
-  { name: "Hero", api_key: "hero", modular_block: true },
+  { name: "Hero", api_key: "hero_block", modular_block: true },
   { skip_menu_item_creation: true },
 );
 
 // Or: create the block directly inside an existing "Page sections" group
 await client.itemTypes.create(
-  { name: "Hero", api_key: "hero", modular_block: true },
+  { name: "Hero", api_key: "hero_block", modular_block: true },
   { schema_menu_item_id: pageSectionsGroupId },
 );
 ```

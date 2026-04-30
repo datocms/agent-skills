@@ -216,13 +216,16 @@ Block model names suffer the same problem more visibly because they
 end up in the project's Blocks Library where editors see them.
 
 - `homepage_hero_block` → ❌ ties the block to a page
-- `hero` → ✅ a hero is a hero on any page
-- `three_card_grid` → ❌ a layout description, not a content shape
-- `card_grid` (with a `cards` array) → ✅ the frontend chooses 2/3/4
+- `hero_block` → ✅ a hero is a hero on any page
+- `three_card_grid_block` → ❌ a layout description, not a content shape
+- `card_grid_block` (with a `cards` array) → ✅ the frontend chooses 2/3/4
   columns
-- `blue_callout`, `yellow_callout`, `red_callout` → ❌ three near-duplicate
-  blocks
-- one `callout` block with a `tone` enum → ✅ one shape, frontend maps
+- `blue_callout_block`, `yellow_callout_block`, `red_callout_block` → ❌
+  three near-duplicate blocks
+- one `callout_block` with a `tone` enum → ✅ one shape, frontend maps
   tone → color
+
+(All block `api_key`s in these examples carry the `_block` suffix —
+see `models-vs-blocks.md` § "Naming convention" for why.)
 
 See `content-reuse.md` for more on block-library hygiene.
