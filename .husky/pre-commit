@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root=$(git rev-parse --show-toplevel)
+cd "$repo_root"
+
+# Find skills with staged changes (any file under skills/<name>/ except agents/, which is excluded from zips).
+changed_skills=$(
+  git diff --cached --name-only --diff-filter=ACMR \
+    | awk -F/ '$1 == "skills" && $2 ~ /^datocms-/ && $3 != "agents" { print $2 }' \
+    | sort -u
+)
+
+if [[ -n "$changed_skills" ]]; then
+  # Build zips from a temp checkout of the index, so they reflect staged content
+  # only — never working-tree edits the user hasn't staged.
+  tmp=$(mktemp -d)
+  trap 'rm -rf "$tmp"' EXIT
+  git checkout-index --prefix="$tmp/" -af
+
+  while IFS= read -r skill; do
+    [[ -z "$skill" ]] && continue
+    echo "regenerating zips/${skill}.zip"
+    rm -f "zips/${skill}.zip"
+    (cd "$tmp/skills" && zip -rq "$repo_root/zips/${skill}.zip" "$skill/" -x "${skill}/agents/*")
+    git add "zips/${skill}.zip"
+  done <<< "$changed_skills"
+fi
+
+echo "running validator..."
+python3 evals/scripts/validate_skill_repo.py --repo-root .

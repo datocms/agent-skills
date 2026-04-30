@@ -4,6 +4,29 @@ This page collects the contributor and maintainer workflows for the
 `datocms/llm-skills` repository. End users do not need anything on this page —
 see the root [README](../README.md) instead.
 
+## Pre-commit automation
+
+This repo uses [husky](https://typicode.github.io/husky/) to run a pre-commit
+hook that keeps artifacts in sync with skill changes. After cloning, run:
+
+```bash
+npm install
+```
+
+The `prepare` script wires `core.hooksPath` to `.husky/` automatically. From
+that point on, every `git commit` will:
+
+1. Detect skills with staged changes (anything under `skills/<name>/` except
+   `agents/`, which is excluded from the claude.ai zips anyway).
+2. Regenerate the `.zip` for each affected skill from a temp checkout of the
+   **index** — so zips reflect *staged* content only, never unstaged
+   working-tree edits — and re-stage the regenerated zip.
+3. Run `validate_skill_repo.py`. A non-zero exit blocks the commit.
+
+The hook intentionally does **not** bump plugin versions or run evals — both
+are explicit release-time decisions (see below). To skip the hook for a
+specific commit, use the standard `git commit --no-verify`.
+
 ## Validation
 
 Run from the repo root before publishing or opening a PR:
@@ -27,8 +50,12 @@ quality.
 ## Regenerate the claude.ai zips
 
 The [`zips/`](../zips) folder ships a pre-built `.zip` per skill for the
-[claude.ai](https://claude.ai) upload flow. Regenerate them after any change to
-skill content:
+[claude.ai](https://claude.ai) upload flow. The pre-commit hook regenerates
+the affected zip on every commit that touches a skill, so this should rarely
+need to be done by hand.
+
+To do a full rebuild (e.g. after editing the hook itself, or to recover from a
+corrupt zip):
 
 ```bash
 rm -rf zips && mkdir zips && for s in skills/datocms-*/; do
@@ -53,12 +80,11 @@ to date and will not fetch your changes.
 
 ## Releasing
 
-1. Land all skill changes on `master`.
+1. Land all skill changes on `master` (the pre-commit hook keeps zips and
+   validation in sync as you go).
 2. Bump the plugin version in both manifests (see above).
 3. Run the validator with `--require-clean-git`.
-4. Regenerate the zips if any skill content changed.
-5. Commit the zip refresh together with the version bump.
-6. Tag and publish.
+4. Tag and publish.
 
 ## Codex readiness
 
