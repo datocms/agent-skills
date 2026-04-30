@@ -30,7 +30,7 @@ export async function simplifyTranscript(
 	await writeFile(outputPath, `${out.join("\n")}\n`);
 }
 
-function clip(s: string, max: number): string {
+export function clip(s: string, max: number): string {
 	const flat = s.replace(/\s+/g, " ").trim();
 	return flat.length > max ? `${flat.slice(0, max - 1)}…` : flat;
 }
@@ -58,7 +58,7 @@ function extractCmaScript(
 	return null;
 }
 
-function bashLabel(command: string): { icon: string; label: string } {
+export function bashLabel(command: string): { icon: string; label: string } {
 	const cmd = command.trim();
 	if (/\bdatocms\b[^\n]*\bcma:script\b/.test(cmd))
 		return { icon: "⚡", label: "cma:script" };
@@ -70,14 +70,15 @@ function bashLabel(command: string): { icon: string; label: string } {
 	return { icon: "$", label: clip(cmd, 80) };
 }
 
-function summarizeInput(name: string, input: unknown): string {
+export function summarizeInput(name: string, input: unknown): string {
 	if (!input || typeof input !== "object") return "";
 	const i = input as Record<string, unknown>;
+	const n = name.toLowerCase();
 
-	if (name === "Skill") return `(${String(i.skill ?? "")})`;
-	if (name === "Read") return `(${String(i.file_path ?? "")})`;
-	if (name === "Glob") return `(${String(i.pattern ?? "")})`;
-	if (name === "Grep") {
+	if (n === "skill") return `(${String(i.name ?? i.skill ?? "")})`;
+	if (n === "read") return `(${String(i.file_path ?? i.filePath ?? "")})`;
+	if (n === "glob") return `(${String(i.pattern ?? "")})`;
+	if (n === "grep") {
 		const extras: string[] = [];
 		if (i.path) extras.push(String(i.path));
 		if (i.glob) extras.push(`glob=${i.glob}`);
@@ -88,8 +89,8 @@ function summarizeInput(name: string, input: unknown): string {
 	return keys ? `(${keys})` : "";
 }
 
-function inputBodyLines(name: string, input: unknown): string[] {
-	if (name !== "Bash") return [];
+export function inputBodyLines(name: string, input: unknown): string[] {
+	if (name.toLowerCase() !== "bash") return [];
 	const command = (input as { command?: unknown })?.command;
 	if (typeof command !== "string") return [];
 
@@ -107,7 +108,7 @@ function inputBodyLines(name: string, input: unknown): string[] {
 	return [];
 }
 
-type ToolResultContent =
+export type ToolResultContent =
 	| string
 	| Array<{ type: string; text?: string } | unknown>;
 
@@ -123,7 +124,7 @@ function extractResultText(content: ToolResultContent): string {
 	return parts.join("\n");
 }
 
-function summarizeResult(
+export function summarizeResult(
 	content: ToolResultContent,
 	isError: boolean | null,
 ): { kind: "ok" | "error" | "info"; detail: string } {

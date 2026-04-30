@@ -7,10 +7,10 @@ import {
 	destroyTestProject,
 } from "./createTestProject.js";
 import {
-	type RunClaudeOptions,
-	type RunClaudeResult,
-	runClaude,
-} from "./runClaude.js";
+	type RunAgentOptions,
+	type RunAgentResult,
+	runAgent,
+} from "./runAgent.js";
 
 export type E2ETestCase<Context = undefined> = {
 	name: string;
@@ -73,9 +73,9 @@ async function runAndAssert<Context>(
 	testCase: E2ETestCase<Context>,
 	project: TestProject<Context>,
 ): Promise<E2ETestOutcome> {
-	let runResult: RunClaudeResult;
+	let runResult: RunAgentResult;
 	try {
-		const runOptions: RunClaudeOptions = {
+		const runOptions: RunAgentOptions = {
 			name: testCase.name,
 			prompt: buildPrompt(project, testCase.task(project)),
 			maxAttempts: testCase.maxAttempts,
@@ -83,14 +83,14 @@ async function runAndAssert<Context>(
 			model: testCase.model,
 			timeoutMs: testCase.timeoutMs,
 		};
-		runResult = await runClaude(runOptions);
+		runResult = await runAgent(runOptions);
 	} catch (error) {
 		const err = error instanceof Error ? error : new Error(String(error));
 		return {
 			name: testCase.name,
 			passed: false,
 			attempts: 0,
-			reason: `runClaude crashed: ${err.message}`,
+			reason: `runAgent crashed: ${err.message}`,
 			transcriptPath: "",
 			toolCallNames: [],
 			finalText: undefined,

@@ -5,30 +5,23 @@ import { delimiter, join } from "node:path";
 import {
 	E2E_TRANSCRIPTS_ROOT,
 	PROJECT_BIN,
+	SKILLS_SOURCE,
 	type RunAgentOptions,
 	type RunAgentResult,
-	SKILLS_SOURCE,
 	type ToolCallRecord,
 } from "./runAgent.js";
-import { simplifyTranscript } from "./simplifyTranscript.js";
-
-export {
-	E2E_TRANSCRIPTS_ROOT,
-	type RunAgentOptions as RunClaudeOptions,
-	type RunAgentResult as RunClaudeResult,
-	type ToolCallRecord,
-};
+import { simplifyOpencodeTranscript } from "./simplifyOpencodeTranscript.js";
 
 const DEFAULT_TIMEOUT_MS = 250 * 1000;
 
 function isCmaScriptInvocation(toolCall: ToolCallRecord): boolean {
-	if (toolCall.name !== "Bash") return false;
+	if (toolCall.name !== "bash") return false;
 	const input = toolCall.input as { command?: unknown } | null;
 	const command = typeof input?.command === "string" ? input.command : "";
 	return /\bdatocms\b[^\n]*\bcma:script\b/.test(command);
 }
 
-export async function runClaude(
+export async function runOpencode(
 	options: RunAgentOptions,
 ): Promise<RunAgentResult> {
 	const slug = options.name.replace(/[^a-z0-9-]+/gi, "-");
@@ -36,50 +29,36 @@ export async function runClaude(
 	await mkdir(workDir, { recursive: true });
 	const transcriptPath = join(workDir, "raw.jsonl");
 
-	// Mirror the repo's `skills/` tree into the isolated workDir under
-	// `.claude/skills/` so every local skill is discoverable by the spawned
-	// agent. Adding a new skill at the project level requires no change here.
+	// opencode reads `.claude/skills/` natively (Claude-compatible discovery
+	// path), so the same mirror as the Claude harness makes every local skill
+	// available without further config.
 	const skillsDest = join(workDir, ".claude", "skills");
 	await mkdir(skillsDest, { recursive: true });
 	await cp(SKILLS_SOURCE, skillsDest, { recursive: true });
 
-	// Tool whitelist: Bash to invoke `datocms cma:script`, Read/Glob/Grep so the
-	// agent can open the SKILL.md and inspect anything else in workDir. No
-	// Edit/Write — scripts are passed through stdin, not committed to disk.
 	const args = [
-		"-p",
-		options.prompt,
-		"--strict-mcp-config",
-		"--mcp-config",
-		// No MCP servers; passing an empty config + --strict makes that explicit.
-		JSON.stringify({ mcpServers: {} }),
-		"--tools",
-		"Bash,Read,Glob,Grep,Skill",
-		"--permission-mode",
-		"bypassPermissions",
-		"--output-format",
-		"stream-json",
-		"--verbose",
-		"--no-session-persistence",
-		"--model",
-		options.model ?? process.env.E2E_MODEL ?? "claude-opus-4-6",
+		"run",
+		"--format",
+		"json",
+		"--dangerously-skip-permissions",
+		"--pure", // disable external plugins / MCP for hermetic runs
 	];
+	const model = options.model ?? process.env.E2E_OPENCODE_MODEL;
+	if (model) args.push("--model", model);
+	args.push(options.prompt);
 
-	const child = spawn("claude", args, {
+	const child = spawn("opencode", args, {
 		cwd: workDir,
 		stdio: ["ignore", "pipe", "pipe"],
 		env: {
 			...process.env,
 			DATOCMS_API_TOKEN: options.apiToken,
-			// Prepend the project's node_modules/.bin so plain `datocms` (and
-			// `npx datocms`) resolves the locally-installed CLI even though
-			// workDir lives several levels below it.
 			PATH: `${PROJECT_BIN}${delimiter}${process.env.PATH ?? ""}`,
 		},
 	});
 
 	const toolCalls: ToolCallRecord[] = [];
-	const seenToolUseIds = new Set<string>();
+	const seenCallIds = new Set<string>();
 	let finalText: string | undefined;
 	let terminatedByCap = false;
 	let stdoutBuffer = "";
@@ -102,31 +81,28 @@ export async function runClaude(
 		}
 		if (!parsed || typeof parsed !== "object") return;
 		const event = parsed as Record<string, unknown>;
+		const part = event.part as Record<string, unknown> | undefined;
+		if (!part) return;
 
-		if (event.type === "assistant") {
-			const message = event.message as
-				| { content?: Array<Record<string, unknown>> }
-				| undefined;
-			for (const block of message?.content ?? []) {
-				if (block.type !== "tool_use") continue;
-				const id = String(block.id);
-				if (seenToolUseIds.has(id)) continue;
-				seenToolUseIds.add(id);
-				const name = String(block.name);
-				const record: ToolCallRecord = { id, name, input: block.input };
-				toolCalls.push(record);
+		if (event.type === "tool_use") {
+			const id = String(part.callID ?? part.id ?? "");
+			if (!id || seenCallIds.has(id)) return;
+			seenCallIds.add(id);
+			const name = String(part.tool ?? "");
+			const state = part.state as { input?: unknown } | undefined;
+			const record: ToolCallRecord = { id, name, input: state?.input ?? {} };
+			toolCalls.push(record);
 
-				if (isCmaScriptInvocation(record)) {
-					const scriptAttempts = toolCalls.filter(isCmaScriptInvocation).length;
-					if (scriptAttempts > options.maxAttempts) {
-						terminatedByCap = true;
-						child.kill("SIGKILL");
-					}
+			if (isCmaScriptInvocation(record)) {
+				const scriptAttempts = toolCalls.filter(isCmaScriptInvocation).length;
+				if (scriptAttempts > options.maxAttempts) {
+					terminatedByCap = true;
+					child.kill("SIGKILL");
 				}
 			}
-		} else if (event.type === "result") {
-			const result = event.result;
-			if (typeof result === "string") finalText = result;
+		} else if (event.type === "text") {
+			const text = part.text;
+			if (typeof text === "string") finalText = text;
 		}
 	}
 
@@ -156,14 +132,15 @@ export async function runClaude(
 	}
 
 	const simplifiedPath = join(workDir, "transcript.simplified.log");
-	await simplifyTranscript(transcriptPath, simplifiedPath).catch((err) => {
-		// Non-fatal: the raw transcript is still on disk for inspection.
-		console.warn(`[simplifyTranscript] failed: ${(err as Error).message}`);
-	});
+	await simplifyOpencodeTranscript(transcriptPath, simplifiedPath).catch(
+		(err) => {
+			// Non-fatal: the raw transcript is still on disk for inspection.
+			console.warn(
+				`[simplifyOpencodeTranscript] failed: ${(err as Error).message}`,
+			);
+		},
+	);
 
-	// The copied `.claude/skills/` tree was only there to make skills
-	// discoverable to the spawned agent — drop it now so the workDir only
-	// contains test artifacts (raw + simplified transcripts).
 	await rm(join(workDir, ".claude"), { recursive: true, force: true });
 
 	const attempts = toolCalls.filter(isCmaScriptInvocation).length;
