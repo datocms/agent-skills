@@ -128,6 +128,50 @@ published" (for example an `event_date` on an event model, or an
 is whether the value can change independently of the publication
 lifecycle.
 
+## Don't recreate file/gallery metadata either
+
+Same trap, applied to uploads. Every asset on a `file` or `gallery`
+field carries **per-locale upload metadata** that editors set
+directly on the asset selector — `alt`, `title`, `custom_data`
+(arbitrary JSON), and (for images) `focal_point`. These live on the
+upload, not on the model, and the editor reaches them by clicking
+the asset in the record form.
+
+Common anti-patterns:
+
+```ts
+// ❌ Don't do this — duplicates the asset's built-in alt/title metadata
+fields.create(modelId, { api_key: "image_alt",     field_type: "string" });
+fields.create(modelId, { api_key: "image_title",   field_type: "string" });
+fields.create(modelId, { api_key: "image_label",   field_type: "string" });
+fields.create(modelId, { api_key: "image_caption", field_type: "string" });
+
+// ✅ Just use the file/gallery field's own metadata.
+//    Force editors to fill alt with required_alt_title — see
+//    field-configuration.md § "Constrain files and images".
+fields.create(modelId, {
+  api_key: "hero_image",
+  field_type: "file",
+  validators: { required_alt_title: { alt: true } },
+});
+```
+
+In GraphQL, asset metadata is exposed on the upload itself
+(`hero.alt`, `hero.title`, `hero.customData`, `hero.focalPoint`),
+not as sibling fields on the record. The CDA's `responsiveImage`
+helpers also pick `alt` and `title` automatically from the upload.
+
+The exception is when the value isn't really *the asset's*
+metadata — a `caption` that describes the figure *in the article*
+(rather than the image generically) is a record-level field, not an
+asset-level one. The test: would the same caption travel with the
+asset to a different record? If yes, it belongs on the upload; if
+no, it's a record field.
+
+The same logic applies to upload-level attributes set in the Media
+Area (`copyright`, `author`, `notes`, `tags`, `upload_collection`).
+Don't recreate them as fields — they're already there.
+
 ## Don't recreate `position` either — use model ordering
 
 Same trap, different field. To order records in a list, **don't add a

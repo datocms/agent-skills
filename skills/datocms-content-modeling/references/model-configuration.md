@@ -108,6 +108,12 @@ landing pages.
 an invalid state, even as a draft. Settings, configuration,
 data-integrity-sensitive records.
 
+**Invalid drafts still cannot be published.** The flag relaxes only
+the *save* gate — publishing a record always requires every
+validator to pass. So `draft_saving_active: true` is a pure
+ergonomics win for editors mid-flight; it never lets bad data reach
+the public CDA.
+
 The flag has no effect unless `draft_mode_active: true` is also set.
 Both must be `false` on block models.
 

@@ -112,10 +112,12 @@ When several models share a meaningful subset of fields and you want:
 - per-record values (each consumer record has its own values; this is
   not edit-propagation reuse — for that, use Pattern 1)
 
-Classic example: a "Bloggable" shape (title, author, tags, hero image,
-publish date) shared across `BlogPost`, `NewsArticle`, and
+Classic example: a "Bloggable" shape (title, subtitle, author, tags,
+hero image) shared across `BlogPost`, `NewsArticle`, and
 `ProductReview`, each of which adds its own model-specific fields
-(`body`, `summary`, `rating`).
+(`body`, `summary`, `rating`). Note that the publish date isn't a
+field — it lives on `record.meta.published_at` (see
+`separation-of-concerns.md` § "Don't recreate built-in record meta").
 
 ### How it works
 
@@ -138,10 +140,10 @@ schema's point of view, they live in one place.
 ```
 Block model: bloggable_block
   ├── title
+  ├── subtitle    (string, optional)
   ├── author      (link → Author)
   ├── tags        (links → [Tag])
-  ├── hero_image  (file)
-  └── published_at
+  └── hero_image  (file)
 
 BlogPost
   ├── shared       (single_block → bloggable_block, required, frameless)

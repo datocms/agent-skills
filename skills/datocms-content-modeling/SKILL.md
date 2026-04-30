@@ -72,10 +72,14 @@ model X?"* — not *"how do I create the model?"*.
    `created_at` field to a model. Likewise, never add a `position` field
    for ordering: use the model's `sortable: true` (manual order) or
    `tree: true` (parent + position hierarchy) instead, or
-   `ordering_field` / `ordering_meta` for automatic order. See
+   `ordering_field` / `ordering_meta` for automatic order. The same
+   trap applies to *upload* metadata: don't add `image_alt`,
+   `image_title`, `image_label`, `image_caption` etc. — `alt`,
+   `title`, `custom_data`, and `focal_point` already live per-locale
+   on every `file` / `gallery` asset. See
    `references/separation-of-concerns.md` § Don't recreate built-in
-   record meta and `references/model-configuration.md` § Behaviour —
-   ordering.
+   record meta, § Don't recreate file/gallery metadata, and
+   `references/model-configuration.md` § Behaviour — ordering.
 4. **Future-proof.** Design for channels and redesigns that don't exist yet.
 5. **Editor-centric.** Optimize for the people creating content, not the
    developer reading the schema once. **Always add hints** to fields,
