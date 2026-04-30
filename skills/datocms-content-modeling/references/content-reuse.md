@@ -221,6 +221,12 @@ this section assumes that baseline. Watch for these:
   could live on the parent directly. Inline them, or note that this
   block is intentionally page-shaped (e.g. a complex hero only the
   homepage uses).
+- **Blocks that duplicate native Structured Text nodes.** A
+  `quote_block`, `code_block`, `list_block`, or `divider_block`
+  recreates `blockquote`, `code`, `list`, or `thematicBreak` —
+  Structured Text produces those natively. Allow the node in the
+  field's `nodes` parameter and delete the block. See
+  `block-fields-and-structured-text.md` § Anti-patterns.
 - **Near-duplicate blocks.** `hero_blue_block`, `hero_yellow_block`,
   `hero_red_block`, or `hero_v1_block`, `hero_v2_block`. Collapse to
   one block with a `tone` / `variant` enum field. The frontend maps

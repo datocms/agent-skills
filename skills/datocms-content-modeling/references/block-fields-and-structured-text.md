@@ -38,6 +38,20 @@ scales with locales.
 - **A `rich_text` of one allowed block type used as a poor man's
   `single_block`.** Editors get an "add block" UI that can only
   produce one thing, and the query has to handle a 0-or-1 array.
+- **Block models that recreate native DAST nodes.** Structured Text
+  already produces `blockquote`, `code` (with language and
+  highlight_lines), `list` / `listItem`, `heading`, `thematicBreak`,
+  and `link` natively — defining `quote_block`, `code_block`,
+  `list_block`, `heading_block`, `divider_block`, or `link_block`
+  duplicates the editor's own toolbar buttons, eats the 600-block
+  budget, and forces the frontend to render two parallel code paths
+  for the same concept. Allow the native node via the editor's
+  `nodes` parameter (`code`, `blockquote`, `list`, `heading`,
+  `thematicBreak`) and skip the block. Block models are for
+  *non-native* content shapes the DAST grammar doesn't cover —
+  images/galleries, callouts with a `tone` enum, embeds, custom
+  data widgets. See the DAST cheatsheet below for what's already in
+  the box.
 
 ## Validators come in three flavors
 
