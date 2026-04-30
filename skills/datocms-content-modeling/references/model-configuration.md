@@ -114,6 +114,12 @@ validator to pass. So `draft_saving_active: true` is a pure
 ergonomics win for editors mid-flight; it never lets bad data reach
 the public CDA.
 
+This is the missing half of the **required-by-default** strategy:
+make every field the frontend needs `required`, then turn on
+`draft_saving_active` so editors can still save incomplete drafts.
+See `field-configuration.md` § "Make fields required by default"
+for the full reasoning.
+
 The flag has no effect unless `draft_mode_active: true` is also set.
 Both must be `false` on block models.
 

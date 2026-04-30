@@ -30,6 +30,51 @@ should be helped (or stopped) by.
 
 ---
 
+## Make fields required by default
+
+Of all the validators, `required` deserves a separate decision frame
+because it shapes both the *frontend code* and the *editor workflow*.
+
+**The frontend tax of optional fields.** Every non-required field is
+a `T | null` (or `T | undefined`) the frontend has to branch on. A
+record with 20 optional fields is 20 conditionals in the rendering
+code, 20 places to forget a fallback, 20 places where a missing
+value silently produces broken layout. Required fields collapse to
+`T` — the rendering code reads cleanly, and the type system
+guarantees the value is there.
+
+**The editor tax of required fields.** An editor mid-flight rarely
+has every value ready: the author hasn't been chosen yet, the hero
+image is still being prepared, the SEO copy comes last. If `required`
+blocks *saving*, editors lose work or invent placeholder values to
+get past the validator.
+
+**The fix is the pairing, not a compromise.** Don't water down
+`required` to accommodate the editor workflow. Instead:
+
+1. Make every field that the frontend genuinely needs **`required`**.
+2. Turn on **`draft_saving_active: true`** at the model level (which
+   itself requires `draft_mode_active: true`). Drafts can now be
+   saved with missing required values — but the publish action still
+   enforces every validator.
+
+The combined effect: the frontend reads only published records, so
+required-on-the-field plus required-at-publish gives it the
+"every required field is present" guarantee for free, while editors
+can still save incomplete drafts mid-session. See
+`model-configuration.md` § draft_saving_active.
+
+**When a field genuinely *should* be optional.** The test is not
+"will the editor have it on day one" — that's what drafts are for.
+The test is "is there a sensible record state where this value
+doesn't exist at all?" An `expires_at` on an offer, a
+`subtitle` that some articles don't have, an alternative
+`secondary_cta` that's only sometimes present — these are real
+optionals. A field that "we'll always fill it in eventually" is
+not an optional, it's a required field with a draft workflow.
+
+---
+
 ## Validators worth remembering
 
 Organized by what they let you express, not by `field_type`.
