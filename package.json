@@ -7,6 +7,8 @@
   "scripts": {
     "test:e2e": "vitest run --config vitest.e2e.config.ts",
     "typecheck": "tsc --noEmit",
+    "format": "remark . --output --quiet",
+    "format:check": "remark . --frail --quiet",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -17,7 +19,11 @@
     "datocms": "^4.0.23",
     "dotenv": "^16.4.5",
     "husky": "^9.1.7",
+    "remark-cli": "^12.0.1",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.1",
     "typescript": "^5.6.0",
+    "unist-util-visit": "^5.1.0",
     "vitest": "^2.1.0"
   }
 }

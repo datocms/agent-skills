@@ -1,0 +1,7 @@
+node_modules/
+zips/
+tmp/
+local/
+.agents/
+__pycache__/
+evals/results/
