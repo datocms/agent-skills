@@ -1,7 +1,7 @@
 {
   "name": "datocms",
   "version": "1.1.0",
-  "description": "DatoCMS skills for content delivery, content management, CLI workflows, frontend integrations, plugin development, plugin UI design, plugin scaffolding, and project setup",
+  "description": "DatoCMS skills for content delivery, content management, content modeling, CLI workflows, frontend integrations, plugin development, plugin UI design, plugin scaffolding, and project setup",
   "author": {
     "name": "DatoCMS",
     "url": "https://www.datocms.com"
@@ -15,19 +15,21 @@
     "graphql",
     "content-delivery",
     "content-management",
+    "content-modeling",
     "plugins",
     "migrations"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "DatoCMS",
-    "shortDescription": "Content delivery, management, CLI, frontend integrations, plugin dev, and project setup for DatoCMS",
-    "longDescription": "8 focused skills for DatoCMS: query content (CDA/GraphQL), manage records and schema (CMA), run CLI workflows and migrations, integrate with frontend frameworks (Next.js, Nuxt, Astro, SvelteKit), build and design DatoCMS plugins, scaffold new plugin projects, and orchestrate one-time project setup including draft mode, visual editing, previews, and imports.",
+    "shortDescription": "Content delivery, management, modeling, CLI, frontend integrations, plugin dev, and project setup for DatoCMS",
+    "longDescription": "9 focused skills for DatoCMS: query content (CDA/GraphQL), manage records and schema (CMA), make content-modeling decisions (models vs blocks, taxonomies, reuse, limits, admin UI), run CLI workflows and migrations, integrate with frontend frameworks (Next.js, Nuxt, Astro, SvelteKit), build and design DatoCMS plugins, scaffold new plugin projects, and orchestrate one-time project setup including draft mode, visual editing, previews, and imports.",
     "developerName": "DatoCMS",
     "category": "cms",
     "capabilities": [
       "content-delivery",
       "content-management",
+      "content-modeling",
       "cli-workflows",
       "frontend-integrations",
       "plugin-development",

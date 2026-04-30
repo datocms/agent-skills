@@ -2,8 +2,8 @@
 
 A collection of agent skills that teach Claude, Codex, Cursor, and other coding
 agents how to work effectively with [DatoCMS](https://www.datocms.com) — from
-GraphQL queries and content management scripts to plugin development and
-one-shot project setup.
+GraphQL queries and content management scripts to content modeling, plugin
+development, and one-shot project setup.
 
 All open source, installable in one step on every supported platform.
 
@@ -15,6 +15,11 @@ Most skills trigger **automatically** based on your prompt. The only one you
 invoke explicitly is `datocms-setup` (see [Usage](#usage)). Together they
 cover the full range of DatoCMS work:
 
+- **Content modeling** — schema-design decisions: model vs block,
+  `single_block` / Modular Content / Structured Text, references vs embedded
+  blocks, taxonomies (flat / tree / faceted), separation of content from
+  presentation, record-size and block-count limits, admin UI organization,
+  plus per-model and per-field configuration (validators, appearances, hints).
 - **Frontend integrations** — draft mode, Web Previews, Visual Editing and
   Content Link overlays, real-time preview subscriptions, cache-tag
   invalidation, SEO/robots/sitemap wiring, crawler-safe search — across
@@ -103,6 +108,8 @@ Upload each skill via **Customize → Skills** in
 You don't need to invoke the auto-triggered skills — describe what you want
 in plain language and the right one activates:
 
+- "Should testimonials be a model or a block?"
+- "How should I structure a multi-locale schema with shared blocks?"
 - "Write a GraphQL query to fetch all blog posts with images"
 - "How do I paginate past the 100-record limit?"
 - "Add draft mode to my Next.js app"

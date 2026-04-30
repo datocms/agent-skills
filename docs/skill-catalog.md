@@ -13,6 +13,7 @@ keeps the fuller catalog and the internal setup matrix.
 | `datocms-cma` | `skills/datocms-cma` | Content management scripts, records, schema, environments, and webhooks |
 | `datocms-cli` | `skills/datocms-cli` | CLI workflows, migrations, environments, and imports |
 | `datocms-cda` | `skills/datocms-cda` | Content delivery queries, GraphQL reads, media, SEO, and typed queries |
+| `datocms-content-modeling` | `skills/datocms-content-modeling` | Schema-design decisions: models vs blocks, block-bearing fields, reuse, taxonomies, limits, admin UI organization, model and field configuration |
 | `datocms-frontend-integrations` | `skills/datocms-frontend-integrations` | Framework integration patterns for draft mode, previews, live updates, rendering, and search |
 | `datocms-setup` | `skills/datocms-setup` | One-time setup orchestrator that routes to internal recipes for frontend, migrations, onboarding, and platform work |
 
@@ -23,6 +24,7 @@ These are good explicit prompt shapes for the shipped public skills:
 ```text
 $datocms-cda write a GraphQL query for blog posts with title, slug, and SEO fields
 $datocms-cma write a script that publishes all records in a model
+$datocms-content-modeling should testimonials be a model or a block?
 $datocms-cli scaffold a migration workflow for this project
 $datocms-frontend-integrations show how to wire DatoCMS draft mode into this Next.js app
 $datocms-plugin-builder patch the config screen in this plugin

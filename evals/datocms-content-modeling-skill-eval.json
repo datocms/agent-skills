@@ -1,0 +1,212 @@
+[
+  {
+    "query": "I'm starting a new DatoCMS project for a SaaS marketing site. How should I structure the content models — pages, blog posts, authors, categories? I want to make sure I don't paint myself into a corner.",
+    "should_trigger": true
+  },
+  {
+    "query": "Should 'testimonials' be a model or a block in DatoCMS? Same testimonials show up on multiple landing pages and editors want to update one and have it reflect everywhere.",
+    "should_trigger": true
+  },
+  {
+    "query": "I have a hero section with an image, headline, and CTA. In DatoCMS, should this be a block I add to a Modular Content field, or should it be its own model linked from the page?",
+    "should_trigger": true
+  },
+  {
+    "query": "What's the difference between Modular Content, Structured Text, and Single Block fields in DatoCMS, and when should I use which? I'm trying to pick one for my article body.",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm hitting the 600-blocks-per-record limit on a localized landing page in DatoCMS. We have 8 locales and each one has dozens of section blocks. How do I refactor the model so we don't keep hitting this?",
+    "should_trigger": true
+  },
+  {
+    "query": "Inside DatoCMS structured text, when should I use inlineItem vs itemLink? And what's the difference between block and inlineBlock?",
+    "should_trigger": true
+  },
+  {
+    "query": "Reviewing our DatoCMS schema and a lot of fields are named after the visual design — bigHeroText, threeColumnGrid, redCallout. Is this a problem and how should we rename them?",
+    "should_trigger": true
+  },
+  {
+    "query": "I want hierarchical product categories in DatoCMS like Electronics > Phones > Smartphones. Should I use tree:true on the model or just give the model a 'parent' link to itself?",
+    "should_trigger": true
+  },
+  {
+    "query": "We want faceted filtering in DatoCMS — filter products by color AND size AND material independently. How should I model this?",
+    "should_trigger": true
+  },
+  {
+    "query": "How should I share an SEO field set across multiple DatoCMS models? Coming from Sanity I'd spread a fields array — what's the DatoCMS equivalent?",
+    "should_trigger": true
+  },
+  {
+    "query": "Our DatoCMS Blocks Library has hero_blue, hero_yellow, hero_red, hero_homepage, hero_pricing — five near-duplicate hero blocks. How should we consolidate?",
+    "should_trigger": true
+  },
+  {
+    "query": "Editors keep complaining they have to navigate between 4 records to edit one logical page in DatoCMS. I think I over-modeled the schema with too many linked records. How do I tell when to inline vs link?",
+    "should_trigger": true
+  },
+  {
+    "query": "Page model with localized rich_text in 6 locales is hitting the 300 KB record-size limit in DatoCMS. What are my options?",
+    "should_trigger": true
+  },
+  {
+    "query": "Can I reference a DatoCMS block from a Link field on another record? I want to reuse the same testimonial block across multiple pages.",
+    "should_trigger": true
+  },
+  {
+    "query": "In DatoCMS, how do I configure a `link` field with item_item_type and item_types validators? I need the typescript signature.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Write a DatoCMS migration script to create an Author model with name, bio, and photo fields.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cli",
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "How do I query a DatoCMS structured_text field with embedded blocks via GraphQL?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "Render a DatoCMS structured text in React with custom components for inlineItem and block nodes.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations",
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "How do I publish a DatoCMS record via the CMA in Node.js?",
+    "should_trigger": false
+  },
+  {
+    "query": "Set up draft mode and visual editing in my Next.js + DatoCMS project.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-setup"
+    ]
+  },
+  {
+    "query": "Designing a content model for a multilingual e-commerce site. We have products, categories, and brand pages. Some content is shared across regions, some is region-specific. How should I structure this in DatoCMS?",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cli"
+    ]
+  },
+  {
+    "query": "Refactoring our DatoCMS schema. Right now every page is its own model (HomePage, AboutPage, PricingPage, ContactPage). Editors want to add new pages without us shipping migrations. How should I restructure?",
+    "should_trigger": true
+  },
+  {
+    "query": "Our DatoCMS Content tab is a flat list of 25 models and editors are getting lost. How should I organize the menu so they can find things quickly?",
+    "should_trigger": true
+  },
+  {
+    "query": "Settings → Models in DatoCMS is a mess of 40 blocks mixed in with 15 models. How do I reorganize the schema menu so devs can navigate it?",
+    "should_trigger": true
+  },
+  {
+    "query": "Editors keep asking me to build them a 'Drafts awaiting review' view in DatoCMS. Is there a way to put this in the sidebar so they don't have to apply the filter every time?",
+    "should_trigger": true
+  },
+  {
+    "query": "Should block models show up in the DatoCMS Content tab menu for editors, or only in the Schema menu?",
+    "should_trigger": true
+  },
+  {
+    "query": "Should we put emojis on our DatoCMS model names and menu items? Some of our models have them and some don't and it looks inconsistent.",
+    "should_trigger": true
+  },
+  {
+    "query": "Can I add emoji icons to DatoCMS fields in the record edit form? I want to make the form more scannable for editors.",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm writing a DatoCMS migration that creates 15 new fields across 4 models. Should I bother filling in the hint field for each one, or is that something we can backfill later?",
+    "should_trigger": true
+  },
+  {
+    "query": "Our DatoCMS editors keep asking on Slack what the difference is between 'Featured' and 'Highlighted' on the article model. How should we communicate that in the schema itself?",
+    "should_trigger": true
+  },
+  {
+    "query": "I have a 'Site settings' model in DatoCMS that holds the global header, footer, and SEO defaults. Should it be a singleton? What happens if we ever need a second one?",
+    "should_trigger": true
+  },
+  {
+    "query": "For an articles list in DatoCMS that editors want to manually feature/reorder, should I use sortable: true, or tree, or ordering_field tied to a 'priority' field? What's the right call?",
+    "should_trigger": true
+  },
+  {
+    "query": "What's the difference between presentation_title_field and title_field on a DatoCMS model? Do I need both?",
+    "should_trigger": true
+  },
+  {
+    "query": "Is it a good idea to set all_locales_required: true on our Article model in DatoCMS? We have 6 locales and editors are usually still translating when they want to publish.",
+    "should_trigger": true
+  },
+  {
+    "query": "What does collection_appearance do on a DatoCMS model and when should I pick 'compact' vs 'table'?",
+    "should_trigger": true
+  },
+  {
+    "query": "Should I enable inverse_relationships_enabled on our Author model in DatoCMS so the frontend can query an author's articles?",
+    "should_trigger": true
+  },
+  {
+    "query": "I have a DatoCMS string field with three valid values: 'draft', 'review', 'published'. Should I just use single_line and validate, or pair the enum with string_select? What's the right setup?",
+    "should_trigger": true
+  },
+  {
+    "query": "For DatoCMS image fields used as hero/cover images, which extension validator should I use — predefined_list 'image' or 'transformable_image'? Does it matter for the responsiveImage queries on the CDA?",
+    "should_trigger": true
+  },
+  {
+    "query": "Should I always wire required_alt_title on file fields in DatoCMS? Editors keep skipping the alt text and our SEO audit flagged it.",
+    "should_trigger": true
+  },
+  {
+    "query": "On my DatoCMS Article model, should the body be a `text` field with markdown/wysiwyg or a `structured_text` field? When does it actually matter?",
+    "should_trigger": true
+  },
+  {
+    "query": "For a 'dietary tags' field in DatoCMS that should be a fixed set (vegetarian, gluten-free, vegan), should I use a json field with string_multi_select editor or create a Tag model with a links field?",
+    "should_trigger": true
+  },
+  {
+    "query": "What's the difference between framed_single_block and frameless_single_block in DatoCMS? When do I pick which?",
+    "should_trigger": true
+  },
+  {
+    "query": "In DatoCMS, when should I use link_select vs link_embed for a link field? Editors find link_embed confusing because they edit shared records by accident.",
+    "should_trigger": true
+  },
+  {
+    "query": "How do I lock down what editors can do inside a DatoCMS structured_text field — limit the heading levels, drop the underline mark, hide the 'open in new tab' checkbox?",
+    "should_trigger": true
+  },
+  {
+    "query": "For DatoCMS slug fields, should I always set slug_title_field so it auto-fills from the title? And what about slug_format with 'webpage_slug'?",
+    "should_trigger": true
+  },
+  {
+    "query": "Our DatoCMS SEO field doesn't tell editors when their meta description is too long for Google. Should I set title_length and description_length validators?",
+    "should_trigger": true
+  }
+]

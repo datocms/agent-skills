@@ -10,5 +10,7 @@
     "datocms-plugin-scaffold",
     "datocms-setup"
   ],
-  "excluded_skills": {}
+  "excluded_skills": {
+    "datocms-content-modeling": "newly added skill — eval fixture present, results pending first run"
+  }
 }
