@@ -105,6 +105,9 @@ This is the right shape for **semantic variants** (`tone`,
 // email
 validators: { format: { predefined_pattern: "email" } }
 
+// URL — covers external links, canonical URLs, profile links, etc.
+validators: { format: { predefined_pattern: "url" } }
+
 // custom pattern with a human-readable description
 validators: {
   format: {
@@ -113,6 +116,10 @@ validators: {
   },
 }
 ```
+
+`predefined_pattern` accepts only `"email"` or `"url"`. Reach for
+those before writing a custom regex — they're maintained by DatoCMS
+and produce a clean error message without needing `description`.
 
 The `description` matters: without it, the editor sees the regex
 itself as the error message. With it, they see plain English.
