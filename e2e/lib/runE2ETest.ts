@@ -47,6 +47,7 @@ function buildPrompt<Context>(
 		`You have access to a DatoCMS project (site ID "${project.siteId}"). ` +
 		`Assume \`npx datocms cma:script\` and \`npx datocms schema:inspect\` are already configured and ready to run — no auth setup needed.\n\n` +
 		`Ensure you load both the datocms-cma AND datocms-cli skills before starting!\n\n` +
+		`After requested the task is done, do not spend extra time/passes to check for the actual results: I'll do it myself.\n\n` +
 		`Task: ${task}`
 	);
 }
