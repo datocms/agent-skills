@@ -70,6 +70,34 @@ The filter does the work; the menu makes it discoverable. Editors who
 would never go build a filter manually start using these heavily
 within days.
 
+#### Group multi-entry models under a container
+
+As soon as a single model has **more than one** menu entry — typically
+the model itself plus one or more `item_type_filter` saved views —
+wrap them in a parent menu group named after the model. Two flat
+siblings in the sidebar (e.g. `🗞️ Articles` and `📥 Awaiting review`)
+read as two unrelated destinations; the editor has to learn that the
+second one is a filter on the first. A container makes the
+relationship structural instead of implicit:
+
+```
+Articles                       (container — no emoji)
+  ├── 🗞️ All articles         (leaf — points to the model)
+  ├── 📥 Awaiting review       (leaf — saved view)
+  └── 📅 Published this week   (leaf — saved view)
+```
+
+The container itself stays plain (per the emoji rules — containers
+don't get emoji). The leaf pointing to the unfiltered model usually
+reads better as `All <model>` than repeating the model name, so it's
+clearly the "everything" entry next to the filtered siblings. The
+filtered entries follow the saved-view emoji rule (signal *what the
+filter does*, not the model).
+
+Single-entry models — most models — stay flat at the top level. The
+group is the cue that "there's more than one way to enter this
+model."
+
 ### External URLs
 
 `menu_item.external_url` (with optional `open_in_new_tab`) links to
@@ -126,29 +154,36 @@ tree*.
 
 ## Menu items are auto-created — curate or opt out
 
-Every call to `itemTypes.create` (creating a model **or** a block
-model) creates a corresponding menu entry by default:
+Every call to `itemTypes.create` auto-creates menu entries by default:
 
-- A regular model gets a `menu_item` in the **Content tab** menu.
-- A block model gets a `schema_menu_item` (with `kind: "modular_block"`)
-  in the **Schema tab** blocks tree.
+- A regular model gets a `menu_item` in the **Content tab** menu **and**
+  a `schema_menu_item` (with `kind: "item_type"`) in the **Schema tab**.
+- A block model gets only a `schema_menu_item` (with
+  `kind: "modular_block"`) in the **Schema tab** blocks tree — block
+  models don't appear in the Content tab.
+
+The `schema_menu_item` is **always** created — there is no flag to
+skip it. You can only redirect where it ends up. The Content tab
+`menu_item` is the only one that can be skipped outright.
 
 This is convenient for the first ten models. After that, the menu
 sprawls — every block ever created sits at the top level of the
 blocks tree in creation order. The fix is awareness at script time:
 
-`itemTypes.create` accepts three query-param flags that govern this:
+`itemTypes.create` accepts three query-param flags that govern menu
+placement:
 
 | Flag | Effect |
 |---|---|
-| `skip_menu_item_creation: true` | No menu entry is created. Use when scripting bulk creation and you'll wire menus separately afterwards. |
-| `menu_item_id: "<id>"` | Wire the new model to a *specific existing* menu item rather than creating a new one. Useful when promoting a placeholder menu entry to a real model. |
-| `schema_menu_item_id: "<id>"` | Same idea for the schema menu — attach the new model/block to a pre-existing schema menu node (e.g. the "Page sections" group you already created). |
+| `skip_menu_item_creation: true` | Skips the Content tab `menu_item` only. The `schema_menu_item` is still created. No-op for block models (they have no Content tab entry). |
+| `menu_item_id: "<id>"` | Wire the new model's Content tab entry to a *specific existing* `menu_item` rather than creating a new one. Useful when promoting a placeholder menu entry to a real model. |
+| `schema_menu_item_id: "<id>"` | Place the auto-created `schema_menu_item` *under* an existing schema menu node (e.g. the "Page sections" group you already created), instead of at the top level. |
 
 ```ts
-// Bulk creation without polluting menus — wire them up after
+// Bulk creation without polluting the Content tab menu — Schema tab
+// entries are still created and can be reorganized after the fact.
 await client.itemTypes.create(
-  { name: "Hero", api_key: "hero_block", modular_block: true },
+  { name: "Article", api_key: "article" },
   { skip_menu_item_creation: true },
 );
 
@@ -190,34 +225,39 @@ pickers via `presentation_title_field` /
 "presentation_title_field and presentation_image_field" for how the
 admin preview is composed.
 
-### Inspect the project before suggesting a convention
+### The convention is on by default
 
-Different projects pick different emoji vocabularies (concrete-objects
-vs abstract-symbols, two-tone vs flat, etc.). Before recommending one,
-inspect what the project already uses — `npx datocms schema:inspect`
-plus a look at existing menu items and item types. Match the
-convention; don't impose taste from elsewhere.
+Apply emoji prefixes across the schema by default. They are the only
+icon system DatoCMS exposes, they make the sidebar scannable, and the
+visual continuity from menu → record is what gives them their value.
+Don't ask the user whether they want emoji — apply the rules below.
 
-If the project has no emojis yet and the user asks for a convention,
-ask them whether they want one before scattering emojis across the
-schema. Some teams deliberately keep things plain.
+The only time you don't apply the convention is when the project
+**already has** an established convention you should match instead.
+Before generating new labels, inspect what the project already uses
+(`npx datocms schema:inspect` plus a look at existing menu items and
+item types) — different projects pick different vocabularies
+(concrete-objects vs abstract-symbols, two-tone vs flat, etc.). Match
+the existing taste; don't import a different one.
 
-### Default suggestions when the team wants a convention
+### Rules
 
-When the team is starting from scratch and wants guidance:
-
-- **Emojis everywhere *except* container menu items.** Leaf entries
-  (a single model, a saved view, an external link) get an emoji.
-  Container entries — folders that group other menu items, like
-  "Marketing pages" or "Settings" — stay plain. Folders are visually
-  identified by their disclosure triangle; an emoji adds noise without
-  navigational value. Same rule applies to container schema menu
-  items.
-- **Model/block emoji should match the emoji of its menu entry.** If
-  the `Article` model lives at `🗞️ Articles` in the content menu,
-  the model itself should be named `🗞️ Article`. Visual continuity
-  from sidebar to record makes the connection obvious — the editor
-  clicks a 🗞️ in the sidebar and sees 🗞️ at the top of the record.
+- **Apply emoji on every surface that supports them, *except*
+  container entries.** That means leaf `menu_item.label`, leaf
+  `schema_menu_item.label`, `item_type.name` (regular and block
+  models), and `fieldset.title`. Container entries — folders that
+  group other menu items, like "Marketing pages" or "Settings" —
+  stay plain. Folders are visually identified by their disclosure
+  triangle; an emoji adds noise without navigational value. Same
+  rule for container schema menu items.
+- **Emoji is paired across menu entry and model — never one without
+  the other.** If the `Article` model lives at `🗞️ Articles` in the
+  content menu, the model itself must be named `🗞️ Article`. The
+  whole point of the convention is visual continuity: the editor
+  clicks 🗞️ in the sidebar and sees 🗞️ at the top of the record.
+  Putting an emoji on the menu entry but leaving the model name plain
+  (or vice versa) breaks that continuity and is worse than no emoji
+  at all — don't pick-and-choose surfaces.
 - **Saved views (filter-based menu items) get their own distinct
   emoji.** When a single model has multiple menu entries via
   `item_type_filter` — e.g. `🗞️ Articles` (all) and `📥 Awaiting
@@ -225,31 +265,36 @@ When the team is starting from scratch and wants guidance:
   the filter does*, not just duplicate the model's emoji. The whole
   point is to make the inbox visually distinguishable from the
   full collection.
-- **No emojis on fields, ever.** Fields render in record edit forms,
-  not in navigation. Emoji prefixes on field labels are visual noise
-  the editor scans past every time they edit a record. Use the field
-  hint for context instead.
+- **No emojis on fields, ever.** `field.label` doesn't render the
+  prefix as an icon, and fields appear in record edit forms, not in
+  navigation. Emoji on field labels is just noise the editor scans
+  past every edit. Use the field hint for context instead.
 
 ### Worked example
 
 ```
-Content tab menu (📋 = container, plain in our convention):
+Content tab menu (containers are plain; leaves carry the emoji):
 
   Marketing pages          (container — no emoji)
     ├── 🏠 Home
     ├── 💰 Pricing
     └── 📞 Contact
-  🗞️ Articles               (leaf — model)
-  📥 Awaiting review        (leaf — saved view, distinct from 🗞️)
-  🏷️ Tags                   (leaf — taxonomy)
+  Articles                 (container — Article has multiple entries)
+    ├── 🗞️ All articles    (leaf — points to the model)
+    └── 📥 Awaiting review (leaf — saved view, distinct emoji)
+  🏷️ Tags                   (leaf — taxonomy, single entry)
   Settings                 (container — no emoji)
     ├── ⚙️ Site settings    (singleton)
     └── 🔁 Redirects
 ```
 
 The corresponding model/block names match: `🗞️ Article`, `🏷️ Tag`,
-`🏠 Home page`, `⚙️ Site settings`. The "Awaiting review" entry uses
-📥 because *the filter* is the inbox, not the model.
+`🏠 Home page`, `⚙️ Site settings`. Note the `Articles` container:
+because the model has both a model-pointing entry and a filter-based
+entry, they're grouped under a plain container to make the
+relationship explicit. `Tags` has a single entry, so it stays flat.
+The "Awaiting review" entry uses 📥 because *the filter* is the
+inbox, not the model.
 
 ## Heuristics that apply to both menus
 

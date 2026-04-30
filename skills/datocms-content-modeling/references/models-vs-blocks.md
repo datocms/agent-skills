@@ -64,7 +64,7 @@ otherwise feel right.
 | Limit | Default value | Notes |
 |---|---|---|
 | Maximum record size | **300 KB** | Includes content in nested blocks. Linked records and asset uploads do **not** count. Higher limits available on some plans. |
-| Maximum blocks per record | **600** | Counts blocks across all block-bearing fields and all nesting levels in one record. |
+| Maximum blocks per record | **500** | Counts blocks across all block-bearing fields and all nesting levels in one record. |
 | Maximum nested-block depth | **5 levels** | A block inside a block inside a block… 5 deep, total. |
 
 A record that approaches any of these is a **modeling smell**.
@@ -79,7 +79,7 @@ Block-bearing fields are localized at the *containing field* level. A
 list per locale. That means:
 
 ```
-total blocks counted toward the 600/record cap
+total blocks counted toward the 500/record cap
   = sum over (each locale × each block-bearing field × blocks in that locale)
 ```
 
@@ -108,7 +108,7 @@ move content from blocks-inside-the-parent into models-linked-from-the-parent.
    `block-fields-and-structured-text.md`.)
 4. **Audit blocks for over-decomposition.** A `callout_block` with one
    text field, a `spacer_block`, a `divider_block` — every block is
-   paid for in the 600 budget. Consolidate. (Also see
+   paid for in the 500 budget. Consolidate. (Also see
    `content-reuse.md` for block-library hygiene.)
 
 ### Diagnosing existing limit failures

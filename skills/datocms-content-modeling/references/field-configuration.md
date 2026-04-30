@@ -210,7 +210,7 @@ validators: {
 ```
 
 `size` on `rich_text` and `length` on `structured_text` help keep
-records under the 300 KB / 600-block limits — see
+records under the 300 KB / 500-block limits — see
 `models-vs-blocks.md`.
 
 ### Sanitize HTML for `text` fields

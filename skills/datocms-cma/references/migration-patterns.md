@@ -4,6 +4,18 @@ Covers common scripting patterns for data migrations, bulk operations, upload mi
 
 > For endpoint shapes of any resource the script touches, consult `npx datocms cma:docs <resource> <action> --types-depth 2` (raise the depth or use `--expand-types` for deeper nested types). This file covers the migration script boilerplate, idempotent loops, progress reporting, and bulk-operation patterns — not the per-endpoint payload.
 
+## Always log progress
+
+Migrations are run interactively (a developer is watching the terminal) or in CI logs — in both cases a silent script is a broken script. Without progress output the operator can't tell whether the run is still working, stuck on a single record, or hitting rate limits.
+
+Every migration should emit `console.log` at:
+- **Start** — what's about to happen, target environment, count of items if known up-front
+- **Each major step** — one line per phase ("Fetching all blog posts…", "Updating slugs…")
+- **Inside long loops** — every N items (e.g. `if (processed % 50 === 0)`), include counts and any error tally
+- **End** — totals, elapsed time, anything the operator must do next
+
+Use `console.error` for per-item failures so they stand out. The examples below all follow this pattern — copy it.
+
 ## Quick Navigation
 
 - [Migration Script Boilerplate](#migration-script-boilerplate)
@@ -303,7 +315,7 @@ async function resumableMigration() {
 
 1. **Test in a sandbox** — Fork the primary environment first (see `references/environments.md`)
 2. **Dry run** — Log what would change before making changes
-3. **Progress tracking** — Report progress and support resumption
+3. **Progress tracking** — `console.log` at start, every N records inside loops, and at the end so the operator can follow the run live (see "Always log progress" at the top of this file). Support resumption for long runs.
 4. **Error handling** — Catch and log errors per record, don't let one failure stop the batch
 5. **Verification** — After migration, verify a sample of records
 6. **Promote** — Only promote after verification passes

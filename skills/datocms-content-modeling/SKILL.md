@@ -10,7 +10,7 @@ description: >-
   references vs embedded blocks, how to organize taxonomies (flat / tree /
   faceted), how to refactor a presentation-shaped or page-shaped schema
   into reusable structured content, how many locales × blocks fit inside
-  the 300 KB / 600-block / 5-level record limits, how to organize the
+  the 300 KB / 500-block / 5-level record limits, how to organize the
   admin UI so editors and devs aren't overwhelmed (menu items, schema
   menu items, saved views via item_type_filter), or how to configure
   a model's behaviour and presentation (singleton, draft mode,
@@ -116,7 +116,7 @@ the whole set up front.
   decision: when content should be its own model vs a block. Covers
   the structural rules (no orphans, no link-field references, locale
   inheritance from the containing field), the per-record limits
-  (300 KB / 600 blocks / 5 levels deep) and how the locale multiplier
+  (300 KB / 500 blocks / 5 levels deep) and how the locale multiplier
   forces the model decision when content compounds.
 - `references/block-fields-and-structured-text.md` — picking between
   `single_block`, `rich_text` (Modular Content), and `structured_text`;

@@ -212,7 +212,7 @@ Transient server errors (5xx with `transient: true`) are also retried automatica
 | Limit | Value |
 |---|---|
 | Max record size | 300 KB including nested blocks, excluding assets and linked records |
-| Max blocks per record | 600 |
+| Max blocks per record | 500 |
 | Max nested block depth | 5 levels |
 | Max upload size | 1 GB per asset |
 | Rate limit | 60 requests per 3 seconds |

@@ -246,17 +246,28 @@ resolves through to the block's. Pure data fields like `boolean`,
 
 ### `collection_appearance`
 
-Either `'compact'` or `'table'`. Controls the density of the model's
-collection view.
+Either `'table'` or `'compact'`. These are **two very different
+layouts**, not just density variants — pick based on the model's role,
+not on visual taste.
 
-- `'compact'` — card-style rows, easier to scan visually, good for
-  models with images and short titles.
-- `'table'` — dense table view, good for data-heavy models where
-  editors need to see many fields at once.
+- `'table'` (default, and what you almost always want) — full-width
+  table view with one column per configured field, image previews,
+  saved views, advanced filters, sorting by column. This is the
+  standard "list of records" experience editors expect.
+- `'compact'` — a narrow vertical **sidebar** of records on the left,
+  with the selected record opening to the right of it. No image
+  previews. No advanced filters — only a plain text-search box. No
+  per-column sorting. The trade-off is that editors can edit a record
+  while still seeing the surrounding list.
 
-If most records have an image and a one-line title, `'compact'` is
-usually better. If editors are scanning by metadata fields,
-`'table'` wins.
+`'compact'` is only appropriate for **small reference / taxonomy-style
+models** where the collection is short, the records are tiny (often
+just a label), and editors mostly jump between records to make small
+edits — e.g. `Tag`, `Category`, `Redirect`, `Author`. Anything larger
+(blog posts, products, pages) belongs on `'table'`: editors need the
+filters, the saved views, and the image previews that compact hides.
+
+If in doubt, leave it at the default (`'table'`).
 
 (There's a typo'd alias `collection_appeareance` in the API surface;
 ignore it and use `collection_appearance`.)

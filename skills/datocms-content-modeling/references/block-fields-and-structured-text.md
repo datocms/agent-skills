@@ -43,7 +43,7 @@ scales with locales.
   highlight_lines), `list` / `listItem`, `heading`, `thematicBreak`,
   and `link` natively — defining `quote_block`, `code_block`,
   `list_block`, `heading_block`, `divider_block`, or `link_block`
-  duplicates the editor's own toolbar buttons, eats the 600-block
+  duplicates the editor's own toolbar buttons, eats the 500-block
   budget, and forces the frontend to render two parallel code paths
   for the same concept. Allow the native node via the editor's
   `nodes` parameter (`code`, `blockquote`, `list`, `heading`,
@@ -142,5 +142,5 @@ The container choice has knock-on effects on those limits:
   mean "exactly one."
 - **Audit blocks for over-decomposition.** A `spacer_block`, a
   `divider_block`, a `callout_block` with one text field — every
-  block is paid for in the 600 budget. Consolidate aggressive
+  block is paid for in the 500 budget. Consolidate aggressive
   decomposition before reaching for limit increases.
