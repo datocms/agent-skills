@@ -130,43 +130,53 @@ lifecycle.
 
 ## Don't recreate file/gallery metadata either
 
-Same trap, applied to uploads. Every asset on a `file` or `gallery`
-field carries **per-locale upload metadata** that editors set
-directly on the asset selector — `alt`, `title`, `custom_data`
-(arbitrary JSON), and (for images) `focal_point`. These live on the
-upload, not on the model, and the editor reaches them by clicking
-the asset in the record form.
+Same trap, applied to uploads. Every asset carries `alt`, `title`,
+`custom_data` (arbitrary JSON), and (for images) `focal_point` —
+all per-locale. The key insight is that these properties exist at
+**two levels**, and either one is enough to avoid creating sibling
+fields:
+
+| Level | Where | Use for |
+|---|---|---|
+| **Upload-level default** | Set on the upload itself in the Media Area (`default_field_metadata`) | The asset's "true" alt/title that travels with it everywhere it's used. The CDA also serves these as fallbacks when no per-record override exists. |
+| **Per-record override** | Set on the `file` / `gallery` field of the specific record (the asset selector exposes the same fields) | When *this record* needs a different alt or title than the upload's default — a hero image whose alt should reference the article's headline, a product photo whose title should mention the product variant. |
+
+**There is no third "in-record-but-not-on-the-upload" case** that
+justifies a sibling field. Whether the editor wants a global value
+or a per-record one, the answer is to fill the metadata on the
+upload or on the field — never `image_alt`, `image_title`,
+`image_label`, `image_caption` as separate fields.
 
 Common anti-patterns:
 
 ```ts
-// ❌ Don't do this — duplicates the asset's built-in alt/title metadata
+// ❌ Don't do this — duplicates the asset's built-in metadata
 fields.create(modelId, { api_key: "image_alt",     field_type: "string" });
 fields.create(modelId, { api_key: "image_title",   field_type: "string" });
 fields.create(modelId, { api_key: "image_label",   field_type: "string" });
 fields.create(modelId, { api_key: "image_caption", field_type: "string" });
 
-// ✅ Just use the file/gallery field's own metadata.
-//    Force editors to fill alt with required_alt_title — see
-//    field-configuration.md § "Constrain files and images".
+// ✅ Use the file/gallery field's own metadata. For a per-locale
+//    record-level alt/title, the editor edits it right inside the
+//    asset selector. Force editors to fill alt with
+//    required_alt_title — see field-configuration.md § "Constrain
+//    files and images".
 fields.create(modelId, {
   api_key: "hero_image",
   field_type: "file",
   validators: { required_alt_title: { alt: true } },
 });
+
+// ✅ For free-form record-specific data on the asset (e.g. a
+//    "display variant" the frontend reads), use custom_data on the
+//    file field — still no extra field needed.
 ```
 
 In GraphQL, asset metadata is exposed on the upload itself
 (`hero.alt`, `hero.title`, `hero.customData`, `hero.focalPoint`),
-not as sibling fields on the record. The CDA's `responsiveImage`
-helpers also pick `alt` and `title` automatically from the upload.
-
-The exception is when the value isn't really *the asset's*
-metadata — a `caption` that describes the figure *in the article*
-(rather than the image generically) is a record-level field, not an
-asset-level one. The test: would the same caption travel with the
-asset to a different record? If yes, it belongs on the upload; if
-no, it's a record field.
+and the CDA automatically resolves the per-record override on top
+of the upload-level default. The `responsiveImage` helpers pick
+`alt` and `title` through the same chain.
 
 The same logic applies to upload-level attributes set in the Media
 Area (`copyright`, `author`, `notes`, `tags`, `upload_collection`).
