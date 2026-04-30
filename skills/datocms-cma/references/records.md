@@ -69,6 +69,56 @@ Scalar types (`string`, `integer`, `float`, `boolean`, `date`, `date_time`, `slu
 
 Modular Content, Structured Text, and Single Block fields are complex enough to merit their own reference — see `references/editing-records.md`.
 
+## Reading structured text as dastdown markdown
+
+The `datocms-structured-text-dastdown` package serializes a DAST tree to a markdown-like string (and parses it back). For read-only use — displaying content, feeding to an LLM, extracting plain text, diffing — `serialize` alone is enough; `parse` is for the editing round-trip (see `editing-records.md` § Pass 1).
+
+```ts
+import { serialize } from "datocms-structured-text-dastdown";
+
+const article = await client.items.find<Schema.Article>(id, { nested: true });
+if (article.content) {
+  const text = serialize(article.content);
+  // text is dastdown markdown — paragraphs, headings, lists, blocks-as-id placeholders
+}
+```
+
+`nested: true` matters here too: without it, blocks inside the structured text are id strings only, and `serialize` encodes them as `<block id="…"/>` placeholders without any block content visible.
+
+### dastdown syntax — what's NOT plain markdown
+
+Markdown-identical: `# H1`–`###### H6`, paragraphs, `- ` / `1. ` lists (2-space indent for nesting), `> ` blockquote, ` ```lang ` fences, `---` thematic break, `**strong**` `*emphasis*` `` `code` `` `~~strike~~`, `[text](url)`, `\` escapes.
+
+**Tables are NOT supported!**
+
+Everything dastdown adds, in one document:
+
+```dastdown
+# Heading {style="display"} ← style trailer on heading line
+
+Paragraph with ==highlight==, ++underline++, custom mark <m k="footnote-ref">x</m>, and span-internal<br/>linebreak.
+{style="lead"} ← paragraph style: own line AFTER
+
+> Quote body.
+{attribution="Oscar Wilde"} ← blockquote attribution: own line AFTER
+
+```js {highlight=[0,2]} ← highlight 0-indexed; no escapes inside fence
+code
+```
+
+Link with meta: [text](https://x.com){rel="nofollow" target="_blank"}
+Record link: [text](dato:item/RECORD_ID){rel="nofollow"}
+Inline refs: <inlineItem id="…"/>  <inlineBlock id="…"/>
+
+<block id="…"/> ← root-level only, own line
+```
+
+Rules that bite:
+
+- `<block|inlineBlock|inlineItem id="…"/>` and `dato:item/ID`: opaque record refs. Don't invent ids — `parse` throws on unknown `block`/`inlineBlock` ids; create them in Pass 2 (see `editing-records.md`) instead.
+- Mark canonical order outer→inner: `highlight → strikethrough → underline → strong → emphasis → code`; custom marks innermost, alphabetical. Serializer rewrites freely — don't depend on input order.
+- Canonicalization also drops empty spans and coalesces adjacent same-marks spans. `parse(null|undefined)` → `null`; `parse("")` → single empty paragraph.
+
 ## Bulk operations are async + 200-cap
 
 `bulkPublish`, `bulkUnpublish`, `bulkDestroy`, `bulkMoveToStage` accept `{ items: [{ id, type: "item" }] }` and run as background jobs (the simplified client awaits completion). Max **200 items per request** — chunk larger sets. See `references/client-types-and-behaviors.md` § Technical Limits.

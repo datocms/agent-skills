@@ -239,37 +239,7 @@ When creating brand new structurede text content, just use `parse("Your **conten
 
 `parse(text, original)` throws if the edit references a `<block id="…"/>` / `<inlineBlock id="…"/>` whose id is not in `original` — that's the signal to either drop the placeholder or move the block creation to Pass 2. Editing a block's contents through dastdown is impossible (only the id is encoded): Pass 2 owns block-internal edits.
 
-#### dastdown syntax — what's NOT plain markdown
-
-Markdown-identical: `# H1`–`###### H6`, paragraphs, `- ` / `1. ` lists (2-space indent for nesting), `> ` blockquote, ` ```lang ` fences, `---` thematic break, `**strong**` `*emphasis*` `` `code` `` `~~strike~~`, `[text](url)`, `\` escapes.
-
-Everything dastdown adds, in one document:
-
-```dastdown
-# Heading {style="display"} ← style trailer on heading line
-
-Paragraph with ==highlight==, ++underline++, custom mark <m k="footnote-ref">x</m>, and span-internal<br/>linebreak.
-{style="lead"} ← paragraph style: own line AFTER
-
-> Quote body.
-{attribution="Oscar Wilde"} ← blockquote attribution: own line AFTER
-
-```js {highlight=[0,2]} ← highlight 0-indexed; no escapes inside fence
-code
-```
-
-Link with meta: [text](https://x.com){rel="nofollow" target="_blank"}
-Record link: [text](dato:item/RECORD_ID){rel="nofollow"}
-Inline refs: <inlineItem id="…"/>  <inlineBlock id="…"/>
-
-<block id="…"/> ← root-level only, own line
-```
-
-Rules that bite:
-
-- `<block|inlineBlock|inlineItem id="…"/>` and `dato:item/ID`: opaque record refs. Don't invent ids — `parse` throws on unknown `block`/`inlineBlock` ids; create them in Pass 2 instead.
-- Mark canonical order outer→inner: `highlight → strikethrough → underline → strong → emphasis → code`; custom marks innermost, alphabetical. Serializer rewrites freely — don't depend on input order.
-- Canonicalization also drops empty spans and coalesces adjacent same-marks spans. `parse(null|undefined)` → `null`; `parse("")` → single empty paragraph.
+For the dastdown syntax (what it adds beyond plain markdown, mark canonical order, canonicalization rules), see `records.md` § "dastdown syntax — what's NOT plain markdown".
 
 ### Pass 2 — `mapNodes` walk (prose AST + block edits)
 
