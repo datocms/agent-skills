@@ -4,19 +4,17 @@ Vue-specific wiring for `vue-datocms` Content Link in Vue and Nuxt projects.
 
 ## Contents
 
-- [Shared Concepts](#shared-concepts)
-- [Setup](#setup)
-- [Framework Integrations](#framework-integrations)
-- [Enabling Click-to-Edit](#enabling-click-to-edit)
-- [`<ContentLink>` Props](#contentlink-props)
-- [`useContentLink` Composable](#usecontentlink-composable)
-- [Data Attributes Reference](#data-attributes-reference)
-- [Group & Boundary Resolution Rules](#group-boundary-resolution-rules)
-- [Structured Text Integration](#structured-text-integration)
-- [Low-Level Utilities](#low-level-utilities)
-- [Troubleshooting](#troubleshooting)
-
----
+- Shared Concepts
+- Setup
+- Framework Integrations
+- Enabling Click-to-Edit
+- `<ContentLink>` Props
+- `useContentLink` Composable
+- Data Attributes Reference
+- Group & Boundary Resolution Rules
+- Structured Text Integration
+- Low-Level Utilities
+- Troubleshooting
 
 ## Shared Concepts
 
@@ -27,8 +25,6 @@ Read [content-link-concepts.md](./content-link-concepts.md) first for the shared
 - shared data attributes, grouping rules, low-level controller utilities, and common troubleshooting
 
 Use this file for Vue-only component API, router wiring, and Structured Text integration details.
-
----
 
 ## Setup
 
@@ -46,8 +42,6 @@ import { ContentLink } from 'vue-datocms';
   <!-- Your content -->
 </template>
 ```
-
----
 
 ## Framework Integrations
 
@@ -120,8 +114,6 @@ Then use it in your layout:
 </template>
 ```
 
----
-
 ## Enabling Click-to-Edit
 
 ### Via Prop (Persistent)
@@ -152,8 +144,6 @@ With options:
 
 Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily show click-to-edit overlays. Releasing the key hides them.
 
----
-
 ## `<ContentLink>` Props
 
 | Prop | Type | Default | Description |
@@ -163,8 +153,6 @@ Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily show click-to-ed
 | `enable-click-to-edit` | `boolean \| { scrollToNearestTarget?: boolean, hoverOnly?: boolean }` | — | Enable click-to-edit overlays persistently |
 | `strip-stega` | boolean | — | Remove stega encoding from text nodes after processing |
 | `root` | `Ref<ParentNode \| null \| undefined>` | — | Limit scanning to a root element instead of entire document |
-
----
 
 ## `useContentLink` Composable
 
@@ -244,8 +232,6 @@ watch(() => route.path, (newPath) => {
 </template>
 ```
 
----
-
 ## Data Attributes Reference
 
 ### Developer-Specified Attributes
@@ -319,8 +305,6 @@ Without the boundary, clicking `page.author` would open the outer group's URL.
 | `data-datocms-contains-stega` | Added to elements with stega content (only when `stripStega` is false) |
 | `data-datocms-auto-content-link-url` | Added to elements identified as editable targets; contains the resolved edit URL |
 
----
-
 ## Group & Boundary Resolution Rules
 
 When stega content is found, the library walks up the DOM from that element:
@@ -328,8 +312,6 @@ When stega content is found, the library walks up the DOM from that element:
 1. **Finds `data-datocms-content-link-group`** — stamps that element as clickable target
 2. **Finds `data-datocms-content-link-boundary`** — stops traversal, stamps the starting element as clickable target
 3. **Reaches root without finding either** — stamps the starting element
-
----
 
 ## Structured Text Integration
 
@@ -420,8 +402,6 @@ function renderInlineBlock({ record }) {
 
 **Why `renderLinkToRecord` doesn't need a boundary:** Record links are `<a>` tags wrapping text that belongs to the surrounding structured text — no separate editing target, no collision.
 
----
-
 ## Low-Level Utilities
 
 ### `stripStega`
@@ -462,8 +442,6 @@ console.log(revealStega(graphqlResponse));   // same object shape, markers visib
 ```
 
 See [content-link-concepts.md → When to Strip Stega](./content-link-concepts.md#when-to-strip-stega) for the full rule on when to wrap values in `stripStega()` (string comparisons, SEO/meta, analytics, slug/URL generation, anything other than direct render). Note: DatoCMS `slug` field types are never stega-encoded and don't need stripping.
-
----
 
 ## Troubleshooting
 

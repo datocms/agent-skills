@@ -1,16 +1,14 @@
 # Astro — Draft Mode Reference
 
-This reference contains the exact code patterns for implementing draft mode in an Astro project with DatoCMS. Sections are organized by feature — always follow `## Core`, then follow optional sections only for features the user selected.
+Exact code patterns for draft mode in Astro with DatoCMS. Sections organized by feature — follow `## Core`, then optional sections only for selected features.
 
 ## Contents
 
-- [Core](#core)
-- [Web Previews (Optional)](#web-previews-optional)
-- [Content Link (Optional)](#content-link-optional)
-- [Real-Time Updates (Optional)](#real-time-updates-optional)
-- [Cache Tags (Optional)](#cache-tags-optional)
-
----
+- Core
+- Web Previews (Optional)
+- Content Link (Optional)
+- Real-Time Updates (Optional)
+- Cache Tags (Optional)
 
 ## Core
 
@@ -68,9 +66,9 @@ export const GET: APIRoute = (event) => {
 
 Key points:
 
-- Uses `astro:env/server` for environment variables (type-safe env access)
+- Uses `astro:env/server` for env vars (type-safe)
 - Uses `event.redirect(url, 307)` for redirects (Astro's API context method)
-- Exports `GET` as an `APIRoute`
+- Exports `GET` as `APIRoute`
 - Import path alias: `~/lib/draftMode` (Astro uses `~` or `@` for src)
 
 ### Disable Endpoint
@@ -180,11 +178,11 @@ export function draftModeHeaders(): HeadersInit {
 
 Key points:
 
-- JWT payload is `{ enabled: true }` (same as SvelteKit)
+- JWT payload `{ enabled: true }` (same as SvelteKit)
 - Cookie name from `astro:env/client`, JWT secret from `astro:env/server`
-- `partitioned: true` is spread with a cast `as AstroCookieSetOptions` because Astro's cookie types may not include `partitioned` yet
+- `partitioned: true` spread with cast `as AstroCookieSetOptions` (Astro's types may not include it)
 - `isDraftModeEnabled` accepts both `APIContext` (API routes) and `AstroCookies` (Astro components via `Astro.cookies`)
-- Cookie value is accessed via `cookie.value` (Astro's `AstroCookie` object, not a raw string)
+- Cookie value accessed via `cookie.value` (Astro's `AstroCookie` object, not raw string)
 
 ### Utils
 
@@ -259,14 +257,14 @@ export function isRelativeUrl(path: string) {
 
 Key points:
 
-- Astro does NOT have a built-in `json()` response helper, so we define our own using `new Response(JSON.stringify(...))`
+- Astro does NOT have built-in `json()` helper, define custom one using `new Response(JSON.stringify(...))`
 - Same `withCORS`, `handleUnexpectedError`, `isRelativeUrl` pattern as other frameworks
 
 ### Query Function Modification
 
 **File:** `src/lib/datocms/executeQuery.ts`
 
-If the project already has an `executeQuery` wrapper, modify it. If not, create this file:
+If project already has `executeQuery` wrapper, modify it. If not, create this file:
 
 ```ts
 import { executeQuery as libExecuteQuery } from '@datocms/cda-client';
@@ -315,7 +313,7 @@ const data = await executeQuery(myQuery, {
 
 ### Astro Config Additions
 
-Add the following to `astro.config.mjs`:
+Add to `astro.config.mjs`:
 
 ```js
 import { defineConfig, envField } from 'astro/config';
@@ -355,11 +353,11 @@ export default defineConfig({
 
 Key points:
 
-- `output: 'server'` — Required for API routes to work (Astro defaults to static)
+- `output: 'server'` — Required for API routes (Astro defaults to static)
 - `env.schema` — Defines type-safe env vars with `envField.string()`
-  - `context: 'server'` + `access: 'secret'` → only available server-side via `astro:env/server`
-  - `context: 'client'` + `access: 'public'` → available on both client and server via `astro:env/client`
-- `validateSecrets: true` — Validates that all secret env vars are set at startup
+  - `context: 'server'` + `access: 'secret'` → server-only via `astro:env/server`
+  - `context: 'client'` + `access: 'public'` → client+server via `astro:env/client`
+- `validateSecrets: true` — Validates all secret env vars at startup
 
 ### Core Environment Variables
 
@@ -382,8 +380,6 @@ Required (install if missing):
 Optional for Web Previews helpers:
 
 - `@datocms/cma-client` — For `RawApiTypes`
-
----
 
 ## Web Previews (Optional)
 
@@ -462,8 +458,8 @@ export const POST: APIRoute = async ({ url, request }) => {
 
 Key points:
 
-- **Astro uses `itemType.attributes.api_key`** (the model's API key string like `'blog_post'`), NOT the model ID. This differs from Next.js/Nuxt/SvelteKit which use the numeric model ID — the `api_key` approach is preferred because it is human-readable and stable across environments
-- Uses the custom `json()` helper from utils
+- **Astro uses `itemType.attributes.api_key`** (model's API key string like `'blog_post'`), NOT numeric model ID. Differs from Next.js/Nuxt/SvelteKit — `api_key` approach preferred (human-readable, stable)
+- Uses custom `json()` helper from utils
 
 ### `recordToWebsiteRoute`
 
@@ -505,11 +501,11 @@ export function recordToWebsiteRoute(
 Key points:
 
 - **Switches on API key strings** (e.g., `'page'`, `'blog_post'`), NOT model IDs
-- This is different from Next.js, Nuxt, and SvelteKit which use model IDs
+- Different from Next.js, Nuxt, SvelteKit which use model IDs
 
 ### Astro Config Web Previews Addition
 
-Add the security config to `astro.config.mjs` to allow DatoCMS to POST to the preview-links endpoint:
+Add security config to `astro.config.mjs` to allow DatoCMS to POST to preview-links endpoint:
 
 ```js
 export default defineConfig({
@@ -524,22 +520,20 @@ export default defineConfig({
 
 ### Web Previews Dependencies
 
-No additional dependencies beyond what Core requires.
-
----
+No additional dependencies beyond Core.
 
 ## Content Link (Optional)
 
 ### Query Function Content Link Addition
 
-Modify the `executeQuery` function from the Core section to add Content Link support. Add these two options inside the `libExecuteQuery` call:
+Modify `executeQuery` function from Core section to add Content Link support. Add these two options inside `libExecuteQuery` call:
 
 ```ts
 contentLink: options?.includeDrafts ? 'v1' : undefined,
 baseEditingUrl: options?.includeDrafts ? DATOCMS_BASE_EDITING_URL : undefined,
 ```
 
-The full query function with Content Link enabled:
+Full query function with Content Link enabled:
 
 ```ts
 import { executeQuery as libExecuteQuery } from '@datocms/cda-client';
@@ -576,7 +570,7 @@ type ExecuteQueryOptions<Variables> = {
 
 ### Astro Config Content Link Addition
 
-Add the `DATOCMS_BASE_EDITING_URL` env field to the Astro config:
+Add `DATOCMS_BASE_EDITING_URL` env field to Astro config:
 
 ```js
 export default defineConfig({
@@ -594,7 +588,7 @@ export default defineConfig({
 
 ### ContentLink Component Setup
 
-Create an Astro component that initializes Content Link. Since Astro uses MPA (multi-page app) routing by default, client-side routing support via `onNavigateTo` / `setCurrentPath` is typically not needed. Use an inline `<script>` to initialize the controller:
+Create Astro component that initializes Content Link. Astro uses MPA routing by default, client-side routing via `onNavigateTo` / `setCurrentPath` typically not needed. Use inline `<script>` to initialize controller:
 
 **File:** `src/components/ContentLink.astro`
 
@@ -609,7 +603,7 @@ Create an Astro component that initializes Content Link. Since Astro uses MPA (m
 </script>
 ```
 
-Then add it to your layout, only rendering when draft mode is enabled:
+Add to layout, only render when draft mode enabled:
 
 ```astro
 ---
@@ -627,11 +621,11 @@ const draftMode = isDraftModeEnabled(Astro.cookies);
 </html>
 ```
 
-**Note:** If using Astro with View Transitions or a client-side router (e.g., `@astrojs/react` with React Router), add `onNavigateTo` and `setCurrentPath` routing support similar to the Next.js pattern. See `content-link-concepts.md` for the `createController()` API details.
+**Note:** If using Astro with View Transitions or client-side router (e.g., `@astrojs/react` with React Router), add `onNavigateTo` and `setCurrentPath` routing support similar to Next.js pattern. See `content-link-concepts.md` for `createController()` API details.
 
 ### Structured Text with Content Link
 
-When rendering Structured Text fields with `@datocms/astro`, wrap the component in a group and add boundaries to embedded blocks and inline records. The `@datocms/astro` `StructuredText` component uses named props for custom renderers:
+When rendering Structured Text fields with `@datocms/astro`, wrap component in group and add boundaries to embedded blocks and inline records. `@datocms/astro` `StructuredText` component uses named props for custom renderers:
 
 ```astro
 ---
@@ -650,7 +644,7 @@ import InlineRecordComponent from './InlineRecordComponent.astro';
 </div>
 ```
 
-For the block and inline record components, add the boundary attribute at the component level:
+For block and inline record components, add boundary attribute at component level:
 
 **`BlockComponent.astro`:**
 
@@ -676,11 +670,11 @@ const { record } = Astro.props;
 </span>
 ```
 
-Note: `renderLinkToRecord` does **not** need a boundary — record links wrap text that belongs to the structured text field, so clicking them correctly opens the structured text field editor.
+Note: `renderLinkToRecord` does **not** need boundary — record links wrap text belonging to structured text field, clicking them opens structured text field editor.
 
 ### Non-Text Field Example
 
-For fields that cannot contain stega encoding (numbers, booleans, dates, JSON), use `data-datocms-content-link-url` with the record's `_editingUrl`:
+For fields that cannot contain stega encoding (numbers, booleans, dates, JSON), use `data-datocms-content-link-url` with record's `_editingUrl`:
 
 ```graphql
 query {
@@ -700,7 +694,7 @@ query {
 
 ### CSP Header for Web Previews Visual Tab
 
-To allow your site to be loaded in the Web Previews Visual tab iframe, add a Content-Security-Policy header. In Astro, use middleware:
+Allow site to load in Web Previews Visual tab iframe, add Content-Security-Policy header. In Astro, use middleware:
 
 **File:** `src/middleware.ts`
 
@@ -721,7 +715,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
 ### Stega Stripping
 
-Content Link embeds invisible characters in text fields. Use `stripStega()` from `@datocms/content-link` before string comparisons, SEO metadata, analytics, or URL generation. See `content-link-concepts.md` for full details and examples.
+Content Link embeds invisible characters in text fields. Use `stripStega()` from `@datocms/content-link` before string comparisons, SEO metadata, analytics, or URL generation. See `content-link-concepts.md` for full details.
 
 ### Content Link Environment Variables
 
@@ -733,11 +727,9 @@ DATOCMS_BASE_EDITING_URL=             # For Content Link, e.g. https://your-proj
 
 - `@datocms/content-link` — For click-to-edit overlays and stega utilities
 
----
-
 ## Real-Time Updates (Optional)
 
-For real-time updates in draft mode, create a wrapper around `@datocms/astro`'s `QueryListener`:
+For real-time updates in draft mode, create wrapper around `@datocms/astro`'s `QueryListener`:
 
 ### `DraftModeQueryListener` Component
 
@@ -777,7 +769,7 @@ const draftModeEnabled = isDraftModeEnabled(Astro.cookies);
 }
 ```
 
-**Note: Combining with Content Link** — If the user also selected Content Link, add these props to the `QueryListener`:
+**Note: Combining with Content Link** — If user also selected Content Link, add these props to `QueryListener`:
 
 ```astro
 contentLink="v1"
@@ -806,32 +798,30 @@ const data = await executeQuery(myQuery, {
 
 Key points:
 
-- Only renders the `QueryListener` when draft mode is enabled
+- Only renders `QueryListener` when draft mode enabled
 - Automatically injects `token`, `includeDrafts`, `excludeInvalid`
-- The `Props` type omits these fields so callers cannot override them
-- Uses `@datocms/astro` package for the `QueryListener` component
+- `Props` type omits these fields so callers cannot override them
+- Uses `@datocms/astro` package for `QueryListener` component
 
 ### Real-Time Dependencies
 
 - `@datocms/astro` — For `QueryListener` component
 
----
-
 ## Cache Tags (Optional)
 
-CDN-first cache tag invalidation for Astro. Instead of revalidating all content on every change, this forwards DatoCMS cache tags to your CDN, which purges only the affected pages when content changes.
+CDN-first cache tag invalidation for Astro. Forwards DatoCMS cache tags to CDN, purges only affected pages when content changes.
 
 ### When to Use
 
-- Your Astro site is deployed behind a CDN that supports tag-based purging (Netlify, Cloudflare, Fastly, Bunny)
-- You want per-record granularity in cache invalidation
-- Your Astro config uses `output: 'server'` or `output: 'hybrid'` (SSR is required to set response headers)
+- Astro site deployed behind CDN supporting tag-based purging (Netlify, Cloudflare, Fastly, Bunny)
+- Per-record granularity in cache invalidation needed
+- Astro config uses `output: 'server'` or `output: 'hybrid'` (SSR required to set response headers)
 
-For the webhook payload structure and CDN header table, see `skills/datocms-cda/references/draft-caching-environments.md` → "Cache Tags".
+For webhook payload structure and CDN header table, see `skills/datocms-cda/references/draft-caching-environments.md` → "Cache Tags".
 
 ### Modified Query Function
 
-Switch from `executeQuery` to `rawExecuteQuery` to access the `x-cache-tags` response header:
+Switch from `executeQuery` to `rawExecuteQuery` to access `x-cache-tags` response header:
 
 **File:** `src/lib/datocms/executeQuery.ts`
 
@@ -870,7 +860,7 @@ type ExecuteQueryWithCacheTagsOptions<Variables> = {
 
 ### Setting CDN Headers
 
-In `.astro` pages (SSR mode), use `Astro.response.headers.set()` to set the CDN-specific header:
+In `.astro` pages (SSR mode), use `Astro.response.headers.set()` to set CDN-specific header:
 
 ```astro
 ---
@@ -895,7 +885,7 @@ Astro.response.headers.set('Cache-Tag', cacheTags);
 
 **File:** `src/pages/api/invalidate-cache.ts`
 
-Receives the DatoCMS cache tag invalidation webhook and calls your CDN's purge API:
+Receives DatoCMS cache tag invalidation webhook and calls CDN's purge API:
 
 ```ts
 import type { APIRoute } from 'astro';
@@ -934,7 +924,7 @@ export const POST: APIRoute = async ({ request }) => {
 
 ### Astro Config Cache Tags Addition
 
-Add the webhook secret and CDN-specific env vars to `astro.config.mjs`:
+Add webhook secret and CDN-specific env vars to `astro.config.mjs`:
 
 ```js
 export default defineConfig({
@@ -970,4 +960,4 @@ CACHE_INVALIDATION_WEBHOOK_SECRET=   # Shared secret to verify webhook requests
 
 ### Cache Tags Dependencies
 
-No additional dependencies — `rawExecuteQuery` is provided by `@datocms/cda-client` which should already be installed.
+No additional dependencies — `rawExecuteQuery` provided by `@datocms/cda-client` (should already be installed).

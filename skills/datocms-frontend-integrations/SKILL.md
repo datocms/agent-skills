@@ -21,14 +21,9 @@ description: >-
 
 # DatoCMS Front-End Integrations Skill
 
-This skill is the shared front-end integration bundle for DatoCMS web projects. Prefer `datocms-setup` when the user wants one feature fully scaffolded end-to-end. Stay in this skill for:
+Shared front-end integration bundle. Prefer `datocms-setup` for single feature end-to-end. Stay here for mixed-feature, framework comparison, partial patching, companion-reference loading.
 
-- mixed-feature tasks touching multiple front-end concerns
-- framework comparison or API-shape questions
-- partial patching inside an existing custom integration
-- companion-reference loading for another DatoCMS skill
-
-When this skill helps scaffold setup-adjacent work, report the result as `scaffolded` when placeholders remain and `production-ready` only when the implementation no longer depends on unresolved project-specific values.
+Report `scaffolded` when placeholders remain, `production-ready` only when implementation no longer depends on unresolved project-specific values.
 
 ## Contents
 
@@ -39,52 +34,27 @@ When this skill helps scaffold setup-adjacent work, report the result as `scaffo
 - [Step 5: Verify](#step-5-verify)
 - [Cross-Skill Routing](#cross-skill-routing)
 
----
-
 ## Step 1: Detect Context (silent)
 
-If the project context is already established in this conversation (framework, UI stack, existing integrations, file structure), skip broad detection below. Re-inspect only when a question cannot be answered from prior context.
+Skip if context established. Only re-inspect when question can't be answered from prior context.
 
-Silently examine the project to determine setup and configuration.
+Silently examine:
 
-1. **Framework** — Read `package.json` and check for:
-   - `next` -> Next.js (App Router)
-   - `nuxt` -> Nuxt
-   - `@sveltejs/kit` -> SvelteKit
-   - `astro` -> Astro
-   - `@remix-run/` -> Remix
-   - otherwise infer whether the project is React-based, Vue-based, or another stack
-2. **UI stack** — Determine which library the project actually uses for Dato rendering:
-   - React-based -> `react-datocms`
-   - Vue-based -> `vue-datocms`
-   - SvelteKit / Svelte -> `@datocms/svelte`
-   - Astro without React integration -> `@datocms/astro`
-3. **Existing Dato helpers** — Search for:
-   - `@datocms/cda-client`
-   - an existing `executeQuery` wrapper
-   - existing image / Structured Text / SEO / video / search helpers
-   - environment variable files with Dato tokens or URLs
-4. **Existing integration markers** — Check whether the repo already has:
-   - draft mode endpoints
-   - preview-links endpoints
-   - Content Link mounting
-   - real-time subscription usage
-   - cache-tag forwarding or invalidation
-   - search routes or search helpers
-   - robots / sitemap routes
-5. **File structure** — Determine whether the project uses `src/` or root-level app directories
+1. **Framework** — `package.json`: `next` → Next.js App Router, `nuxt` → Nuxt, `@sveltejs/kit` → SvelteKit, `astro` → Astro, `@remix-run/` → Remix, or infer React/Vue/other
+2. **UI stack** — Dato rendering lib: React (`react-datocms`), Vue (`vue-datocms`), SvelteKit/Svelte (`@datocms/svelte`), Astro without React (`@datocms/astro`)
+3. **Existing Dato helpers** — `@datocms/cda-client`, query wrappers, image/Structured Text helpers, env vars
+4. **Existing integration markers** — draft mode endpoints, preview-links, Content Link, real-time subscriptions, cache-tag forwarding, search routes, robots/sitemap
+5. **File structure** — `src/` or root-level app directories
 
 ### Stop conditions
 
-- If the framework cannot be determined, ask the user which stack they are using.
-- If a requested integration already exists, inspect it and patch in place by default.
-- Only ask about full replacement when the current setup is clearly incompatible, broken, or the user explicitly asked for a rewrite.
-
----
+- Framework unclear → ask user
+- Integration exists → inspect and patch in place by default
+- Only ask about full replacement when clearly incompatible, broken, or user explicitly requested rewrite
 
 ## Step 2: Classify and Route
 
-Classify the user's request into one or more categories:
+Categorize into:
 
 | Category | When to select |
 | - | - |
@@ -104,7 +74,7 @@ Multiple categories can apply.
 
 ### Prefer the setup orchestrator for full single-feature scaffolding
 
-If the task is clearly "set up X end-to-end", route to `datocms-setup` instead of keeping all work in this bundle:
+Route to `datocms-setup` instead of keeping all work in this bundle:
 
 | Category | Route |
 | - | - |
@@ -115,36 +85,34 @@ If the task is clearly "set up X end-to-end", route to `datocms-setup` instead o
 | Video Player | `datocms-setup` for `video-player` |
 | SEO & Meta Tags | `datocms-setup` for `seo` |
 | Real-Time Updates | `datocms-setup` for `realtime` |
-| Visual Editing / Content Link | `datocms-setup` for `visual-editing` when the user means the full editor flow, or `content-link` when they explicitly want only overlays/stega wiring |
+| Visual Editing / Content Link | `datocms-setup` for `visual-editing` (full flow) or `content-link` (overlays/stega only) |
 | Site Search | `datocms-setup` for `site-search` |
 | Robots & Sitemaps | `datocms-setup` for `robots-sitemaps` |
 | Cache Tags | `datocms-setup` for `cache-tags` |
 
-Route to `datocms-setup` when the task is "set up X end-to-end from scratch" for a single feature. Stay here for multi-feature tasks, partial patching, framework comparisons, or when another skill explicitly depends on these references.
+Route to `datocms-setup` for "set up X end-to-end from scratch" (single feature). Stay here for multi-feature, partial patching, framework comparisons, or when another skill explicitly depends on these references.
 
-If the request says **visual editing** and clearly wants the full editorial flow, treat that as the bundled setup: draft mode + preview links + Content Link + real-time updates. Only route to `content-link` by itself when the user explicitly wants the overlay/stega piece in isolation.
+**visual editing** = full editorial flow (draft mode + preview links + Content Link + real-time). Route to `content-link` only when user explicitly wants overlay/stega in isolation.
 
 ### Questions
 
 Ask zero questions by default.
 
-Only ask when a safe implementation is blocked by something the repo cannot answer, such as:
+Only ask when blocked by something the repo cannot answer:
 
-- missing model-to-route mappings for preview or sitemap generation
+- missing model-to-route mappings for preview/sitemap
 - missing cache provider or purge-adapter choice
-- multiple competing renderers where patching the wrong one would be risky
+- multiple competing renderers where patching the wrong one is risky
 
-Otherwise proceed directly and call out unresolved values instead of stalling.
-
----
+Otherwise proceed and call out unresolved values instead of stalling.
 
 ## Step 3: Load References
 
-Read only what is needed from the `references/` directory next to this skill. Long files include a contents section at the top; preview that first, then load the relevant section.
+Read only what is needed from `references/` next to this skill. Long files include contents section at top; preview that first, then load relevant section.
 
 ### Component concept references
 
-Load the relevant concept file first — it contains shared GraphQL queries, field definitions, and patterns. Then load the framework-specific file for component APIs and props.
+Load concept file first (shared GraphQL queries, field definitions, patterns), then framework-specific file for component APIs/props.
 
 | Category | Concept file |
 | - | - |
@@ -217,11 +185,11 @@ Use `references/site-search-api.md` for Svelte / SvelteKit site-search work.
 | Real-Time Updates | `references/astro-realtime.md` |
 | Visual Editing / Content Link | `references/astro-content-link.md` |
 
-Use `references/site-search-api.md` for Astro site-search work. For Astro video, use the Mux web component directly or React integration when the project already has it.
+Use `references/site-search-api.md` for Astro site-search work. For Astro video, use Mux web component directly or React integration when project already has it.
 
 ### Generic search and crawl references
 
-Load these when the task is framework-agnostic, non-widget-based, or crawler-specific:
+Load for framework-agnostic, non-widget-based, or crawler-specific:
 
 - `references/site-search-api.md`
 - `references/robots-and-sitemaps.md`
@@ -232,84 +200,78 @@ When implementation work is involved, load:
 
 - `references/verification-checklists.md`
 
----
-
 ## Step 4: Generate or Patch Code
 
-Follow the loaded references and these shared rules:
+Follow loaded references and shared rules:
 
 ### Workflow rules
 
-- Respect existing abstractions and patch in place by default.
-- Prefer the focused setup skill when the task narrows to a single full scaffold.
-- Make targeted changes instead of full rewrites unless the current code is unusable.
+- Respect existing abstractions and patch in place by default
+- Prefer focused setup skill when task narrows to single full scaffold
+- Make targeted changes instead of full rewrites unless current code is unusable
 
 ### Security and environment rules
 
-- All secrets come from environment variables.
-- Validate a dedicated preview/webhook secret environment variable where draft mode or preview-links flows require it; preserve existing repo naming when present.
-- Use `isRelativeUrl()` for redirect validation.
-- Do not require authentication on draft-mode disable endpoints.
+- All secrets from environment variables
+- Validate dedicated preview/webhook secret env var where draft mode or preview-links flows require it; preserve existing repo naming when present
+- Use `isRelativeUrl()` for redirect validation
+- Do not require authentication on draft-mode disable endpoints
 
 ### Query-wrapper rules
 
-- Add or preserve an `includeDrafts` option for draft-aware querying.
-- Switch between published and draft CDA tokens based on that option.
-- Default to `excludeInvalid: true` for draft-aware wrapper patterns unless the task explicitly needs invalid records during schema work.
-- Enable the repo's existing `contentLink` mode (`'v1'` or `'vercel-v1'`) plus `baseEditingUrl` only in draft / visual-editing contexts.
+- Add or preserve `includeDrafts` option for draft-aware querying
+- Switch between published and draft CDA tokens based on that option
+- Default to `excludeInvalid: true` for draft-aware wrapper patterns unless task explicitly needs invalid records during schema work
+- Enable repo's existing `contentLink` mode (`'v1'` or `'vercel-v1'`) plus `baseEditingUrl` only in draft / visual-editing contexts
 
 ### Framework rules
 
-- Use native env and redirect APIs for the detected framework.
-- For Astro, always use `@datocms/astro/*` subpath imports.
-- Use the framework-appropriate component or helper API from the loaded reference, not a cross-framework pattern copied from memory.
+- Use native env and redirect APIs for detected framework
+- For Astro, always use `@datocms/astro/*` subpath imports
+- Use framework-appropriate component or helper API from loaded reference, not cross-framework pattern from memory
 
 ### TypeScript rules
 
-- No `as unknown as`.
-- Avoid unnecessary casts.
-- Prefer `import type { ... }` for type-only imports.
-- Let TypeScript infer types where it can.
+- No `as unknown as`
+- Avoid unnecessary casts
+- Prefer `import type { ... }` for type-only imports
+- Let TypeScript infer where it can
 
 ### Dependency rules
 
-- Install missing packages only when the task truly needs them.
-- Use `@mux/mux-player-react` for React video.
-- Use `@mux/mux-player` for Vue or Svelte video.
-- Use `@datocms/cma-client-browser` for React / Vue widget-based site search.
+- Install missing packages only when task truly needs them
+- Use `@mux/mux-player-react` for React video
+- Use `@mux/mux-player` for Vue or Svelte video
+- Use `@datocms/cma-client-browser` for React / Vue widget-based site search
 
 ### Search and crawl safety rules
 
-- Use explicit search index ids.
-- Use least-privilege public search tokens in the browser.
-- Keep sitemap output on the configured public domain only.
-- Order Dato crawler `Allow` rules before any catch-all `Disallow: /`.
+- Use explicit search index ids
+- Use least-privilege public search tokens in browser
+- Keep sitemap output on configured public domain only
+- Order Dato crawler `Allow` rules before any catch-all `Disallow: /`
 
-If customer-specific values such as route mappings, provider details, or index ids remain unresolved, leave clear placeholders and explicitly call out the missing inputs instead of presenting the work as fully ready.
-
----
+If customer-specific values (route mappings, provider details, index ids) remain unresolved, leave clear placeholders and explicitly call out missing inputs instead of presenting work as fully ready.
 
 ## Step 5: Verify
 
-Load `references/verification-checklists.md` and check only the sections relevant to the work you actually performed.
+Load `references/verification-checklists.md` and check only sections relevant to work you actually performed.
 
 At minimum, verify:
 
-- security, token handling, redirect validation, and environment-variable usage
-- query shapes, wrapper options, and framework-specific component APIs
+- security, token handling, redirect validation, environment-variable usage
+- query shapes, wrapper options, framework-specific component APIs
 - dependency choices and import paths
 - draft-only behavior stays draft-only
 - any remaining placeholders or customer-specific mappings are clearly called out
 
----
-
 ## Cross-Skill Routing
 
-Use companion skills when the task leaves this bundle's sweet spot:
+Use companion skills when task leaves this bundle's sweet spot:
 
 | Condition | Route to |
 | - | - |
-| Full single-feature scaffolding | `datocms-setup` with the matching recipe from Step 2 |
+| Full single-feature scaffolding | `datocms-setup` with matching recipe from Step 2 |
 | Shared CDA client wrapper or `executeQuery` baseline | `datocms-setup` for `cda-client` |
 | Writing or optimizing GraphQL queries for the CDA | `datocms-cda` |
 | Programmatic content management, schema changes, migration scripts, access control, or webhook creation via REST | `datocms-cma` |

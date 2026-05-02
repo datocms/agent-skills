@@ -1,18 +1,26 @@
-_Internal recipe for `datocms-setup`. Use this file only after the parent skill selects the `realtime` recipe and queues any prerequisites from `../../../references/recipe-manifest.json`._
+Internal recipe for `datocms-setup`. Use after parent skill selects `realtime` recipe and queues prerequisites from `../../../references/recipe-manifest.json`.
 
 # DatoCMS Real-Time Updates Setup
 
-You are an expert at setting up DatoCMS real-time content updates. This recipe generates the components and patterns needed for live content streaming in draft mode, so editors see content changes without page reload.
+Setup DatoCMS real-time updates. Generate components for live content streaming in draft mode.
 
-Follow these steps in order. Do not skip steps.
+Follow steps in order.
 
----
+## Contents
+
+- Step 1: Detect Context (silent)
+- Step 2: Ask Questions
+- Step 3: Load References
+- Step 4: Generate Code
+- Step 5: Install Dependencies
+- Step 6: Final handoff
+- Verification Checklist
 
 ## Step 1: Detect Context (silent)
 
-Silently examine the project:
+Examine project:
 
-Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
+Follow shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect recipe-specific signals below.
 
 1. **Framework** — Read `package.json` and check for:
    - `next` → Next.js (App Router)
@@ -38,8 +46,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 - If draft mode does not exist, record `draft-mode` as a prerequisite and continue after it is applied.
 - If realtime components already exist, inspect them first and update them in place by default. Only ask about full replacement if the current implementation is materially incompatible or the user explicitly wants a rewrite.
 
----
-
 ## Step 2: Ask Questions
 
 Infer first from the repo.
@@ -61,8 +67,6 @@ Only ask if one of these high-impact ambiguities remains after inspection:
    > "This repo already has more than one realtime-style wrapper. Which one should stay the source of truth? Recommended default: preserve the wrapper already paired with draft mode or the primary page shell. If you skip, I'll patch the strongest existing owner and list the alternatives under unresolved placeholders."
 
 Otherwise, proceed directly.
-
----
 
 ## Step 3: Load References
 
@@ -89,8 +93,6 @@ Read the relevant reference files. Load only what is needed.
 | Nuxt (Vue) | `../../../../datocms-frontend-integrations/references/vue-realtime.md` |
 | SvelteKit | `../../../../datocms-frontend-integrations/references/svelte-realtime.md` |
 | Astro | `../../../../datocms-frontend-integrations/references/astro-realtime.md` |
-
----
 
 ## Step 4: Generate Code
 
@@ -166,8 +168,6 @@ Recipe-specific env var names:
 
 Follow the file conflict rules in `../../../patterns/MANDATORY_RULES.md`.
 
----
-
 ## Step 5: Install Dependencies
 
 Install missing packages:
@@ -180,8 +180,6 @@ Install missing packages:
 | `@datocms/astro` | Astro (if not already installed) |
 
 Use the project's package manager (see `../../../patterns/MANDATORY_RULES.md`).
-
----
 
 ## Step 6: Final handoff
 
@@ -196,8 +194,6 @@ After generating all files, tell the user:
 Treat the result as `scaffolded` if the repo still depends on placeholder page-integration steps, missing draft-token values, or unresolved ownership of the realtime wrapper. Report `production-ready` only when at least one real page or reusable wrapper is wired end to end with intentional repo values.
 
 Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including an explicit `Unresolved placeholders` section.
-
----
 
 ## Verification Checklist
 

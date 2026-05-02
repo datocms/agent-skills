@@ -1,15 +1,17 @@
 # Plugin Configuration Screen Reference
 
-## Quick Navigation
-
-- `renderConfigScreen` basics
-- Read and save global parameters
-- Decide between plain React state and `react-final-form`
-- Read-only / informational config screens
-- `normalizeParameters()` for legacy parameter shapes
-- Permission and save notes
-
 The configuration screen lets plugin administrators set global parameters that apply across the entire plugin. It appears in the plugin's settings page in the DatoCMS Settings area.
+
+## Contents
+
+- Render Hook: `renderConfigScreen`
+- Reading Current Parameters
+- Saving Parameters
+- Pattern with `react-final-form`
+- Simpler Config Screen (without react-final-form)
+- Informational Config Screen
+- `normalizeParameters` Pattern
+- Key Notes
 
 ## Render Hook: `renderConfigScreen`
 

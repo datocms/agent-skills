@@ -6,14 +6,12 @@ See `site-search-concepts.md` for shared initialization options, state behavior,
 
 ## Contents
 
-- [Installation](#installation)
-- [Basic Usage](#basic-usage)
-- [Initialization Options](#initialization-options)
-- [Returned Data Shape](#returned-data-shape)
-- [Rendering Highlights](#rendering-highlights)
-- [Complete Example with Pagination](#complete-example-with-pagination)
-
----
+- Installation
+- Basic Usage
+- Initialization Options
+- Returned Data Shape
+- Rendering Highlights
+- Complete Example with Pagination
 
 ## Installation
 
@@ -22,8 +20,6 @@ Requires `@datocms/cma-client-browser` for API requests:
 ```bash
 npm install vue-datocms @datocms/cma-client-browser
 ```
-
----
 
 ## Basic Usage
 
@@ -59,8 +55,6 @@ const { state, error, data } = useSiteSearch({
 
 **Key difference from React:** State is reactive — use `v-model` for the query input and direct assignment (`state.query = ...`, `state.page = ...`) instead of setter functions (`state.setQuery()`, `state.setPage()`).
 
----
-
 ## Initialization Options
 
 See `site-search-concepts.md` for shared options. Vue additionally supports:
@@ -70,8 +64,6 @@ See `site-search-concepts.md` for shared options. Vue additionally supports:
 | `initialState.query` | string | `''` | Initial search query |
 | `initialState.locale` | string | `null` | Initial locale filter |
 | `initialState.page` | number | `0` | Initial page number |
-
----
 
 ## Returned Data Shape
 
@@ -117,8 +109,6 @@ type HighlightPiece = {
 - **`data`** — Search results, `undefined` while loading.
 - If both `error` and `data` are `undefined`/`null`, the form is loading — show a spinner.
 
----
-
 ## Rendering Highlights
 
 Use `titleHighlights` and `bodyHighlights` to render search match highlighting in templates:
@@ -149,8 +139,6 @@ Use `titleHighlights` and `bodyHighlights` to render search match highlighting i
   </div>
 </template>
 ```
-
----
 
 ## Complete Example with Pagination
 

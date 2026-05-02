@@ -4,17 +4,6 @@ Astro component for progressive/responsive images from DatoCMS, designed to work
 
 See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, and best practices.
 
-## Contents
-
-- [Setup](#setup)
-- [Out-of-the-Box Features](#out-of-the-box-features)
-- [GraphQL Query](#graphql-query)
-- [Basic Usage](#basic-usage)
-- [`<Image />` Props](#image-props)
-- [Key Differences from React and Svelte](#key-differences-from-react-and-svelte)
-
----
-
 ## Setup
 
 ```js
@@ -22,8 +11,6 @@ import { Image } from '@datocms/astro/Image';
 ```
 
 **Note:** `@datocms/astro` uses subpath imports — always import from `@datocms/astro/Image`, not from `@datocms/astro`.
-
----
 
 ## Out-of-the-Box Features
 
@@ -34,13 +21,9 @@ import { Image } from '@datocms/astro/Image';
 - Holds the image position so your page doesn't jump while images load
 - Uses either blur-up or background color techniques to show a preview of the image while it loads
 
----
-
 ## GraphQL Query
 
 See `image-concepts.md` for the full query, field definitions, and best practices.
-
----
 
 ## Basic Usage
 
@@ -75,8 +58,6 @@ const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
 <Image data={blogPost.cover.responsiveImage} />
 ```
 
----
-
 ## `<Image />` Props
 
 | Prop | Type | Default | Description |
@@ -91,8 +72,6 @@ const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
 | `usePlaceholder` | boolean | true | Whether to show blurred image placeholder |
 | `srcSetCandidates` | Array<number> | `[0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4]` | Width multipliers for auto-generated `srcset` (used when `data` has no `srcSet`) |
 | `referrerPolicy` | string | `no-referrer-when-downgrade` | Defines which referrer is sent when fetching the image |
-
----
 
 ## Key Differences from React and Svelte
 

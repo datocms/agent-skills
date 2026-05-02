@@ -4,19 +4,17 @@ Astro component for rendering DatoCMS [Structured Text (DAST)](https://www.datoc
 
 ## Contents
 
-- [Setup](#setup)
-- [Basic Usage](#basic-usage)
-- [Full GraphQL Fragment](#full-graphql-fragment)
-- [Custom Components (`__typename`-Keyed Objects)](#custom-components-typename-keyed-objects)
-- [Override Default Rendering of Nodes](#override-default-rendering-of-nodes)
-- [Override Default Rendering of Marks](#override-default-rendering-of-marks)
-- [Strict Props Type Checking](#strict-props-type-checking)
-- [Props Reference](#props-reference)
-- [Conditional Rendering with `isEmptyDocument`](#conditional-rendering-with-isemptydocument)
-- [Related Packages](#related-packages)
-- [Content Link Integration](#content-link-integration)
-
----
+- Setup
+- Basic Usage
+- Full GraphQL Fragment
+- Custom Components (`__typename`-Keyed Objects)
+- Override Default Rendering of Nodes
+- Override Default Rendering of Marks
+- Strict Props Type Checking
+- Props Reference
+- Conditional Rendering with `isEmptyDocument`
+- Related Packages
+- Content Link Integration
 
 ## Setup
 
@@ -25,8 +23,6 @@ import { StructuredText } from '@datocms/astro/StructuredText';
 ```
 
 **Note:** `@datocms/astro` uses subpath imports — always import from `@datocms/astro/StructuredText`, not from `@datocms/astro`.
-
----
 
 ## Basic Usage
 
@@ -56,8 +52,6 @@ const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
   <StructuredText data={blogPost.content} />
 </article>
 ```
-
----
 
 ## Full GraphQL Fragment
 
@@ -114,8 +108,6 @@ query {
 ```
 
 **Critical:** Always include `id` and `__typename` on every `links`, `blocks`, and `inlineBlocks` entry via `... on RecordInterface`. The component uses `__typename` to match records to components.
-
----
 
 ## Custom Components (`__typename`-Keyed Objects)
 
@@ -212,8 +204,6 @@ const { block } = Astro.props;
 </div>
 ```
 
----
-
 ## Override Default Rendering of Nodes
 
 Override default rendering for any node type using the `nodeOverrides` prop. Keys are DAST node type names, values are Astro components:
@@ -271,8 +261,6 @@ const { node } = Astro.props;
 </pre>
 ```
 
----
-
 ## Override Default Rendering of Marks
 
 Override how marks (bold, italic, etc.) render using the `markOverrides` prop:
@@ -302,8 +290,6 @@ import Strong from '~/components/Strong.astro';
 | `'highlight'` | `<mark>` | Highlighted text |
 | `'code'` | `<code>` | Inline code |
 
----
-
 ## Strict Props Type Checking
 
 Since Astro doesn't support generics-typed components, use `ensureValidStructuredTextProps()` to strictly validate that all possible block and linked record types are managed. This is especially useful with [gql.tada](https://gql-tada.0no.co/):
@@ -332,8 +318,6 @@ import { StructuredText, ensureValidStructuredTextProps } from '@datocms/astro/S
 />
 ```
 
----
-
 ## Props Reference
 
 | Prop | Type | Required | Description |
@@ -345,8 +329,6 @@ import { StructuredText, ensureValidStructuredTextProps } from '@datocms/astro/S
 | `inlineRecordComponents` | `Record<string, AstroComponent>` | Only if document has `inlineItem` nodes | Object keyed by `__typename` of inline records to render |
 | `nodeOverrides` | `Record<string, AstroComponent>` | No | Object keyed by DAST node type to override default rendering |
 | `markOverrides` | `Record<string, AstroComponent>` | No | Object keyed by mark type to override default mark rendering |
-
----
 
 ## Conditional Rendering with `isEmptyDocument`
 
@@ -365,8 +347,6 @@ import { isEmptyDocument } from 'datocms-structured-text-utils';
   )}
 </article>
 ```
-
----
 
 ## Related Packages
 
@@ -399,8 +379,6 @@ const html = toHtml(data.blogPost.content, {
   },
 });
 ```
-
----
 
 ## Content Link Integration
 

@@ -4,6 +4,16 @@ Use `datocms schema:inspect` whenever the agent or the user needs to know how a 
 
 This is the CLI counterpart of the remote-MCP `get_schema` tool — same data shape, same filters, runnable from the terminal once the project is linked.
 
+## Contents
+
+- Inputs to confirm before running commands
+- Command shape
+- Common patterns
+- Flags
+- Output shape
+- When to use it
+- Cross-skill routing
+
 ## Inputs to confirm before running commands
 
 Confirm these inputs when they are not already clear:
@@ -119,14 +129,14 @@ With `--include-nested-blocks`, `--include-referenced-models`, or `--include-emb
 Reach for `schema:inspect` whenever you need to **understand the project before acting**:
 
 - "What models are in this project?" — no-argument call.
-- "What fields does the blog\_post model have?" — `schema:inspect blog_post`.
+- "What fields does the blog_post model have?" — `schema:inspect blog_post`.
 - "Does `slug` have a `required` validator?" — `schema:inspect blog_post --include-validators`.
 - "What's the editor layout for this model?" — `schema:inspect blog_post --include-fieldsets --include-appearance`.
 - "Which models reference the `author` model?" — `schema:inspect article --include-referenced-models` (from the referring side), or inspect `author` on its own and then check the referencing side.
 - "Which models embed this block?" — `schema:inspect my_block --type=blocks_only --include-embedding-models`.
 - "What blocks are allowed inside this modular field?" — `schema:inspect parent_model --include-nested-blocks`.
 
-Prefer this command over composing equivalent `cma:call item_types list` / `fields list` invocations by hand — `schema:inspect` already handles fieldset grouping, nested-block walks, embedding lookups, and TOON-compact output in one shot.
+Prefer this command over composing equivalent `cma:call itemTypes list` / `fields list` invocations by hand — `schema:inspect` already handles fieldset grouping, nested-block walks, embedding lookups, and TOON-compact output in one shot.
 
 ## Cross-skill routing
 

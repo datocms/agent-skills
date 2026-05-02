@@ -6,8 +6,6 @@ This recipe is the orchestration layer for the full editorial preview experience
 
 See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
 
----
-
 ## Step 1: Detect Context (silent)
 
 Silently examine the project:
@@ -23,8 +21,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 3. **Vercel conflict signals** — inspect for Vercel Content Link / Edit Mode wiring so duplicate overlay systems are never enabled together.
 4. **Route and site-url helpers** — inspect existing route builders, public URL helpers, and site URL env vars.
 5. **Frontend count** — inspect whether the repo clearly serves one frontend or multiple frontends/environments.
-
----
 
 ## Step 2: Ask Questions
 
@@ -44,8 +40,6 @@ If Vercel Content Link / Edit Mode is already present and no earlier bundle deci
 
 > "This repo already appears to use Vercel Content Link / Edit Mode. Do you want to preserve that setup, replace it with DatoCMS Visual Editing, or switch only the side-by-side DatoCMS workflow on? Recommended default: preserve the existing Vercel setup unless you explicitly want DatoCMS side-by-side editing. If you skip, I'll preserve the Vercel overlays and avoid duplicate overlays."
 
----
-
 ## Step 3: Load References
 
 Always load:
@@ -57,8 +51,6 @@ Always load:
 - `../../../../datocms-frontend-integrations/references/realtime-concepts.md` only when the bundle decision includes real-time updates
 
 Do not load framework-specific implementation refs here unless you need them to resolve the bundle decision itself. The focused prerequisite recipes will load the exact framework refs they need.
-
----
 
 ## Step 4: Apply the bundle
 
@@ -77,8 +69,6 @@ Bundle rules:
 - never leave Vercel overlays and Dato overlays active simultaneously
 - if the repo already has one or more layers, extend them in place instead of rebuilding them
 
----
-
 ## Step 5: Final verification
 
 Treat the bundle as `scaffolded` if any selected layer is still scaffolded, any overlay conflict is unresolved, or any required route/token/base-editing-url value still depends on placeholders.
@@ -92,8 +82,6 @@ The manual check that matters most:
 3. confirm click-to-edit opens the intended field
 4. if Web Previews is enabled, confirm the side-by-side preview follows record/page navigation
 5. if real-time updates are enabled, confirm an editor change appears without a rebuild
-
----
 
 ## Step 6: Final handoff
 

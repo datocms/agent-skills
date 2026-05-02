@@ -2,6 +2,14 @@
 
 Lifecycle hooks run at specific moments in the DatoCMS workflow. They execute in the hidden boot iframe (no UI rendering) and can modify behavior, validate data, or perform side effects.
 
+## Contents
+
+- `onBoot`
+- `onBeforeItemUpsert`
+- `onBeforeItemsPublish`
+- `onBeforeItemsUnpublish`
+- `onBeforeItemsDestroy`
+
 ## `onBoot`
 
 Called once when the plugin first loads. Use for initialization, parameter migrations, and integrity checks. Runs in a hidden iframe — no UI rendering.

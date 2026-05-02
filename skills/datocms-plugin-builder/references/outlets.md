@@ -2,6 +2,12 @@
 
 Outlets are plugin-rendered areas that appear at the top of record editing forms and record collection (list) views. They are useful for displaying banners, status indicators, bulk action tools, or any custom UI above the standard content.
 
+## Contents
+
+- Item Form Outlets
+- Item Collection Outlets
+- Key Notes
+
 ## Item Form Outlets
 
 Appear at the top of a record's editing page.

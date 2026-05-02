@@ -2,7 +2,13 @@
 
 Covers `_seoMetaTags`, `faviconMetaTags`, `globalSeo`, and SEO field values.
 
----
+## Contents
+
+- `_seoMetaTags`
+- `faviconMetaTags`
+- `globalSeo`
+- SEO Field Values
+- Complete Example: SEO Head Tags
 
 ## `_seoMetaTags`
 
@@ -49,8 +55,6 @@ _seoMetaTags(locale: it) {
 }
 ```
 
----
-
 ## `faviconMetaTags`
 
 Available under `_site`. Returns favicon-related meta tags with a `variants` argument to select which types to include:
@@ -71,8 +75,6 @@ query {
 | `icon` | Standard favicon tags |
 | `appleTouchIcon` | Apple touch icon tags |
 | `msApplication` | Microsoft application tile tags |
-
----
 
 ## `globalSeo`
 
@@ -122,8 +124,6 @@ globalSeo(locale: en) {
 }
 ```
 
----
-
 ## SEO Field Values
 
 When a model has an explicit SEO field, query its raw values directly:
@@ -151,8 +151,6 @@ query {
 | `image` | `Upload` | Social sharing image |
 | `twitterCard` | `String` | Twitter card type |
 | `noIndex` | `Boolean` | Prevent search engine indexing |
-
----
 
 ## Complete Example: SEO Head Tags
 

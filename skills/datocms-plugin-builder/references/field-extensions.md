@@ -1,27 +1,28 @@
 # Field Extensions Reference
 
-## Quick Navigation
+Field extensions replace/augment default field editor. Two types: **editors** (replace default) and **addons** (appear below).
 
-- Manual vs override selection
-- `manualFieldExtensions` declaration
-- `overrideFieldExtensions` declaration
-- `asSidebarPanel` usage
-- `renderFieldExtension` patterns
-- Localized-field handling
-- Configurable extension patterns and gotchas
+## Contents
 
-Field extensions replace or augment the default field editor in the record editing form. There are two types: **editors** (replace the default editor) and **addons** (appear below the editor).
+- Choosing Between Manual and Override
+- Declaration: `manualFieldExtensions`
+- Override: `overrideFieldExtensions`
+- `asSidebarPanel` — Editor in Sidebar
+- Render: `renderFieldExtension`
+- Localized Fields
+- Gotchas
+- Configurable Field Extensions
 
 ## Choosing Between Manual and Override
 
-- **`manualFieldExtensions`** — the extension appears in field settings for users to install per-field. Use when: the extension is opt-in, applies to specific fields chosen by the user, or needs per-field configuration (`configurable: true`).
-- **`overrideFieldExtensions`** — the plugin programmatically applies the extension based on conditions (field type, model, validators, etc.). Use when: the extension should auto-apply to all matching fields, the user shouldn't need to configure each field individually, or you need conditional logic (e.g., "add character counter to all string fields with a length validator").
+- **`manualFieldExtensions`** — Extension appears in field settings for users to install per-field. Use when: opt-in, applies to specific fields chosen by user, or needs per-field config (`configurable: true`).
+- **`overrideFieldExtensions`** — Plugin programmatically applies extension based on conditions (field type, model, validators, etc.). Use when: should auto-apply to all matching fields, user shouldn't configure each field individually, or need conditional logic (e.g., "add character counter to all string fields with length validator").
 
-Both can coexist in the same plugin.
+Both can coexist.
 
 ## Declaration: `manualFieldExtensions`
 
-Declares field extensions that users can manually install on fields via the DatoCMS UI.
+Declares field extensions users can manually install on fields via DatoCMS UI.
 
 ```ts
 manualFieldExtensions(ctx: ManualFieldExtensionsCtx): ManualFieldExtension[]
@@ -68,7 +69,7 @@ connect({
 
 ## Override: `overrideFieldExtensions`
 
-Programmatically forces field extensions onto fields based on conditions — no manual installation needed. Called once per field.
+Programmatically forces field extensions onto fields based on conditions — no manual installation. Called once per field.
 
 ```ts
 overrideFieldExtensions(
@@ -133,7 +134,7 @@ connect({
 
 ## `asSidebarPanel` — Editor in Sidebar
 
-The `asSidebarPanel` option moves an editor field extension from the main form into a collapsible sidebar panel. The field's value is still stored in the original field, but the UI renders in the sidebar. This is useful for complex editors (e.g., notes, metadata, JSON editors) that benefit from more space or a secondary position.
+The `asSidebarPanel` option moves an editor field extension from main form into collapsible sidebar panel. Field's value is still stored in original field, but UI renders in sidebar. Useful for complex editors (notes, metadata, JSON) that benefit from more space or secondary position.
 
 ### Manual declaration
 
@@ -166,11 +167,11 @@ overrideFieldExtensions(field, ctx) {
 },
 ```
 
-The component rendered by `renderFieldExtension` is identical — it still receives `RenderFieldExtensionCtx` with `ctx.fieldPath`, `ctx.formValues`, `ctx.setFieldValue`, etc. The only difference is where the iframe appears.
+Component rendered by `renderFieldExtension` is identical — still receives `RenderFieldExtensionCtx` with `ctx.fieldPath`, `ctx.formValues`, `ctx.setFieldValue`. Only difference is where iframe appears.
 
 ## Render: `renderFieldExtension`
 
-Called when a field extension needs to be rendered. The `fieldExtensionId` matches the `id` from declaration/override.
+Called when field extension needs rendering. The `fieldExtensionId` matches the `id` from declaration/override.
 
 ```ts
 renderFieldExtension(fieldExtensionId: string, ctx: RenderFieldExtensionCtx): void
@@ -303,7 +304,7 @@ export default function ColorEditor({ ctx }: Props) {
 }
 ```
 
-**Important**: Editor extensions **must** respect `ctx.disabled`. When the field is disabled (e.g., due to workflow state or permissions), the editor should prevent all user input.
+**Important**: Editor extensions **must** respect `ctx.disabled`. When field is disabled (workflow state, permissions), editor should prevent all user input.
 
 ### Complete Addon Extension Example
 
@@ -364,7 +365,7 @@ export default function WordCount({ ctx }: Props) {
 
 ## Localized Fields
 
-When a field is localized (has multiple language versions), the value structure in `ctx.formValues` differs from non-localized fields.
+When field is localized (has multiple language versions), value structure in `ctx.formValues` differs from non-localized fields.
 
 ### How `ctx.fieldPath` Works
 
@@ -373,7 +374,7 @@ When a field is localized (has multiple language versions), the value structure 
 - Non-localized field: `ctx.fieldPath` → `"title"`
 - Localized field: `ctx.fieldPath` → `"title.en"` (or `"title.it"`, etc.)
 
-This means `get(ctx.formValues, ctx.fieldPath)` and `ctx.setFieldValue(ctx.fieldPath, value)` always work correctly regardless of whether the field is localized — the SDK resolves the path for you.
+This means `get(ctx.formValues, ctx.fieldPath)` and `ctx.setFieldValue(ctx.fieldPath, value)` always work regardless of whether field is localized — SDK resolves path for you.
 
 ### How `ctx.formValues` Stores Localized Fields
 
@@ -417,17 +418,17 @@ const isLocalized = ctx.field.attributes.localized;
 
 ## Gotchas
 
-- **`ctx.item` is `null` for new records**: When a user creates a new record (before the first save), `ctx.item` is `null`. Always guard against this: `if (ctx.item) { ... }`. After the first save, `ctx.item` is populated.
+- **`ctx.item` is `null` for new records**: When user creates new record (before first save), `ctx.item` is `null`. Always guard: `if (ctx.item) { ... }`. After first save, `ctx.item` is populated.
 
-- **Editor extensions must respect `ctx.disabled`**: When `ctx.disabled` is `true` (due to workflow state, permissions, or record locking), the editor **must** prevent all user input. This is a correctness requirement — without it, users can edit locked records.
+- **Editor extensions must respect `ctx.disabled`**: When `ctx.disabled` is `true` (workflow state, permissions, record locking), editor **must** prevent all user input. Correctness requirement — without it, users can edit locked records.
 
-- **ctx recreation in iframes**: The `ctx` object is recreated on every message from the parent window, triggering `useEffect` even when values appear identical. Use `useDeepCompareEffect` from `use-deep-compare-effect` instead of `useEffect` when depending on `ctx` properties. See `sdk-architecture.md` for details.
+- **ctx recreation in iframes**: The `ctx` object is recreated on every message from parent window, triggering `useEffect` even when values appear identical. Use `useDeepCompareEffect` from `use-deep-compare-effect` instead of `useEffect` when depending on `ctx` properties. See `sdk-architecture.md`.
 
-- **`toggleField()` destroys plugin iframes**: When a field is hidden via `ctx.toggleField(path, false)`, its plugin iframes are **completely destroyed**. When the field is shown again, the iframes are recreated from scratch — all React state is lost. If you need to persist state across visibility changes, store it in plugin parameters or outside the React tree.
+- **`toggleField()` destroys plugin iframes**: When field is hidden via `ctx.toggleField(path, false)`, its plugin iframes are **completely destroyed**. When field is shown again, iframes are recreated from scratch — all React state is lost. If you need to persist state across visibility changes, store it in plugin parameters or outside React tree.
 
-- **Avoid Editor extensions for Modular Content, Single Block, and Structured Text fields**: Use Addon extensions instead. Editor extensions for these field types require reimplementing the rendering and update logic for all contained fields and blocks. See `form-values.md` for working with these field types programmatically.
+- **Avoid Editor extensions for Modular Content, Single Block, and Structured Text fields**: Use Addon extensions instead. Editor extensions for these field types require reimplementing rendering and update logic for all contained fields and blocks. See `form-values.md` for working with these field types programmatically.
 
-- **`formValuesToItem()` returns `undefined`**: If required nested blocks aren't loaded, this method returns `undefined` rather than throwing. Always check the return value.
+- **`formValuesToItem()` returns `undefined`**: If required nested blocks aren't loaded, this method returns `undefined` rather than throwing. Always check return value.
 
 ## Configurable Field Extensions
 
@@ -435,7 +436,7 @@ When `configurable: true`, two additional hooks are needed:
 
 ### `renderManualFieldExtensionConfigScreen`
 
-Renders the per-field configuration form in the field settings modal.
+Renders per-field configuration form in field settings modal.
 
 ```ts
 renderManualFieldExtensionConfigScreen(
@@ -459,7 +460,7 @@ ctx.setParameters(params) // set new parameter values
 
 ### `validateManualFieldExtensionParameters`
 
-Validates parameters whenever they change. Return an object with error messages (empty object = valid).
+Validates parameters whenever they change. Return object with error messages (empty object = valid).
 
 ```ts
 validateManualFieldExtensionParameters(

@@ -1,60 +1,68 @@
 # Direct CMA Calls
 
-Use `cma:call` for single-method Content Management API operations from the terminal when a reusable script would be overkill.
+Use `cma:call` for single-method CMA operations from terminal. Reusable script overkill? Use this.
 
-The command surface is **dynamic**: available resources and methods reflect the `@datocms/cma-client` version installed in the project. Always use the discovery commands below rather than guessing resource/method pairs.
+Command surface **dynamic**: resources/methods match installed `@datocms/cma-client` version. Always discover first — never guess.
 
-> **Related:** For multi-step or typed TypeScript logic that still does not need to live in the repo (loops, branching, dependent calls, `Schema.*` record types), reach for `cma:script` instead — stdin-mode for heredocs and pipes, file-mode for longer scripts in a scratch dir. See `cma-script.md`.
+> **Related:** Multi-step/typed/looping/branching/dependent calls? Use `cma:script` — stdin-mode for heredocs/pipes, file-mode for longer scratch scripts. See `cma-script.md`.
 
----
+## Contents
+
+- Inputs to confirm before running commands
+- Command Shape
+- Resource and Method Discovery
+- Operation Safety Levels
+- Path Arguments
+- JSON5 Support for --data and --params
+- Core Patterns by Example
+- Commonly Used Resources
+- Pagination
+- Output and Scripting
+- When to Escalate
 
 ## Inputs to confirm before running commands
 
-When unsure about the exact request shape for a resource/action, run `npx datocms cma:docs <resource> <action>` first to look up the endpoint details.
+Unsure about request shape? Run `npx datocms cma:docs <resource> <action>` first.
 
-Pick the right tool for the shape of the task:
+Pick tool:
 
-- **`cma:call`** — a single CMA call with a shape you can read from `cma:docs`. Fastest path (direct HTTP request, no workspace cold-start) and the most discoverable (resource/method/body map 1:1 to the docs output).
-- **`cma:script` stdin-mode** — anything one-off that needs loops, branching, dependent calls, or typed `Schema.*` payloads. Piped or heredoc, ambient `client` / `Schema`, zero setup. See `cma-script.md`.
-- **`cma:script` file-mode** — same throwaway scenario as stdin-mode, but the script is long enough that heredoc quoting hurts, imports local helpers, or should be rerunnable by filename. Lives in a gitignored scratch dir.
-- **Migration** — switch to `migrations:new` when the code should be committed, versioned, and replayed across environments.
-- **Checked-in `buildClient()` script (datocms-cma)** — switch when the code will run **unattended** (CI, app server, webhook, long-lived automation) and needs a CMA token in the environment.
+- **`cma:call`** — single call, shape from `cma:docs`. Fastest path, most discoverable.
+- **`cma:script` stdin-mode** — one-off needs loops/branching/dependent calls/typed `Schema.*`. Piped/heredoc, ambient `client`/`Schema`, zero setup. See `cma-script.md`.
+- **`cma:script` file-mode** — throwaway but too long for heredoc, needs imports, or rerunnable by filename. Gitignored scratch dir.
+- **Migration** — commit/version/replay across environments? `migrations:new`.
+- **Checked-in `buildClient()` script (datocms-cma)** — unattended runtime (CI/app server/webhook/automation) needs env token.
 
-Confirm these inputs when they are not already clear:
+Confirm:
 
-- resource + method (for `cma:call`) or script scope (for `cma:script`)
-- required positional path args (for `cma:call`)
-- whether the call needs `--data`, `--params`, or `--environment`
-- whether the operation is read-only (list/find — safe), mutating (create/update/publish — confirm environment), or destructive (destroy/bulk\_destroy/promote — always confirm target)
-- whether this is truly a one-off CLI invocation or should become reusable CMA code
-
----
+- resource + method (`cma:call`) or script scope (`cma:script`)
+- required positional path args (`cma:call`)
+- needs `--data`, `--params`, `--environment`?
+- read-only (safe), mutating (confirm env), or destructive (always confirm target)
+- one-off CLI or reusable CMA code
 
 ## Command Shape
 
 ```bash
-npx datocms cma:call <RESOURCE> <METHOD> [...pathArgs] [--data '...'] [--params '...'] [--environment <env>]
+npx datocms cma:call <resourceCamelCase> <methodCamelCase> [...pathArgs] [--data '...'] [--params '...'] [--environment <env>]
 ```
 
 ### Flags
 
 | Flag | Description |
 | - | - |
-| `--data <value>` | JSON or JSON5 string for the request body (create/update operations) |
-| `--params <value>` | JSON or JSON5 string for query parameters (filtering, pagination) |
-| `-e, --environment <value>` | Target a specific environment |
-| `--json` | Machine-readable JSON output (useful for piping) |
-| `--api-token <value>` | Override the API token for this call |
-| `--profile <value>` | Use a specific CLI profile |
-| `--log-level <level>` | NONE, BASIC, BODY, or BODY\_AND\_HEADERS |
-
----
+| `--data <value>` | JSON/JSON5 string for request body (create/update) |
+| `--params <value>` | JSON/JSON5 string for query params (filtering, pagination) |
+| `-e, --environment <value>` | Target specific environment |
+| `--json` | Machine-readable JSON output (piping) |
+| `--api-token <value>` | Override API token for this call |
+| `--profile <value>` | Use specific CLI profile |
+| `--log-level <level>` | NONE, BASIC, BODY, or BODY_AND_HEADERS |
 
 ## Resource and Method Discovery
 
 ### `cma:docs` — Browse full API reference
 
-Use `cma:docs` to get detailed, up-to-date documentation about any CMA endpoint directly in the terminal. Always reflects the installed client version — never stale.
+Use `cma:docs` for detailed, up-to-date terminal docs. Always matches installed client — never stale.
 
 ```bash
 # List all available resources
@@ -81,85 +89,77 @@ npx datocms cma:docs items create --types-depth 4
 
 | Flag | Description |
 | - | - |
-| `--expand <summary>` | Expand a collapsed `<details>` section by its summary text (repeatable) |
-| `--expand-types <name>` | Inline full TS declarations for referenced types. Pass `*` for everything reachable, or specific type names (repeatable) |
-| `--types-depth <n>` | Walk depth for the "Not expanded" type list when `--expand-types` is omitted (default 2) |
+| `--expand <summary>` | Expand collapsed `<details>` by summary text (repeatable) |
+| `--expand-types <name>` | Inline full TS declarations for referenced types. `*` for everything reachable, or specific names (repeatable) |
+| `--types-depth <n>` | Walk depth for "Not expanded" type list without `--expand-types` (default 2) |
 
-**Resource names are camelCase** in `cma:docs`, matching the JS client surface: `itemTypes` (not `item_types`), `scheduledPublication`, `uploadSmartTags`, `buildTriggers`, `auditLogEvents`, etc. Same camelCase appears on the client (`client.itemTypes.create`, `client.scheduledPublication.create`, …). When unsure, run `npx datocms cma:docs` with no args to list every resource.
+**Resource names camelCase** in `cma:docs`, matching JS client: `itemTypes` (not `item_types`), `scheduledPublication`, `uploadSmartTags`, `buildTriggers`, `auditLogEvents`. Same camelCase on client (`client.itemTypes.create`, etc.). Unsure? Run `npx datocms cma:docs` (no args) for full list.
 
-When the task is to write a typed mutation (`buildBlockRecord<Schema.X>`, `client.items.create<Schema.X>`, etc.), consider passing `--types-depth 2` (or higher) to surface a deeper "Not expanded" type list, or `--expand-types <SpecificType>` to inline a single declaration. Reach for `--expand-types "*"` only as a last resort — its output is verbose.
+Writing typed mutations? Consider `--types-depth 2`+ for deeper type list, or `--expand-types <SpecificType>` to inline one declaration. `--expand-types "*"` is verbose — last resort.
 
-This is the recommended way to look up endpoint details — request body schemas, required fields, query parameters, response shapes, and TS signatures — before constructing a `cma:call` command or writing CMA client code.
+Recommended way to look up: request body schemas, required fields, query params, response shapes, TS signatures before constructing `cma:call` or CMA client code.
 
 ### `cma:call --help` — Quick resource/method listing
-
-For a quick listing of available resources and methods:
 
 ```bash
 # List all available resources
 npx datocms cma:call --help
 
 # List all methods for a specific resource
-npx datocms cma:call <RESOURCE> --help
+npx datocms cma:call <resourceCamelCase> --help
 ```
 
-The CLI provides helpful suggestions when a resource or method name is not found, including a list of valid options.
+CLI suggests valid options when resource/method not found.
 
 ### Naming Convention
 
-`cma:call` accepts flexible resource naming — snake\_case (`item_types`), camelCase (`itemTypes`), and bare (`itemtypes`) all work. Matching is case-insensitive and ignores underscores/hyphens.
-
-> **CLI vs JavaScript mapping:** `cma:call` resource names correspond to the camelCase namespace on the JavaScript CMA client (e.g., `item_types` on the CLI = `client.itemTypes` in code).
-
----
+Prefer **camelCase** in examples (`itemTypes`, `accessTokens`, `bulkPublish`) — matches JS CMA client namespace exactly (`client.itemTypes.create`). `cma:call` also accepts snake_case (`item_types`), bare (`itemtypes`), case-insensitive, ignores underscores/hyphens — but stick to camelCase for consistency with `cma:docs` and client code.
 
 ## Operation Safety Levels
 
-Every `cma:call` operation falls into one of three categories. Classify the user's intent before proposing commands:
+Every `cma:call` is one category. Classify intent first.
 
-### Read-only (safe to run without confirmation)
+### Read-only (safe — no confirmation needed)
 
-Methods that never modify data — always safe:
+Never modifies data:
 
 - `list`, `find`, `references`, `related`, `referencing`, `query`
-- `fields` (on plugins — lists fields using a plugin)
-- `find_me` (on users)
-- `maintenance_mode find`, `site find`, `public_info find`
+- `fields` (plugins — lists fields using plugin)
+- `findMe` (users)
+- `maintenanceMode find`, `site find`, `publicInfo find`
 
 ### Mutating (reversible — confirm target environment)
 
-Methods that create or modify data, but the changes can typically be undone:
+Creates/modifies data, typically undoable:
 
 - `create`, `update`, `duplicate`, `publish`, `unpublish`
-- `bulk_publish`, `bulk_unpublish`, `bulk_move_to_stage`
+- `bulkPublish`, `bulkUnpublish`, `bulkMoveToStage`
 - `activate`, `deactivate` (maintenance mode)
 - `trigger`, `abort`, `reindex` (build triggers)
 - `reorder` (menu items, schema menu items, upload collections)
-- `resend` (invitations), `resend_webhook` (webhook calls)
-- `regenerate_token` (access tokens — old token stops working)
+- `resend` (invitations), `resendWebhook` (webhooks)
+- `regenerateToken` (access tokens — old token stops working)
 
-### Destructive (irreversible — always confirm before proposing)
+### Destructive (irreversible — always confirm first)
 
-Methods that permanently delete data or replace environments:
+Permanently deletes or replaces environments:
 
-- `destroy` on any resource (`items`, `item_types`, `fields`, `uploads`, `environments`, `roles`, `webhooks`, `access_tokens`, `plugins`, etc.)
-- `bulk_destroy` (`items`, `uploads`)
-- `environments promote` (replaces the current primary environment)
-- `environments rename` (may break references to old ID)
+- `destroy` on any resource (`items`, `itemTypes`, `fields`, `uploads`, `environments`, `roles`, `webhooks`, `accessTokens`, `plugins`, etc.)
+- `bulkDestroy` (`items`, `uploads`)
+- `environments promote` (replaces current primary)
+- `environments rename` (may break old ID references)
 
-### Schema changes need an approach decision first
+### Schema changes need approach decision first
 
-`create` / `update` / `destroy` on `item_types`, `fields`, `fieldsets`, or block models are **schema changes**. Before proposing a `cma:call` for any of them, confirm with the user:
+`create`/`update`/`destroy` on `itemTypes`, `fields`, `fieldsets`, or block models = **schema changes**. Before proposing `cma:call`, confirm:
 
-- Migration script (default) or direct change via `cma:call`?
-- If direct: sandbox or primary environment?
-- Skipping the migration path means no review, no dry-run, no reproducibility. Direct changes against the primary environment require an explicit user confirmation.
-
----
+- Migration script (default) or direct `cma:call`?
+- If direct: sandbox or primary?
+- Skipping migration = no review, no dry-run, no reproducibility. Direct primary changes need explicit user confirmation.
 
 ## Path Arguments
 
-Some methods require positional arguments after the method name. These map to URL placeholders in the API endpoint.
+Some methods need positional args after method name. Map to URL placeholders.
 
 ```bash
 # find / update / destroy require the entity ID
@@ -172,16 +172,14 @@ npx datocms cma:call fields create <ITEM_TYPE_ID> --data '{label: "Title", api_k
 
 # Some need both parent and entity ID
 npx datocms cma:call fields update <ITEM_TYPE_ID> <FIELD_ID> --data '{label: "New Label"}'
-npx datocms cma:call upload_tracks create <UPLOAD_ID> --data '{...}'
+npx datocms cma:call uploadTracks create <UPLOAD_ID> --data '{...}'
 ```
 
-The CLI validates argument count and shows the required placeholder names when too few or too many are provided.
-
----
+CLI validates arg count, shows required placeholder names on mismatch.
 
 ## JSON5 Support for --data and --params
 
-Both flags accept **JSON5** syntax, which is more shell-friendly than strict JSON:
+Both accept **JSON5** — more shell-friendly than strict JSON:
 
 ```bash
 # JSON5: unquoted keys (avoids shell quote escaping)
@@ -195,24 +193,22 @@ JSON5 allows: unquoted keys, trailing commas, single-quoted strings, comments.
 
 ### Shell Quoting
 
-Wrap `--data` / `--params` values in **single quotes** to prevent shell interpolation. Use double quotes only inside the JSON:
+Wrap `--data`/`--params` in **single quotes** to prevent shell interpolation. Double quotes only inside JSON:
 
 ```bash
 # Correct — single quotes outside
 npx datocms cma:call items create --data '{item_type: {type: "item_type", id: "blog_post"}, title: "Hello"}'
 ```
 
----
-
 ## Core Patterns by Example
 
-These four patterns cover the vast majority of `cma:call` usage. The resource and field names change, but the shapes are consistent across all 44 resources.
+Four patterns cover most `cma:call` usage. Resources/fields change, shapes consistent across all 44.
 
 ### Pattern 1: List + filter + paginate (read-only)
 
 ```bash
 # Simple list
-npx datocms cma:call item_types list
+npx datocms cma:call itemTypes list
 
 # Filter by model type
 npx datocms cma:call items list --params '{filter: {type: "blog_post"}}'
@@ -224,11 +220,11 @@ npx datocms cma:call items list --params '{page: {offset: 0, limit: 30}}'
 npx datocms cma:call items list --environment=staging
 ```
 
-### Pattern 2: Find / inspect a single entity (read-only)
+### Pattern 2: Find / inspect single entity (read-only)
 
 ```bash
 npx datocms cma:call items find <ITEM_ID>
-npx datocms cma:call item_types find <ITEM_TYPE_ID>
+npx datocms cma:call itemTypes find <ITEM_TYPE_ID>
 npx datocms cma:call uploads references <UPLOAD_ID>
 npx datocms cma:call site find
 ```
@@ -237,7 +233,7 @@ npx datocms cma:call site find
 
 ```bash
 # Create — path args for parent if nested, --data for the body
-npx datocms cma:call item_types create --data '{name: "Author", api_key: "author"}'
+npx datocms cma:call itemTypes create --data '{name: "Author", api_key: "author"}'
 npx datocms cma:call fields create <ITEM_TYPE_ID> --data '{label: "Name", api_key: "name", field_type: "string"}'
 npx datocms cma:call items create --data '{item_type: {type: "item_type", id: "blog_post"}, title: "New Post"}'
 
@@ -254,47 +250,43 @@ npx datocms cma:call items unpublish <ITEM_ID>
 
 ```bash
 # Bulk publish (mutating)
-npx datocms cma:call items bulk_publish --data '{items: [{type: "item", id: "123"}, {type: "item", id: "456"}]}'
+npx datocms cma:call items bulkPublish --data '{items: [{type: "item", id: "123"}, {type: "item", id: "456"}]}'
 
 # Bulk tag uploads (mutating)
-npx datocms cma:call uploads bulk_tag --data '{uploads: [{type: "upload", id: "789"}], tags: ["hero"]}'
+npx datocms cma:call uploads bulkTag --data '{uploads: [{type: "upload", id: "789"}], tags: ["hero"]}'
 
 # Bulk destroy (DESTRUCTIVE — confirm first)
-npx datocms cma:call items bulk_destroy --data '{items: [{type: "item", id: "123"}]}'
+npx datocms cma:call items bulkDestroy --data '{items: [{type: "item", id: "123"}]}'
 ```
 
 Bulk payloads use relationship arrays: `{items: [{type: "item", id: "..."}]}`.
 
----
-
 ## Commonly Used Resources
 
-44 resources are available. Run `npx datocms cma:call --help` for the current list. The most frequently used:
+44 resources available. Run `npx datocms cma:call --help` for current list. Most frequent:
 
 | Resource | Key methods | Path args |
 | - | - | - |
-| `items` | list, find, create, update, destroy, publish, unpublish, duplicate, bulk\_publish, bulk\_unpublish, bulk\_destroy, references, validate\_new, validate\_existing | itemId |
-| `item_types` | list, find, create, update, destroy, duplicate, referencing | itemTypeId |
+| `items` | list, find, create, update, destroy, publish, unpublish, duplicate, bulkPublish, bulkUnpublish, bulkDestroy, references, validateNew, validateExisting | itemId |
+| `itemTypes` | list, find, create, update, destroy, duplicate, referencing | itemTypeId |
 | `fields` | list, find, create, update, destroy, duplicate, referencing, related | itemTypeId + fieldId |
 | `fieldsets` | list, find, create, update, destroy | itemTypeId + fieldsetId |
-| `uploads` | list, find, create, update, destroy, references, bulk\_tag, bulk\_destroy | uploadId |
+| `uploads` | list, find, create, update, destroy, references, bulkTag, bulkDestroy | uploadId |
 | `roles` | list, find, create, update, destroy, duplicate | roleId |
 | `webhooks` | list, find, create, update, destroy | webhookId |
-| `build_triggers` | list, find, create, update, destroy, trigger, abort, reindex | buildTriggerId |
+| `buildTriggers` | list, find, create, update, destroy, trigger, abort, reindex | buildTriggerId |
 | `plugins` | list, find, create, update, destroy, fields | pluginId |
-| `access_tokens` | list, find, create, update, destroy, regenerate\_token | accessTokenId |
+| `accessTokens` | list, find, create, update, destroy, regenerateToken | accessTokenId |
 | `environments` | list, find, fork, promote, rename, destroy | environmentId |
 | `site` | find, update | (none) |
-| `maintenance_mode` | find, activate, deactivate | (none) |
-| `scheduled_publications` | create, destroy | itemId |
+| `maintenanceMode` | find, activate, deactivate | (none) |
+| `scheduledPublications` | create, destroy | itemId |
 | `workflows` | list, find, create, update, destroy | workflowId |
-| `upload_tracks` | list, create, destroy, generate\_subtitles | uploadId + uploadTrackId |
+| `uploadTracks` | list, create, destroy, generateSubtitles | uploadId + uploadTrackId |
 
-> **Note:** For `environments`, prefer the dedicated CLI commands (`environments:fork`, `environments:promote`, etc.) — they have better flags and output than the `cma:call` equivalents.
+> **Note:** `environments`? Use dedicated CLI (`environments:fork`, `environments:promote`, etc.) — better flags/output than `cma:call`.
 
-> **Note:** Creating new uploads from URL or local file via `cma:call` is painful — it is the raw `upload_request` + `uploads create` two-step JSON:API dance. Escalate to `cma:script` (stdin-mode or file-mode): the `client` you get — ambient in stdin-mode, function parameter in file-mode — exposes `client.uploads.createFromUrl()` and `client.uploads.createFromLocalFile()` directly. A checked-in `buildClient()` script (**datocms-cma**) is only needed for unattended runtime, not for the upload ergonomics themselves.
-
----
+> **Note:** Creating uploads via `cma:call` painful — raw `uploadRequest` + `uploads create` two-step JSON:API dance. Escalate to `cma:script` (stdin/file-mode): `client` exposes `client.uploads.createFromUrl()`/`client.uploads.createFromLocalFile()`. Checked-in `buildClient()` script (**datocms-cma**) only needed for unattended runtime, not upload ergonomics.
 
 ## Pagination
 
@@ -305,29 +297,25 @@ npx datocms cma:call items list --params '{page: {offset: 0, limit: 30}}'
 npx datocms cma:call items list --params '{page: {offset: 30, limit: 30}}'
 ```
 
-Default page size varies by resource. For iterating over all pages, switch to **datocms-cma** (the JavaScript client provides `listPagedIterator`).
-
----
+Default page size varies by resource. Iterating all pages? Switch to **datocms-cma** (JS client provides `listPagedIterator`).
 
 ## Output and Scripting
 
-Default output is pretty-printed JSON. Use `--json` for piping:
+Default output: pretty-printed JSON. Use `--json` for piping:
 
 ```bash
 npx datocms cma:call items create --json --data '{...}' | jq '.id'
-npx datocms cma:call item_types list --json | jq '.[].api_key'
+npx datocms cma:call itemTypes list --json | jq '.[].api_key'
 ```
-
----
 
 ## When to Escalate
 
-`cma:call` is ideal for a single CMA call. If the task needs loops, branching, dependent calls, or typed payloads, escalate to **`cma:script`** (see `cma-script.md`) — stdin-mode for heredocs and pipes, file-mode for longer scripts in a gitignored scratch dir.
+`cma:call` ideal for single CMA call. Task needs loops/branching/dependent calls/typed payloads? Escalate to **`cma:script`** (see `cma-script.md`) — stdin-mode for heredocs/pipes, file-mode for longer scratch scripts.
 
 Escalate past `cma:script` when:
 
-- **The code should be committed, versioned, and replayed across environments** → that is a **migration** (`migrations:new`), not a `cma:script`. A file-mode script can be promoted into a migration with `mv` since imports and signature already match.
-- **The code will run unattended** (CI, app server, webhook, long-lived automation) and needs a CMA token in the environment → checked-in `buildClient()` script via **datocms-cma**.
-- **You need tests, custom error handling, retries, or progress reporting** → repo script, **datocms-cma**.
+- **Code should be committed/versioned/replayed across environments** → **migration** (`migrations:new`), not `cma:script`. File-mode script can become migration with `mv` — imports/signature already match.
+- **Code runs unattended** (CI/app server/webhook/automation) needs env CMA token → checked-in `buildClient()` script via **datocms-cma**.
+- **Need tests/custom error handling/retries/progress reporting** → repo script, **datocms-cma**.
 
-> **Tip:** Use `npx datocms cma:docs <resource> <action>` to look up the exact request body shape and parameters before writing either a `cma:call` command or CMA client code.
+> **Tip:** Use `npx datocms cma:docs <resource> <action>` to look up exact request body shape/params before writing `cma:call` command or CMA client code.

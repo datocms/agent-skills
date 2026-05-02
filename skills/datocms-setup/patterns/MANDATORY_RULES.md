@@ -2,7 +2,15 @@
 
 These rules apply to every datocms-setup recipe. They are not repeated in individual recipe files.
 
----
+## Contents
+
+- TypeScript Strictness
+- File Conflict Handling
+- Shared Repo Inspection Defaults
+- Framework Environment Variable Conventions
+- Dependency Installation
+- Zero Questions Default
+- Question Format
 
 ## TypeScript Strictness
 
@@ -10,8 +18,6 @@ These rules apply to every datocms-setup recipe. They are not repeated in indivi
 - Avoid `as SomeType` casts — use type guards or fix upstream types instead
 - Prefer `import type { ... }` for type-only imports
 - Let TypeScript infer types wherever possible — do not add redundant annotations
-
----
 
 ## File Conflict Handling
 
@@ -21,8 +27,6 @@ These rules apply to every datocms-setup recipe. They are not repeated in indivi
 - If an existing setup is materially different, patch in place by default
 - Only ask about full replacement when the current setup is clearly incompatible or the user explicitly asked for a rewrite
 
----
-
 ## Shared Repo Inspection Defaults
 
 - Start from `../references/repo-conventions.md` before following recipe-specific checks
@@ -30,8 +34,6 @@ These rules apply to every datocms-setup recipe. They are not repeated in indivi
 - Inspect existing route helpers, query wrappers, renderer components, scripts, and endpoints before creating new ones
 - Preserve the strongest existing owner by default instead of creating a parallel implementation
 - Ask only when patching the wrong owner would materially change behavior, safety, or project conventions
-
----
 
 ## Framework Environment Variable Conventions
 
@@ -45,8 +47,6 @@ These rules apply to every datocms-setup recipe. They are not repeated in indivi
 - Add variables to `.env.example` (with placeholder values) and the actual env file
 - Never commit real tokens — use placeholder values in examples
 
----
-
 ## Dependency Installation
 
 Detect the project's package manager before installing:
@@ -57,8 +57,6 @@ Detect the project's package manager before installing:
 4. Otherwise -> `npm install`
 
 Always install DatoCMS packages as regular dependencies (not devDependencies) unless the package is CLI-only.
-
----
 
 ## Zero Questions Default
 
@@ -72,8 +70,6 @@ Only ask when a safe implementation is blocked by something the repo cannot answ
 - Ambiguous existing setup where patching the wrong file would break things
 - Missing external service credentials that have no reasonable default
 - Operational choices the repo cannot infer safely, such as release profiles, destructive importer tolerance, or whether to preserve an existing CLI convention
-
----
 
 ## Question Format
 

@@ -23,7 +23,7 @@ Step 1 fails by default if collaborators are editing records. Pass `{ force: tru
 
 ## Subscription limits and features as pre-flight checks
 
-Plan limits (records, uploadable\_bytes, item\_types, fields) and feature flags (sso, workflows, localization) are the canonical way to pre-check before bulk operations or before writing automation that depends on a gated feature.
+Plan limits (records, uploadable_bytes, item_types, fields) and feature flags (sso, workflows, localization) are the canonical way to pre-check before bulk operations or before writing automation that depends on a gated feature.
 
 ```ts
 const recordsLimit = await client.subscriptionLimits.find("records");

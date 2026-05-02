@@ -6,71 +6,76 @@ Once you've decided something is a block (see `models-vs-blocks.md`), the next q
 
 | Field type | Shape | Use when |
 | - | - | - |
-| `single_block` | Exactly one block (or `null`) | A fixed slot: hero on a landing page, SEO block on any record, address on a contact page. The shape is known and singular. |
-| `rich_text` (Modular Content) | Ordered list of blocks, no prose between | A page-builder / sequence-of-sections experience. Editors compose pages from a fixed palette of block types. No interleaved free-form text. |
-| `structured_text` | Prose tree (DAST) with blocks interleaved | Long-form editorial content where blocks live _inside_ the writing — articles with embedded quotes, galleries, CTAs; documentation with code samples; rich editorial pages. |
+| `single_block` | Exactly one block (or `null`) | Fixed slot: hero, SEO block, address. Shape known. Singular. |
+| `rich_text` (Modular Content) | Ordered list of blocks, no prose between | Page-builder. Sections from fixed palette. No free text. |
+| `structured_text` | Prose tree (DAST) with blocks interleaved | Long-form writing. Blocks inside prose. Articles, docs. |
 
 ### Decision shortcuts
 
-- **No prose? → `rich_text`.** Landing pages, page builders, dashboards. If editors are stacking sections, not writing paragraphs, this is the right field.
-- **Prose with embedded structured pieces? → `structured_text`.** Articles, blog posts, docs, knowledge base.
-- **Exactly one of something? → `single_block`.** SEO, hero, address, any "the X for this record" slot. Avoid using a 1-element `rich_text` to fake this — `single_block` is purpose-built and queries simpler. When the goal is to share a _field set_ across many models, use the required + frameless variant — see `content-reuse.md` § Pattern 4 (frameless single\_block) and `field-configuration.md` § single\_block for the appearance setting.
+**No prose? → `rich_text`.** Landing pages, page builders, dashboards. Stacking sections, not writing paragraphs.
+
+**Prose with embedded structured pieces? → `structured_text`.** Articles, blog posts, docs, knowledge base.
+
+**Exactly one of something? → `single_block`.** SEO, hero, address. Not 1-element `rich_text` — `single_block` queries simpler. Sharing field set across models? Use required + frameless variant — see `content-reuse.md` § Pattern 4 and `field-configuration.md` § single_block.
 
 ### Anti-patterns
 
-- **Modular Content used for prose.** A "paragraph block" with a single text field, repeated, is a Structured Text in disguise. Use `structured_text` and the editor gets a real prose UX.
-- **Structured Text used as a page builder.** Page sections aren't prose — there's no narrative tying them together. Use `rich_text`.
-- **A `rich_text` of one allowed block type used as a poor man's `single_block`.** Editors get an "add block" UI that can only produce one thing, and the query has to handle a 0-or-1 array.
-- **Block models that recreate native DAST nodes.** Structured Text already produces `blockquote`, `code` (with language and highlight\_lines), `list` / `listItem`, `heading`, `thematicBreak`, and `link` natively — defining `quote_block`, `code_block`, `list_block`, `heading_block`, `divider_block`, or `link_block` duplicates the editor's own toolbar buttons, eats the 500-block budget, and forces the frontend to render two parallel code paths for the same concept. Allow the native node via the editor's `nodes` parameter (`code`, `blockquote`, `list`, `heading`, `thematicBreak`) and skip the block. Block models are for _non-native_ content shapes the DAST grammar doesn't cover — images/galleries, callouts with a `tone` enum, embeds, custom data widgets. See the DAST cheatsheet below for what's already in the box.
+**Modular Content for prose.** "Paragraph block" with single text field = Structured Text in disguise. Use `structured_text` for real prose UX.
+
+**Structured Text as page builder.** Page sections not prose — no narrative. Use `rich_text`.
+
+**`rich_text` with one block type as poor `single_block`.** "Add block" UI produces one thing. Query handles 0-or-1 array. Use `single_block`.
+
+**Blocks recreating native DAST nodes.** Structured Text already has `blockquote`, `code` (with language, highlight_lines), `list` / `listItem`, `heading`, `thematicBreak`, `link`. No need for `quote_block`, `code_block`, `list_block`, `heading_block`, `divider_block`, `link_block`. Duplicates editor toolbar, eats 500-block budget, two render paths. Use native via editor `nodes` parameter. Block models for _non-native_ shapes DAST doesn't cover — images, galleries, callouts with `tone` enum, embeds. See DAST cheatsheet below.
 
 ## Validators come in three flavors
 
-A `structured_text` field has **three separate** allowlists, and they do not imply each other:
+`structured_text` field has **three separate** allowlists. Not implied:
 
-- `structured_text_blocks` — which block models may appear as block-level (`type: "block"`) nodes.
-- `structured_text_inline_blocks` — which block models may appear as inline (`type: "inlineBlock"`) nodes.
-- `structured_text_links` — which models may appear as `itemLink` / `inlineItem` nodes (and where the cascade-strategy fields live).
+- `structured_text_blocks` — which block models as block-level (`type: "block"`) nodes.
+- `structured_text_inline_blocks` — which block models as inline (`type: "inlineBlock"`) nodes.
+- `structured_text_links` — which models as `itemLink` / `inlineItem` nodes (cascade-strategy fields live here).
 
-Setting `structured_text_blocks` does **not** authorize inline blocks or record links. Wire each one explicitly. For "no embedded blocks at all" set the array to `[]` rather than omitting the validator.
+`structured_text_blocks` does **not** authorize inline blocks or record links. Wire each. "No embedded blocks" → `[]` not omit.
 
-For full validator shapes and cascade-strategy detail, see `../../datocms-cma/references/schema.md`. For the editor parameters that govern which `nodes` / `marks` / `heading_levels` editors can produce in a `structured_text` field, see `field-configuration.md` § structured\_text editor parameters.
+Full validator shapes and cascade-strategy: `../../datocms-cma/references/schema.md`. Editor parameters (`nodes` / `marks` / `heading_levels`): `field-configuration.md` § structured_text editor parameters.
 
 ## DAST node cheatsheet
 
-Modeling-relevant subset only. For the full grammar (children rules per node type, marks list, and how to actually build/edit DAST), see `../../datocms-cma/references/editing-records.md` § DAST grammar.
+Modeling-relevant subset only. Full grammar (children rules, marks list, building/editing DAST): `../../datocms-cma/references/editing-records.md` § DAST grammar.
 
 | Node | Role | Where it can live |
 | - | - | - |
-| `block` | Embedded **block-level** record | Direct child of `root` only — never inside a paragraph |
+| `block` | Embedded **block-level** record | Direct child of `root` only — never inside paragraph |
 | `inlineBlock` | Embedded **inline** record (badge, equation, mid-flow widget) | Inside `paragraph` and `heading` |
-| `itemLink` | Hyperlink whose target is a DatoCMS record, with inner text | Inside `paragraph` and `heading` |
-| `inlineItem` | Reference to a record with **no inner text** — frontend chooses how to render (chip, mention, auto-title link) | Inside `paragraph` and `heading` |
+| `itemLink` | Hyperlink to DatoCMS record, with inner text | Inside `paragraph` and `heading` |
+| `inlineItem` | Reference to record, **no inner text** — frontend renders (chip, mention, auto-title link) | Inside `paragraph` and `heading` |
 | `link` | Plain external hyperlink with optional `meta` (`rel`, `target`, etc.) | Inside `paragraph` and `heading` |
 | `span` | Leaf text node, with optional `marks` | Inside `paragraph`, `heading`, `link`, `itemLink` |
 | `marks` on span | `strong`, `emphasis`, `code`, `underline`, `strikethrough`, `highlight` | — |
 
 ### The two pairs that get confused
 
-**`block` vs `inlineBlock`** — same idea (an embedded block record), different layout role.
+**`block` vs `inlineBlock`** — same idea (embedded block record), different layout.
 
-- `block` is block-level. It sits _between_ paragraphs at the root, like an `<aside>` or `<figure>`. The author hits enter, drops a block, hits enter, keeps writing.
-- `inlineBlock` lives _inside_ prose. Use for things like equations, user mentions, badges, dynamic-data widgets — anything that flows with the surrounding text.
+- `block` = block-level. Between paragraphs at root, like `<aside>` or `<figure>`. Enter, drop block, enter, write.
+- `inlineBlock` = inside prose. Equations, mentions, badges, widgets — flows with text.
 
-If a designer tells you "a quote appears between paragraphs" → `block`. If they tell you "a stock ticker appears mid-sentence" → `inlineBlock`.
+"Quote between paragraphs" → `block`. "Stock ticker mid-sentence" → `inlineBlock`.
 
-**`itemLink` vs `inlineItem`** — both point at a record, but only one has inner text.
+**`itemLink` vs `inlineItem`** — both point at record, one has inner text.
 
-- `itemLink` is an `<a href>`-shaped link to a record — the _author_ writes the link text. Use when the author wants to control how the link reads in flow ("see \[our Q3 earnings post] for context").
-- `inlineItem` is a record reference with no inner content — the _frontend_ decides what to render (the record's title? a chip? a hovercard?). Use when the rendering should adapt to the linked record's current state, or when the surface is non-textual.
+- `itemLink` = `<a href>`-shaped link to record — _author_ writes link text. Use when author controls link text ("see \[our Q3 earnings post]").
+- `inlineItem` = record reference, no inner content — _frontend_ decides render (title? chip? hovercard?). Use when rendering adapts to target state, or surface non-textual.
 
-If editors should be able to say "click here" or "this article" → use `itemLink`. If the rendering should always reflect the target's current title or visual treatment → use `inlineItem`.
+Editors say "click here" or "this article" → `itemLink`. Rendering reflects target's current title/visual → `inlineItem`.
 
 ## Container choice and the limits
 
-Block-bearing fields are bounded by per-record limits (size, block count, nesting depth) — see `models-vs-blocks.md` § Hard limits and the locale multiplier for the numbers and the canonical mitigations.
+Block-bearing fields bounded by per-record limits (size, block count, nesting depth) — see `models-vs-blocks.md` § Hard limits, locale multiplier for numbers, mitigations.
 
-The container choice has knock-on effects on those limits:
+Container choice effects:
 
-- **Localized prose with shared structure.** If the structural composition is the same across locales but only the prose differs, localize a `structured_text` field for the prose and keep non-localized sibling fields for the structural blocks. This drops the per-record block count dramatically vs localizing a whole `rich_text` page builder.
-- **Single block vs one-element rich\_text.** A `single_block` field holds one block, period. A `rich_text` with `max_items: 1` holds an array of length ≤ 1 — same data shape, slightly more weight in the block budget and a worse editor UX. Pick `single_block` when you mean "exactly one."
-- **Audit blocks for over-decomposition.** A `spacer_block`, a `divider_block`, a `callout_block` with one text field — every block is paid for in the 500 budget. Consolidate aggressive decomposition before reaching for limit increases.
+- **Localized prose, shared structure.** Structure same across locales, only prose differs → localize `structured_text` for prose, non-localized siblings for structural blocks. Drops block count vs localizing whole `rich_text` page builder.
+- **Single block vs one-element rich_text.** `single_block` = one block. `rich_text` `max_items: 1` = array ≤ 1 — same shape, more block budget weight, worse UX. Pick `single_block` for "exactly one."
+- **Audit blocks for over-decomposition.** `spacer_block`, `divider_block`, `callout_block` with one text field — each paid from 500 budget. Consolidate before limit increases.

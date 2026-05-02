@@ -2,6 +2,15 @@
 
 Custom modals let you display popup dialogs from any plugin context. They are opened programmatically and can return a value to the caller.
 
+## Contents
+
+- Opening a Modal: `ctx.openModal()`
+- Render Hook: `renderModal`
+- Complete Modal Example
+- Modal with Form and Validation
+- Built-in Confirm Dialog
+- Key Notes
+
 ## Opening a Modal: `ctx.openModal()`
 
 Available in any render context (field extension, sidebar panel, page, etc.):

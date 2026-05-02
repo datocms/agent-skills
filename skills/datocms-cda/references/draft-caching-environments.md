@@ -2,7 +2,13 @@
 
 Covers draft/preview mode, strict mode (`excludeInvalid`), environment targeting, cache tags, CDN behavior, and Content Link / visual editing.
 
----
+## Contents
+
+- Draft / Preview Mode
+- Strict Mode (`excludeInvalid`)
+- Environment Targeting
+- Cache Tags
+- Content Link / Visual Editing
 
 ## Draft / Preview Mode
 
@@ -24,8 +30,6 @@ When `includeDrafts` is enabled, the `_status` meta field becomes meaningful:
 - `updated` — the record is published but has unpublished changes (what you see includes those changes)
 
 Without `includeDrafts`, all returned records are published — `_status` is always `published`.
-
----
 
 ## Strict Mode (`excludeInvalid`)
 
@@ -52,8 +56,6 @@ When enabled:
 
 **Safer alternative:** Use `filter: { _isValid: { eq: true } }` in your query instead of `excludeInvalid`. This filters out invalid records without the re-validation error risk, though it does not narrow GraphQL types to non-nullable.
 
----
-
 ## Environment Targeting
 
 Target a specific DatoCMS environment (instead of the primary):
@@ -66,8 +68,6 @@ const data = await executeQuery(query, {
 ```
 
 Omit the `environment` option to use the primary environment.
-
----
 
 ## Cache Tags
 
@@ -149,8 +149,6 @@ For the full implementation pattern (replacement `executeQuery`, DB abstraction,
   - `X-Cacheable-On-Cdn` — whether the query is cached on CDN
 
 **Tip:** Keep queries under the 8 KB gzip limit for best performance. Oversized queries bypass CDN and face stricter rate limits.
-
----
 
 ## Content Link / Visual Editing
 

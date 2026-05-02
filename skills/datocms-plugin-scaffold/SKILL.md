@@ -11,69 +11,58 @@ description: >-
 
 # DatoCMS Plugin Scaffold
 
-Create the smallest working first version of a new plugin project. Keep the initial scaffold narrow, then hand later incremental edits to `datocms-plugin-builder`.
+Create smallest working first version of new plugin. Keep initial scaffold narrow, hand later edits to `datocms-plugin-builder`.
 
 ## Step 1: Confirm scaffold mode
 
-Silently inspect the current directory.
+Silently inspect current directory.
 
-1. Check for an existing plugin project (`package.json` with `datocms-plugin-sdk`, a `connect()` entrypoint, and Vite config).
-2. If a plugin already exists and the request is an edit, switch to `datocms-plugin-builder`.
-3. Infer the likely starting surface from the request before asking questions.
+Check for existing plugin (`package.json` with `datocms-plugin-sdk`, `connect()` entrypoint, Vite config). If exists and request is edit, switch to `datocms-plugin-builder`. Infer starting surface before asking.
 
 ## Step 2: Ask only for missing essentials
 
-Ask only when the request or repo does not already answer them:
+Ask only when unclear:
 
-- plugin name or folder name
-- private vs marketplace distribution
-- initial surface and target model or field scope when that changes the scaffold
-- whether the plugin needs `currentUserAccessToken` or other external API access
+- plugin/folder name
+- private vs marketplace
+- initial surface/target scope (if changes scaffold)
+- `currentUserAccessToken`/external API needs
 
-Skip the question round if those points are already clear enough to scaffold safely.
+Skip if already clear.
 
 ## Step 3: Load the small reference set
 
-Always load:
+Load:
 
 - `references/project-scaffold.md`
 - `references/surface-starters.md`
 
-Stay with these files for the first implementation. Route later feature expansion or maintenance work to `datocms-plugin-builder`.
+Use for first implementation. Route expansion/maintenance to `datocms-plugin-builder`.
 
 ## Step 4: Scaffold the project
 
-- Create the plugin directory inside the current working directory.
-- Use the standard Vite/React layout from `references/project-scaffold.md`.
-- Add only the entrypoints the requested surfaces need.
-- Keep package metadata minimal for private plugins.
-- For marketplace plugins, set the npm package name, keywords, homepage, and permissions correctly.
-- Add only the optional dependencies required by the first implementation.
-- Install dependencies before verification.
+Create plugin dir in cwd. Use Vite/React layout from `references/project-scaffold.md`. Add only needed entrypoints. Keep metadata minimal for private plugins. For marketplace: set npm name, keywords, homepage, permissions. Add only required optional dependencies. Install before verification.
 
 ## Step 5: Wire the first surface
 
-Use `references/surface-starters.md` to choose the declaration, render, and execute hooks.
+Use `references/surface-starters.md` for declaration, render, execute hooks.
 
-Keep these starter guardrails:
+Guardrails:
 
-- Keep exactly one top-level `connect()` call.
-- Wrap rendered UI in `<Canvas ctx={ctx}>`; use `noAutoResizer` for pages, inspectors, and full-width sidebars.
-- Use `switch` for ID-dispatched render hooks.
-- Use `import type { ... }` for SDK types.
-- Keep `ctx.openModal()` parameters and `ctx.resolve()` values JSON-serializable.
-- Do not create editor field extensions for modular content, single block, or structured text fields.
-- Stop at the smallest working first version. Do not pre-build extra surfaces or settings the user did not ask for.
+- One top-level `connect()`
+- Wrap UI in `<Canvas ctx={ctx}>`; use `noAutoResizer` for pages/inspectors/full-width sidebars
+- Use `switch` for ID-dispatched render hooks
+- Use `import type { ... }` for SDK types
+- Keep `ctx.openModal()` params and `ctx.resolve()` JSON-serializable
+- No editor field extensions for modular content/single block/structured text
+- Stop at smallest working first version
 
 ## Step 6: Verify
 
-1. Install dependencies with the selected package manager.
-2. Run the build script with that same package manager.
-3. Tell the user which dev command to run with that package manager.
-4. Tell the user how to install the local plugin in DatoCMS and name the single manual surface check that matters most.
+Install deps with chosen package manager. Run build. Tell user dev command and how to install local plugin. Name the single most important manual surface check.
 
 ## Cross-skill routing
 
 - Existing plugin maintenance -> `datocms-plugin-builder`
-- Native DatoCMS plugin UI design, layout restyling, or design-system alignment -> `datocms-plugin-design-system`
-- Standalone CMA scripts or schema work outside the plugin iframe -> `datocms-cma`
+- Native UI design/layout restyling -> `datocms-plugin-design-system`
+- Standalone CMA scripts/schema work -> `datocms-cma`

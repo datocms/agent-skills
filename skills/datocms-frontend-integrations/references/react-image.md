@@ -6,15 +6,13 @@ See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, be
 
 ## Contents
 
-- [`<SRCImage />` vs `<Image />`](#srcimage-vs-image-)
-- [GraphQL Query](#graphql-query)
-- [Basic Usage](#basic-usage)
-- [`<SRCImage />` Props](#srcimage-props)
-- [`<Image />` Props](#image-props)
-- [Layout Modes (`<Image />` only)](#layout-modes-image-only)
-- [Handling Dynamic `data` Changes](#handling-dynamic-data-changes)
-
----
+- `<SRCImage />` vs `<Image />`
+- GraphQL Query
+- Basic Usage
+- `<SRCImage />` Props
+- `<Image />` Props
+- Layout Modes (`<Image />` only)
+- Handling Dynamic `data` Changes
 
 ## `<SRCImage />` vs `<Image />`
 
@@ -32,13 +30,9 @@ See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, be
 - Use `<SRCImage />` by default — zero JS, simpler output, works as RSC
 - Use `<Image />` when you need crossfade effects, custom lazy-loading thresholds, or images with transparency
 
----
-
 ## GraphQL Query
 
 See `image-concepts.md` for the full query, field definitions, and best practices.
-
----
 
 ## Basic Usage
 
@@ -60,8 +54,6 @@ function BlogPost({ data }) {
 }
 ```
 
----
-
 ## `<SRCImage />` Props
 
 | Prop | Type | Default | Description |
@@ -75,8 +67,6 @@ function BlogPost({ data }) {
 | `sizes` | string | undefined | HTML5 `sizes` attribute (falls back to `data.sizes`) |
 | `usePlaceholder` | boolean | true | Whether to show blurred image placeholder |
 | `srcSetCandidates` | Array<number> | `[0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4]` | Width multipliers for auto-generated `srcset` (used when `data` has no `srcSet`) |
-
----
 
 ## `<Image />` Props
 
@@ -101,8 +91,6 @@ function BlogPost({ data }) {
 | `placeholderClassName` | string | null | Additional CSS class for placeholder image |
 | `placeholderStyle` | CSS properties | null | Additional CSS for placeholder image |
 
----
-
 ## Layout Modes (`<Image />` only)
 
 See `image-concepts.md` for the layout mode table. Use the `layout` prop on `<Image />` to select a mode.
@@ -119,8 +107,6 @@ See `image-concepts.md` for the layout mode table. Use the `layout` prop on `<Im
   />
 </div>
 ```
-
----
 
 ## Handling Dynamic `data` Changes
 

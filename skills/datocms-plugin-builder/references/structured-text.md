@@ -2,6 +2,12 @@
 
 These hooks let you add custom inline marks and block-level styles to Structured Text fields in the DatoCMS editor.
 
+## Contents
+
+- `customMarksForStructuredTextField`
+- `customBlockStylesForStructuredTextField`
+- Programmatic Structured Text Manipulation
+
 ## `customMarksForStructuredTextField`
 
 Defines custom inline marks for Structured Text fields (e.g., custom highlighting).

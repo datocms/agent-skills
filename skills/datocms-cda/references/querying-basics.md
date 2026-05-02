@@ -2,7 +2,18 @@
 
 Covers the GraphQL endpoint, query naming conventions, single/collection/meta queries, GraphQL variables, record meta fields, and inverse relationships.
 
----
+## Contents
+
+- GraphQL Endpoint
+- Query Naming Conventions
+- Single Record Query
+- Single-Instance Model Query
+- Collection Query
+- Meta Count Query
+- Record Meta Fields
+- GraphQL Variables
+- Inverse Relationships
+- Complete Example
 
 ## GraphQL Endpoint
 
@@ -12,13 +23,11 @@ https://graphql.datocms.com/
 
 POST-only, read-only — **no mutations**. All content changes go through the CMA (Content Management API).
 
----
-
 ## Query Naming Conventions
 
 Model API keys map to GraphQL query names following these rules:
 
-- Snake\_case API keys become camelCase (e.g., `blog_post` → `blogPost`)
+- Snake_case API keys become camelCase (e.g., `blog_post` → `blogPost`)
 - Collection queries use `all` prefix + English plural (e.g., `allBlogPosts`)
 - Meta queries use `_all` prefix + English plural + `Meta` suffix (e.g., `_allBlogPostsMeta`)
 
@@ -30,8 +39,6 @@ Model API keys map to GraphQL query names following these rules:
 | `use_case` | `useCase` | `allUseCases` | `_allUseCasesMeta` |
 
 **Tip:** Use the DatoCMS API Explorer at `https://cda-explorer.datocms.com/` to discover exact query names. Pluralization follows English rules (e.g., `category` → `allCategories`, not `allCategorys`).
-
----
 
 ## Single Record Query
 
@@ -50,8 +57,6 @@ query {
 
 When no filter is provided, `orderBy` controls which record is returned (e.g., `blogPost(orderBy: [_publishedAt_DESC])` returns the most recently published record).
 
----
-
 ## Single-Instance Model Query
 
 Models marked as "single instance" (e.g., homepage, site settings) do not need a filter:
@@ -66,8 +71,6 @@ query {
 ```
 
 Single-instance models have no collection or meta queries — only the singular query exists.
-
----
 
 ## Collection Query
 
@@ -95,8 +98,6 @@ query {
 }
 ```
 
----
-
 ## Meta Count Query
 
 Returns the total number of matching records. The naming pattern is `_all<PluralModelName>Meta`.
@@ -122,8 +123,6 @@ query {
   }
 }
 ```
-
----
 
 ## Record Meta Fields
 
@@ -158,8 +157,6 @@ query {
   }
 }
 ```
-
----
 
 ## GraphQL Variables
 
@@ -200,8 +197,6 @@ const data = await executeQuery(query, {
 - `$skip: IntType` — for pagination `skip` argument
 - `$id: ItemId` — for record ID filters
 - `$slug: String` — for string filters
-
----
 
 ## Inverse Relationships
 
@@ -275,8 +270,6 @@ _allReferencingBlogPosts(
 ### Block Awareness
 
 Inverse relationships are blocks-aware — they find references inside Modular Content and Structured Text blocks at any nesting depth, not just top-level link fields.
-
----
 
 ## Complete Example
 

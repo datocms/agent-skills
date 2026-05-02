@@ -2,7 +2,18 @@
 
 Executing pending migration scripts with `migrations:run`.
 
----
+## Contents
+
+- Inputs to confirm before running commands
+- Command
+- Default Behavior (Fork-and-Run)
+- In-Place Execution
+- Dry Run
+- Migration Tracking
+- File Discovery
+- TypeScript Execution
+- Legacy Client Support
+- Return Value
 
 ## Inputs to confirm before running commands
 
@@ -14,8 +25,6 @@ Confirm these inputs when they are not already clear:
 - custom migrations dir / tracking model / migrations tsconfig, if the repo already uses them
 - whether `--fast-fork` is needed for a large environment
 - whether active editors make `--force` risky
-
----
 
 ## Command
 
@@ -39,8 +48,6 @@ Runs migration scripts that have not been executed yet.
 | `--migrations-model=<key>` | string | API key of the model used to track migration data |
 | `--migrations-tsconfig=<path>` | string | Path to tsconfig.json for running TS migrations |
 
----
-
 ## Default Behavior (Fork-and-Run)
 
 By default, `migrations:run` forks the source environment into a new sandbox, then runs pending migrations on the fork:
@@ -58,8 +65,6 @@ npx datocms migrations:run --source=staging --destination=staging-migrated
 
 This is the safest approach: if migrations fail, the source environment is untouched.
 
----
-
 ## In-Place Execution
 
 Run migrations directly on an environment without forking:
@@ -74,8 +79,6 @@ npx datocms migrations:run --source=staging --in-place
 
 Use `--in-place` during local development iteration or when you've already forked manually.
 
----
-
 ## Dry Run
 
 Preview which migrations would run without executing them:
@@ -84,8 +87,6 @@ Preview which migrations would run without executing them:
 npx datocms migrations:run --dry-run
 ```
 
----
-
 ## Migration Tracking
 
 The CLI uses a DatoCMS model to track which migrations have already been executed. By default, this model has the API key `schema_migration`.
@@ -93,8 +94,6 @@ The CLI uses a DatoCMS model to track which migrations have already been execute
 - Each migration that runs creates a record in this model
 - On subsequent runs, only migrations without a corresponding record are executed
 - Override the tracking model with `--migrations-model=<api_key>`
-
----
 
 ## File Discovery
 
@@ -107,8 +106,6 @@ The CLI discovers migration files by scanning the migrations directory for files
 Files must start with digits (the timestamp prefix). They are sorted by filename to determine execution order.
 
 Default migrations directory: `./migrations/` (configurable via `--migrations-dir` or `datocms.config.json`).
-
----
 
 ## TypeScript Execution
 
@@ -132,15 +129,11 @@ Or configure it in `datocms.config.json`:
 }
 ```
 
----
-
 ## Legacy Client Support
 
 For backward compatibility with older DatoCMS client versions, the CLI also checks for migration files in a `legacyClient/` subdirectory within the migrations directory. These use the older client API signature.
 
 New projects should always use the standard migrations directory.
-
----
 
 ## Return Value
 

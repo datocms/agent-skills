@@ -8,8 +8,6 @@ You are an expert at setting up standalone CMA schema type generation on top of 
 
 Follow these steps in order. Do not skip steps.
 
----
-
 ## Step 1: Detect Context (silent)
 
 Silently examine the project:
@@ -28,8 +26,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 - If `datocms` is not installed or the active profile has no `siteId`, stop and route back to `cli-bootstrap`.
 - If the repo already has a materially different schema-type generation setup, inspect and patch it in place by default instead of replacing it.
 
----
-
 ## Step 2: Ask Questions
 
 Infer first from the repo.
@@ -40,16 +36,12 @@ If you do ask, make it one concise question, put the recommended/default path fi
 
 Only ask if the project already has a conflicting CMA type-generation flow and patching it safely is unclear.
 
----
-
 ## Step 3: Load References
 
 Read only these references:
 
 - `../../../../datocms-cli/references/cli-setup.md`
 - `../../../../datocms-cma/references/type-generation.md`
-
----
 
 ## Step 4: Generate Code
 
@@ -74,8 +66,6 @@ Generate only the standalone CMA type-generation setup.
 - Do not install `dotenv-cli` — unnecessary with OAuth-linked profile
 - Do not add any CMA token placeholder to `.env.example` for `schema:generate`. `schema:generate` uses the default profile's OAuth resolution.
 
----
-
 ## Step 5: Next Steps
 
 After generating the files, tell the user:
@@ -83,8 +73,6 @@ After generating the files, tell the user:
 1. Re-run `generate-cma-types` after schema changes
 2. Use the generated unions such as `AnyModel` and `AnyBlock` with `raw*()` CMA methods
 3. Optional follow-up recipe id: `graphql-types` if they also want typed CDA queries
-
----
 
 ## Verification Checklist
 

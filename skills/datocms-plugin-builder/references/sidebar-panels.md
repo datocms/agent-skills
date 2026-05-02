@@ -1,14 +1,12 @@
 # Sidebar Panels & Sidebars Reference
 
-## Quick Navigation
-
-- Choose panel vs full sidebar
-- `itemFormSidebarPanels` and panel render context
-- Reading `ctx.formValues` safely in sidebar UI
-- `itemFormSidebars` and full-width sidebar behavior
-- Placement and iframe gotchas
-
 DatoCMS provides two ways to add UI to the record editing form's sidebar area: **sidebar panels** (collapsible panels in the right sidebar) and **full-width sidebars** (take over the entire sidebar area).
+
+## Contents
+
+- Sidebar Panels
+- Full-Width Sidebars
+- Gotchas
 
 ## Sidebar Panels
 

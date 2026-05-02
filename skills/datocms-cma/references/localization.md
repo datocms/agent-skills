@@ -4,18 +4,16 @@ Covers working with localized field values and the normalized field value utilit
 
 > For endpoint shapes that touch localized fields, consult `npx datocms cma:docs items <action> --types-depth 2` and `cma:docs site update --types-depth 2` (raise the depth or use `--expand-types` for deeper nested types). This file covers the per-locale value shape, `all_locales_required` semantics, and the partial-vs-full-update rule for localized fields.
 
-## Quick Navigation
+## Contents
 
-- [Localized vs Non-Localized Values](#localized-vs-non-localized-values)
-- [Getting Available Locales](#getting-available-locales)
-- [Creating Records with Localized Fields](#creating-records-with-localized-fields)
-- [Updating Localized Fields](#updating-localized-fields)
-- [Localized File Fields](#localized-file-fields)
-- [Checking if a Field is Localized](#checking-if-a-field-is-localized)
-- [Normalized Field Value Utilities](#normalized-field-value-utilities)
-- [Complete Example: Migrate Content to a New Locale](#complete-example-migrate-content-to-a-new-locale)
-
----
+- Localized vs Non-Localized Values
+- Getting Available Locales
+- Creating Records with Localized Fields
+- Updating Localized Fields
+- Localized File Fields
+- Checking if a Field is Localized
+- Normalized Field Value Utilities
+- Complete Example: Migrate Content to a New Locale
 
 ## Localized vs Non-Localized Values
 
@@ -33,8 +31,6 @@ When a field **is** localized, its value is an object keyed by locale code:
 
 This applies to all field types — strings, files, links, blocks, structured text, etc.
 
----
-
 ## Getting Available Locales
 
 ```ts
@@ -43,8 +39,6 @@ console.log(site.locales); // ["en", "it", "de"]
 ```
 
 The first locale in the array is the primary locale.
-
----
 
 ## Creating Records with Localized Fields
 
@@ -67,8 +61,6 @@ const record = await client.items.create({
 
 **Important:** If the model has `all_locales_required: true`, you must provide values for every locale on the site. If `all_locales_required: false`, you can provide values for only some locales.
 
----
-
 ## Updating Localized Fields
 
 When updating a localized field, you provide the full object with all locales — there is no "partial locale update":
@@ -85,8 +77,6 @@ await client.items.update("record-id", {
   },
 });
 ```
-
----
 
 ## Localized File Fields
 
@@ -112,8 +102,6 @@ await client.items.create({
 });
 ```
 
----
-
 ## Checking if a Field is Localized
 
 ```ts
@@ -127,8 +115,6 @@ for (const field of fields) {
   }
 }
 ```
-
----
 
 ## Normalized Field Value Utilities
 
@@ -277,8 +263,6 @@ Every function above has an async counterpart:
 - `someNormalizedFieldValuesAsync()`
 - `everyNormalizedFieldValueAsync()`
 - `visitNormalizedFieldValuesAsync()`
-
----
 
 ## Complete Example: Migrate Content to a New Locale
 

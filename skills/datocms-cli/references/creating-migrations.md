@@ -2,8 +2,6 @@
 
 Scaffolding new migration scripts with `migrations:new`.
 
----
-
 ## Inputs to confirm before running commands
 
 Only enter this sub-task once the user has chosen the migration approach (see "Schema changes" in Step 2.5 of SKILL.md). Confirm these inputs when they are not already clear:
@@ -14,8 +12,6 @@ Only enter this sub-task once the user has chosen the migration approach (see "S
 - whether schema helper types (`--schema`) are needed
 
 **Always warn** that `--autogenerate` captures schema changes only. It does **not** include records or uploads.
-
----
 
 ## Command
 
@@ -29,8 +25,6 @@ Run `npx datocms migrations:new --help` for all available flags.
 
 > **Precondition:** any mode that inspects the live DatoCMS project (especially `--autogenerate`) needs a CMA-enabled token via a linked project (`datocms link`), `--api-token` flag, or environment variable.
 
----
-
 ## Format Detection
 
 The CLI determines the file format in this order:
@@ -41,8 +35,6 @@ The CLI determines the file format in this order:
 4. Otherwise -> JavaScript
 
 Preserve the repo's established TS/JS convention unless the user explicitly asks for a different output format.
-
----
 
 ## Autogenerate Mode
 
@@ -72,8 +64,6 @@ It does **not** include:
 - other content data that must be migrated manually
 
 If the change requires records or uploads, write that part manually or extend the generated migration script afterward.
-
----
 
 ## Schema Types Flag
 

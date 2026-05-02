@@ -1,18 +1,19 @@
 # Plugin Surfaces
 
-## Quick Navigation
-
-- config screen
-- page
-- sidebar panel
-- full sidebar
-- modal
-- outlet
-- inspector
-- asset source
-- sizing and theme rules
-
 Use this file after `foundations.md` when the plugin hook determines the UI shell more than the visual polish does.
+
+## Contents
+
+- Shared rules
+- Config screen
+- Page
+- Sidebar panel
+- Full sidebar
+- Modal
+- Outlets
+- Inspector
+- Asset source
+- Surface-specific design defaults
 
 ## Shared rules
 
@@ -28,7 +29,7 @@ Useful docs:
 - Config screen: <https://www.datocms.com/docs/plugin-sdk/config-screen>
 - Sidebars and sidebar panels: <https://www.datocms.com/docs/plugin-sdk/sidebar-panels>
 
-## 1. Config screen
+## Config screen
 
 Best fit:
 
@@ -44,7 +45,7 @@ Choose a normal page rhythm before inventing a custom settings dashboard.
 - normal `<Canvas ctx={ctx}>`
 - no `noAutoResizer`
 
-## 2. Page
+## Page
 
 Best fit:
 
@@ -59,7 +60,7 @@ Use either a page shell or a full-height shell depending on content type. If the
 - `renderPage` uses an imposed-size frame
 - use `<Canvas ctx={ctx} noAutoResizer>`
 
-## 3. Sidebar panel
+## Sidebar panel
 
 Best fit:
 
@@ -74,7 +75,7 @@ Sidebar panels should stay compact. If they turn into a whole app, move to a ful
 - `renderItemFormSidebarPanel` and `renderUploadSidebarPanel` are self-resizing
 - normal `<Canvas ctx={ctx}>`
 
-## 4. Full sidebar
+## Full sidebar
 
 Best fit:
 
@@ -89,7 +90,7 @@ Full sidebars should still feel like side work, not a separate dashboard. If the
 - `renderItemFormSidebar` and `renderUploadSidebar` use imposed-size frames
 - use `<Canvas ctx={ctx} noAutoResizer>`
 
-## 5. Modal
+## Modal
 
 Best fit:
 
@@ -109,7 +110,7 @@ Keep modals narrow in scope and limited in vertical complexity.
 
 Plugins should use `ctx.openModal()` to open modals — the CMS handles the backdrop overlay automatically. `--backdrop-color` and `--backdrop-linear-gradient` are **not** available inside Canvas, so do not attempt to build a custom backdrop. If you need a dimming layer within a plugin surface for a local popover, use a simple `rgb(0 0 0 / 0.3)` overlay.
 
-## 6. Outlets
+## Outlets
 
 Best fit:
 
@@ -124,7 +125,7 @@ Outlets must visually defer to the surrounding CMS screen.
 - `renderItemFormOutlet` is self-resizing
 - normal `<Canvas ctx={ctx}>`
 
-## 7. Inspector
+## Inspector
 
 Best fit:
 
@@ -139,7 +140,7 @@ Use `VerticalSplit` when it reads naturally for the interaction and the installe
 - inspectors use imposed-size frames
 - use `<Canvas ctx={ctx} noAutoResizer>`
 
-## 8. Asset source
+## Asset source
 
 Best fit:
 
@@ -154,7 +155,7 @@ Asset sources should feel like efficient work tools. Prefer compact search, filt
 - asset sources are self-resizing
 - normal `<Canvas ctx={ctx}>`
 
-## 9. Surface-specific design defaults
+## Surface-specific design defaults
 
 | Surface | Default shell | Avoid |
 | - | - | - |

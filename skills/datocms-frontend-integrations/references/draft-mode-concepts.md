@@ -1,39 +1,30 @@
 # Draft Mode Concepts
 
-This reference covers core concepts that apply to all frameworks when implementing draft mode for DatoCMS.
+Reference for implementing draft mode across frameworks.
 
 ## Contents
 
-- [Overview](#overview)
-- [Token Validation Pattern](#token-validation-pattern)
-- [Open Redirect Prevention](#open-redirect-prevention)
-- [Cookie Attributes for Iframe Support](#cookie-attributes-for-iframe-support)
-- [Query Function Modification](#query-function-modification)
-- [Error Handling](#error-handling)
-- [Environment Variables](#environment-variables)
-- [JWT-Based Draft Mode (Nuxt, SvelteKit, Astro)](#jwt-based-draft-mode-nuxt-sveltekit-astro)
-
----
+- Overview
+- Token Validation Pattern
+- Open Redirect Prevention
+- Cookie Attributes for Iframe Support
+- Query Function Modification
+- Error Handling
+- Environment Variables
+- JWT-Based Draft Mode (Nuxt, SvelteKit, Astro)
 
 ## Overview
 
-Draft mode allows content editors to preview unpublished content on the frontend before publishing it. The implementation uses a **two-token architecture**:
+Draft mode lets editors preview unpublished content. Uses two tokens:
 
-- **Published Content CDA Token** — Used for production queries, returns only published content
-- **Draft Content CDA Token** — Used in draft mode, returns draft (unpublished) content alongside published content
+- **Published Content CDA Token** — production queries, published content only
+- **Draft Content CDA Token** — draft mode, returns unpublished + published
 
-When an editor enables draft mode, the frontend:
-
-1. Receives a request at the **enable endpoint** with a secret token
-2. Sets a **draft mode cookie** (framework-specific mechanism)
-3. Redirects to the content page
-4. The page's query function detects draft mode and switches to the draft token with `includeDrafts: true`
-
----
+Flow: enable endpoint receives secret token → sets draft cookie → redirects → query function detects draft mode → switches to draft token with `includeDrafts: true`.
 
 ## Token Validation Pattern
 
-The enable endpoint must validate that requests come from a trusted source by checking a shared secret:
+Enable endpoint validates requests via shared secret:
 
 ```ts
 // Parse query string parameters
@@ -45,15 +36,13 @@ if (token !== SECRET_API_TOKEN) {
 }
 ```
 
-The `SECRET_API_TOKEN` is a random string that you configure in your environment variables. It is **not** a DatoCMS API token — it's a shared secret between your app and DatoCMS.
+`SECRET_API_TOKEN` is a random string in env vars. Not a DatoCMS token — shared secret between app and DatoCMS.
 
-**Important:** The disable endpoint does NOT require token validation. It simply removes the draft cookie and redirects. This is safe because the disable endpoint only reduces access (from draft to published).
-
----
+**Important:** Disable endpoint needs NO token validation. Just removes cookie and redirects. Safe because it only reduces access.
 
 ## Open Redirect Prevention
 
-Both enable and disable endpoints accept a redirect URL parameter. To prevent open redirect vulnerabilities (where an attacker could redirect users to a malicious site), validate that the URL is relative:
+Validate redirect URLs are relative to prevent open redirect vulnerabilities:
 
 ```ts
 function isRelativeUrl(path: string): boolean {
@@ -74,7 +63,7 @@ function isRelativeUrl(path: string): boolean {
 }
 ```
 
-Use it in every endpoint that redirects:
+Use in every endpoint that redirects:
 
 ```ts
 const redirectUrl = request.searchParams.get('redirect') || '/';
@@ -84,21 +73,19 @@ if (!isRelativeUrl(redirectUrl)) {
 }
 ```
 
----
-
 ## Cookie Attributes for Iframe Support
 
-DatoCMS can load your site inside an iframe (e.g., via the "Web Previews" plugin). Setting a cookie inside an iframe is considered a third-party cookie. Modern browsers require specific attributes for third-party cookies to work:
+DatoCMS loads your site in an iframe. Third-party cookies need specific attributes:
 
-- **`partitioned: true`** — Required for CHIPS (Cookies Having Independent Partitioned State). Creates a separate cookie jar partitioned by the top-level site.
-- **`sameSite: 'none'`** — Required because the cookie is set in a cross-site context (your site inside DatoCMS's iframe).
-- **`secure: true`** — Required whenever `sameSite` is `'none'`.
+- **`partitioned: true`** — CHIPS (Cookies Having Independent Partitioned State), separate cookie jar per top-level site
+- **`sameSite: 'none'`** — cross-site context (your site in DatoCMS iframe)
+- **`secure: true`** — required when `sameSite` is `'none'`
 
-These three attributes must be set on every cookie operation (set, delete) related to draft mode.
+Must set on all cookie operations (set, delete) for draft mode.
 
 ### Next.js Special Case
 
-Next.js has a built-in `draftMode()` API that sets a `__prerender_bypass` cookie. However, it does NOT set the `partitioned` attribute. You must rewrite this cookie after calling `draft.enable()` or `draft.disable()`:
+Next.js `draftMode()` API sets `__prerender_bypass` cookie but NOT `partitioned`. Rewrite after `draft.enable()` or `draft.disable()`:
 
 ```ts
 async function makeDraftModeWorkWithinIframes() {
@@ -120,19 +107,13 @@ async function makeDraftModeWorkWithinIframes() {
 
 These frameworks use a custom cookie with a JWT token. The cookie attributes are set directly when creating/deleting the cookie.
 
----
-
 ## Query Function Modification
 
-The existing `executeQuery` wrapper (or a new one if none exists) must be modified to support draft mode:
+Modify `executeQuery` wrapper (or create one):
 
-1. **Accept an `includeDrafts` option**
-2. **Switch tokens** based on `includeDrafts`:
-   - `true` → use the Draft Content CDA Token
-   - `false`/`undefined` → use the Published Content CDA Token
-3. **Always set `excludeInvalid: true`**
-
-Pattern:
+1. Accept `includeDrafts` option
+2. Switch tokens: `true` → Draft CDA Token, `false`/`undefined` → Published CDA Token
+3. Always set `excludeInvalid: true`
 
 ```ts
 const result = await executeQuery(query, {
@@ -145,11 +126,9 @@ const result = await executeQuery(query, {
 });
 ```
 
----
-
 ## Error Handling
 
-All endpoints should catch unexpected errors using a shared `handleUnexpectedError` utility:
+Catch errors with shared `handleUnexpectedError` utility:
 
 ```ts
 import { serializeError } from 'serialize-error';
@@ -165,20 +144,11 @@ function handleUnexpectedError(error: unknown) {
 }
 ```
 
-This pattern:
-
-1. Logs the error
-2. Serializes the error into a response-safe shape with `serialize-error`
-
-Required packages: `serialize-error`.
-
-If a companion feature later adds direct DatoCMS client calls, you can extend this helper to surface structured request/response details there without making the base draft mode flow depend on the CMA client.
-
----
+Logs error, serializes to response-safe shape. Requires `serialize-error` package.
 
 ## Environment Variables
 
-All frameworks need these core environment variables (names vary by framework):
+Core env variables (names vary by framework):
 
 | Variable | Description | Where to find it |
 | - | - | - |
@@ -188,29 +158,27 @@ All frameworks need these core environment variables (names vary by framework):
 | Signed Cookie JWT Secret | Secret for signing the draft mode JWT cookie (non-Next.js only) | Generate with `openssl rand -hex 32` |
 | Draft Mode Cookie Name | Name of the draft mode cookie (non-Next.js only) | Choose any name, e.g., `datocms-draft-mode` |
 
-Next.js does NOT need the JWT secret or cookie name variables because it uses the built-in `draftMode()` API with the `__prerender_bypass` cookie.
-
----
+Next.js doesn't need JWT secret or cookie name — uses built-in `draftMode()` with `__prerender_bypass` cookie.
 
 ## JWT-Based Draft Mode (Nuxt, SvelteKit, Astro)
 
-For frameworks without a built-in draft mode mechanism, the pattern uses a JWT-signed cookie:
+JWT-signed cookie for frameworks without built-in draft mode:
 
 ### Enable
 
-1. Sign a JWT containing draft mode state (e.g., `{ enabled: true }` or `{ datocmsDraftContentCdaToken: '...' }`)
-2. Set the JWT as a cookie with the CHIPS-compatible attributes
+1. Sign JWT with draft mode state (e.g., `{ enabled: true }` or `{ datocmsDraftContentCdaToken: '...' }`)
+2. Set as cookie with CHIPS-compatible attributes
 
 ### Disable
 
-1. Delete the cookie (using the same attributes)
+1. Delete cookie (same attributes)
 
 ### Check
 
-1. Read the cookie
-2. Verify the JWT signature
-3. Return the payload's `enabled` state (or falsy if missing/invalid)
+1. Read cookie
+2. Verify JWT signature
+3. Return payload's `enabled` state (falsy if missing/invalid)
 
-The JWT secret must be a strong random string stored in an environment variable.
+JWT secret must be strong random string in env vars.
 
-**Nuxt difference:** The Nuxt starter kit stores the actual draft CDA token inside the JWT payload (`{ datocmsDraftContentCdaToken: '...' }`), so the client can decode it and use it for real-time subscriptions. SvelteKit and Astro use a simpler `{ enabled: true }` payload and keep the token server-side only.
+**Nuxt difference:** Stores actual draft CDA token in JWT payload (`{ datocmsDraftContentCdaToken: '...' }`) for client-side real-time subscriptions. SvelteKit and Astro use simpler `{ enabled: true }` payload, keep token server-side only.

@@ -14,148 +14,123 @@ description: >-
 
 # DatoCMS Plugin Design System
 
-This skill turns plugin UI work into native-feeling DatoCMS UI work. Use it when the main problem is visual fit, structure, density, or styling — not when the main problem is wiring hooks or scaffolding a new plugin.
+Make plugin UI native. Use for visual fit, structure, density, styling. Not for wiring hooks or scaffolding.
 
-Typical requests this skill should own:
+Owns:
 
-- “Make this plugin config screen feel native to DatoCMS”
-- “Restyle this sidebar panel to match the DatoCMS dashboard”
-- “Use raw CSS so this plugin page looks like a first-party DatoCMS screen”
-- “Tighten the spacing and hierarchy in this plugin modal”
-- “Choose `datocms-react-ui` components that best match the CMS UI”
+- Make config screen native
+- Restyle sidebar panel to match dashboard
+- Use raw CSS for native page look
+- Tighten modal spacing/hierarchy
+- Pick `datocms-react-ui` components matching CMS UI
 
 ## Step 1: Detect context silently
 
-1. Identify whether the target is:
-   - an existing plugin project
-   - a greenfield plugin scaffold
-   - a single screen or surface inside a larger plugin
-2. Identify the touched surface:
-   - config screen
-   - page
-   - sidebar panel
-   - full sidebar
-   - modal
-   - outlet
-   - inspector
-   - asset source
-3. Check whether the project already uses `datocms-react-ui`.
-4. Check whether the requested change is primarily:
-   - visual restyling
-   - layout restructuring
-   - control selection
-   - theme alignment
-   - density cleanup
-5. Read the smallest existing UI slice before changing anything:
-   - the entrypoint for the surface
-   - the component being restyled
-   - its local CSS or CSS module
-   - `package.json` only if component availability is unclear
+1. Identify target: existing plugin, greenfield scaffold, single surface.
+2. Identify surface: config screen, page, sidebar panel, full sidebar, modal, outlet, inspector, asset source.
+3. Check if project uses `datocms-react-ui`.
+4. Identify change type: visual, layout, control selection, theme, density.
+5. Read smallest slice: surface entrypoint, component being restyled, local CSS, `package.json` if needed.
 
-Ask nothing unless the repo cannot tell which surface or plugin repo is being changed.
+Ask only if repo unclear.
 
-## Step 2: Choose the implementation path
+## Step 2: Choose implementation path
 
-Use the narrowest path that keeps the result native.
+Use narrowest path keeping result native.
 
 ### A. Public component path first
 
-Choose this when `datocms-react-ui` already exposes the control or layout primitive you need.
+Use when `datocms-react-ui` exposes needed control.
 
-Prefer it for:
+Prefer for:
 
 - `Canvas`
-- form wrappers and grouped settings
-- standard fields
-- buttons and button groups
-- sections
-- toolbar and header structure
-- sidebar panels
-- dropdowns
-- spinners and loading states
-- split layouts with `VerticalSplit` when available
+- form wrappers, grouped settings
+- standard fields, buttons, button groups
+- sections, toolbar, header structure
+- sidebar panels, dropdowns, spinners
+- `VerticalSplit` if available
 
 ### B. Raw React + CSS fallback
 
-Choose this when the public package does not expose the needed layout or when exact CMS composition matters more than a near match.
+Use when public package lacks needed layout or exact CMS composition matters.
 
-Use raw code for:
+Use for:
 
-- page shells that need CMS-like spacing but not a full custom component library
-- list and table wrappers plus lightweight summary rows
-- special empty states or info blocks
-- split or two-pane layouts when the installed UI package version does not provide a fitting primitive
-- surface-specific wrappers that only need theme variables and clean CSS
+- page shells needing CMS spacing
+- list/table wrappers, summary rows
+- empty states, info blocks
+- split layouts when UI package lacks primitive
+- surface-specific wrappers needing theme vars
 
-Do not import private CMS styles or private CMS class names into plugins. Recreate the structure with plugin-local CSS using Canvas variables.
+Do not import private CMS styles or class names. Recreate with plugin-local CSS using Canvas variables.
 
-## Step 3: Load the minimum references
+## Step 3: Load minimum references
 
 Always start with:
 
 - `references/foundations.md`
 - `references/datocms-react-ui-bridge.md`
 
-Load `references/source-map.md` only when the public docs plus the current plugin code are not enough and you need local visual calibration from a CMS checkout.
+Load `references/source-map.md` only if public docs + plugin code insufficient.
 
-Then load only the touched reference:
+Then load touched reference:
 
-- layout or page structure -> `references/layouts.md`
-- forms, settings screens, controls -> `references/forms-and-controls.md`
-- tabs, dropdowns, tables, notices, blank slates -> `references/navigation-feedback-and-data-display.md`
-- hook-specific screen shape and sizing -> `references/plugin-surfaces.md`
-- raw CSS implementation -> `references/raw-css-fallbacks.md`
+- layout/page → `references/layouts.md`
+- forms/settings/controls → `references/forms-and-controls.md`
+- tabs/dropdowns/tables/notices → `references/navigation-feedback-and-data-display.md`
+- hook-specific screen shape → `references/plugin-surfaces.md`
+- raw CSS → `references/raw-css-fallbacks.md`
 
-Do not load the whole bundle for a small restyle.
+Do not load whole bundle for small restyle.
 
 ## Step 4: Build native-looking UI
 
-Keep these guardrails:
+Guardrails:
 
 - Match DatoCMS density before inventing layout.
-- Use project theme variables from `<Canvas>` instead of hardcoded brand colors.
-- Prefer 1px borders, 3-5px radii, and subtle shadow only where the CMS uses it.
-- Keep page widths, toolbar heights, section spacing, and form rhythm close to the CMS source of truth.
-- Use one primary action per section or screen.
-- Keep destructive actions isolated.
-- Use labels above controls, hints below, and concise error text.
-- Favor sections, toolbars, sidebars, and tables over decorative cards.
-- Avoid hero blocks, KPI grids, ornamental copy, oversized rounded corners, heavy gradients, and dashboard filler.
-- Keep custom CSS local to the plugin and variable-driven.
-- If a public component is close but incomplete, compose around it instead of replacing all controls.
+- Use `<Canvas>` theme vars, not hardcoded brand colors.
+- Prefer 1px borders, 3-5px radii, subtle shadow where CMS uses it.
+- Keep page widths, toolbar heights, section spacing, form rhythm close to CMS.
+- One primary action per section/screen.
+- Isolate destructive actions.
+- Labels above controls, hints below, concise errors.
+- Favor sections/toolbars/sidebars/tables over decorative cards.
+- Avoid hero blocks, KPI grids, ornamental copy, oversized rounded corners, heavy gradients, dashboard filler.
+- Keep custom CSS local and variable-driven.
+- If public component close but incomplete, compose around it.
 
-When a user asks for a plugin UI that “looks native”, optimize in this order:
+For "native" UI, optimize in order:
 
 1. structure
 2. spacing
 3. typography
-4. color and theming
+4. color/theming
 5. control choice
 6. micro-interactions
 
 ## Step 5: Verify
 
-Run the smallest useful verification in the target plugin repo:
+Run smallest useful verification:
 
-- the repo's existing build script (`npm run build`, `pnpm build`, etc.) by default
-- or the nearest existing typecheck or build command
+- existing build script (`npm run build`, `pnpm build`)
 
-Then name the one manual UI check that matters most for the surface:
+Name one manual UI check:
 
-- config screen -> spacing, section grouping, primary action placement
-- page -> toolbar or header rhythm and scroll behavior
-- sidebar panel -> density and collapsed or open behavior
-- modal -> focus, width, and action hierarchy
-- outlet -> inline fit with surrounding CMS UI
-- asset source -> search or result rhythm and sizing
-- inspector or full sidebar -> `noAutoResizer` and two-pane behavior if present
+- config → spacing, section grouping, primary action placement
+- page → toolbar/header rhythm, scroll behavior
+- sidebar panel → density, collapsed/open behavior
+- modal → focus, width, action hierarchy
+- outlet → inline fit with surrounding CMS UI
+- asset source → search/result rhythm, sizing
+- inspector/full sidebar → `noAutoResizer`, two-pane behavior
 
 ## Cross-skill routing
 
-- New plugin project or new plugin folder -> `datocms-plugin-scaffold`
-- Existing plugin feature work, hook wiring, parameter logic, or surface behavior -> `datocms-plugin-builder`
-- Mixed tasks are normal:
-  - use this skill for native DatoCMS UI choices
-  - pair with scaffold or builder for hook wiring or project setup
-- Standalone CMA work outside plugin UI -> `datocms-cma`
-- Front-end site integration work -> `datocms-frontend-integrations`
+- New plugin/project/folder → `datocms-plugin-scaffold`
+- Existing plugin feature/hooks/parameters/surface behavior → `datocms-plugin-builder`
+- Mixed tasks normal:
+  - this skill for native DatoCMS UI
+  - scaffold/builder for hooks/setup
+- Standalone CMA outside plugin UI → `datocms-cma`
+- Frontend site integration → `datocms-frontend-integrations`

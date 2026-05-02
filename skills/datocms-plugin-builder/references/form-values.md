@@ -1,14 +1,13 @@
 # Working with Form Values Reference
 
-## Quick Navigation
-
-- Localized field reads and writes
-- `readFieldValue()` for non-field-extension contexts
-- Modular content and block arrays
-- Structured Text Slate format vs DAST
-- When to use extra Structured Text utilities
-
 The `ctx.formValues` object contains the internal form state for the record being edited. This reference covers the internal data formats, which differ from the API/DAST formats in important ways.
+
+## Contents
+
+- Localized Fields — Always Guard
+- Modular Content Fields
+- Structured Text Fields — Slate Format
+- Key Notes
 
 ## Localized Fields — Always Guard
 

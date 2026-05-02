@@ -1,14 +1,5 @@
 # Navigation, Feedback, and Data Display
 
-## Quick Navigation
-
-- dropdowns
-- tabs
-- tables and lists
-- blank slates
-- notices and info blocks
-- badges and summary rows
-
 Primary sources:
 
 - `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Dropdown.css`
@@ -19,7 +10,18 @@ Primary sources:
 - `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Info.css`
 - `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Badge.css`
 
-## 1. Dropdowns
+## Contents
+
+- Dropdowns
+- Tabs
+- Tables
+- Lists and summary rows
+- Blank slates
+- Notices and info blocks
+- Badges and tags
+- Native-feel checks for data display
+
+## Dropdowns
 
 Official doc: <https://www.datocms.com/docs/plugin-sdk/dropdown>
 
@@ -33,7 +35,7 @@ CMS dropdowns are:
 
 Use grouped titles sparingly. A flat list is often better.
 
-## 2. Tabs
+## Tabs
 
 Tabs are acceptable for a small set of peer views. Use them when the content belongs on the same screen and users switch frequently.
 
@@ -45,7 +47,7 @@ CMS tab styling is restrained:
 - active tab reads as a raised white surface
 - invalid tabs can use alert color, but only for true validation/state issues
 
-## 3. Tables
+## Tables
 
 Tables in the CMS are left-aligned, border-led, and compact.
 
@@ -58,7 +60,7 @@ Tables in the CMS are left-aligned, border-led, and compact.
 
 Use tables for structured comparison or operational lists. Use simple stacked rows for lighter metadata views.
 
-## 4. Lists and summary rows
+## Lists and summary rows
 
 Plugin-card-like rows from the CMS are useful when a full table is too heavy.
 
@@ -69,7 +71,7 @@ Common ingredients:
 - secondary metadata aligned to the edge
 - border or separator instead of deep card chrome
 
-## 5. Blank slates
+## Blank slates
 
 Blank slates in the CMS are centered but still restrained.
 
@@ -85,7 +87,7 @@ Bad blank slate content:
 - three paragraphs of explanation
 - multiple equal actions
 
-## 6. Notices and info blocks
+## Notices and info blocks
 
 Use a notice or info block when users need contextual guidance that should stay attached to the screen.
 
@@ -99,7 +101,7 @@ Use a highlighted left-edge treatment for stronger guidance, warnings, or multi-
 
 Keep both compact. If the message becomes a tutorial, move it elsewhere.
 
-## 7. Badges and tags
+## Badges and tags
 
 CMS badges are tiny, uppercase, and used for real status or classification.
 
@@ -111,7 +113,7 @@ Use them for:
 
 Do not turn every metadata point into a badge.
 
-## 8. Native-feel checks for data display
+## Native-feel checks for data display
 
 - Is the layout readable without color?
 - Would a simple divider solve the problem better than another card?

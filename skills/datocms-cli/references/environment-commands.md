@@ -2,8 +2,6 @@
 
 Managing DatoCMS environments (sandboxes) and making direct CMA calls from the CLI.
 
----
-
 ## Inputs to confirm before running commands
 
 Confirm these inputs when they are not already clear:
@@ -11,8 +9,6 @@ Confirm these inputs when they are not already clear:
 - exact environment ids involved
 - whether the target is disposable
 - whether the action is read-only, destructive, or promotion-related
-
----
 
 ## Simple Environment Commands
 
@@ -22,8 +18,6 @@ Confirm these inputs when they are not already clear:
 - **`environments:destroy`** — destroy a sandbox environment: `npx datocms environments:destroy <ENVIRONMENT_ID>`
 
 **Warning:** `environments:destroy` permanently deletes the environment and all its data.
-
----
 
 ## environments:fork
 
@@ -48,8 +42,6 @@ npx datocms environments:fork main staging --fast
 npx datocms environments:fork main staging --fast --force
 ```
 
----
-
 ## environments:promote
 
 Promote a sandbox environment to primary:
@@ -66,8 +58,6 @@ npx datocms environments:promote staging
 
 **Warning:** This replaces the current primary environment. The old primary becomes a sandbox.
 
----
-
 ## cma:call (Environment-Specific Usage)
 
 For one-off environment operations from the terminal, `cma:call` can target environments directly:
@@ -81,7 +71,7 @@ npx datocms cma:call environments find <ENVIRONMENT_ID>
 
 # Target a specific environment for any resource
 npx datocms cma:call items list --environment=staging
-npx datocms cma:call item_types list --environment=my-feature
+npx datocms cma:call itemTypes list --environment=my-feature
 ```
 
 > **Prefer the dedicated CLI commands** (`environments:fork`, `environments:promote`, etc.) over `cma:call environments` — they have better flags and output.

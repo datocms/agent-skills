@@ -4,18 +4,6 @@ React hook for live content updates via DatoCMS's [Real-time Updates API](https:
 
 See `realtime-concepts.md` for shared initialization options, connection status values, error object shape, and the `fetcher` gotcha.
 
-## Contents
-
-- [Basic Usage](#basic-usage)
-- [Hook Signature](#hook-signature)
-- [Initialization Options](#initialization-options)
-- [Connection Status](#connection-status)
-- [Error Object](#error-object)
-- [Integration with Draft Mode](#integration-with-draft-mode)
-- [Critical: The `fetcher` Gotcha](#critical-the-fetcher-gotcha)
-
----
-
 ## Basic Usage
 
 ```jsx
@@ -64,8 +52,6 @@ function App() {
 }
 ```
 
----
-
 ## Hook Signature
 
 ```ts
@@ -76,25 +62,17 @@ const {
 } = useQuerySubscription(options);
 ```
 
----
-
 ## Initialization Options
 
 See `realtime-concepts.md` for the full options table shared across all frameworks.
-
----
 
 ## Connection Status
 
 See `realtime-concepts.md` for connection status values.
 
----
-
 ## Error Object
 
 See `realtime-concepts.md` for the error object shape.
-
----
 
 ## Integration with Draft Mode
 
@@ -113,8 +91,6 @@ const { data } = useQuerySubscription({
   initialData: serverData,
 });
 ```
-
----
 
 ## Critical: The `fetcher` Gotcha
 

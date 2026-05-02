@@ -8,14 +8,12 @@ See `realtime-concepts.md` for shared initialization options and the `fetcher` g
 
 ## Contents
 
-- [Setup](#setup)
-- [Basic Usage](#basic-usage)
-- [Integration with Draft Mode](#integration-with-draft-mode)
-- [Conditional Rendering](#conditional-rendering)
-- [Initialization Options](#initialization-options)
-- [Key Differences from React, Vue, and Svelte](#key-differences-from-react-vue-and-svelte)
-
----
+- Setup
+- Basic Usage
+- Integration with Draft Mode
+- Conditional Rendering
+- Initialization Options
+- Key Differences from React, Vue, and Svelte
 
 ## Setup
 
@@ -24,8 +22,6 @@ import { QueryListener } from '@datocms/astro/QueryListener';
 ```
 
 **Note:** `@datocms/astro` uses subpath imports — always import from `@datocms/astro/QueryListener`, not from `@datocms/astro`.
-
----
 
 ## Basic Usage
 
@@ -57,8 +53,6 @@ const data = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
 ```
 
 When content changes in DatoCMS, `<QueryListener />` detects the change and reloads the page, causing Astro to re-fetch the data server-side with the updated content.
-
----
 
 ## Integration with Draft Mode
 
@@ -101,8 +95,6 @@ const data = await executeQuery(query, {
 
 **Important:** The `<QueryListener />` options should match the options you pass to `executeQuery` so the subscription monitors the same query configuration.
 
----
-
 ## Conditional Rendering
 
 Only render `<QueryListener />` when in draft mode to avoid unnecessary subscriptions in production:
@@ -126,13 +118,9 @@ const isDraftMode = /* your draft mode check */;
 )}
 ```
 
----
-
 ## Initialization Options
 
 See `realtime-concepts.md` for the full options table. `<QueryListener />` accepts the same core options as props, except it does not expose `fetcher` or `eventSourceClass`.
-
----
 
 ## Key Differences from React, Vue, and Svelte
 

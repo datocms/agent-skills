@@ -4,19 +4,17 @@ React-specific wiring for `react-datocms` Content Link in React and Next.js-styl
 
 ## Contents
 
-- [Shared Concepts](#shared-concepts)
-- [Setup](#setup)
-- [Framework Integrations](#framework-integrations)
-- [Enabling Click-to-Edit](#enabling-click-to-edit)
-- [`<ContentLink />` Props](#contentlink-props)
-- [`useContentLink` Hook](#usecontentlink-hook)
-- [Data Attributes Reference](#data-attributes-reference)
-- [Group & Boundary Resolution Rules](#group-boundary-resolution-rules)
-- [Structured Text Integration](#structured-text-integration)
-- [Low-Level Utilities](#low-level-utilities)
-- [Troubleshooting](#troubleshooting)
-
----
+- Shared Concepts
+- Setup
+- Framework Integrations
+- Enabling Click-to-Edit
+- `<ContentLink />` Props
+- `useContentLink` Hook
+- Data Attributes Reference
+- Group & Boundary Resolution Rules
+- Structured Text Integration
+- Low-Level Utilities
+- Troubleshooting
 
 ## Shared Concepts
 
@@ -27,8 +25,6 @@ Read [content-link-concepts.md](./content-link-concepts.md) first for the shared
 - shared data attributes, grouping rules, low-level controller utilities, and common troubleshooting
 
 Use this file for React-only component API, router wiring, and Structured Text integration details.
-
----
 
 ## Setup
 
@@ -48,8 +44,6 @@ function App() {
   );
 }
 ```
-
----
 
 ## Framework Integrations
 
@@ -113,8 +107,6 @@ export function ContentLink() {
 }
 ```
 
----
-
 ## Enabling Click-to-Edit
 
 ### Via Prop (Persistent)
@@ -145,8 +137,6 @@ With options:
 
 Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily show click-to-edit overlays. Releasing the key hides them.
 
----
-
 ## `<ContentLink />` Props
 
 | Prop | Type | Default | Description |
@@ -156,8 +146,6 @@ Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily show click-to-ed
 | `enableClickToEdit` | `boolean \| ClickToEditOptions` | — | Enable click-to-edit overlays persistently |
 | `stripStega` | boolean | — | Remove stega encoding from text nodes after processing |
 | `root` | `React.RefObject<HTMLElement>` | — | Limit scanning to a root element instead of entire document |
-
----
 
 ## `useContentLink` Hook
 
@@ -220,8 +208,6 @@ function EditingToolbar() {
   );
 }
 ```
-
----
 
 ## Data Attributes Reference
 
@@ -296,8 +282,6 @@ Without the boundary, clicking `page.author` would open the outer group's URL.
 | `data-datocms-contains-stega` | Added to elements with stega content (only when `stripStega` is false) |
 | `data-datocms-auto-content-link-url` | Added to elements identified as editable targets; contains the resolved edit URL |
 
----
-
 ## Group & Boundary Resolution Rules
 
 When stega content is found, the library walks up the DOM from that element:
@@ -305,8 +289,6 @@ When stega content is found, the library walks up the DOM from that element:
 1. **Finds `data-datocms-content-link-group`** → stamps that element as clickable target
 2. **Finds `data-datocms-content-link-boundary`** → stops traversal, stamps the starting element as clickable target
 3. **Reaches root without finding either** → stamps the starting element
-
----
 
 ## Structured Text Integration
 
@@ -352,8 +334,6 @@ Structured Text fields need special handling:
 
 **Why `renderLinkToRecord` doesn't need a boundary:** Record links are `<a>` tags wrapping text that belongs to the surrounding structured text — no separate editing target, no collision.
 
----
-
 ## Low-Level Utilities
 
 ### `stripStega`
@@ -394,8 +374,6 @@ console.log(revealStega(graphqlResponse));   // same object shape, markers visib
 ```
 
 See [content-link-concepts.md → When to Strip Stega](./content-link-concepts.md#when-to-strip-stega) for the full rule on when to wrap values in `stripStega()` (string comparisons, SEO/meta, analytics, slug/URL generation, anything other than direct render). Note: DatoCMS `slug` field types are never stega-encoded and don't need stripping.
-
----
 
 ## Troubleshooting
 

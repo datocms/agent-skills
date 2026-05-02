@@ -2,15 +2,22 @@
 
 Covers all filter operators by field type, AND/OR logic, meta field filters, deep filtering for modular content and structured text, and upload filtering.
 
----
+## Contents
+
+- Critical Filter Behaviors
+- Filter Syntax
+- AND / OR Logic
+- Filter Operators by Field Type
+- `matches` / `notMatches` Details
+- Meta Field Filters
+- Deep Filtering
+- Upload Queries and Filtering
 
 ## Critical Filter Behaviors
 
 **`neq` / `notIn` / `notMatches` return nulls:** Across all field types, negation operators also return records where the field is `null`. For example, `neq: "x"` returns records with a different value **and** records with no value. Add `exists: true` (or `isPresent: true` for string/text fields) if you need to exclude nulls.
 
 **Empty arrays in `in` / `notIn`:** `{ in: [] }` returns an **empty result** (nothing matches). `{ notIn: [] }` returns **all records** (nothing is excluded). Be careful when building filters dynamically — an empty array can produce unexpected results.
-
----
 
 ## Filter Syntax
 
@@ -29,8 +36,6 @@ query {
   }
 }
 ```
-
----
 
 ## AND / OR Logic
 
@@ -84,8 +89,6 @@ filter: {
   ]
 }
 ```
-
----
 
 ## Filter Operators by Field Type
 
@@ -269,8 +272,6 @@ filter: {
 
 **Note:** When deep filtering is enabled on a structured text field, the filter schema changes — see the Deep Filtering section below.
 
----
-
 ## `matches` / `notMatches` Details
 
 The `pattern` value is a **regular expression**:
@@ -284,8 +285,6 @@ filter: {
 ```
 
 `caseSensitive` defaults to `false` if omitted.
-
----
 
 ## Meta Field Filters
 
@@ -316,8 +315,6 @@ filter: {
   _locales: { anyIn: [it, en] }
 }
 ```
-
----
 
 ## Deep Filtering
 
@@ -417,8 +414,6 @@ filter: {
 1. **One level deep only.** Cannot filter on blocks nested within other blocks.
 2. **Block meta fields:** Blocks only have `id` as a meta field — no `_createdAt`, `_publishedAt`, etc.
 3. **CDA only.** Deep filtering is not available in the CMA REST API.
-
----
 
 ## Upload Queries and Filtering
 

@@ -1,15 +1,18 @@
 # Foundations
 
-## Quick Navigation
-
-- typography and type scale
-- spacing scale and page rhythm
-- borders, radii, and shadows
-- color system and theme bridging
-- native-feel heuristics
-- implementation defaults for plugin code
-
 Use this file first for every restyle. It contains the decisions that make a plugin read as “DatoCMS” before any component choice.
+
+## Contents
+
+- Typography
+- Spacing scale
+- Borders, radii, and shadows
+- Transitions and motion
+- Color system
+- What Canvas actually injects
+- Theme bridging pattern
+- Native-feel heuristics
+- Default implementation choices
 
 ## Typography
 

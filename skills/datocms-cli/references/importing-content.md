@@ -2,7 +2,11 @@
 
 WordPress and Contentful import commands.
 
----
+## Contents
+
+- Inputs to confirm before running commands
+- WordPress Import
+- Contentful Import
 
 ## Inputs to confirm before running commands
 
@@ -20,8 +24,6 @@ If the target is existing or unclear, prefer a staged approach:
 - run once **without** `--autoconfirm`
 - consider schema-only or narrowed imports first when the importer supports it
 - call out any destructive schema-reset behavior explicitly
-
----
 
 ## WordPress Import
 
@@ -65,8 +67,6 @@ npx datocms wordpress:import \
 ```
 
 Add `--autoconfirm` only when the operator intentionally wants a non-interactive run.
-
----
 
 ## Contentful Import
 

@@ -4,9 +4,9 @@ Use only the sections that match the work you actually performed.
 
 ## Contents
 
-- [Setup Flows](#setup-flows)
-- [Component Integrations](#component-integrations)
-- [Search and Crawl](#search-and-crawl)
+- Setup Flows
+- Component Integrations
+- Search and Crawl
 
 ## Setup Flows
 

@@ -6,13 +6,11 @@ See `site-search-concepts.md` for shared initialization options, state behavior,
 
 ## Contents
 
-- [Installation](#installation)
-- [Basic Usage](#basic-usage)
-- [Initialization Options](#initialization-options)
-- [Returned Data Shape](#returned-data-shape)
-- [Complete Example with Pagination](#complete-example-with-pagination)
-
----
+- Installation
+- Basic Usage
+- Initialization Options
+- Returned Data Shape
+- Complete Example with Pagination
 
 ## Installation
 
@@ -21,8 +19,6 @@ Requires `@datocms/cma-client-browser` for API requests:
 ```bash
 npm install react-datocms @datocms/cma-client-browser
 ```
-
----
 
 ## Basic Usage
 
@@ -64,8 +60,6 @@ function SearchWidget() {
 }
 ```
 
----
-
 ## Initialization Options
 
 See `site-search-concepts.md` for shared options. React additionally supports:
@@ -76,8 +70,6 @@ See `site-search-concepts.md` for shared options. React additionally supports:
 | `initialState.query` | string | `''` | Initial search query |
 | `initialState.locale` | string | `null` | Initial locale filter |
 | `initialState.page` | number | `0` | Initial page number |
-
----
 
 ## Returned Data Shape
 
@@ -110,8 +102,6 @@ See `site-search-concepts.md` for shared options. React additionally supports:
 - **`error`** — Error message string on API failure, otherwise `undefined`.
 - **`data`** — Search results, `undefined` while loading.
 - If both `error` and `data` are `undefined`/`null`, the form is loading — show a spinner.
-
----
 
 ## Complete Example with Pagination
 

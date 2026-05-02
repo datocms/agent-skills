@@ -6,6 +6,19 @@ Mutate record fields — block-bearing fields (Modular Content `rich_text`, Sing
 
 Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.body) { ... }`. Always pass `Schema.X` as generic to typed helpers; never hand-roll JSON:API.
 
+## Contents
+
+- Workflow
+- Imports
+- Typing values you build up in code
+- `Schema.X` is mandatory on every typed call
+- Prerequisites the workflow assumes
+- Modular content (`rich_text`)
+- Single block (`single_block`)
+- Structured text (`structured_text`)
+- Localized fields and adding a locale
+- Optimistic locking via `meta.current_version`
+
 ## Workflow
 
 1. Inspect schema model, including nested blocks for block IDs.

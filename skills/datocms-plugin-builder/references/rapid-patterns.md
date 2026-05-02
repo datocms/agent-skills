@@ -1,12 +1,24 @@
 # Rapid Maintenance Patterns
 
-Use this file for common follow-up edits before loading the larger references.
+Use for common follow-up edits before loading larger references.
+
+## Contents
+
+- Quick picks
+- Config screen + normalized parameters
+- Asset source + modal wiring
+- Upload sidebar / panel + modal wiring
+- Modal height and resizing
+- Browser CMA from plugin UI
+- Permission additions that stay aligned
+- Restraint in plugin UI
+- When not to reorganize files
 
 ## Quick picks
 
 - Config screen + parameter cleanup -> normalize once at read/save boundary
-- Asset source + modal -> let the asset source own selection, use modal only for a focused sub-step
-- Upload sidebar + modal -> let the sidebar own context, use modal only for focused edits
+- Asset source + modal -> let asset source own selection, use modal only for focused sub-step
+- Upload sidebar + modal -> let sidebar own context, use modal only for focused edits
 - Height issues -> trust `<Canvas ctx={ctx}>` first, then add `initialHeight` or `ctx.updateHeight()`
 - Browser CMA in plugin UI -> prefer SDK helpers first, otherwise use `@datocms/cma-client-browser`
 - Permission change -> update `package.json`, runtime guard, and visible UI together
@@ -44,13 +56,13 @@ Keep the asset source as the primary surface.
 
 1. Declare in `assetSources()`.
 2. Render in `renderAssetSource()`.
-3. If the user needs one focused extra step, open a modal from the asset source.
+3. If user needs one focused extra step, open a modal from the asset source.
 4. Resolve a small payload back.
 5. Finish with `ctx.select()` from the asset source flow.
 
 Use a modal for focused choices like metadata, crop mode, or source-specific options. Do not turn the asset source into a multi-screen mini app.
 
-Prefer `ctx.select()` over raw CMA upload creation when the job is simply “pick a file and create an upload”.
+Prefer `ctx.select()` over raw CMA upload creation when the job is simply "pick a file and create an upload".
 
 See `asset-sources.md` and `modals.md`.
 
@@ -73,7 +85,7 @@ See `upload-sidebars.md` and `modals.md`.
 Default to normal iframe behavior.
 
 - Self-resizing surfaces already work with `<Canvas ctx={ctx}>`.
-- Use `initialHeight` to avoid cramped first paint when the modal/panel loads async data.
+- Use `initialHeight` to avoid cramped first paint when modal/panel loads async data.
 - Use `ctx.updateHeight()` only when content height changes after render and auto-resize is not enough.
 - Use `noAutoResizer` only for imposed-size surfaces like pages, inspectors, and full-width sidebars.
 
@@ -110,7 +122,7 @@ See `connect-conventions.md` for imposed-size vs self-resizing surfaces.
 
 ## Browser CMA from plugin UI
 
-Treat this as a normal plugin-maintenance pattern.
+Treat as normal plugin-maintenance pattern.
 
 Use SDK helpers first:
 
@@ -119,7 +131,7 @@ Use SDK helpers first:
 - `ctx.updatePluginParameters()`
 - `ctx.editUpload()` / `ctx.selectUpload()`
 
-Use browser CMA only when the plugin UI must create or update records/uploads directly and the SDK helper is not enough.
+Use browser CMA only when plugin UI must create or update records/uploads directly and SDK helper is not enough.
 
 ```ts
 import { buildClient } from '@datocms/cma-client-browser';
@@ -135,13 +147,13 @@ const client = buildClient({
 });
 ```
 
-- Add the `currentUserAccessToken` permission only when that code path exists.
+- Add `currentUserAccessToken` permission only when that code path exists.
 - Check the token at runtime every time.
 - Keep CMA work in a small helper when reused or when it keeps the UI component smaller.
 - Catch errors and report them with `ctx.alert()`.
 - Prefer asset-source `ctx.select()` over CMA upload creation when possible.
 
-See `sdk-architecture.md` for the full CMA pattern.
+See `sdk-architecture.md` for full CMA pattern.
 
 ## Permission additions that stay aligned
 
@@ -152,7 +164,7 @@ When a change needs a new permission:
 3. Keep the UI honest: disable or hide the action when the permission is unavailable.
 4. Verify the action still degrades cleanly for roles without that permission.
 
-Do not add broad permissions “just in case”.
+Do not add broad permissions "just in case".
 
 ## Restraint in plugin UI
 

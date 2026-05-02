@@ -2,7 +2,15 @@
 
 Covers querying localized content: site locales, query-level and field-level locale arguments, fallback locales, fetching all locale values, and filtering by locale availability.
 
----
+## Contents
+
+- Get Site Locales
+- Record Available Locales
+- Query-Level Locale
+- Per-Field Locale Override
+- Fallback Locales
+- All Locale Values
+- Complete Example
 
 ## Get Site Locales
 
@@ -15,8 +23,6 @@ query {
 ```
 
 Returns an array of locale codes in the order configured in the project (e.g., `["en", "it", "fr"]`). The first locale is the project's default locale.
-
----
 
 ## Record Available Locales
 
@@ -47,8 +53,6 @@ query {
 }
 ```
 
----
-
 ## Query-Level Locale
 
 Pass the `locale` argument on the query to set the locale for all localized fields. Without it, fields return the project's default (first) locale.
@@ -75,8 +79,6 @@ query {
 
 **Important:** When you set `locale` on a query, **filters apply to that locale's field values**. In the example above, `slug: { eq: "ciao-mondo" }` matches the Italian slug, not the default-locale slug.
 
----
-
 ## Per-Field Locale Override
 
 Individual fields can override the query-level locale. Use GraphQL aliases to fetch multiple locales of the same field:
@@ -90,8 +92,6 @@ query {
   }
 }
 ```
-
----
 
 ## Fallback Locales
 
@@ -118,8 +118,6 @@ query {
   }
 }
 ```
-
----
 
 ## All Locale Values
 
@@ -157,8 +155,6 @@ query {
   }
 }
 ```
-
----
 
 ## Complete Example
 

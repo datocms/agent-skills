@@ -6,13 +6,11 @@ Astro component for rendering SEO meta tags, social share tags, and favicons fro
 
 ## Contents
 
-- [Setup](#setup)
-- [GraphQL Queries](#graphql-queries)
-- [`<Seo />`](#seo-)
-- [`renderMetaTagsToString()`](#rendermetatagstostring)
-- [Utility Summary](#utility-summary)
-
----
+- Setup
+- GraphQL Queries
+- `<Seo />`
+- `renderMetaTagsToString()`
+- Utility Summary
 
 ## Setup
 
@@ -22,13 +20,9 @@ import { Seo } from '@datocms/astro/Seo';
 
 **Note:** `@datocms/astro` uses subpath imports — always import from `@datocms/astro/Seo`, not from `@datocms/astro`.
 
----
-
 ## GraphQL Queries
 
 See `seo-concepts.md` for the query shape and tag concatenation pattern. Examples below assume tags are fetched as `result.page.seo` and `result.site.favicon`.
-
----
 
 ## `<Seo />`
 
@@ -115,8 +109,6 @@ const seoData = [...result.page.seo, ...result.site.favicon];
 </Layout>
 ```
 
----
-
 ## `renderMetaTagsToString()`
 
 For server-side HTML string generation (e.g., in middleware, API routes, or non-component contexts), use `renderMetaTagsToString()`:
@@ -127,8 +119,6 @@ import { renderMetaTagsToString } from '@datocms/astro/Seo';
 const htmlString = renderMetaTagsToString([...result.page.seo, ...result.site.favicon]);
 // Returns a string of <title>, <meta>, and <link> HTML tags
 ```
-
----
 
 ## Utility Summary
 

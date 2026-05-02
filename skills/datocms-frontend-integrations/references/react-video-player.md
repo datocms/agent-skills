@@ -4,15 +4,6 @@ See `video-player-concepts.md` for the shared GraphQL query, video field definit
 
 React component for DatoCMS/Mux video streaming, designed to work with the `video` GraphQL query.
 
-## Contents
-
-- [Installation](#installation)
-- [Basic Usage](#basic-usage)
-- [Props](#props)
-- [`useVideoPlayer` Hook](#usevideoplayer-hook)
-
----
-
 ## Installation
 
 Requires `@mux/mux-player-react` as a peer dependency:
@@ -20,8 +11,6 @@ Requires `@mux/mux-player-react` as a peer dependency:
 ```bash
 npm install react-datocms @mux/mux-player-react
 ```
-
----
 
 ## Basic Usage
 
@@ -37,8 +26,6 @@ function BlogPost({ data }) {
   );
 }
 ```
-
----
 
 ## Props
 
@@ -58,8 +45,6 @@ function BlogPost({ data }) {
 | `style.aspectRatio` | `"[width] / [height]"` | none | Auto-set from `data.width`/`data.height` when available |
 
 All other props are forwarded directly to `<MuxPlayer />`.
-
----
 
 ## `useVideoPlayer` Hook
 

@@ -4,19 +4,17 @@ Vue 3 component for rendering DatoCMS [Structured Text (DAST)](https://www.datoc
 
 ## Contents
 
-- [Setup](#setup)
-- [Basic Usage](#basic-usage)
-- [Full GraphQL Fragment](#full-graphql-fragment)
-- [Custom Renderers](#custom-renderers)
-- [Custom Node Rules](#custom-node-rules)
-- [Custom Mark Rules](#custom-mark-rules)
-- [DAST Node Reference](#dast-node-reference)
-- [Conditional Rendering with `isEmptyDocument`](#conditional-rendering-with-isemptydocument)
-- [Related Packages](#related-packages)
-- [Props Reference](#props-reference)
-- [Content Link Integration](#content-link-integration)
-
----
+- Setup
+- Basic Usage
+- Full GraphQL Fragment
+- Custom Renderers
+- Custom Node Rules
+- Custom Mark Rules
+- DAST Node Reference
+- Conditional Rendering with `isEmptyDocument`
+- Related Packages
+- Props Reference
+- Content Link Integration
 
 ## Setup
 
@@ -35,8 +33,6 @@ Or use locally:
 import { StructuredText } from 'vue-datocms';
 </script>
 ```
-
----
 
 ## Basic Usage
 
@@ -67,8 +63,6 @@ query {
   }
 }
 ```
-
----
 
 ## Full GraphQL Fragment
 
@@ -125,8 +119,6 @@ query {
 ```
 
 **Critical:** Always include `id` and `__typename` on every `links`, `blocks`, and `inlineBlocks` entry via `... on RecordInterface`. The component uses `__typename` for the switch statements in custom renderers.
-
----
 
 ## Custom Renderers
 
@@ -193,8 +185,6 @@ function renderInlineBlock({ record }) {
 </template>
 ```
 
----
-
 ## Custom Node Rules
 
 Override default rendering for any node type using `customNodeRules` with `renderNodeRule`. Import type guards from `datocms-structured-text-utils`.
@@ -258,8 +248,6 @@ Available type guards: `isHeading`, `isCode`, `isParagraph`, `isList`, `isListIt
 
 **Note:** If you override the rules for `inlineItem`, `itemLink`, `block`, or `inlineBlock` nodes via `customNodeRules`, the corresponding `renderInlineRecord`, `renderLinkToRecord`, `renderBlock`, and `renderInlineBlock` props are ignored.
 
----
-
 ## Custom Mark Rules
 
 Override how marks (bold, italic, etc.) render using `customMarkRules` with `renderMarkRule`:
@@ -285,8 +273,6 @@ const customMarkRules = [
 | `'highlight'` | `<mark>` | Highlighted text |
 | `'code'` | `<code>` | Inline code |
 
----
-
 ## DAST Node Reference
 
 Each node type in a Structured Text document has specific properties available in `renderNodeRule` callbacks:
@@ -307,8 +293,6 @@ Each node type in a Structured Text document has specific properties available i
 | Link | `isLink` | `children`, `url`, `meta` (optional array of `{ id, value }`) |
 | Item Link | `isItemLink` | `children`, `item` (record ID -- resolved via `links` array), `meta` (optional) |
 | Inline Item | `isInlineItem` | `item` (record ID -- resolved via `links` array) |
-
----
 
 ## Conditional Rendering with `isEmptyDocument`
 
@@ -332,8 +316,6 @@ const props = defineProps<{ data: any }>();
   </div>
 </template>
 ```
-
----
 
 ## Related Packages
 
@@ -368,8 +350,6 @@ const html = toHtml(data.blogPost.content, {
 
 Same customization API as `<StructuredText>` (`renderBlock`, `renderInlineRecord`, `renderLinkToRecord`, `renderInlineBlock`, `customNodeRules`, `customMarkRules`).
 
----
-
 ## Props Reference
 
 | Prop | Type | Required | Description |
@@ -383,8 +363,6 @@ Same customization API as `<StructuredText>` (`renderBlock`, `renderInlineRecord
 | `customNodeRules` | `Array<RenderRule>` | No | Custom node rendering rules (via `renderNodeRule()`) |
 | `customMarkRules` | `Array<RenderMarkRule>` | No | Custom mark rendering rules (via `renderMarkRule()`) |
 | `renderText` | `(text: string, key: string) => VNode \| string \| null` | No | Custom text node rendering |
-
----
 
 ## Content Link Integration
 

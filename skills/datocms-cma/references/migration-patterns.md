@@ -4,6 +4,17 @@ Covers common scripting patterns for data migrations, bulk operations, upload mi
 
 > For endpoint shapes of any resource the script touches, consult `npx datocms cma:docs <resource> <action> --types-depth 2` (raise the depth or use `--expand-types` for deeper nested types). This file covers the migration script boilerplate, idempotent loops, progress reporting, and bulk-operation patterns — not the per-endpoint payload.
 
+## Contents
+
+- Always log progress
+- Migration Script Boilerplate
+- Iterating All Records with Progress
+- Bulk Content Updates
+- Upload Migration from External URLs
+- Field Type Migration
+- Resumable / Idempotent Migrations
+- Common Migration Checklist
+
 ## Always log progress
 
 Migrations are run interactively (a developer is watching the terminal) or in CI logs — in both cases a silent script is a broken script. Without progress output the operator can't tell whether the run is still working, stuck on a single record, or hitting rate limits.
@@ -16,18 +27,6 @@ Every migration should emit `console.log` at:
 - **End** — totals, elapsed time, anything the operator must do next
 
 Use `console.error` for per-item failures so they stand out. The examples below all follow this pattern — copy it.
-
-## Quick Navigation
-
-- [Migration Script Boilerplate](#migration-script-boilerplate)
-- [Iterating All Records with Progress](#iterating-all-records-with-progress)
-- [Bulk Content Updates](#bulk-content-updates)
-- [Upload Migration from External URLs](#upload-migration-from-external-urls)
-- [Field Type Migration](#field-type-migration)
-- [Resumable / Idempotent Migrations](#resumable--idempotent-migrations)
-- [Common Migration Checklist](#common-migration-checklist)
-
----
 
 ## Migration Script Boilerplate
 
@@ -63,8 +62,6 @@ migrate().catch((error) => {
 });
 ```
 
----
-
 ## Iterating All Records with Progress
 
 ```ts
@@ -97,8 +94,6 @@ async function processAllRecords() {
 ```
 
 **Important:** Use `concurrency: 1` (the default) when the loop performs writes. This prevents exceeding rate limits.
-
----
 
 ## Bulk Content Updates
 
@@ -156,8 +151,6 @@ async function publishAllDrafts() {
 }
 ```
 
----
-
 ## Upload Migration from External URLs
 
 Migrate images from an external CMS or URL source:
@@ -189,8 +182,6 @@ async function migrateUploads(
   return uploadMap;
 }
 ```
-
----
 
 ## Field Type Migration
 
@@ -251,8 +242,6 @@ async function migrateTextToStructuredText() {
 }
 ```
 
----
-
 ## Resumable / Idempotent Migrations
 
 For long-running migrations, track progress so you can resume if interrupted:
@@ -309,8 +298,6 @@ async function resumableMigration() {
   fs.unlinkSync(PROGRESS_FILE);
 }
 ```
-
----
 
 ## Common Migration Checklist
 

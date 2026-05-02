@@ -6,7 +6,15 @@ You are an expert at setting up TypeScript type generation for DatoCMS GraphQL q
 
 Follow these steps in order. Do not skip steps.
 
----
+## Contents
+
+- Step 1: Detect Context (silent)
+- Step 2: Ask Questions
+- Step 3: Load References
+- Step 4: Generate code
+- Step 5: Install dependencies
+- Step 6: Final handoff
+- Verification checklist
 
 ## Step 1: Detect Context (silent)
 
@@ -35,8 +43,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 - If the framework cannot be determined, ask the user.
 - If the project already has a materially different type-generation setup, inspect and patch it in place by default instead of replacing it.
 
----
-
 ## Step 2: Ask Questions
 
 Follow the zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
@@ -58,15 +64,11 @@ In that case, ask one question:
 
 Do not ask about CMA types here. If the user later wants CMA schema types, keep that as the optional `cma-types` follow-up recipe.
 
----
-
 ## Step 3: Load References
 
 Read only this reference:
 
 - `../../../../datocms-cda/references/type-generation.md`
-
----
 
 ## Step 4: Generate code
 
@@ -97,8 +99,6 @@ Create or patch:
 - Do not add `generate-cma-types` here
 - Default greenfield setups to `gql.tada`
 
----
-
 ## Step 5: Install dependencies
 
 Install only the dependencies required by the selected approach:
@@ -118,8 +118,6 @@ Install only the dependencies required by the selected approach:
 
 Use the detected package manager.
 
----
-
 ## Step 6: Final handoff
 
 After generating the files, tell the user:
@@ -129,8 +127,6 @@ After generating the files, tell the user:
 3. the optional follow-up recipe id `cma-types` if they also want CMA schema types
 
 Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including an explicit `Unresolved placeholders` section.
-
----
 
 ## Verification checklist
 

@@ -1,14 +1,5 @@
 # Forms and Controls
 
-## Quick Navigation
-
-- field rhythm and label placement
-- hints, errors, and validation tone
-- button hierarchy
-- grouped settings
-- inline vs block controls
-- destructive sections and save actions
-
 Primary sources:
 
 - `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/form/Field.tsx`
@@ -18,7 +9,20 @@ Primary sources:
 - `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_button.css`
 - `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_input-group.css`
 
-## 1. Field rhythm
+## Contents
+
+- Field rhythm
+- Labels and helper text
+- Validation
+- Button hierarchy
+- Grouped settings
+- Inline vs block controls
+- Config screen action placement
+- Control defaults to prefer
+- Disabled states
+- Destructive areas
+
+## Field rhythm
 
 The CMS default field stack is simple:
 
@@ -29,7 +33,7 @@ The CMS default field stack is simple:
 
 Keep labels aligned and predictable. Do not switch between left labels, top labels, and inline labels unless the control truly requires it.
 
-## 2. Labels and helper text
+## Labels and helper text
 
 Labels should be short and concrete. Use helper text only when the field needs clarification.
 
@@ -47,7 +51,7 @@ Labels should be short and concrete. Use helper text only when the field needs c
 
 Secondary text should usually use `var(--light-body-color)` and `var(--font-size-s)`.
 
-## 3. Validation
+## Validation
 
 Primary source: `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_form.css`
 
@@ -59,7 +63,7 @@ CMS validation is close to the field:
 
 Plugins should do the same. Do not surface every validation issue as a toast.
 
-## 4. Button hierarchy
+## Button hierarchy
 
 Official docs:
 
@@ -79,7 +83,7 @@ Official docs:
 - Full-width buttons are appropriate in narrow config screens and focused modals
 - In toolbar contexts, buttons should stay compact
 
-## 5. Grouped settings
+## Grouped settings
 
 Use grouped sections for settings that belong together. Public component path:
 
@@ -89,7 +93,7 @@ Use grouped sections for settings that belong together. Public component path:
 
 If you use `react-final-form`, alias its `Form` import to avoid colliding with the `datocms-react-ui` `Form` component.
 
-## 6. Inline vs block controls
+## Inline vs block controls
 
 Default to block controls.
 
@@ -101,7 +105,7 @@ Inline controls are good for:
 
 Use input groups for prefixed and suffixed values rather than inventing a separate visual treatment.
 
-## 7. Config screen action placement
+## Config screen action placement
 
 A normal config screen usually ends with:
 
@@ -111,7 +115,7 @@ A normal config screen usually ends with:
 
 The CMS does not usually bury the main save action inside a decorative footer.
 
-## 8. Control defaults to prefer
+## Control defaults to prefer
 
 Public component path:
 
@@ -128,7 +132,7 @@ Raw fallback path:
 - CSS Modules using Canvas variables
 - browser-native semantics first, extra chrome second
 
-## 9. Disabled states
+## Disabled states
 
 ### Visual treatment
 
@@ -155,6 +159,6 @@ Raw fallback path:
 
 Use the native `disabled` attribute on form elements. For non-form elements that appear disabled, use `aria-disabled="true"` and prevent interaction in the click handler.
 
-## 10. Destructive areas
+## Destructive areas
 
 Destructive actions should usually live in a separated section with one clear explanation. If the CMS source uses a highlighted or destructive treatment, copy the restraint, not just the color.

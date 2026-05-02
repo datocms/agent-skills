@@ -1,14 +1,15 @@
 # datocms-react-ui Bridge
 
-## Quick Navigation
-
-- public-first decision rule
-- design intent to component mapping
-- when to stay with public components
-- when to fall back to raw React and CSS
-- version-sensitive areas
-
 Use this file when the question is “which public primitive should carry this UI?” instead of “how does the CMS look?”
+
+## Contents
+
+- Public-first decision rule
+- Mapping table
+- Component notes
+- When to stay with public components
+- When to fall back to raw code
+- Version-sensitive areas
 
 ## Public-first decision rule
 

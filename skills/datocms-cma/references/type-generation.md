@@ -9,14 +9,12 @@ The generated types are useful for **both** CMA API styles:
 
 Default to the simplified API. Reach for raw methods only when the task explicitly needs them. See `client-types-and-behaviors.md` for the `RawApiTypes` overview and dual-API guidance.
 
-## Quick Navigation
+## Contents
 
-- [Install](#install)
-- [Generate Script](#generate-script)
-- [Generated Output](#generated-output)
-- [Usage](#usage)
-
----
+- Install
+- Generate Script
+- Generated Output
+- Usage
 
 ## Install
 
@@ -25,8 +23,6 @@ npm install --save-dev datocms dotenv-cli
 ```
 
 `datocms` provides the `datocms schema:generate` command. `dotenv-cli` loads your `.env` file so the API token is available to the script.
-
----
 
 ## Generate Script
 
@@ -54,8 +50,6 @@ The Nuxt script remaps its env var inline because `datocms` expects `DATOCMS_API
 ```json
 "generate-cma-types": "dotenv -c -- bash -c 'DATOCMS_API_TOKEN=$NUXT_DATOCMS_CMA_TOKEN npx datocms schema:generate lib/datocms/cma-types.ts'"
 ```
-
----
 
 ## Generated Output
 
@@ -103,8 +97,6 @@ export type AnyBlockOrModel = AnyBlock | AnyModel;
 - `AnyBlock` — union of all block models
 - `AnyModel` — union of all regular models
 - `AnyBlockOrModel` — union of both
-
----
 
 ## Usage
 

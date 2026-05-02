@@ -8,7 +8,14 @@ See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
 
 Follow these steps in order. Do not skip steps.
 
----
+## Contents
+
+- Step 1: Detect Context (silent)
+- Step 2: Ask Questions
+- Step 3: Load References
+- Step 4: Generate Code
+- Step 5: Next Steps
+- Verification Checklist
 
 ## Step 1: Detect Context (silent)
 
@@ -29,8 +36,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 - If the framework cannot be determined, ask the user.
 - If the repo already has a materially different sitemap implementation, patch it in place by default instead of rewriting it wholesale.
 
----
-
 ## Step 2: Ask Questions
 
 Infer first from the repo.
@@ -41,8 +46,6 @@ If you do ask, make it one concise question, put the recommended/default path fi
 
 Only ask if the repo exposes multiple public sections but their sitemap or crawler boundaries cannot be inferred safely from the existing route structure.
 
----
-
 ## Step 3: Load References
 
 Read only these references:
@@ -50,8 +53,6 @@ Read only these references:
 - `../../../../datocms-frontend-integrations/references/robots-and-sitemaps.md`
 
 If the repo already has SEO or preview-route helpers, inspect those files directly and reuse them instead of loading more references than necessary.
-
----
 
 ## Step 4: Generate Code
 
@@ -113,8 +114,6 @@ Reuse existing file-placement conventions in the repo.
 - Report `scaffolded` if the site URL is still a placeholder or any public section lacks a concrete route / `lastmod` mapping
 - Report `production-ready` only when the generated outputs have real URLs, deterministic mappings, and no unresolved crawler TODOs
 
----
-
 ## Step 5: Next Steps
 
 After generating the files, tell the user:
@@ -123,8 +122,6 @@ After generating the files, tell the user:
 2. Which public sections were added to the sitemap source list
 3. Whether suffix-specific Dato crawler groups were generated
 4. Which mappings still need real route or `lastmod` logic, if any
-
----
 
 ## Verification Checklist
 

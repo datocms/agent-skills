@@ -6,7 +6,16 @@ You are an expert at setting up the thinnest useful DatoCMS Content Delivery API
 
 Follow these steps in order. Do not skip steps.
 
----
+## Contents
+
+- Step 1: Detect Context (silent)
+- Step 2: Ask Questions
+- Step 3: Load References
+- Step 4: Generate Code
+- Step 5: Install Dependencies
+- Step 6: Environment Variables
+- Step 7: Next Steps
+- Verification Checklist
 
 ## Step 1: Detect Context (silent)
 
@@ -29,8 +38,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 - If the framework cannot be determined, ask the user which supported framework they are using.
 - If the repo already has a materially different shared query utility, inspect and patch it in place by default instead of replacing it wholesale.
 
----
-
 ## Step 2: Ask Questions
 
 Infer first from the repo.
@@ -40,8 +47,6 @@ Follow the zero-question default and question-format rules in `../../../patterns
 If you do ask, make it one concise question, put the recommended/default path first, and explain whether skipping it will leave placeholders, ownership, or project-specific values unresolved.
 
 Only ask if framework detection fails or the existing shared query utility is materially different enough that patching it safely is unclear.
-
----
 
 ## Step 3: Load References
 
@@ -57,8 +62,6 @@ Load the matching framework reference and focus on the core query-utility shape:
 | Nuxt | `../../../../datocms-frontend-integrations/references/nuxt.md` |
 | SvelteKit | `../../../../datocms-frontend-integrations/references/sveltekit.md` |
 | Astro | `../../../../datocms-frontend-integrations/references/astro.md` |
-
----
 
 ## Step 4: Generate Code
 
@@ -97,8 +100,6 @@ The generated query utility must:
 - **Next.js / Astro / SvelteKit:** keep the wrapper server-first and use a private published CDA token
 - **Nuxt:** keep the public published-token convention and `composables` pattern so the baseline stays compatible with the existing Nuxt integration flow
 
----
-
 ## Step 5: Install Dependencies
 
 Install only this package when missing:
@@ -106,8 +107,6 @@ Install only this package when missing:
 - `@datocms/cda-client`
 
 Use the detected package manager.
-
----
 
 ## Step 6: Environment Variables
 
@@ -139,8 +138,6 @@ DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN=your_published_token_here
 
 Only add variables that do not already exist. Preserve any existing values.
 
----
-
 ## Step 7: Next Steps
 
 After generating the files, tell the user:
@@ -148,8 +145,6 @@ After generating the files, tell the user:
 1. Fill in the published CDA token locally
 2. Optional follow-up recipe ids: `draft-mode` for preview reads and `graphql-types` for typed CDA queries
 3. Keep `cache-tags`, `content-link`, and `realtime` as separate follow-up recipe ids when they are actually needed
-
----
 
 ## Verification Checklist
 

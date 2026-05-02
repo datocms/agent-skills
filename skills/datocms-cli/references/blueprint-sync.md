@@ -2,7 +2,15 @@
 
 Keeping one shared DatoCMS migration history in sync across multiple projects by using CLI profiles.
 
----
+## Contents
+
+- Inputs to confirm before running commands
+- Core assumption
+- Recommended Shape
+- Authentication
+- Daily Workflow
+- Automation Guidance
+- Safety Notes
 
 ## Inputs to confirm before running commands
 
@@ -13,15 +21,11 @@ Confirm these inputs when they are not already clear:
 - whether destination projects were duplicated from the blueprint or otherwise keep aligned entity IDs
 - whether the helper should stop at dry-run / forked env creation or also describe promotion steps separately
 
----
-
 ## Core assumption
 
 This flow is safest when destination projects were **duplicated from the blueprint project** or are otherwise known to keep entity IDs aligned.
 
 DatoCMS keeps the same entity IDs when a project is duplicated from a blueprint. That alignment is what makes one shared migration history practical. If the projects were not duplicated from the same blueprint baseline, confirm that ID alignment assumptions still hold before normalizing onto one shared migration sequence.
-
----
 
 ## Recommended Shape
 
@@ -56,8 +60,6 @@ Use one `datocms.config.json` with one profile per project and one shared `migra
 ```
 
 This keeps one canonical migration sequence and avoids drift caused by per-project migration folders.
-
----
 
 ## Authentication
 
@@ -99,8 +101,6 @@ DATOCMS_CLIENT_B_PROFILE_API_TOKEN=...
 
 The token must have CMA access enabled.
 
----
-
 ## Daily Workflow
 
 ### 1. Create migrations once
@@ -133,8 +133,6 @@ npx datocms environments:promote client-a-sync --profile=client_a
 npx datocms environments:promote client-b-sync --profile=client_b
 ```
 
----
-
 ## Automation Guidance
 
 For repeated multi-project rollout, prefer a small local helper script instead of expanding `package.json` with many profile-specific scripts.
@@ -149,8 +147,6 @@ Recommended behavior for that helper:
 6. Print the created environment ids instead of auto-promoting
 
 Do not auto-promote in the sync helper by default. Promotion is a separate release decision per project.
-
----
 
 ## Safety Notes
 

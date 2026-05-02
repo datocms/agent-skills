@@ -8,12 +8,12 @@ Use this reference when you need DatoCMS Site Search outside the packaged React/
 
 ## Contents
 
-- [Dato-side prerequisites](#dato-side-prerequisites)
-- [Search index provisioning via CMA](#search-index-provisioning-via-cma)
-- [Search requests](#search-requests)
-- [Returned result shape](#returned-result-shape)
-- [Recommended helper contract](#recommended-helper-contract)
-- [Safety rules](#safety-rules)
+- Dato-side prerequisites
+- Search index provisioning via CMA
+- Search requests
+- Returned result shape
+- Recommended helper contract
+- Safety rules
 
 ## Dato-side prerequisites
 

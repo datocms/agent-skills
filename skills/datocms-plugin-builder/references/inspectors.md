@@ -2,6 +2,15 @@
 
 Inspectors are full-screen side panel interfaces that combine a custom plugin view with built-in DatoCMS functionality (record lists, record editors, or custom panels). They appear as top-level navigation tabs and provide a powerful way to build content browsing and editing experiences.
 
+## Contents
+
+- How Inspectors Work
+- Declaration via `mainNavigationTabs`
+- Render: `renderInspector`
+- Render: `renderInspectorPanel`
+- Complete Inspector Example
+- Key Notes
+
 ## How Inspectors Work
 
 An inspector is declared via `mainNavigationTabs` using `inspectorId` instead of `pageId`. When the user clicks the tab, DatoCMS opens a split interface:

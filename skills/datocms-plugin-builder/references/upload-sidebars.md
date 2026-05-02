@@ -4,6 +4,12 @@ Plugins can add custom UI to the Media Area's asset detail view, appearing when 
 
 There are two variants: **sidebar panels** (collapsible panels in the asset sidebar) and **full-width sidebars** (replace the entire sidebar area).
 
+## Contents
+
+- Upload Sidebar Panels
+- Full-Width Upload Sidebars
+- Key Notes
+
 ## Upload Sidebar Panels
 
 ### Declaration: `uploadSidebarPanels`

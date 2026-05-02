@@ -4,18 +4,16 @@ React component for rendering DatoCMS [Structured Text (DAST)](https://www.datoc
 
 ## Contents
 
-- [Basic Usage](#basic-usage)
-- [Full GraphQL Fragment](#full-graphql-fragment)
-- [Custom Renderers](#custom-renderers)
-- [Custom Node Rules](#custom-node-rules)
-- [Custom Mark Rules](#custom-mark-rules)
-- [DAST Node Reference](#dast-node-reference)
-- [Conditional Rendering with `isEmptyDocument`](#conditional-rendering-with-isemptydocument)
-- [Related Packages](#related-packages)
-- [Props Reference](#props-reference)
-- [Content Link Integration](#content-link-integration)
-
----
+- Basic Usage
+- Full GraphQL Fragment
+- Custom Renderers
+- Custom Node Rules
+- Custom Mark Rules
+- DAST Node Reference
+- Conditional Rendering with `isEmptyDocument`
+- Related Packages
+- Props Reference
+- Content Link Integration
 
 ## Basic Usage
 
@@ -44,8 +42,6 @@ query {
   }
 }
 ```
-
----
 
 ## Full GraphQL Fragment
 
@@ -103,8 +99,6 @@ query {
 
 **Critical:** Always include `id` and `__typename` on every `links`, `blocks`, and `inlineBlocks` entry via `... on RecordInterface`. The component uses `__typename` for the switch statements in custom renderers.
 
----
-
 ## Custom Renderers
 
 Use `renderBlock`, `renderInlineRecord`, `renderLinkToRecord`, and `renderInlineBlock` to handle embedded content. Always switch on `record.__typename`:
@@ -157,8 +151,6 @@ Use `renderBlock`, `renderInlineRecord`, `renderLinkToRecord`, and `renderInline
 />
 ```
 
----
-
 ## Custom Node Rules
 
 Override default rendering for any node type using `customNodeRules` with `renderNodeRule`. Import type guards from `datocms-structured-text-utils`.
@@ -208,8 +200,6 @@ The `renderNodeRule` callback receives `{ node, children, key, ancestors, adapte
 
 **Note:** If you override the rules for `inlineItem`, `itemLink`, `block`, or `inlineBlock` nodes via `customNodeRules`, the corresponding `renderInlineRecord`, `renderLinkToRecord`, `renderBlock`, and `renderInlineBlock` props are ignored.
 
----
-
 ## Custom Mark Rules
 
 Override how marks (bold, italic, etc.) render using `customMarkRules` with `renderMarkRule`:
@@ -238,8 +228,6 @@ import { renderMarkRule, StructuredText } from 'react-datocms';
 | `'highlight'` | `<mark>` | Highlighted text |
 | `'code'` | `<code>` | Inline code |
 
----
-
 ## DAST Node Reference
 
 Each node type in a Structured Text document has specific properties available in `renderNodeRule` callbacks:
@@ -261,8 +249,6 @@ Each node type in a Structured Text document has specific properties available i
 | Item Link | `isItemLink` | `children`, `item` (record ID — resolved via `links` array), `meta` (optional) |
 | Inline Item | `isInlineItem` | `item` (record ID — resolved via `links` array) |
 
----
-
 ## Conditional Rendering with `isEmptyDocument`
 
 Use `isEmptyDocument()` to skip rendering when a Structured Text field is empty (contains only a single empty paragraph):
@@ -282,8 +268,6 @@ function BlogPost({ data }) {
   );
 }
 ```
-
----
 
 ## Related Packages
 
@@ -319,8 +303,6 @@ const html = toHtml(data.blogPost.content, {
 
 Same customization API as `<StructuredText>` (`renderBlock`, `renderInlineRecord`, `renderLinkToRecord`, `renderInlineBlock`, `customNodeRules`, `customMarkRules`).
 
----
-
 ## Props Reference
 
 | Prop | Type | Required | Description |
@@ -334,8 +316,6 @@ Same customization API as `<StructuredText>` (`renderBlock`, `renderInlineRecord
 | `customNodeRules` | `Array<RenderRule>` | No | Custom node rendering rules (via `renderNodeRule()`) |
 | `customMarkRules` | `Array<RenderMarkRule>` | No | Custom mark rendering rules (via `renderMarkRule()`) |
 | `renderText` | `(text: string, key: string) => ReactElement \| string \| null` | No | Custom text node rendering |
-
----
 
 ## Content Link Integration
 

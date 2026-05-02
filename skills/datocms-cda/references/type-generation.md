@@ -2,7 +2,12 @@
 
 This reference covers setting up TypeScript type generation for fully typed DatoCMS CDA queries using **gql.tada** or **GraphQL Code Generator**. Both produce `TypedDocumentNode` that `executeQuery` accepts directly (see `client-and-config.md` for TypedDocumentNode support).
 
----
+## Contents
+
+- Which Approach?
+- gql.tada
+- GraphQL Code Generator
+- CMA Schema Types
 
 ## Which Approach?
 
@@ -15,8 +20,6 @@ This reference covers setting up TypeScript type generation for fully typed Dato
 | **Used in** | All DatoCMS starters | DatoCMS fully-fledged demos |
 
 Both approaches produce `TypedDocumentNode` — the `executeQuery` function from `@datocms/cda-client` accepts either and returns fully typed results.
-
----
 
 ## gql.tada
 
@@ -114,8 +117,6 @@ Run `npm run generate-schema && npm run generate-output` in CI before `tsc` or t
 | `FragmentOf<typeof fragment>` | Type of a masked fragment reference (used in component props) |
 | `ResultOf<typeof query>` | Inferred result type of a query or fragment |
 | `VariablesOf<typeof query>` | Inferred variables type of a query |
-
----
 
 ## GraphQL Code Generator
 
@@ -223,8 +224,6 @@ app/
 ```
 
 The `documents` glob in `graphql.config.ts` controls which files are scanned.
-
----
 
 ## CMA Schema Types
 

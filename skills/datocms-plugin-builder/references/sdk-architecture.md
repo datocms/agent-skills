@@ -1,20 +1,32 @@
 # DatoCMS Plugin SDK — Core Architecture
 
-## Quick Navigation
+## Contents
 
-- `connect()` entrypoint rules
-- Hook catalog by category
-- Shared render and `Canvas` patterns
-- Frame sizing model
-- Base `ctx` properties and methods
-- Partial repositories and iframe `ctx` recreation
-- `formValues`, CMA access, and async error handling
-- Parameter migration and declaration/render pairing rules
-- Type exports, CSS variables, and field-type tables
+- Entry Point: `connect()`
+- Complete Hook Reference
+- The `render()` Utility
+- The `Canvas` Wrapper
+- Plugin Frame Types
+- Base Context Properties (available in ALL hooks)
+- Base Context Methods (available in ALL hooks)
+- Entity Repositories Are Partial
+- `ctx` Object Recreation in Iframes
+- `ctx.formValues` Gotchas
+- Using the CMA Client API
+- Error Handling in Async Operations
+- Icon Type
+- Reading Plugin Global Parameters
+- Permission Check Before Updating Parameters
+- Version Migration Pattern
+- Declaration + Render Hook Pairing Rule
+- All Type Exports from `datocms-plugin-sdk`
+- Converting Between Form Values and API Items
+- CSS Custom Properties
+- FieldType Values
 
 ## Entry Point: `connect()`
 
-Every DatoCMS plugin has a single entry point — the `connect()` function from `datocms-plugin-sdk`. You pass it an object whose keys are hook names and whose values are hook implementations.
+`connect()` from `datocms-plugin-sdk` = single entry point. Object keys = hook names, values = implementations.
 
 ```tsx
 import { connect } from 'datocms-plugin-sdk';
@@ -28,13 +40,11 @@ connect({
 });
 ```
 
-The `connect()` function accepts a `Partial<FullConnectParameters>` — you only implement the hooks you need.
-
-**Important**: `connect()` must be called exactly **once** per plugin. Do not call it conditionally, inside components, or multiple times. It runs at module load time and registers all hooks with the DatoCMS parent window.
+`connect()` accepts `Partial<FullConnectParameters>` — implement only needed hooks. **Important**: Call `connect()` **once** per plugin. Not conditional, not inside components, not multiple times. Runs at module load, registers all hooks.
 
 ## Complete Hook Reference
 
-The SDK supports 40+ hooks in total. Here is every hook, grouped by category:
+40+ hooks total:
 
 ### Declaration Hooks (return data, no DOM access)
 
@@ -82,7 +92,7 @@ The SDK supports 40+ hooks in total. Here is every hook, grouped by category:
 | `renderInspector` | `ImposedSizePluginFrameCtx` | Render the left side of an inspector |
 | `renderInspectorPanel` | `ImposedSizePluginFrameCtx` | Render a custom panel in the inspector right side |
 
-Frame types determine iframe sizing behavior: `SelfResizingPluginFrameCtx` auto-resizes to content height; `ImposedSizePluginFrameCtx` fills the available space (pass `noAutoResizer` to Canvas).
+Frame types: `SelfResizingPluginFrameCtx` = auto-resize to content height; `ImposedSizePluginFrameCtx` = fills available space (pass `noAutoResizer` to Canvas).
 
 ### Lifecycle Hooks (no UI, run in hidden iframe)
 
@@ -106,7 +116,7 @@ Frame types determine iframe sizing behavior: `SelfResizingPluginFrameCtx` auto-
 
 ## The `render()` Utility
 
-Every plugin should define a `render()` helper in `src/utils/render.tsx`:
+Define `render()` helper in `src/utils/render.tsx`:
 
 ```tsx
 import type { ReactNode } from 'react';
@@ -134,15 +144,11 @@ connect({
 });
 ```
 
-**Important**: The `root` is created once at module level. Each render hook call re-renders into the same root. This is correct — only one render hook runs per iframe instance.
+**Important**: `root` created once at module level. Each render hook re-renders into same root. Correct — only one render hook runs per iframe instance.
 
 ## The `Canvas` Wrapper
 
-Every rendered component **must** be wrapped in `<Canvas ctx={ctx}>`. Canvas:
-
-- Injects CSS custom properties for theming (accent color, font, spacing)
-- Starts the auto-resizer (for self-resizing frames)
-- Provides context via `useCtx()` hook
+Every rendered component **must** wrap in `<Canvas ctx={ctx}>`. Canvas: Injects CSS custom properties for theming, starts auto-resizer (for self-resizing frames), provides context via `useCtx()` hook.
 
 ```tsx
 import { Canvas } from 'datocms-react-ui';
@@ -157,11 +163,11 @@ function MyComponent({ ctx }: { ctx: SomeCtx }) {
 }
 ```
 
-**Always import styles**: `import 'datocms-react-ui/styles.css'` — do this once in your entry file (e.g., `src/main.tsx`).
+**Always import styles**: `import 'datocms-react-ui/styles.css'` — once in entry file (e.g., `src/main.tsx`).
 
 ### `useCtx()` Hook
 
-Canvas provides context via the `useCtx<T>()` hook from `datocms-react-ui`. This lets deeply nested child components access the plugin context without prop-drilling:
+Canvas provides context via `useCtx<T>()` from `datocms-react-ui`. Deeply nested child components access plugin context without prop-drilling:
 
 ```tsx
 import { useCtx } from 'datocms-react-ui';
@@ -174,11 +180,11 @@ function NestedChild() {
 }
 ```
 
-Use this when components are 2+ levels deep. For top-level entrypoint components, passing `ctx` as a prop is fine.
+Use when components are 2+ levels deep. For top-level entrypoint components, passing `ctx` as prop is fine.
 
 ### `noAutoResizer` Prop
 
-For hooks that use `ImposedSizePluginFrameCtx` (pages, full-width sidebars, inspectors), the auto-resizer does nothing because DatoCMS controls the iframe size. Pass `noAutoResizer` to avoid unnecessary resize attempts:
+For hooks using `ImposedSizePluginFrameCtx` (pages, full-width sidebars, inspectors), auto-resizer does nothing. Pass `noAutoResizer` to avoid unnecessary resize attempts:
 
 ```tsx
 // For pages, full-width sidebars, and inspectors
@@ -187,9 +193,7 @@ For hooks that use `ImposedSizePluginFrameCtx` (pages, full-width sidebars, insp
 </Canvas>
 ```
 
-**When to use `noAutoResizer`:** `renderPage`, `renderItemFormSidebar`, `renderUploadSidebar`, `renderInspector`, `renderInspectorPanel`.
-
-**When NOT to use it:** `renderFieldExtension`, `renderItemFormSidebarPanel`, `renderConfigScreen`, `renderModal`, `renderAssetSource`, `renderItemFormOutlet`, `renderItemCollectionOutlet`, `renderUploadSidebarPanel`.
+**When to use `noAutoResizer`:** `renderPage`, `renderItemFormSidebar`, `renderUploadSidebar`, `renderInspector`, `renderInspectorPanel`. **When NOT to use it:** `renderFieldExtension`, `renderItemFormSidebarPanel`, `renderConfigScreen`, `renderModal`, `renderAssetSource`, `renderItemFormOutlet`, `renderItemCollectionOutlet`, `renderUploadSidebarPanel`.
 
 ## Plugin Frame Types
 
@@ -197,22 +201,22 @@ Render hooks receive one of two frame context types:
 
 ### `SelfResizingPluginFrameCtx`
 
-For components embedded within the DatoCMS page (field extensions, sidebar panels, config screen, modals, asset sources, outlets, upload sidebar panels). The iframe auto-resizes to fit content.
+Components embedded within DatoCMS page (field extensions, sidebar panels, config screen, modals, asset sources, outlets, upload sidebar panels). Iframe auto-resizes to fit content.
 
-**Additional sizing utilities available:**
+**Additional sizing utilities:**
 
-- `ctx.startAutoResizer()` — auto-resize on DOM changes (Canvas does this for you)
+- `ctx.startAutoResizer()` — auto-resize on DOM changes (Canvas does this)
 - `ctx.stopAutoResizer()` — stop auto-resizing
 - `ctx.updateHeight(newHeight?)` — manually set height
 - `ctx.setHeight(number)` — set exact iframe height
 
 ### `ImposedSizePluginFrameCtx`
 
-For full-screen contexts (pages, full-width sidebars, inspectors). DatoCMS controls the iframe size — no auto-resize.
+Full-screen contexts (pages, full-width sidebars, inspectors). DatoCMS controls iframe size — no auto-resize.
 
 ## Base Context Properties (available in ALL hooks)
 
-Every hook receives a `ctx` object. The base properties available in every context:
+Every hook receives `ctx` object. Base properties in every context:
 
 ```
 ctx.currentUser        // User | SsoUser | Account | Organization — the logged-in user
@@ -272,18 +276,18 @@ ctx.navigateTo(path)                   // Promise<void> — navigate within Dato
 
 ## Entity Repositories Are Partial
 
-`ctx.itemTypes`, `ctx.fields`, `ctx.fieldsets`, `ctx.users`, and `ctx.ssoUsers` are `Partial<Record<string, T>>` — they only contain entities that DatoCMS has **already loaded** in the current UI context. If you need data for a model that hasn't been loaded yet, you must explicitly fetch it:
+`ctx.itemTypes`, `ctx.fields`, `ctx.fieldsets`, `ctx.users`, `ctx.ssoUsers` are `Partial<Record<string, T>>` — only entities DatoCMS has **already loaded** in current UI context. If you need data for a model that hasn't been loaded yet, explicitly fetch it:
 
 ```ts
 // ctx.fields may NOT contain all fields — explicitly load them
 const fields = await ctx.loadItemTypeFields(itemTypeId);
 ```
 
-Always check for `undefined` when accessing these repositories (e.g., `ctx.itemTypes[id]?.attributes.name`).
+Always check for `undefined` when accessing (e.g., `ctx.itemTypes[id]?.attributes.name`).
 
 ## `ctx` Object Recreation in Iframes
 
-The `ctx` object is **recreated on every message** from the DatoCMS parent window to the plugin iframe. This means reference equality changes even when values are identical. Using `ctx` properties in a `useEffect` dependency array will cause the effect to re-fire on every update, even if nothing changed.
+`ctx` object **recreated on every message** from DatoCMS parent window to plugin iframe. Reference equality changes even when values are identical. Using `ctx` properties in `useEffect` dependency array will cause effect to re-fire on every update, even if nothing changed.
 
 **Solution**: Use `useDeepCompareEffect` from `use-deep-compare-effect` instead of `useEffect` when depending on `ctx` properties:
 
@@ -307,7 +311,7 @@ Hooks with access to `ctx.formValues` (field extensions, sidebar panels, outlets
 
 ## Using the CMA Client API
 
-For plugins that need to make DatoCMS API calls (fetching records, updating content, etc.), use the `@datocms/cma-client-browser` package with `ctx.currentUserAccessToken`. Plugins run inside browser iframes, so always use the `-browser` variant (not `@datocms/cma-client`).
+For plugins that need to make DatoCMS API calls, use `@datocms/cma-client-browser` with `ctx.currentUserAccessToken`. Plugins run inside browser iframes, so always use the `-browser` variant.
 
 **Requires** adding `"permissions": ["currentUserAccessToken"]` to `datoCmsPlugin` in `package.json` (see project-scaffold.md).
 
@@ -341,11 +345,11 @@ await client.items.update(recordId, {
 });
 ```
 
-`ctx.currentUserAccessToken` is `undefined` if the plugin doesn't have the `currentUserAccessToken` permission declared in `package.json`, or if the user's role doesn't grant it. Always check before use.
+`ctx.currentUserAccessToken` is `undefined` if plugin doesn't have `currentUserAccessToken` permission declared in `package.json`, or if user's role doesn't grant it. Always check before use.
 
 ## Error Handling in Async Operations
 
-SDK methods (`ctx.setFieldValue`, `ctx.updatePluginParameters`, CMA client calls, etc.) return Promises and can fail. Wrap async operations in try/catch and use `ctx.alert()` to show errors to the user:
+SDK methods (`ctx.setFieldValue`, `ctx.updatePluginParameters`, CMA client calls, etc.) return Promises and can fail. Wrap async operations in try/catch and use `ctx.alert()` to show errors:
 
 ```ts
 try {
@@ -356,7 +360,7 @@ try {
 }
 ```
 
-For CMA client API calls, errors include rate limiting, permission issues, and validation failures:
+For CMA client API calls, errors include rate limiting, permission issues, validation failures:
 
 ```ts
 try {
@@ -415,11 +419,11 @@ if (ctx.currentRole.meta.final_permissions.can_edit_schema) {
 
 ## Version Migration Pattern
 
-When plugin parameters evolve over time (e.g., adding new settings, restructuring existing ones), use the `onBoot` lifecycle hook to migrate old parameter formats to the new format at plugin initialization. This ensures existing installations are updated automatically. See `lifecycle-hooks.md` for the full `onBoot` migration pattern with examples.
+When plugin parameters evolve over time, use `onBoot` lifecycle hook to migrate old parameter formats to the new format at plugin initialization. Ensures existing installations are updated automatically. See `lifecycle-hooks.md` for full `onBoot` migration pattern with examples.
 
 ## Declaration + Render Hook Pairing Rule
 
-Declaration hooks tell DatoCMS _what_ exists. Render hooks tell it _how_ to display it. They are paired by ID:
+Declaration hooks tell DatoCMS _what_ exists. Render hooks tell it _how_ to display it. Paired by ID:
 
 | Declaration Hook | Render Hook | ID Parameter |
 | - | - | - |
@@ -526,11 +530,11 @@ import type {
 
 ## Converting Between Form Values and API Items
 
-Two utility methods are available in item form contexts (field extensions, sidebar panels, outlets):
+Two utility methods in item form contexts (field extensions, sidebar panels, outlets):
 
-- **`ctx.formValuesToItem(formValues, skipUnchangedFields?)`** — Converts the internal form state into an API-compatible `Item` object. Useful when you need to send form data to an external API or compare with the persisted record. Returns `undefined` if required nested data (blocks, relationships) hasn't loaded yet — **always check the return value**.
+- **`ctx.formValuesToItem(formValues, skipUnchangedFields?)`** — Converts internal form state into API-compatible `Item` object. Useful when sending form data to external API or comparing with persisted record. Returns `undefined` if required nested data (blocks, relationships) hasn't loaded yet — **always check the return value**.
 
-- **`ctx.itemToFormValues(item)`** — Converts an API `Item` object into the internal form value format. Useful when you receive data from the CMA API and want to populate the form.
+- **`ctx.itemToFormValues(item)`** — Converts API `Item` object into internal form value format. Useful when receiving data from CMA API and want to populate the form.
 
 ```ts
 // Example: send current form state to an external preview API

@@ -6,7 +6,15 @@ You are an expert at configuring one shared DatoCMS migration history across mul
 
 Follow these steps in order. Do not skip steps.
 
----
+## Contents
+
+- Step 1: Detect Context (silent)
+- Step 2: Ask Questions
+- Step 3: Load References
+- Step 4: Generate Code
+- Step 5: Install Dependencies
+- Step 6: Next Steps
+- Verification Checklist
 
 ## Step 1: Detect Context (silent)
 
@@ -28,8 +36,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 - If the project does not already have working CLI migration setup, stop and record `migrations` as a prerequisite and continue after it is applied.
 - If the repo already has a materially different multi-profile scheme, patch it in place instead of normalizing it.
 
----
-
 ## Step 2: Ask Questions
 
 Ask one grouped follow-up:
@@ -37,8 +43,6 @@ Ask one grouped follow-up:
 > "Which CLI profile id should be the blueprint source, and which profile ids should be the destination projects? Do you also want the optional GitHub Actions template for the sync helper? Recommended default: no unless you explicitly want CI rollout. Were the destination projects duplicated from the blueprint, or should I keep entity-id alignment as an explicit assumption to preserve? Recommended default: if the repo does not prove duplication, preserve alignment as an explicit assumption and mark the rollout `scaffolded` until you confirm it."
 
 If the user does not specify custom migration directories, keep or create one shared `./migrations` directory for all profiles.
-
----
 
 ## Step 3: Load References
 
@@ -52,8 +56,6 @@ Also inspect these bundled assets only when generating files:
 
 - `scripts/datocms-sync-projects.mjs`
 - `assets/datocms-sync.github-actions.yml`
-
----
 
 ## Step 4: Generate Code
 
@@ -83,13 +85,9 @@ Generate only these project changes:
 - Do not infer project mappings from external systems or remote APIs
 - Do not create one migrations directory per project unless the repo already follows that pattern
 
----
-
 ## Step 5: Install Dependencies
 
 Do not add any new dependencies for this setup unless the repo already depends on a helper runtime outside Node built-ins. The bundled helper must work with Node built-ins only.
-
----
 
 ## Step 6: Next Steps
 
@@ -103,8 +101,6 @@ After generating the files, tell the user:
 6. Optional follow-up recipe id: `migration-release-workflow` when they want a promote-included release helper for a single project
 
 Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including an explicit `Unresolved placeholders` section.
-
----
 
 ## Verification Checklist
 

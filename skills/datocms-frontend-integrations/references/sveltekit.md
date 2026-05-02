@@ -4,13 +4,11 @@ This reference contains the exact code patterns for implementing draft mode in a
 
 ## Contents
 
-- [Core](#core)
-- [Web Previews (Optional)](#web-previews-optional)
-- [Content Link (Optional)](#content-link-optional)
-- [Real-Time Updates (Optional)](#real-time-updates-optional)
-- [Cache Tags (Optional)](#cache-tags-optional)
-
----
+- Core
+- Web Previews (Optional)
+- Content Link (Optional)
+- Real-Time Updates (Optional)
+- Cache Tags (Optional)
 
 ## Core
 
@@ -333,8 +331,6 @@ Optional for Web Previews helpers:
 
 - `@datocms/cma-client` — For `RawApiTypes`
 
----
-
 ## Web Previews (Optional)
 
 ### Preview Links Endpoint
@@ -455,8 +451,6 @@ export function recordToWebsiteRoute(
 ### Web Previews Dependencies
 
 No additional dependencies beyond what Core requires.
-
----
 
 ## Content Link (Optional)
 
@@ -667,8 +661,6 @@ PRIVATE_DATOCMS_BASE_EDITING_URL=              # For Content Link
 
 - `@datocms/content-link` — For click-to-edit overlays and stega utilities
 
----
-
 ## Real-Time Updates (Optional)
 
 ### `generateRealtimeSubscription`
@@ -774,8 +766,6 @@ Key points:
 
 - `@datocms/svelte` — For `querySubscription` store
 - `graphql` — For `print()` to serialize queries (needed by subscription)
-
----
 
 ## Cache Tags (Optional)
 

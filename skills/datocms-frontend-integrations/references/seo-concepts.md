@@ -2,8 +2,6 @@
 
 Shared concepts for DatoCMS SEO metadata rendering across all frameworks. For framework-specific rendering utilities and components, see the dedicated framework reference.
 
----
-
 ## GraphQL Query
 
 ```graphql
@@ -26,8 +24,6 @@ query {
 }
 ```
 
----
-
 ## Tag Concatenation Pattern
 
 Always concatenate page SEO tags with site favicon tags before rendering:
@@ -37,8 +33,6 @@ const allMetaTags = [...data.page.seo, ...data.site.favicon];
 ```
 
 This ensures both page-specific meta tags (title, description, OG tags) and site-wide favicon tags are rendered together.
-
----
 
 ## Tag Object Shape
 

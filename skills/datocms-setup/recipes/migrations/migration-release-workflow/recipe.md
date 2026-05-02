@@ -6,7 +6,15 @@ You are an expert at turning a working DatoCMS CLI migration setup into a repeat
 
 Follow these steps in order. Do not skip steps.
 
----
+## Contents
+
+- Step 1: Detect Context (silent)
+- Step 2: Ask Questions
+- Step 3: Load References
+- Step 4: Generate Code
+- Step 5: Install Dependencies
+- Step 6: Next Steps
+- Verification Checklist
 
 ## Step 1: Detect Context (silent)
 
@@ -26,15 +34,11 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 - If the project does not already have working CLI migration setup, stop and record `migrations` as a prerequisite and continue after it is applied.
 - If a release helper already exists, patch it in place by default instead of replacing it wholesale.
 
----
-
 ## Step 2: Ask Questions
 
 Ask one grouped question:
 
 > "Do you want only the local release helper, or the local helper plus the optional GitHub Actions workflow? Recommended default: local helper only unless you explicitly want CI. If this repo has multiple CLI profiles and no clear release default, which profile should the helper target by default? Recommended default: preserve the strongest existing release or migration profile convention. If you skip the profile choice, I'll infer the strongest current default and mark any ambiguity under unresolved placeholders."
-
----
 
 ## Step 3: Load References
 
@@ -49,8 +53,6 @@ Also inspect these bundled assets only when generating files:
 
 - `scripts/datocms-release.mjs`
 - `assets/datocms-release.github-actions.yml`
-
----
 
 ## Step 4: Generate Code
 
@@ -82,13 +84,9 @@ The local helper script must:
 - Do not default to `maintenance:on --force`; force is an explicit operator override
 - Do not replace a working existing release workflow unless the user explicitly asked for a rewrite
 
----
-
 ## Step 5: Install Dependencies
 
 Do not add any new dependencies for this setup unless the project is missing a required Node runtime package for its own existing scripts. The bundled helper must work with Node built-ins only.
-
----
 
 ## Step 6: Next Steps
 
@@ -102,8 +100,6 @@ After generating the files, tell the user:
 6. Whether the result is `scaffolded` or `production-ready`
 
 Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including an explicit `Unresolved placeholders` section.
-
----
 
 ## Verification Checklist
 

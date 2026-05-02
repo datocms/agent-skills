@@ -6,7 +6,14 @@ You are an expert at setting up the minimum repeatable workflow for importing Wo
 
 Follow these steps in order. Do not skip steps.
 
----
+## Contents
+
+- Step 1: Detect Context (silent)
+- Step 2: Ask Questions
+- Step 3: Load References
+- Step 4: Generate Code
+- Step 5: Next Steps
+- Verification Checklist
 
 ## Step 1: Detect Context (silent)
 
@@ -28,8 +35,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 - If `datocms` is not installed or the active profile has no `siteId`, stop and route back to `cli-bootstrap`.
 - If an existing WordPress import helper follows a materially different flow, patch it in place by default and only ask if a rewrite would replace working behavior.
 
----
-
 ## Step 2: Ask Questions
 
 Infer first from the repo.
@@ -42,8 +47,6 @@ Only ask if an existing WordPress import helper materially conflicts with the le
 
 If the repo or request implies an existing target project rather than a fresh disposable import target, ask whether the destructive importer behavior is acceptable for that target and whether they want the safest available staged path (for example: an interactive run without `--autoconfirm`, limited flags, or a disposable rehearsal project first).
 
----
-
 ## Step 3: Load References
 
 Read only these references:
@@ -54,8 +57,6 @@ Read only these references:
 Also inspect this bundled asset only when generating files:
 
 - `scripts/datocms-import-wordpress.mjs`
-
----
 
 ## Step 4: Generate Code
 
@@ -89,8 +90,6 @@ Generate only these project changes:
 - Do not add CI files or multi-step orchestration around the import
 - Do not add provider-mapping or transformation layers in this setup
 
----
-
 ## Step 5: Next Steps
 
 After generating the files, tell the user:
@@ -99,8 +98,6 @@ After generating the files, tell the user:
 2. Prefer `WORDPRESS_JSON_API_URL` when they already know the exact REST API endpoint
 3. Run the helper once without `--autoconfirm` to review the import behavior
 4. Add flags like `--ignore-errors`, `--concurrency`, or `--autoconfirm` only when they intentionally want those modes
-
----
 
 ## Verification Checklist
 

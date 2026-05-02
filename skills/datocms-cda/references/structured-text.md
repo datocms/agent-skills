@@ -2,7 +2,15 @@
 
 Covers querying structured text fields: the three sub-fields (`value`, `blocks`, `links`), DAST node types, inline blocks, and rendering.
 
----
+## Contents
+
+- Response Shape
+- The `value` Field — DAST Structure
+- The `blocks` Field
+- The `links` Field
+- The `inlineBlocks` Field
+- Rendering
+- Complete Example
 
 ## Response Shape
 
@@ -55,8 +63,6 @@ query {
   }
 }
 ```
-
----
 
 ## The `value` Field — DAST Structure
 
@@ -124,8 +130,6 @@ The `span` node's `marks` array can contain:
 
 Spans support `\n` for line breaks within the same paragraph.
 
----
-
 ## The `blocks` Field
 
 Query embedded block records using inline fragments. Each block node in the DAST references a block by its `item` ID, which corresponds to a record in the `blocks` array.
@@ -156,8 +160,6 @@ blocks {
 }
 ```
 
----
-
 ## The `links` Field
 
 Query linked records (referenced by `itemLink` and `inlineItem` nodes in the DAST). These are full DatoCMS records from any model.
@@ -178,8 +180,6 @@ links {
 }
 ```
 
----
-
 ## The `inlineBlocks` Field
 
 Query inline block records (referenced by `inlineBlock` nodes in the DAST). These appear inline within text, unlike regular blocks which are full-width.
@@ -194,8 +194,6 @@ inlineBlocks {
   }
 }
 ```
-
----
 
 ## Rendering
 
@@ -249,8 +247,6 @@ import { StructuredText } from "react-datocms";
   }}
 />
 ```
-
----
 
 ## Complete Example
 

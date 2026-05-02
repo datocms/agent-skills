@@ -6,16 +6,14 @@ See `realtime-concepts.md` for shared initialization options, connection status 
 
 ## Contents
 
-- [Basic Usage](#basic-usage)
-- [Composable Signature](#composable-signature)
-- [Initialization Options](#initialization-options)
-- [Connection Status](#connection-status)
-- [Error Object](#error-object)
-- [Integration with Draft Mode](#integration-with-draft-mode)
-- [Full Example with SEO](#full-example-with-seo)
-- [Critical: The `fetcher` Gotcha](#critical-the-fetcher-gotcha)
-
----
+- Basic Usage
+- Composable Signature
+- Initialization Options
+- Connection Status
+- Error Object
+- Integration with Draft Mode
+- Full Example with SEO
+- Critical: The `fetcher` Gotcha
 
 ## Basic Usage
 
@@ -61,8 +59,6 @@ const statusMessage = {
 </template>
 ```
 
----
-
 ## Composable Signature
 
 ```ts
@@ -75,25 +71,17 @@ const {
 
 **Important:** Unlike the React hook, the returned `data`, `error`, and `status` are Vue `Ref` values. Access their values with `.value` in `<script>` and use them directly in `<template>`.
 
----
-
 ## Initialization Options
 
 See `realtime-concepts.md` for the full options table shared across all frameworks.
-
----
 
 ## Connection Status
 
 See `realtime-concepts.md` for connection status values.
 
----
-
 ## Error Object
 
 See `realtime-concepts.md` for the error object shape.
-
----
 
 ## Integration with Draft Mode
 
@@ -116,8 +104,6 @@ const { data } = useQuerySubscription({
 });
 </script>
 ```
-
----
 
 ## Full Example with SEO
 
@@ -205,8 +191,6 @@ const statusMessage = {
   </div>
 </template>
 ```
-
----
 
 ## Critical: The `fetcher` Gotcha
 

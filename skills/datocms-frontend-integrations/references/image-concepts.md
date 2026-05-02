@@ -2,8 +2,6 @@
 
 Shared concepts for DatoCMS responsive image components across all frameworks. For framework-specific component APIs and props, see the dedicated framework reference.
 
----
-
 ## GraphQL Query
 
 ```graphql
@@ -25,8 +23,6 @@ query {
 }
 ```
 
----
-
 ## ResponsiveImage Object Fields
 
 | Field | Type | Required | Description |
@@ -41,16 +37,12 @@ query {
 | `bgColor` | string | No | Background color placeholder (omit if requesting `base64`) |
 | `srcSet` | string | No | HTML5 `srcSet` (can be omitted — components auto-generate from `src`) |
 
----
-
 ## Best Practices
 
 1. **Always use `{ auto: format }`** in `imgixParams` — serves WebP/AVIF automatically without increasing response size
 2. **Prefer omitting `srcSet`** from GraphQL — components auto-generate it from `src` + `srcSetCandidates`, dramatically reducing response size when many images are returned
 3. **Never request both `bgColor` and `base64`** — `base64` takes precedence, so requesting both only increases response size
 4. **Omit `sizes` from GraphQL** if you pass `sizes` as a prop to the component
-
----
 
 ## Layout Modes
 

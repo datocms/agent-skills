@@ -1,15 +1,18 @@
 # Source Map
 
-## Quick Navigation
-
-- CMS tokens and CSS variables
-- page, toolbar, and full-height layout shells
-- forms, buttons, labels, and grouped controls
-- navigation, feedback, and data-display patterns
-- plugin-facing screens used as visual references
-- official public plugin UI docs
-
 Use the public plugin docs first. Reach for this file only when you need to trace a design recommendation back to local CMS implementation details for visual calibration.
+
+## Contents
+
+- Local CMS calibration (optional)
+- Foundations
+- Layout shells
+- Forms and controls
+- Navigation, feedback, and data display
+- Plugin-facing CMS screens worth copying structurally
+- Storybook references
+- Official public docs (default source of truth)
+- How to use this map
 
 ## Local CMS calibration (optional)
 

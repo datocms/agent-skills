@@ -48,8 +48,6 @@ inherits_permissions_from: [{ id: baseRoleId, type: "role" }]
 
 Inherited permissions are unioned with own positives, minus own negatives. The resolved set lives in `meta.final_permissions` (read-only).
 
----
-
 ## API tokens
 
 The `token` string value is **only returned on `create` and `regenerateToken`** — every other read returns `token: null`. Persist it at creation time or you will need to regenerate it (which invalidates the previous value).
@@ -58,15 +56,11 @@ The `token` string value is **only returned on `create` and `regenerateToken`** 
 
 `regenerateToken("token-id")` returns a new `token` value and invalidates the old one immediately — coordinate rollouts to consumers before calling it on a production token.
 
----
-
 ## Site invitations
 
 `invitation_link` is, like the access token value, **only returned on create / resend** — list/find responses set it to `null`. Capture it at creation time.
 
 `expired: true` means the link no longer works; call `client.siteInvitations.resend(id)` to mint a fresh link with the same role binding.
-
----
 
 ## SSO
 

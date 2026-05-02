@@ -6,20 +6,16 @@ Utilities for rendering SEO meta tags, social share tags, and favicons from Dato
 
 ## Contents
 
-- [GraphQL Queries](#graphql-queries)
-- [`renderMetaTags()`](#rendermetatags)
-- [`renderMetaTagsToString()`](#rendermetatagstostring)
-- [`toNextMetadata()`](#tonextmetadata)
-- [`toRemixMeta()`](#toremixmeta)
-- [Utility Summary](#utility-summary)
-
----
+- GraphQL Queries
+- `renderMetaTags()`
+- `renderMetaTagsToString()`
+- `toNextMetadata()`
+- `toRemixMeta()`
+- Utility Summary
 
 ## GraphQL Queries
 
 See `seo-concepts.md` for the query shape and tag concatenation pattern. Examples below assume tags are fetched as `data.page.seo` and `data.site.favicon`.
-
----
 
 ## `renderMetaTags()`
 
@@ -54,8 +50,6 @@ function Page({ data }) {
 }
 ```
 
----
-
 ## `renderMetaTagsToString()`
 
 Generates an HTML string of `<meta>` and `<link>` tags for server-side rendering:
@@ -72,8 +66,6 @@ const html = `
 `;
 ```
 
----
-
 ## `toNextMetadata()`
 
 Generates a `Metadata` object for Next.js `generateMetadata` export:
@@ -87,8 +79,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return toNextMetadata(homepage?._seoMetaTags || []);
 }
 ```
-
----
 
 ## `toRemixMeta()`
 
@@ -137,8 +127,6 @@ export const meta: MetaFunction = ({ data: { post } }) => {
   return toRemixV1Meta(post.seo);
 };
 ```
-
----
 
 ## Utility Summary
 

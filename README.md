@@ -76,7 +76,7 @@ You don't need to invoke the auto-triggered skills — describe what you want in
 - "How do I paginate past the 100-record limit?"
 - "Add draft mode to my Next.js app"
 - "Why isn't my Visual Editing overlay showing up?"
-- "Create a migration that adds a `category` field to the blog\_post model"
+- "Create a migration that adds a `category` field to the blog_post model"
 - "What's the safest way to run a migration in production?"
 - "Bulk-publish all draft records of type `article`"
 - "Publish them"

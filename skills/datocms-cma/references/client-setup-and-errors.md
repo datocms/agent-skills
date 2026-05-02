@@ -4,14 +4,12 @@ This reference is always loaded. It covers package selection, `buildClient()` se
 
 > **Scope:** `buildClient()` is for **unattended runtime** code (CI, app server, webhook, long-lived automation, repo-committed scripts) — that is the scenario where you need a CMA token in the environment and you construct the client yourself. Interactive one-offs go through `cma:call` or `cma:script` (stdin-mode or file-mode), where the client is either absent or handed to you as `client` (ambient in stdin-mode, default-export parameter in file-mode and migrations) — the configuration options and error types below still apply, you just don't call `buildClient()` yourself.
 
-## Quick Navigation
+## Contents
 
-- [Package Selection](#package-selection)
-- [Building the Client](#building-the-client)
-- [Common Resources](#common-resources)
-- [Error Handling](#error-handling)
-
----
+- Package Selection
+- Building the Client
+- Common Resources
+- Error Handling
 
 ## Package Selection
 
@@ -28,8 +26,6 @@ Install with:
 ```bash
 npm install @datocms/cma-client-node
 ```
-
----
 
 ## Building the Client
 
@@ -59,8 +55,6 @@ const client = buildClient({
 - CMA operations require `can_access_cma: true`
 - Schema changes require a role with `can_edit_schema: true`
 - Public browser tokens or read-only CDA tokens are not sufficient for CMA writes
-
----
 
 ## Common Resources
 
@@ -93,8 +87,6 @@ const client = buildClient({
 The client also exposes resources for record versions, webhook calls, SSO, daily usage, subscription features, white-label settings, and more.
 
 > **Tip:** When the `datocms` npm package is installed, run `npx datocms cma:docs <resource> <action>` to browse detailed, up-to-date endpoint documentation (request body schemas, required fields, parameters, examples) directly in the terminal.
-
----
 
 ## Error Handling
 

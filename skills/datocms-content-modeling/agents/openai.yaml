@@ -1,5 +1,5 @@
 # synced_from_name: datocms-content-modeling
-# synced_from_description_sha256: 179d1b82bbda7a3e9fd7477bbc2bd88c34bfdc3ae0797cc7a6f941b04105573a
+# synced_from_description_sha256: 8470048e3e7f30b3645bdc3a467ebfa53e05fc917144d0fda46d1e0aeedb041b
 interface:
   display_name: "DatoCMS Content Modeling"
   short_description: "Design DatoCMS schemas: models vs blocks, reuse, taxonomy"

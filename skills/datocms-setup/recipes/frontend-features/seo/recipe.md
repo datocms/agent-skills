@@ -8,7 +8,14 @@ See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
 
 Follow these steps in order. Do not skip steps.
 
----
+## Contents
+
+- Step 1: Detect Context (silent)
+- Step 2: Ask Questions
+- Step 3: Load References
+- Step 4: Generate Code
+- Step 5: Next Steps
+- Verification Checklist
 
 ## Step 1: Detect Context (silent)
 
@@ -29,8 +36,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 - If the framework cannot be determined, ask the user.
 - If the repo already has a strong SEO abstraction, patch it in place by default instead of replacing it.
 
----
-
 ## Step 2: Ask Questions
 
 Infer first from the repo.
@@ -40,8 +45,6 @@ Follow the zero-question default and question-format rules in `../../../patterns
 If you do ask, make it one concise question, put the recommended/default path first, and explain whether skipping it will leave placeholders, ownership, or project-specific values unresolved.
 
 Only ask if the project already has multiple competing metadata systems and it is unclear which one owns the final page head output.
-
----
 
 ## Step 3: Load References
 
@@ -58,8 +61,6 @@ If Content Link is already configured, also load:
 - `../../../../datocms-frontend-integrations/references/content-link-concepts.md`
 
 Use only the framework-specific SEO reference that matches the project.
-
----
 
 ## Step 4: Generate Code
 
@@ -113,8 +114,6 @@ Only add the variable if it does not already exist.
 - Report `scaffolded` if the public site URL is still a placeholder or if the query integration remains partially wired
 - Report `production-ready` only when page SEO tags, favicon tags, and canonical URL helpers are all fully wired with real env values
 
----
-
 ## Step 5: Next Steps
 
 After generating the files, tell the user:
@@ -123,8 +122,6 @@ After generating the files, tell the user:
 2. Which public site URL env var must be filled, if still pending
 3. Whether Content Link stripping was necessary in SEO-related code paths
 4. That this setup intentionally did not change Dato schema
-
----
 
 ## Verification Checklist
 

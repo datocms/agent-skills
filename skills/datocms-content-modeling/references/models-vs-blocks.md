@@ -1,108 +1,119 @@
 # Models vs Blocks
 
-The central modeling decision in DatoCMS: should this content be its own **model** (a record that exists on its own), or a **block** (a structured fragment that lives only inside a parent record)? Get this right and reuse, lifecycle, and limits all fall out naturally. Get it wrong and you fight the platform.
+DatoCMS core choice: model (record exists alone) or block (fragment inside parent). Right choice = reuse, lifecycle, limits work. Wrong choice = fight platform.
+
+## Contents
+
+- The three decision questions
+- Structural rules that constrain the choice
+- Hard limits — they force the model decision
+- Naming convention: suffix block model `api_key`s with `_block`
+- Quick examples
+- Reusable across pages: model or block?
+- The hybrid: link + override
+- Common mistakes
 
 ## The three decision questions
 
-Pulled directly from the DatoCMS guidance — apply them in order:
+DatoCMS rules, apply in order:
 
-1. **Will I ever want to reference this content from outside the record it's defined in?** → if yes, **model**.
-2. **Does this content have standalone value, or does it only make sense inside a parent record?** → standalone → **model**; only-in-parent → **block**.
-3. **If the parent were deleted, do I want this content deleted with it, or to remain?** → deleted-with-parent → **block**; should-remain → **model**.
+1. **Reference from outside record?** → yes = **model**.
+2. **Standalone value or only-in-parent?** → standalone = **model**, only-in-parent = **block**.
+3. **Parent deleted: keep content or delete with it?** → delete-with = **block**, keep = **model**.
 
-If the three questions disagree, question 1 wins: anything that needs to be linked from elsewhere has to be a model. Blocks cannot be the target of a Link field.
+Questions disagree? #1 wins. Links need models. Blocks can't be Link targets.
 
 ## Structural rules that constrain the choice
 
-These are not preferences — they are platform rules. Letting them inform the decision avoids dead-ends later.
+Platform rules, not preferences. Follow early, avoid dead-ends.
 
-- **Blocks have no independent existence.** A block only lives inside a `single_block` field, a `rich_text` (Modular Content) field, or a `structured_text` field. There is no "list of blocks" page in the UI; there is no `client.items.find(blockId)` workflow that returns a detached block.
-- **Blocks don't count toward your plan's record limit.** This makes blocks the right choice for content that would otherwise inflate record counts (e.g. dozens of layout sections per page).
-- **Blocks cannot be linked to.** A Link field's `item_item_type` / `items_item_type` validators only accept models, never blocks. If another record needs to point at this content, it has to be a model.
-- **Deleting the parent deletes its blocks.** No orphaned blocks remain in the project. If you want the content to outlive its current parent, it's a model.
-- **Block fields are not localized at the block level.** Localization lives one level up: the _containing_ `rich_text` / `single_block` / `structured_text` field is what carries `localized: true`, and each locale holds its own collection of blocks. See `block-fields-and-structured-text.md` for the locale-multiplier consequences.
-- **Block models have a constrained subset of model flags.** `sortable`, `tree`, `draft_mode_active`, `draft_saving_active`, `singleton`, and `inverse_relationships_enabled` must all be `false` on block models. This is enforced by the API. Anything that needs those flags has to be a model. For what each flag actually does, see `model-configuration.md` § Behaviour.
+- **Blocks live inside fields only.** `single_block`, `rich_text`, `structured_text`. No "list blocks" page, no `client.items.find(blockId)`.
+- **Blocks don't count toward record limit.** Blocks right for content that inflates counts (dozens of sections per page).
+- **Blocks can't be link targets.** Link `item_item_type` / `items_item_type` accept models only. Need pointing? = model.
+- **Delete parent = delete blocks.** No orphan blocks. Content outlives parent? = model.
+- **Block fields not localized at block level.** Localization one level up: containing field `localized: true`. Each locale has own blocks. See `block-fields-and-structured-text.md`.
+- **Block models = subset of model flags.** `sortable`, `tree`, `draft_mode_active`, `draft_saving_active`, `singleton`, `inverse_relationships_enabled` must be `false`. API enforces. Need flags? = model. See `model-configuration.md` § Behaviour.
 
 ## Hard limits — they force the model decision
 
-Block-bearing fields are bounded per-record. When content compounds, these limits push the decision _toward models_ even when blocks would otherwise feel right.
+Block fields bounded per-record. Content compounds? Limits push to models.
 
-| Limit | Default value | Notes |
+| Limit | Default | Notes |
 | - | - | - |
-| Maximum record size | **300 KB** | Includes content in nested blocks. Linked records and asset uploads do **not** count. Higher limits available on some plans. |
-| Maximum blocks per record | **500** | Counts blocks across all block-bearing fields and all nesting levels in one record. |
-| Maximum nested-block depth | **5 levels** | A block inside a block inside a block… 5 deep, total. |
+| Max record size | **300 KB** | Nested blocks count. Links/assets don't. Higher on some plans. |
+| Max blocks per record | **500** | All block fields, all nesting. |
+| Max nested depth | **5 levels** | Block in block in block... 5 deep. |
 
-A record that approaches any of these is a **modeling smell**. Promoting compounding blocks into a linked model is the standard fix — linked records don't count toward the host's size or block budget.
+Near limit? **Smell**. Fix: promote blocks to linked models. Links don't count toward host size/block budget.
 
 ### The locale multiplier
 
-Block-bearing fields are localized at the _containing field_ level. A `rich_text` field marked `localized: true` holds an independent block list per locale. That means:
+Block fields localized at _containing field_. `rich_text` with `localized: true` = separate block list per locale.
 
 ```
 total blocks counted toward the 500/record cap
   = sum over (each locale × each block-bearing field × blocks in that locale)
 ```
 
-Worst-offender shape: a long landing page with many `rich_text` fields, each with dozens of blocks, in 6+ locales. The math compounds. Heavy locales + page-builder is the top reason teams blow the limit.
+Worst: long page, many `rich_text` fields, dozens of blocks, 6+ locales. Math explodes. Heavy locales + page-builder = limit blown.
 
-### Mitigations (in rough order of preference)
+### Mitigations (best first)
 
-All three of the first mitigations are model-vs-block reframes — they move content from blocks-inside-the-parent into models-linked-from-the-parent.
+First three = model-vs-block reframes. Blocks → linked models.
 
-1. **Move repeating compositions into linked records.** Instead of a `rich_text` with 50 "section" blocks, make a `Section` model and link to a list of sections. Linked records don't count toward the parent's block budget or 300 KB size.
-2. **Promote the page itself to a parent + children model.** A `Page` record with a `links` field to `PageSection` records. Each section has its own localized fields. Edits are scoped, limits are per-section.
-3. **Localize at a coarser grain.** Sometimes only the _prose_ needs to be localized, not the whole composition. A localized `structured_text` field with non-localized sibling fields for the structural blocks can drop the multiplier dramatically. (This one is a container-shape decision — see `block-fields-and-structured-text.md`.)
-4. **Audit blocks for over-decomposition.** A `callout_block` with one text field, a `spacer_block`, a `divider_block` — every block is paid for in the 500 budget. Consolidate. (Also see `content-reuse.md` for block-library hygiene.)
+1. **Move repeating compositions to linked records.** `rich_text` with 50 sections → `Section` model, link to list. Links don't count toward budget.
+2. **Promote page to parent + children.** `Page` record with `links` to `PageSection` records. Each section has own localized fields. Scoped edits, per-section limits.
+3. **Localize coarser.** Only prose needs locale, not whole composition. Localized `structured_text` + non-localized structural blocks = drop multiplier. See `block-fields-and-structured-text.md`.
+4. **Audit over-decomposition.** `callout_block` (one text), `spacer_block`, `divider_block` — each costs 500 budget. Consolidate. See `content-reuse.md`.
 
 ### Diagnosing existing limit failures
 
-When an existing record fails to save with a size or block-count error, the question to ask first is _which field and which locale is the worst contributor?_ The mitigation usually applies to that one locale × field combination, not the whole schema.
+Record fails save with size/block error? Ask: _which field, which locale worst?_ Mitigation targets that one locale × field, not whole schema.
 
 ## Naming convention: suffix block model `api_key`s with `_block`
 
-A simple rule that pays back daily: **every block model's `api_key` ends with `_block`**. `hero_block`, `callout_block`, `image_gallery_block`, `featured_product_block`. Block model _display names_ (`item_type.name`) don't need the suffix — only the `api_key`.
+Simple rule, pays daily: **block `api_key` ends with `_block`**. `hero_block`, `callout_block`, `image_gallery_block`, `featured_product_block`. Display names don't need suffix — only `api_key`.
 
 Why:
 
-- **Visual distinction in the Blocks Library and GraphQL schema.** Editors browsing the schema instantly see which entries are blocks; developers reading a query see `HeroBlockRecord` and know it's an embedded block, not a standalone model.
-- **No collisions with model `api_key`s.** Without the suffix, `hero` (block) and `hero` (page model) compete for the same name. Suffixing blocks reserves the bare name for actual models.
-- **Cleaner Structured Text validators.** A `structured_text_blocks: { item_types: [...] }` allowlist that only lists `*_block` entries is self-documenting.
-- **Consistency across the project.** New blocks added later follow the same rule without case-by-case judgement.
+- **Visual distinction in Blocks Library + GraphQL.** Editors see blocks; devs read `HeroBlockRecord` = embedded, not standalone.
+- **No collisions with model `api_key`s.** `hero` (block) + `hero` (model) collide. Suffix blocks, reserve bare for models.
+- **Clean Structured Text validators.** `structured_text_blocks: { item_types: [...] }` with `*_block` only = self-documenting.
+- **Project consistency.** New blocks follow rule, no judgement.
 
-This convention applies to _all_ block models — including the shared "frameless" blocks used for the field-set pattern (`bloggable_block`, `cardable_block`) and single-use blocks. The only blocks named without the suffix are negative examples in this documentation that predate the convention.
+Applies to _all_ block models — shared frameless blocks (`bloggable_block`, `cardable_block`) and single-use. Only unsuffixed blocks here = old negative examples.
 
 ## Quick examples
 
-| Content | Model or block | Why |
+| Content | Model/block | Why |
 | - | - | - |
-| Author profile | model | Reused across many articles, has standalone value, survives article deletion |
-| Product | model | Linked from many places, has its own page, lifecycle independent of any one parent |
-| Category | model | Many records reference it, lives in a taxonomy that exists on its own |
-| Hero section on a landing page | block | Page-specific, makes no sense outside the page, deleted with the page |
-| Image gallery on a project page | block | Project-specific composition; each project has its own gallery |
-| Quote pulled mid-article | block | Inline composition inside the article's prose; no independent value |
-| Reusable testimonial shown on many pages | model (or block, depending on reuse) | If the _same_ testimonial appears in multiple places and edits should propagate, model. If each page has its own snapshot, block. |
-| SEO metadata for a record | the built-in `seo` field type | Purpose-built field type covering title/description/image/twitter card; don't roll your own |
-| Address of a store | depends | One canonical store record → fields directly on the model. Reusable address shape across stores/contacts/employees → block in a `single_block` field |
+| Author profile | model | Reused, standalone, survives article |
+| Product | model | Linked many places, own page, lifecycle independent |
+| Category | model | Referenced, taxonomy lives alone |
+| Hero on landing | block | Page-only, no sense outside, deleted with page |
+| Gallery on project | block | Project-specific; each has own |
+| Quote mid-article | block | Inline in prose, no independent value |
+| Reusable testimonial | model (or block) | Same testimonial many places, edits propagate = model. Each page snapshot = block. |
+| SEO metadata | built-in `seo` | Use field type, don't roll own |
+| Store address | depends | One store → fields on model. Reusable shape → block in `single_block` |
 
 ## Reusable across pages: model or block?
 
-This is where teams hesitate most. The deciding question is **edit propagation**, not appearance:
+Teams hesitate here. Deciding question: **edit propagation**, not looks:
 
-- _"If I edit this once, should every place it appears update?"_ → model + Link field. One source of truth, edits propagate.
-- _"Each page has its own copy that drifts independently?"_ → block. Snapshot semantics, no propagation.
+- _"Edit once, update everywhere?"_ → model + Link. One source, propagates.
+- _"Each page own copy, drifts?"_ → block. Snapshot, no propagation.
 
-Common examples:
+Examples:
 
-- **Authors** → model. The bio updates across every article.
-- **Testimonials shown verbatim on many pages** → model. Editing the quote updates everywhere.
-- **CTAs** → model when there's a small library of canonical CTAs the marketing team curates; block when each page composes its own.
-- **Product cards on landing pages** → almost always a model link. The product owns its name/price/image; the page references it. (For per-context overrides, use the hybrid pattern below.)
+- **Authors** → model. Bio updates across articles.
+- **Testimonials verbatim many pages** → model. Edit quote, updates everywhere.
+- **CTAs** → model = small canonical library, curated. Block = each page composes own.
+- **Product cards on landing** → almost always model link. Product owns name/price/image; page references. (Overrides? Use hybrid below.)
 
 ## The hybrid: link + override
 
-When content is reusable but a specific context needs to tweak it, combine a link to the canonical model with override fields in a block.
+Content reusable, but context needs tweak: link to canonical model + override fields in block.
 
 ```
 block model: featured_product_block
@@ -111,11 +122,11 @@ block model: featured_product_block
   └── override_blurb     (text, optional)
 ```
 
-The frontend resolves with `coalesce(override_title, product.title)`. The product stays canonical; the page-specific tweak is local. See `datocms-cda` for query patterns.
+Frontend: `coalesce(override_title, product.title)`. Product canonical; tweak local. See `datocms-cda` for queries.
 
 ## Common mistakes
 
-- **Modeling a reusable thing as a block** because "the editor sees it on the page." Result: editing one place doesn't update the others; the block library fills with near-duplicates.
-- **Modeling a page-specific composition as a model** to make it "feel reusable later." Result: a model that's only ever used once, plus an extra Link field, plus the editor has to navigate two records to edit one page.
-- **Forcing a tree, sortable, or singleton requirement onto a block.** The API will reject it. If the content needs those flags, it's a model. See `model-configuration.md` for what each flag changes.
-- **Trying to reference a block from another record.** Blocks aren't link targets. If another record needs to point at this content, promote it to a model.
+- **Reusable as block** "editor sees on page." Result: edits don't propagate, library fills with near-duplicates.
+- **Page-specific as model** "feel reusable later." Result: model used once, extra Link field, editor navigates two records for one page.
+- **Forcing tree/sortable/singleton on block.** API rejects. Need flags? = model. See `model-configuration.md`.
+- **Reference block from another record.** Blocks not link targets. Need pointing? Promote to model.

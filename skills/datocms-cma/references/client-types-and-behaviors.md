@@ -2,19 +2,13 @@
 
 Load this reference when the task uses `raw*()` methods, generated CMA types, advanced client behavior, platform limits, or site-level metadata.
 
-## Quick Navigation
+## Contents
 
-- [The Dual API Surface](#the-dual-api-surface)
-  - [JSON:API Payload Structure](#jsonapi-payload-structure)
-  - [Raw Method Examples](#raw-method-examples)
-  - [When to Use Raw vs Simplified](#when-to-use-raw-vs-simplified)
-- [Type System](#type-system)
-  - [Looking up a specific type](#looking-up-a-specific-type)
-- [Automatic Behaviors](#automatic-behaviors)
-- [Technical Limits](#technical-limits)
-- [Getting Site Information](#getting-site-information)
-
----
+- The Dual API Surface
+- Type System
+- Automatic Behaviors
+- Technical Limits
+- Getting Site Information
 
 ## The Dual API Surface
 
@@ -159,8 +153,6 @@ const rawRecordRelationships = rawRecord.data.relationships;
 | Migration/export needing full JSON:API payloads | Raw |
 | Everything else | Simplified |
 
----
-
 ## Type System
 
 ```ts
@@ -193,8 +185,6 @@ See `references/type-generation.md` for generating the project's `cma-types.ts` 
 
 For the exact, up-to-date shape of any `ApiTypes.*` / `RawApiTypes.*` type, run `npx datocms cma:docs <resource> <action>`. To inline a specific type declaration, consider `--expand-types <TypeName>` (e.g. `--expand-types ItemCreateSchema`); to walk a deeper "Not expanded" type list without inlining everything, consider `--types-depth 2` or higher. Reach for `--expand-types "*"` only as a last resort — its output is verbose. For the full command surface, load the **datocms-cli** skill and read `../../datocms-cli/references/direct-cma-calls.md` § cma:docs — that is the single source of truth.
 
----
-
 ## Automatic Behaviors
 
 ### Rate Limit Retry
@@ -204,8 +194,6 @@ When `autoRetry` is `true` (the default), the client automatically retries 429 r
 ### Transient Error Retry
 
 Transient server errors (5xx with `transient: true`) are also retried automatically when `autoRetry` is enabled.
-
----
 
 ## Technical Limits
 
@@ -219,8 +207,6 @@ Transient server errors (5xx with `transient: true`) are also retried automatica
 | Bulk operation batch | 200 items per request |
 
 Exceeding these typically triggers `TECHNICAL_LIMIT_REACHED` or `TOO_MANY_OPERATIONS`.
-
----
 
 ## Getting Site Information
 

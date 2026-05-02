@@ -6,15 +6,13 @@ See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, be
 
 ## Contents
 
-- [`<datocms-naked-image>` vs `<datocms-image>`](#datocms-naked-image-vs-datocms-image)
-- [Setup](#setup)
-- [GraphQL Query](#graphql-query)
-- [Basic Usage](#basic-usage)
-- [`<datocms-naked-image>` Props](#datocms-naked-image-props)
-- [`<datocms-image>` Props](#datocms-image-props)
-- [Layout Modes (`<datocms-image>` only)](#layout-modes-datocms-image-only)
-
----
+- `<datocms-naked-image>` vs `<datocms-image>`
+- Setup
+- GraphQL Query
+- Basic Usage
+- `<datocms-naked-image>` Props
+- `<datocms-image>` Props
+- Layout Modes (`<datocms-image>` only)
 
 ## `<datocms-naked-image>` vs `<datocms-image>`
 
@@ -30,8 +28,6 @@ See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, be
 
 - Use `<datocms-naked-image>` by default — minimal JS, simpler output
 - Use `<datocms-image>` when you need crossfade effects, custom lazy-loading thresholds, or images with transparency
-
----
 
 ## Setup
 
@@ -54,13 +50,9 @@ import { Image, NakedImage } from 'vue-datocms';
 
 When using local imports with `<script setup>`, the components are available as `<Image>` and `<NakedImage>`. To use kebab-case names (`<datocms-image>`, `<datocms-naked-image>`), register them via the plugin or in a `components` option.
 
----
-
 ## GraphQL Query
 
 See `image-concepts.md` for the full query, field definitions, and best practices.
-
----
 
 ## Basic Usage
 
@@ -83,8 +75,6 @@ const props = defineProps<{ data: any }>();
   </div>
 </template>
 ```
-
----
 
 ## `<datocms-naked-image>` Props
 
@@ -111,8 +101,6 @@ const props = defineProps<{ data: any }>();
 | Property | Type | Description |
 | - | - | - |
 | `imageRef` | `HTMLImageElement` | `ref()` to the img node |
-
----
 
 ## `<datocms-image>` Props
 
@@ -148,8 +136,6 @@ const props = defineProps<{ data: any }>();
 | - | - | - |
 | `rootRef` | `HTMLDivElement` | `ref()` to the root node |
 | `imageRef` | `HTMLImageElement` | `ref()` to the img node |
-
----
 
 ## Layout Modes (`<datocms-image>` only)
 

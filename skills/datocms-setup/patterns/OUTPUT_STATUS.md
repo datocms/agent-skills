@@ -2,8 +2,6 @@
 
 Use these labels consistently when reporting recipe results.
 
----
-
 ## `scaffolded`
 
 The implementation is structurally complete but contains unresolved placeholders or project-specific values that the user must fill in. Examples:
@@ -13,8 +11,6 @@ The implementation is structurally complete but contains unresolved placeholders
 - Generic search index IDs that need replacement
 
 Always explicitly list every placeholder that remains.
-
----
 
 ## `production-ready`
 
@@ -27,8 +23,6 @@ This status requires that:
 - No placeholder comments remain in generated code
 - The feature works end-to-end without manual edits
 
----
-
 ## Final handoff requirements
 
 Every recipe handoff should:
@@ -39,8 +33,6 @@ Every recipe handoff should:
 - keep any recipe-specific follow-up recipe ids or operator next steps that the recipe requires
 
 When unresolved values remain, always include an explicit `Unresolved placeholders` section and list every remaining placeholder or ownership ambiguity. If nothing remains, say `none`.
-
----
 
 ## Test it
 

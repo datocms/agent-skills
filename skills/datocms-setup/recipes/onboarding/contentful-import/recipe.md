@@ -6,8 +6,6 @@ You are an expert at setting up the minimum repeatable workflow for importing Co
 
 Follow these steps in order. Do not skip steps.
 
----
-
 ## Step 1: Detect Context (silent)
 
 Silently examine the project:
@@ -28,8 +26,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 - If `datocms` is not installed or the active profile has no `siteId`, stop and route back to `cli-bootstrap`.
 - If an existing Contentful import helper follows a materially different flow, patch it in place by default and only ask if a rewrite would replace working behavior.
 
----
-
 ## Step 2: Ask Questions
 
 Infer first from the repo.
@@ -42,8 +38,6 @@ Only ask if an existing Contentful import helper materially conflicts with the l
 
 If the repo or request implies an existing target project rather than a fresh disposable import target, ask whether to start with a schema-only import and whether the destructive importer behavior is acceptable for that target.
 
----
-
 ## Step 3: Load References
 
 Read only these references:
@@ -54,8 +48,6 @@ Read only these references:
 Also inspect this bundled asset only when generating files:
 
 - `scripts/datocms-import-contentful.mjs`
-
----
 
 ## Step 4: Generate Code
 
@@ -87,8 +79,6 @@ Generate only these project changes:
 - Do not add CI files or multi-step orchestration around the import
 - Do not add provider-mapping or transformation layers in this setup
 
----
-
 ## Step 5: Next Steps
 
 After generating the files, tell the user:
@@ -96,8 +86,6 @@ After generating the files, tell the user:
 1. Fill in the Contentful credentials locally (DatoCMS auth is already wired through the linked default profile)
 2. Run the helper once without `--autoconfirm` to review the import behavior
 3. Add flags like `--skip-content`, `--only-content-type`, or `--autoconfirm` only when they intentionally want those modes
-
----
 
 ## Verification Checklist
 

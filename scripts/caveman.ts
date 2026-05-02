@@ -13,6 +13,11 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { extname, resolve } from "node:path";
+import { encode } from "gpt-tokenizer";
+
+function countTokens(text: string): number {
+  return encode(text).length;
+}
 
 const ENV_FILE = resolve(import.meta.dirname, "..", ".env.local");
 const Z_AI_BASE_URL = "https://api.z.ai/api/anthropic";
@@ -101,7 +106,6 @@ function isNaturalLanguage(filepath: string): boolean {
 
 function shouldCompress(filepath: string): boolean {
   if (!existsSync(filepath) || !statSync(filepath).isFile()) return false;
-  if (filepath.endsWith(".original.md")) return false;
   return isNaturalLanguage(filepath);
 }
 
@@ -218,30 +222,37 @@ function extractHeadings(text: string): Array<[string, string]> {
   return out;
 }
 
-function extractCodeBlocks(text: string): string[] {
-  const blocks: string[] = [];
-  const lines = text.split("\n");
+interface CodeBlockMatch {
+  block: string;
+  start: number;
+  end: number;
+}
+
+function extractCodeBlocksWithPositions(text: string): CodeBlockMatch[] {
+  const blocks: CodeBlockMatch[] = [];
   let i = 0;
-  while (i < lines.length) {
-    const line = lines[i];
-    if (line === undefined) {
-      i++;
-      continue;
-    }
+  while (i < text.length) {
+    const lineStart = i;
+    let lineEnd = text.indexOf("\n", i);
+    if (lineEnd === -1) lineEnd = text.length;
+    const line = text.slice(lineStart, lineEnd);
+
     const m = line.match(FENCE_OPEN_REGEX);
     if (!m) {
-      i++;
+      i = lineEnd + 1;
       continue;
     }
     const fenceMarker = m[2] ?? "";
     const fenceChar = fenceMarker[0] ?? "";
     const fenceLen = fenceMarker.length;
-    const blockLines = [line];
-    i++;
-    let closed = false;
-    while (i < lines.length) {
-      const cur = lines[i];
-      if (cur === undefined) break;
+
+    let cursor = lineEnd + 1;
+    let blockEnd = -1;
+    while (cursor <= text.length) {
+      const ls = cursor;
+      let le = text.indexOf("\n", cursor);
+      if (le === -1) le = text.length;
+      const cur = text.slice(ls, le);
       const cm = cur.match(FENCE_OPEN_REGEX);
       if (
         cm &&
@@ -249,17 +260,29 @@ function extractCodeBlocks(text: string): string[] {
         (cm[2]?.length ?? 0) >= fenceLen &&
         (cm[3] ?? "").trim() === ""
       ) {
-        blockLines.push(cur);
-        closed = true;
-        i++;
+        blockEnd = le;
         break;
       }
-      blockLines.push(cur);
-      i++;
+      if (le === text.length) break;
+      cursor = le + 1;
     }
-    if (closed) blocks.push(blockLines.join("\n"));
+
+    if (blockEnd >= 0) {
+      blocks.push({
+        block: text.slice(lineStart, blockEnd),
+        start: lineStart,
+        end: blockEnd,
+      });
+      i = blockEnd + 1;
+    } else {
+      i = lineEnd + 1;
+    }
   }
   return blocks;
+}
+
+function extractCodeBlocks(text: string): string[] {
+  return extractCodeBlocksWithPositions(text).map((b) => b.block);
 }
 
 function extractSet(text: string, regex: RegExp): Set<string> {
@@ -270,6 +293,156 @@ function setDiff(a: Set<string>, b: Set<string>): string[] {
   return [...a].filter((x) => !b.has(x));
 }
 
+function formatHeading([level, text]: [string, string]): string {
+  return `${level} ${text}`;
+}
+
+function diffHeadings(
+  a: Array<[string, string]>,
+  b: Array<[string, string]>,
+): { lost: string[]; added: string[]; reordered: Array<[string, string]> } {
+  const sa = a.map(formatHeading);
+  const sb = b.map(formatHeading);
+  const setB = new Set(sb);
+  const setA = new Set(sa);
+  const lost = sa.filter((h) => !setB.has(h));
+  const added = sb.filter((h) => !setA.has(h));
+  const reordered: Array<[string, string]> = [];
+  if (lost.length === 0 && added.length === 0) {
+    for (let i = 0; i < sa.length; i++) {
+      if (sa[i] !== sb[i]) reordered.push([sa[i] ?? "", sb[i] ?? ""]);
+    }
+  }
+  return { lost, added, reordered };
+}
+
+function summarizeBlock(block: string, maxLen = 80): string {
+  const firstLine = (block.split("\n")[0] ?? "").trim();
+  const lineCount = block.split("\n").length;
+  const head =
+    firstLine.length > maxLen ? `${firstLine.slice(0, maxLen)}…` : firstLine;
+  return `${head} (${lineCount} lines)`;
+}
+
+function diffCodeBlocks(
+  a: string[],
+  b: string[],
+): Array<{ index: number; reason: string; orig: string; comp?: string }> {
+  const diffs: Array<{
+    index: number;
+    reason: string;
+    orig: string;
+    comp?: string;
+  }> = [];
+  const max = Math.max(a.length, b.length);
+  for (let i = 0; i < max; i++) {
+    const ao = a[i];
+    const bo = b[i];
+    if (ao === undefined) {
+      diffs.push({ index: i, reason: "extra block in compressed", orig: "—", comp: bo });
+    } else if (bo === undefined) {
+      diffs.push({ index: i, reason: "missing in compressed", orig: ao });
+    } else if (ao !== bo) {
+      diffs.push({ index: i, reason: "content differs", orig: ao, comp: bo });
+    }
+  }
+  return diffs;
+}
+
+// ---------- Mechanical patching ----------
+
+const FUZZY_THRESHOLD = 0.7;
+
+function levenshtein(a: string, b: string): number {
+  if (a === b) return 0;
+  const m = a.length;
+  const n = b.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+  let prev = new Array<number>(n + 1);
+  let cur = new Array<number>(n + 1);
+  for (let j = 0; j <= n; j++) prev[j] = j;
+  for (let i = 1; i <= m; i++) {
+    cur[0] = i;
+    for (let j = 1; j <= n; j++) {
+      const cost = a.charCodeAt(i - 1) === b.charCodeAt(j - 1) ? 0 : 1;
+      cur[j] = Math.min(cur[j - 1] + 1, (prev[j] ?? 0) + 1, (prev[j - 1] ?? 0) + cost);
+    }
+    [prev, cur] = [cur, prev];
+  }
+  return prev[n] ?? 0;
+}
+
+function similarity(a: string, b: string): number {
+  if (a === b) return 1;
+  const max = Math.max(a.length, b.length);
+  if (max === 0) return 1;
+  const min = Math.min(a.length, b.length);
+  // Lower bound: best possible similarity given the length gap.
+  // Skips Levenshtein when even a perfect alignment can't reach the threshold.
+  if (min / max < FUZZY_THRESHOLD) return min / max;
+  return 1 - levenshtein(a, b) / max;
+}
+
+// Replaces compressed code blocks with their originals when fuzzy match is
+// confident. Tries positional match first (the common case), then best-match
+// across remaining originals (handles deleted/reordered blocks). Blocks below
+// the threshold are left untouched and surface as validation errors.
+function patchCodeBlocks(
+  origBody: string,
+  compBody: string,
+): { patched: string; count: number } {
+  const origBlocks = extractCodeBlocksWithPositions(origBody).map((b) => b.block);
+  const compBlocks = extractCodeBlocksWithPositions(compBody);
+
+  const used = new Set<number>();
+  const replacements: Array<{ start: number; end: number; text: string }> = [];
+
+  for (let i = 0; i < compBlocks.length; i++) {
+    const cb = compBlocks[i];
+    if (cb === undefined) continue;
+    let matchIdx = -1;
+
+    const positional = origBlocks[i];
+    if (
+      positional !== undefined &&
+      !used.has(i) &&
+      similarity(positional, cb.block) >= FUZZY_THRESHOLD
+    ) {
+      matchIdx = i;
+    } else {
+      let bestSim = FUZZY_THRESHOLD;
+      for (let j = 0; j < origBlocks.length; j++) {
+        if (used.has(j)) continue;
+        const ob = origBlocks[j];
+        if (ob === undefined) continue;
+        const s = similarity(ob, cb.block);
+        if (s > bestSim) {
+          bestSim = s;
+          matchIdx = j;
+        }
+      }
+    }
+
+    if (matchIdx >= 0) {
+      used.add(matchIdx);
+      const matched = origBlocks[matchIdx];
+      if (matched !== undefined && matched !== cb.block) {
+        replacements.push({ start: cb.start, end: cb.end, text: matched });
+      }
+    }
+  }
+
+  if (replacements.length === 0) return { patched: compBody, count: 0 };
+
+  replacements.sort((a, b) => b.start - a.start);
+  let patched = compBody;
+  for (const r of replacements) {
+    patched = patched.slice(0, r.start) + r.text + patched.slice(r.end);
+  }
+  return { patched, count: replacements.length };
+}
+
 function validate(orig: string, comp: string): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -277,38 +450,85 @@ function validate(orig: string, comp: string): ValidationResult {
   const h1 = extractHeadings(orig);
   const h2 = extractHeadings(comp);
   if (h1.length !== h2.length) {
-    errors.push(`Heading count mismatch: ${h1.length} vs ${h2.length}`);
-  }
-  if (JSON.stringify(h1) !== JSON.stringify(h2)) {
-    warnings.push("Heading text/order changed");
+    const { lost, added } = diffHeadings(h1, h2);
+    const detail = [
+      lost.length ? `lost: ${lost.map((h) => JSON.stringify(h)).join(", ")}` : "",
+      added.length ? `added: ${added.map((h) => JSON.stringify(h)).join(", ")}` : "",
+    ]
+      .filter(Boolean)
+      .join("; ");
+    errors.push(
+      `Heading count mismatch: ${h1.length} vs ${h2.length}${detail ? ` (${detail})` : ""}`,
+    );
+  } else if (JSON.stringify(h1) !== JSON.stringify(h2)) {
+    const { lost, added, reordered } = diffHeadings(h1, h2);
+    if (lost.length || added.length) {
+      warnings.push(
+        `Heading text changed: lost=${JSON.stringify(lost)}, added=${JSON.stringify(added)}`,
+      );
+    } else if (reordered.length) {
+      const sample = reordered
+        .slice(0, 3)
+        .map(([from, to]) => `${JSON.stringify(from)} → ${JSON.stringify(to)}`)
+        .join("; ");
+      warnings.push(
+        `Heading order changed (${reordered.length} position${reordered.length === 1 ? "" : "s"}): ${sample}`,
+      );
+    } else {
+      warnings.push("Heading text/order changed");
+    }
   }
 
   const c1 = extractCodeBlocks(orig);
   const c2 = extractCodeBlocks(comp);
   if (JSON.stringify(c1) !== JSON.stringify(c2)) {
-    errors.push("Code blocks not preserved exactly");
+    const diffs = diffCodeBlocks(c1, c2);
+    if (diffs.length === 0) {
+      errors.push(
+        `Code block count mismatch: ${c1.length} vs ${c2.length} (no per-index diff)`,
+      );
+    } else {
+      for (const d of diffs.slice(0, 3)) {
+        errors.push(
+          `Code block #${d.index + 1} ${d.reason}: original=${JSON.stringify(summarizeBlock(d.orig))}${d.comp !== undefined ? `, compressed=${JSON.stringify(summarizeBlock(d.comp))}` : ""}`,
+        );
+      }
+      if (diffs.length > 3) {
+        errors.push(`…and ${diffs.length - 3} more code block diff(s)`);
+      }
+    }
   }
 
   const u1 = extractSet(orig, URL_REGEX);
   const u2 = extractSet(comp, URL_REGEX);
   if (u1.size !== u2.size || [...u1].some((u) => !u2.has(u))) {
-    errors.push(
-      `URL mismatch: lost=${JSON.stringify(setDiff(u1, u2))}, added=${JSON.stringify(setDiff(u2, u1))}`,
-    );
+    const lost = setDiff(u1, u2);
+    const added = setDiff(u2, u1);
+    const parts: string[] = [`${u1.size} → ${u2.size}`];
+    if (lost.length) parts.push(`lost (${lost.length}): ${JSON.stringify(lost)}`);
+    if (added.length) parts.push(`added (${added.length}): ${JSON.stringify(added)}`);
+    errors.push(`URL mismatch: ${parts.join("; ")}`);
   }
 
   const p1 = extractSet(orig, PATH_REGEX);
   const p2 = extractSet(comp, PATH_REGEX);
-  if (p1.size !== p2.size || [...p1].some((p) => !p2.has(p))) {
-    warnings.push(
-      `Path mismatch: lost=${JSON.stringify(setDiff(p1, p2))}, added=${JSON.stringify(setDiff(p2, p1))}`,
-    );
+  const lostPaths = setDiff(p1, p2);
+  if (lostPaths.length) {
+    const added = setDiff(p2, p1);
+    const parts: string[] = [`${p1.size} → ${p2.size}`];
+    parts.push(`lost (${lostPaths.length}): ${JSON.stringify(lostPaths)}`);
+    if (added.length) parts.push(`added (${added.length}): ${JSON.stringify(added)}`);
+    warnings.push(`Path mismatch: ${parts.join("; ")}`);
   }
 
   const b1 = (orig.match(BULLET_REGEX) ?? []).length;
   const b2 = (comp.match(BULLET_REGEX) ?? []).length;
   if (b1 > 0 && Math.abs(b1 - b2) / b1 > 0.15) {
-    warnings.push(`Bullet count changed too much: ${b1} -> ${b2}`);
+    const delta = b2 - b1;
+    const pct = ((Math.abs(delta) / b1) * 100).toFixed(1);
+    warnings.push(
+      `Bullet count changed too much: ${b1} → ${b2} (${delta >= 0 ? "+" : ""}${delta}, ${pct}% change, threshold 15%)`,
+    );
   }
 
   return { isValid: errors.length === 0, errors, warnings };
@@ -348,24 +568,63 @@ function compressFile(filepath: string): boolean {
   let compressedBody = callClaude(buildCompressPrompt(originalBody));
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    console.log(`\nValidation attempt ${attempt + 1}`);
+    console.log(`\nValidation attempt ${attempt + 1}/${MAX_RETRIES}`);
+
+    const patched = patchCodeBlocks(originalBody, compressedBody);
+    if (patched.count > 0) {
+      console.log(
+        `🔧 Restored ${patched.count} code block${patched.count === 1 ? "" : "s"} from original`,
+      );
+      compressedBody = patched.patched;
+    }
+
     const result = validate(originalText, frontmatter + compressedBody);
 
     if (result.isValid) {
-      writeFileSync(abs, frontmatter + compressedBody);
-      console.log("Validation passed");
+      const finalText = frontmatter + compressedBody;
+      writeFileSync(abs, finalText);
+      const before = countTokens(originalText);
+      const after = countTokens(finalText);
+      const saved = before - after;
+      const pct = before > 0 ? ((saved / before) * 100).toFixed(1) : "0.0";
+      console.log(
+        `✅ Validation passed (${result.warnings.length} warning${result.warnings.length === 1 ? "" : "s"})`,
+      );
+      console.log(
+        `🪙 Tokens: ${before} → ${after} (saved ${saved}, -${pct}%)`,
+      );
       if (result.warnings.length) {
-        console.log("Warnings:");
-        for (const w of result.warnings) console.log(`   - ${w}`);
+        console.log(`Warnings (${result.warnings.length}):`);
+        for (const [i, w] of result.warnings.entries()) {
+          console.log(`   ${i + 1}. ${w}`);
+        }
       }
       return true;
     }
 
-    console.log("❌ Validation failed:");
-    for (const err of result.errors) console.log(`   - ${err}`);
+    console.log(
+      `❌ Validation failed (${result.errors.length} error${result.errors.length === 1 ? "" : "s"}, ${result.warnings.length} warning${result.warnings.length === 1 ? "" : "s"}):`,
+    );
+    console.log(`Errors (${result.errors.length}):`);
+    for (const [i, err] of result.errors.entries()) {
+      console.log(`   ${i + 1}. ${err}`);
+    }
+    if (result.warnings.length) {
+      console.log(`Warnings (${result.warnings.length}):`);
+      for (const [i, w] of result.warnings.entries()) {
+        console.log(`   ${i + 1}. ${w}`);
+      }
+    }
+
+    if (attempt === 0) {
+      writeFileSync(abs, frontmatter + compressedBody);
+      console.log(`🐞 Wrote post-step-1 output to ${abs}`);
+    }
 
     if (attempt === MAX_RETRIES - 1) {
-      console.log("❌ Failed after retries — original left untouched");
+      console.log(
+        `❌ Failed after ${MAX_RETRIES} attempts — original left untouched`,
+      );
       return false;
     }
 

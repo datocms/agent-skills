@@ -1,45 +1,50 @@
 # Field configuration: validators and appearance
 
-Every field carries two settings beyond its `field_type`: **validators** (what values are accepted) and **appearance** (which editor renders the field, plus its parameters). Defaults are sensible — most fields don't need an explicit `appearance`. This reference covers the choices that _do_ matter for content modeling.
+Every field has two settings beyond `field_type`: **validators** (accepted values) and **appearance** (editor + parameters). Defaults sensible — most fields don't need explicit `appearance`. This reference covers choices that _matter_ for content modeling.
 
-> For the full TypeScript shape of any per-field-type validator or appearance, run `npx datocms cma:docs fields create --expand-types '<TypeName>'` (e.g. `StringFieldValidators`, `FileFieldAppearance`).
+> For full TypeScript shape, run `npx datocms cma:docs fields create --expand-types '<TypeName>'` (e.g. `StringFieldValidators`, `FileFieldAppearance`).
+
+## Contents
+
+- Defaults are usually right
+- Make fields required by default
+- Validators worth remembering
+- Appearance — when defaults aren't enough
+- Cross-cutting field attributes
+- Common mistakes
 
 ## Defaults are usually right
 
-Each `field_type` has a default editor — `string` → `single_line`, `text` → `markdown`, `link` → `link_select`, `boolean` → `boolean`, `structured_text` → `structured_text`, etc. Omit `appearance` for the common case; only set it when:
+Each `field_type` has a default editor (default editor for `text` → `markdown`). Omit `appearance` for common case; set it when:
 
-- A different built-in editor fits better (`textarea` vs `markdown`, `string_select` to pair with an `enum` validator).
-- You need to tune editor parameters (a `slug` `url_prefix`, a `color` preset palette, a `single_line` `heading: true`).
-- You're wiring a plugin-provided editor or add-on.
+- Different built-in editor fits better (`textarea` vs `markdown`, `string_select` + `enum`).
+- Tuning editor parameters (slug `url_prefix`, color `preset_colors`, `single_line` `heading: true`).
+- Wiring plugin-provided editor/add-on.
 
-Validators are different — defaults give you "anything goes." Reach for them whenever the field has a meaningful constraint editors should be helped (or stopped) by.
-
----
+Validators differ — defaults give "anything goes." Use when field has meaningful constraint editors should be helped/stopped by.
 
 ## Make fields required by default
 
-Of all the validators, `required` deserves a separate decision frame because it shapes both the _frontend code_ and the _editor workflow_.
+`required` deserves separate decision frame — shapes _frontend code_ and _editor workflow_.
 
-**The frontend tax of optional fields.** Every non-required field is a `T | null` (or `T | undefined`) the frontend has to branch on. A record with 20 optional fields is 20 conditionals in the rendering code, 20 places to forget a fallback, 20 places where a missing value silently produces broken layout. Required fields collapse to `T` — the rendering code reads cleanly, and the type system guarantees the value is there.
+**Frontend tax of optional fields.** Every non-required field is `T | null` — 20 optional fields = 20 conditionals, 20 fallbacks, 20 silent breaks. Required fields collapse to `T` — clean rendering, type system guarantees value.
 
-**The editor tax of required fields.** An editor mid-flight rarely has every value ready: the author hasn't been chosen yet, the hero image is still being prepared, the SEO copy comes last. If `required` blocks _saving_, editors lose work or invent placeholder values to get past the validator.
+**Editor tax of required fields.** Editor mid-flight rarely has every value ready — author not chosen, hero image being prepared, SEO copy last. If `required` blocks _saving_, editors lose work or invent placeholders.
 
-**The fix is the pairing, not a compromise.** Don't water down `required` to accommodate the editor workflow. Instead:
+**Fix is pairing, not compromise.** Don't water down `required`. Instead:
 
-1. Make every field that the frontend genuinely needs **`required`**.
-2. Turn on **`draft_saving_active: true`** at the model level (which itself requires `draft_mode_active: true`). Drafts can now be saved with missing required values — but the publish action still enforces every validator.
+1. Make every field frontend genuinely needs **`required`**.
+2. Turn on **`draft_saving_active: true`** at model level (requires `draft_mode_active: true`). Drafts save with missing required values — publish action still enforces every validator.
 
-The combined effect: the frontend reads only published records, so required-on-the-field plus required-at-publish gives it the "every required field is present" guarantee for free, while editors can still save incomplete drafts mid-session. See `model-configuration.md` § draft\_saving\_active.
+Effect: frontend reads only published records, required-on-field + required-at-publish = "every required field present" guarantee, editors save incomplete drafts. See `model-configuration.md` § draft_saving_active.
 
-**When a field genuinely _should_ be optional.** The test is not "will the editor have it on day one" — that's what drafts are for. The test is "is there a sensible record state where this value doesn't exist at all?" An `expires_at` on an offer, a `subtitle` that some articles don't have, an alternative `secondary_cta` that's only sometimes present — these are real optionals. A field that "we'll always fill it in eventually" is not an optional, it's a required field with a draft workflow.
-
----
+**When field genuinely _should_ be optional.** Test: "is there sensible record state where this value doesn't exist at all?" `expires_at`, `subtitle` some articles don't have, alternative `secondary_cta` sometimes present — real optionals. "We'll always fill it eventually" = required field with draft workflow.
 
 ## Validators worth remembering
 
 Organized by what they let you express, not by `field_type`.
 
-### Constrain a string to a fixed set of values — `enum`
+### Constrain string to fixed set — `enum`
 
 ```ts
 // string field
@@ -51,9 +56,9 @@ appearance: { editor: "string_select", parameters: { options: [
 ]}}
 ```
 
-Always pair `enum` with `string_select` or `string_radio_group` — a plain `single_line` doesn't enforce the choice in the UI, even though the validator rejects bad values at save time. The enum is the structural guarantee; the dropdown is the affordance.
+Pair `enum` with `string_select` or `string_radio_group` — plain `single_line` doesn't enforce choice in UI. Enum = structural guarantee; dropdown = affordance.
 
-This is the right shape for **semantic variants** (`tone`, `emphasis`, `severity`) — see `separation-of-concerns.md`.
+Right shape for **semantic variants** (`tone`, `emphasis`, `severity`) — see `separation-of-concerns.md`.
 
 ### Constrain string format — `format` and `length`
 
@@ -73,15 +78,15 @@ validators: {
 }
 ```
 
-`predefined_pattern` accepts only `"email"` or `"url"`. Reach for those before writing a custom regex — they're maintained by DatoCMS and produce a clean error message without needing `description`.
+`predefined_pattern` accepts `"email"` or `"url"`. Use these before custom regex — maintained by DatoCMS, clean error message without `description`.
 
-The `description` matters: without it, the editor sees the regex itself as the error message. With it, they see plain English.
+`description` matters: without it, editor sees regex as error. With it, plain English.
 
-`length` accepts `min`, `max`, or `eq` — useful for ISBN, country codes, anything with a fixed length.
+`length` accepts `min`, `max`, `eq` — ISBN, country codes, fixed length.
 
 ### Force uniqueness — `unique`
 
-Available on `string`, `slug`, `link`. Use for natural keys (slug, SKU, internal codename). DatoCMS enforces uniqueness across the whole collection — no scoping by another field.
+Available on `string`, `slug`, `link`. Use for natural keys (slug, SKU, internal codename). DatoCMS enforces uniqueness across whole collection — no scoping.
 
 ### Constrain numeric/date ranges
 
@@ -98,19 +103,19 @@ validators: { date_time_range: { min: "2024-01-01T00:00:00Z" } }
 
 | Validator | Use for |
 | - | - |
-| `extension: { predefined_list: 'image' \| 'transformable_image' \| 'video' \| 'document' }` | Restrict by category. **`'transformable_image'` is the one to use for hero/cover images** — only these support `responsiveImage` transformations on the CDA. |
+| `extension: { predefined_list: 'image' \| 'transformable_image' \| 'video' \| 'document' }` | Restrict by category. **`'transformable_image'` for hero/cover images** — only these support `responsiveImage` transformations. |
 | `extension: { extensions: ["pdf", "epub"] }` | Custom allowlist. |
-| `image_dimensions: { width_min_value, width_max_value, height_min_value, height_max_value }` | Reject images that are too small for the design. |
-| `image_aspect_ratio: { eq_ar_numerator: 16, eq_ar_denominator: 9 }` | Force editorial consistency (also `min_*` / `max_*` form for ranges). |
+| `image_dimensions: { width_min_value, width_max_value, height_min_value, height_max_value }` | Reject too-small images. |
+| `image_aspect_ratio: { eq_ar_numerator: 16, eq_ar_denominator: 9 }` | Force editorial consistency (also `min_*` / `max_*`). |
 | `file_size: { max_value: 2, max_unit: "MB" }` | Cap upload size. |
-| `required_alt_title: { alt: true }` | Force alt text — wire on every user-facing image field. Accessibility and SEO depend on it; editors will skip alt unless DatoCMS blocks them. |
-| `size: { min, max }` (gallery only) | Limit the number of images. |
+| `required_alt_title: { alt: true }` | Force alt text — wire on every user-facing image field. Accessibility/SEO depend on it. |
+| `size: { min, max }` (gallery only) | Limit image count. |
 
 ### Constrain links between records
 
-`item_item_type` (link), `items_item_type` (links), and `structured_text_links` carry the **cascade strategies** (`on_reference_delete_strategy`, etc.) — see `../../datocms-cma/references/schema.md` § Reference-cascade strategies. Set the allowlist deliberately; default to `"fail"` for editorial content.
+`item_item_type` (link), `items_item_type` (links), `structured_text_links` carry **cascade strategies** — see `../../datocms-cma/references/schema.md` § Reference-cascade strategies. Set allowlist deliberately; default to `"fail"` for editorial content.
 
-### Auto-fill a slug from a title — `slug_title_field`
+### Auto-fill slug from title — `slug_title_field`
 
 ```ts
 validators: {
@@ -119,9 +124,9 @@ validators: {
 }
 ```
 
-Without `slug_title_field`, editors type the slug by hand. With it, the slug pre-fills from the bound title and updates as the editor types — until they manually edit the slug. Wire this on every URL slug.
+Without `slug_title_field`, editors type slug by hand. With it, slug pre-fills from bound title, updates as editor types — until manual edit. Wire on every URL slug.
 
-`slug_format` accepts `predefined_pattern: "webpage_slug"` (lowercase, hyphens, ASCII) or a `custom_pattern` regex.
+`slug_format` accepts `predefined_pattern: "webpage_slug"` (lowercase, hyphens, ASCII) or `custom_pattern` regex.
 
 ### Require specific SEO sub-fields
 
@@ -134,9 +139,9 @@ validators: {
 }
 ```
 
-`title_length` / `description_length` show editors a live character counter — invaluable because Google truncates around 60/160. Wire both on every public-facing model's SEO field. The SEO field doesn't stand alone: when a sub-field is empty, the CDA's `_seoMetaTags` falls back to the model's `title_field` / `image_preview_field` / `excerpt_field` — see `model-configuration.md` § "SEO fallbacks for `_seoMetaTags`".
+`title_length` / `description_length` show live character counter — Google truncates \~60/160. Wire on every public-facing model's SEO field. SEO field doesn't stand alone: when sub-field empty, CDA's `_seoMetaTags` falls back to model's `title_field` / `image_preview_field` / `excerpt_field` — see `model-configuration.md` § "SEO fallbacks for `_seoMetaTags`".
 
-### Limit a Modular Content / Structured Text container
+### Limit Modular Content / Structured Text container
 
 ```ts
 // rich_text
@@ -151,7 +156,7 @@ validators: {
 }
 ```
 
-`size` on `rich_text` and `length` on `structured_text` help keep records under the 300 KB / 500-block limits — see `models-vs-blocks.md`.
+`size` on `rich_text`, `length` on `structured_text` keep records under 300 KB / 500-block limits — see `models-vs-blocks.md`.
 
 ### Sanitize HTML for `text` fields
 
@@ -159,20 +164,18 @@ validators: {
 validators: { sanitized_html: { sanitize_before_validation: true } }
 ```
 
-Use when the `text` field stores HTML the frontend will render. Without it, an editor can paste a `<script>` tag and get it back verbatim from the API.
-
----
+Use when `text` field stores HTML frontend will render. Without it, editor can paste `<script>` tag and get it back verbatim.
 
 ## Appearance — when defaults aren't enough
 
 ### Single-editor field types
 
-These have one built-in editor; the only configuration is its parameters. Don't reach for `appearance` unless tuning a parameter.
+One built-in editor; only configuration is parameters. Don't reach for `appearance` unless tuning parameter.
 
-| `field_type` | Default editor | Tunable parameters of note |
+| `field_type` | Default editor | Tunable parameters |
 | - | - | - |
-| `boolean` | `boolean` | none (or use `boolean_radio_group`, see below) |
-| `color` | `color_picker` | `enable_alpha`, `preset_colors` (lock to a brand palette) |
+| `boolean` | `boolean` | none (or `boolean_radio_group`) |
+| `color` | `color_picker` | `enable_alpha`, `preset_colors` (brand palette) |
 | `date` | `date_picker` | none |
 | `date_time` | `date_time_picker` | none |
 | `file` | `file` | none |
@@ -183,11 +186,11 @@ These have one built-in editor; the only configuration is its parameters. Don't 
 | `slug` | `slug` | `url_prefix` (e.g. `https://site.com/blog/`), `placeholder` |
 | `video` | `video` | none |
 
-### Multi-editor field types — the real choices
+### Multi-editor field types — real choices
 
 #### `boolean`: `boolean` vs `boolean_radio_group`
 
-Default is a checkbox-style toggle. Switch to `boolean_radio_group` when **the labels matter**:
+Default = checkbox-style toggle. Switch to `boolean_radio_group` when **labels matter**:
 
 ```ts
 appearance: {
@@ -199,34 +202,34 @@ appearance: {
 }
 ```
 
-A toggle labeled "Featured" is ambiguous — featured _where_? A radio group with explicit labels removes the guess.
+Toggle "Featured" ambiguous — featured _where_? Radio group with explicit labels removes guess.
 
 #### `string`: `single_line` vs `string_radio_group` vs `string_select`
 
-- `single_line` — free text. Default. `heading: true` makes the input visually larger and is conventionally used for the field that represents the record's title/headline (presentation cue, not validation).
+- `single_line` — free text. Default. `heading: true` = larger input, conventionally for record's title/headline (presentation cue, not validation).
 - `string_select` — dropdown. Pair with `enum` (always).
-- `string_radio_group` — radios laid out flat. Pair with `enum` when there are 2-4 options and editors should see all at once.
+- `string_radio_group` — radios flat. Pair with `enum` when 2-4 options, editors should see all.
 
 #### `text`: `markdown` vs `wysiwyg` vs `textarea`
 
-Three different editor experiences. The choice changes what editors can produce.
+Three editor experiences. Choice changes what editors can produce.
 
 | Editor | Output | When |
 | - | - | - |
-| `markdown` (default) | Markdown source | Editors are technical; output is parsed downstream; you want predictable output |
-| `wysiwyg` | HTML | Non-technical editors; "looks like Word" is desired; output is HTML you'll render |
+| `markdown` (default) | Markdown source | Editors technical; output parsed downstream; predictable output |
+| `wysiwyg` | HTML | Non-technical editors; "looks like Word"; HTML output |
 | `textarea` | Plain text | Multi-line plain text — meta descriptions, transcripts, alt text — no formatting |
 
-**For new structured editorial work, prefer `structured_text` over any of these.** It gives you typed AST, embedded blocks, controlled nodes/marks, and a frontend rendering story. `text` field types are right for legacy-shaped content (Markdown source, raw HTML) or pure plain text.
+**New structured editorial work: prefer `structured_text`.** Typed AST, embedded blocks, controlled nodes/marks, frontend rendering. `text` for legacy-shaped content (Markdown source, raw HTML) or plain text.
 
-If you do pick `markdown` or `wysiwyg`, the `toolbar` parameter constrains what editors can do — drop `image`, `table`, etc. when you don't want them.
+`markdown` / `wysiwyg`: `toolbar` parameter constrains what editors can do — drop `image`, `table` when unwanted.
 
 #### `json`: raw JSON vs multi-select vs checkbox-group
 
-The same `json` field type has three radically different editors:
+Same `json` field type, three radically different editors:
 
 ```ts
-// editor: "json" — raw JSON textarea. Use for true free-form JSON.
+// editor: "json" — JSON textarea w/ syntax highlighting. Use for true free-form JSON.
 
 // editor: "string_multi_select" — dropdown of preset options
 appearance: {
@@ -241,28 +244,28 @@ appearance: {
 // editor: "string_checkbox_group" — same shape, checkboxes instead
 ```
 
-`string_multi_select` and `string_checkbox_group` are the right shape for **a fixed set of tags** (dietary flags, badge types, feature toggles). The value is a JSON array of strings, queryable on the CDA.
+`string_multi_select` / `string_checkbox_group` = right shape for **fixed tag set** (dietary flags, badge types, feature toggles). Value = JSON array of strings, queryable on CDA.
 
-For a free-form, editor-typed list of strings that _isn't_ a fixed set, prefer creating a tag _model_ and a `links` field — see `taxonomy-classification.md`.
+Free-form, editor-typed string list not fixed set? Create tag _model_ + `links` field — see `taxonomy-classification.md`.
 
 #### `single_block`: `framed_single_block` vs `frameless_single_block`
 
-This is a content-reuse decision, not just a UI one. The frameless variant is DatoCMS's "shared field set" pattern — see `content-reuse.md` § Pattern 4 (Frameless single\_block).
+Content-reuse decision, not just UI. Frameless = DatoCMS's "shared field set" pattern — see `content-reuse.md` § Pattern 4 (Frameless single_block).
 
-Quick version: **frameless** when the block is a transparent way to share fields (the editor sees the block's fields as if they were inline on the parent); **framed** when the block is a meaningful nested entity the editor should perceive as a unit.
+So: **frameless** when block = transparent way to share fields (editor sees block's fields as inline); **framed** when block = meaningful nested entity editor should perceive as unit.
 
 #### `link` / `links`: `*_select` vs `*_embed`
 
-Both editors do the same thing — pick / create a referenced record. The difference is **preview density**.
+Both = pick / create referenced record. Difference = **preview density**.
 
-- `link_select` / `links_select` — compact chips. The linked record shows up as a small tag with its title and an `x` to remove. Right for high-density many-link fields where editors recognize records by name alone (tags, technologies, categories).
-- `link_embed` / `links_embed` — rich card. The linked record shows up with its presentation image, model name, title, and publication status. Right when editors benefit from a visual cue or when publication state matters at a glance (a featured Author, a selected Project on a case-study page).
+- `link_select` / `links_select` — compact chips. Linked record = small tag with title + `x`. Right for high-density many-link fields where editors recognize records by name (tags, technologies, categories).
+- `link_embed` / `links_embed` — rich card. Linked record shows presentation image, model name, title, publication status. Right when editor needs visual cue or publication state matters (featured Author, selected Project).
 
-Both variants offer the same "Create new…" and "From library" actions, and both keep the linked record as a real reference — neither edits the upstream record inline. Pick by how much information the editor needs to scan to identify the link.
+Both offer "Create new…" and "From library" actions, keep linked record as real reference — neither edits upstream inline. Pick by information editor needs to scan.
 
 ### `structured_text` editor parameters
 
-The structured-text editor is the most configurable in the system:
+Most configurable editor:
 
 ```ts
 appearance: {
@@ -278,12 +281,12 @@ appearance: {
 }
 ```
 
-The decisions to make per field:
+Decisions per field:
 
-- **`nodes`** — which block-level node types editors can insert. Constrain aggressively. An "Article body" might allow everything; a "Quote attribution" might allow only `link`.
-- **`marks`** — inline formatting. Drop `underline` if your design doesn't use it (otherwise editors will use it inconsistently).
-- **`heading_levels`** — which `<h2>`–`<h6>` the editor can produce. `<h1>` is always reserved for the page itself; for body content, `[2, 3]` is the common pick.
-- **`show_links_target_blank`** — gives editors the "open in new tab" toggle. Disable if your frontend handles target attribution globally.
+- **`nodes`** — block-level node types editors can insert. Constrain aggressively. "Article body" = everything; "Quote attribution" = only `link`.
+- **`marks`** — inline formatting. Drop `underline` if design doesn't use it.
+- **`heading_levels`** — which `<h2>`–`<h6>` editor can produce. `<h1>` reserved for page; body content = `[2, 3]`.
+- **`show_links_target_blank`** — "open in new tab" toggle. Disable if frontend handles target globally.
 
 ### `seo` editor parameters
 
@@ -297,15 +300,13 @@ appearance: {
 }
 ```
 
-Hiding sub-fields the project doesn't use declutters the editor. Showing only the previews that match the channels you publish to (typically Google + one social) keeps the form scannable.
-
----
+Hide unused sub-fields = declutter editor. Show only previews matching channels you publish (Google + one social) = scannable.
 
 ## Cross-cutting field attributes
 
 ### `default_value`
 
-Per-type default. For localized fields, it's a locale-keyed object, not a bare value:
+Per-type default. Localized fields = locale-keyed object, not bare value:
 
 ```ts
 // non-localized
@@ -315,30 +316,28 @@ default_value: "Untitled"
 default_value: { en: "Untitled", it: "Senza titolo" }
 ```
 
-Pairs well with required-but-rarely-changed fields (record status, visibility flags) so editors don't have to think about them.
+Pairs well with required-but-rarely-changed fields (record status, visibility flags).
 
 ### `addons`
 
-`appearance.addons` is an array of plugin add-ons that wrap the editor — translation helpers, AI assist, character counters, validation hints. The first-party editor is unchanged; addons appear alongside it. Most projects don't need this; reach for it only when a specific plugin solves a recurring editor pain.
+`appearance.addons` = array of plugin add-ons wrapping editor — translation helpers, AI assist, character counters, validation hints. First-party editor unchanged; addons appear alongside. Most projects don't need; reach for when specific plugin solves recurring editor pain.
 
 ### `deep_filtering_enabled`
 
-Flag on `rich_text`, `single_block`, and `structured_text` fields. When `true`, the GraphQL CDA exposes filters that look _inside_ the embedded blocks of records — e.g. "find all pages whose body contains a `cta_block` with `tone: 'urgent'`."
+Flag on `rich_text`, `single_block`, `structured_text`. When `true`, GraphQL CDA exposes filters _inside_ embedded blocks — e.g. "find all pages whose body contains `cta_block` with `tone: 'urgent'`."
 
-**Use when** the frontend genuinely needs to query block contents (filtering pages by embedded promo type, building a "blocks mentioning X" report).
+**Use when** frontend genuinely needs to query block contents (filtering pages by embedded promo type, "blocks mentioning X" report).
 
-**Skip when** the frontend always reads block content top-down from the parent record. Deep filtering adds GraphQL surface and can be expensive on high-volume models.
-
----
+**Skip when** frontend reads block content top-down from parent. Deep filtering adds GraphQL surface, expensive on high-volume models.
 
 ## Common mistakes
 
-- **Adding an `enum` validator without `string_select`/`string_radio_group`.** Validator catches bad input at save; UI still shows a free-text box. Pair them.
-- **Using `extension: { predefined_list: 'image' }` for hero images.** Some image formats can't be transformed by the CDA's `responsiveImage`. Use `'transformable_image'` for any image you plan to render with responsive crops.
-- **Skipping `required_alt_title`.** Editors forget alt text; accessibility audits and SEO suffer. Wire it on user-facing image fields.
-- **Skipping `slug_title_field` on slug fields.** Editors hand-type slugs and they drift from titles. Always bind.
-- **Skipping `title_length` / `description_length` on SEO fields.** Editors write copy that gets truncated by Google. The character counter prevents it.
-- **Using `text` + `wysiwyg` for new editorial content.** Prefer `structured_text` — typed, queryable, embeds blocks, configurable nodes/marks. Use `text` for legacy or pure plain text.
-- **Using a `json` field with the raw `json` editor for a fixed tag set.** Reach for `string_multi_select` / `string_checkbox_group` — editors get a curated UI, the data is still a JSON array of strings.
-- **Defaulting to `link_select` for fields where editors need a visual cue.** Compact chips are great for tag-like fields (lots of short identifiers) but force editors to recognize records by title alone. For curated picks like a featured Author or a chosen Project, `link_embed` shows the thumbnail and publication status and is easier to scan.
-- **Setting a bare-value `default_value` on a localized field.** It's silently ignored. Pass a locale-keyed object.
+- **`enum` without `string_select`/`string_radio_group`.** Validator catches at save; UI shows free-text. Pair them.
+- **`extension: { predefined_list: 'image' }` for hero images.** Some formats can't be transformed by `responsiveImage`. Use `'transformable_image'`.
+- **Skipping `required_alt_title`.** Editors forget alt; accessibility/SEO suffer. Wire on user-facing images.
+- **Skipping `slug_title_field` on slugs.** Editors hand-type, slugs drift. Always bind.
+- **Skipping `title_length` / `description_length` on SEO.** Editors write truncated copy. Counter prevents.
+- **`text` + `wysiwyg` for new editorial.** Prefer `structured_text` — typed, queryable, embeds blocks, configurable. `text` for legacy/plain text.
+- **`json` field with raw `json` editor for fixed tag set.** Use `string_multi_select` / `string_checkbox_group` — curated UI, data still JSON array.
+- **Defaulting to `link_select` where editors need visual cue.** Compact chips = tag-like fields (lots of short identifiers). Curated picks (featured Author, chosen Project) = `link_embed` shows thumbnail + status.
+- **Bare-value `default_value` on localized field.** Silently ignored. Pass locale-keyed object.

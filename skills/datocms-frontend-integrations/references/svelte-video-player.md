@@ -4,8 +4,6 @@ See `video-player-concepts.md` for the shared GraphQL query, video field definit
 
 Svelte component for DatoCMS/Mux video streaming, designed to work with the `video` GraphQL query. Uses the [MUX Player web component](https://github.com/muxinc/elements/blob/main/packages/mux-player/README.md) internally.
 
----
-
 ## Installation
 
 Requires `@mux/mux-player` as a peer dependency (the web component, not the React package):
@@ -13,8 +11,6 @@ Requires `@mux/mux-player` as a peer dependency (the web component, not the Reac
 ```bash
 npm install @datocms/svelte @mux/mux-player
 ```
-
----
 
 ## Basic Usage
 
@@ -30,8 +26,6 @@ npm install @datocms/svelte @mux/mux-player
   <VideoPlayer data={data.blogPost.cover.video} />
 </div>
 ```
-
----
 
 ## Props
 

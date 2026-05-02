@@ -1,15 +1,5 @@
 # Raw CSS Fallbacks
 
-## Quick Navigation
-
-- local wrapper rules
-- section shell
-- config screen form shell
-- toolbar shell
-- sidebar panel shell
-- table shell
-- blank slate shell
-
 Use these patterns when `datocms-react-ui` does not expose the exact shell you need. These snippets are plugin-safe: they rely on Canvas variables and local class names only.
 
 ### Canvas variable warning
@@ -20,7 +10,22 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 :root { --space-unit: 12px; }
 ```
 
-## 1. Wrapper defaults
+## Contents
+
+- Wrapper defaults
+- Local section shell
+- Config screen shell
+- Simple field shell
+- Toolbar shell
+- Sidebar panel shell
+- Table shell
+- Blank slate shell
+- Disabled controls
+- Split shell
+- Transition defaults
+- Do not do this in plugins
+
+## Wrapper defaults
 
 ```css
 .wrapper {
@@ -31,7 +36,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 }
 ```
 
-## 2. Local section shell
+## Local section shell
 
 ```css
 /* --space-unit is NOT injected by Canvas; define :root { --space-unit: 12px; } locally */
@@ -60,7 +65,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 }
 ```
 
-## 3. Config screen shell
+## Config screen shell
 
 ```css
 .page {
@@ -96,7 +101,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 }
 ```
 
-## 4. Simple field shell
+## Simple field shell
 
 ```css
 .field {
@@ -145,7 +150,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 }
 ```
 
-## 5. Toolbar shell
+## Toolbar shell
 
 ```css
 .toolbar {
@@ -174,7 +179,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 }
 ```
 
-## 6. Sidebar panel shell
+## Sidebar panel shell
 
 ```css
 .sidebarPanel {
@@ -200,7 +205,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 }
 ```
 
-## 7. Table shell
+## Table shell
 
 ```css
 .table {
@@ -223,7 +228,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 }
 ```
 
-## 8. Blank slate shell
+## Blank slate shell
 
 ```css
 .blankSlate {
@@ -246,7 +251,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 }
 ```
 
-## 9. Disabled controls
+## Disabled controls
 
 ```css
 .input:disabled,
@@ -264,7 +269,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 }
 ```
 
-## 10. Split shell
+## Split shell
 
 ```css
 .splitRoot {
@@ -296,7 +301,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 
 Use this only when `VerticalSplit` is unavailable or too rigid for the target plugin.
 
-## 11. Transition defaults
+## Transition defaults
 
 ```css
 .button {
@@ -314,7 +319,7 @@ Use this only when `VerticalSplit` is unavailable or too rigid for the target pl
 
 Use `0.2s` and `var(--material-ease)` as the default transition for interactive elements. Apply transitions to hover, focus, and state-toggle properties only.
 
-## 12. Do not do this in plugins
+## Do not do this in plugins
 
 - import CMS bundle CSS
 - reuse private class names like `.Page__title` or `.SidebarPanel__header`

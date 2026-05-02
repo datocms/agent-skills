@@ -4,19 +4,9 @@ See `seo-concepts.md` for the shared GraphQL query shape and tag concatenation p
 
 Svelte component for rendering SEO meta tags, social share tags, and favicons from DatoCMS's `_seoMetaTags` and `faviconMetaTags` GraphQL queries. Unlike React's `renderMetaTags()` or Vue's `toHead()`, Svelte uses a `<Head />` component that directly injects `<title>`, `<meta>`, and `<link>` tags into the document's `<head>`.
 
-## Contents
-
-- [GraphQL Queries](#graphql-queries)
-- [`<Head />`](#head-)
-- [Utility Summary](#utility-summary)
-
----
-
 ## GraphQL Queries
 
 See `seo-concepts.md` for the query shape and tag concatenation pattern. Examples below assume tags are fetched as `data.page.seo` and `data.site.favicon`.
-
----
 
 ## `<Head />`
 
@@ -98,8 +88,6 @@ In a SvelteKit page, use the `<Head />` component with data from your `load` fun
   <Head data={metaTags} />
 {/if}
 ```
-
----
 
 ## Utility Summary
 

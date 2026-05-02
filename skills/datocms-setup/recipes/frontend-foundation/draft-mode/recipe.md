@@ -6,7 +6,16 @@ You are an expert at setting up DatoCMS draft mode for frontend frameworks. This
 
 Follow these steps in order. Do not skip steps.
 
----
+## Contents
+
+- Step 1: Detect Context (silent)
+- Step 2: Ask Questions
+- Step 3: Load References
+- Step 4: Generate Code
+- Step 5: Install Dependencies
+- Step 6: Environment Variables
+- Step 7: Final handoff
+- Verification Checklist
 
 ## Step 1: Detect Context (silent)
 
@@ -33,8 +42,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 - If the framework cannot be determined, ask the user.
 - If draft endpoints already exist, inspect the current implementation first and update it in place by default. Only ask about full replacement if the existing setup is materially different, clearly broken, or the user requested a clean rewrite.
 
----
-
 ## Step 2: Ask Questions
 
 Infer first from the repo.
@@ -44,8 +51,6 @@ Follow the zero-question default and question-format rules in `../../../patterns
 Only ask if inspecting an existing draft-mode setup leaves one high-impact ambiguity around which existing endpoint, cookie helper, or shared query wrapper should remain the source of truth.
 
 If you do ask, make it one concise question, put the recommended/default path first, and explain what happens if the user skips it. Recommended default: preserve the most central working draft-aware wrapper or endpoint already used by the live preview flow. If the user skips, patch that strongest existing owner in place and list any alternative owners under `Unresolved placeholders`.
-
----
 
 ## Step 3: Load References
 
@@ -63,8 +68,6 @@ Read the relevant reference files. Load only what is needed.
 | Nuxt | `../../../../datocms-frontend-integrations/references/nuxt.md` |
 | SvelteKit | `../../../../datocms-frontend-integrations/references/sveltekit.md` |
 | Astro | `../../../../datocms-frontend-integrations/references/astro.md` |
-
----
 
 ## Step 4: Generate Code
 
@@ -124,8 +127,6 @@ Recipe-specific env var names:
 
 Follow the file conflict rules in `../../../patterns/MANDATORY_RULES.md`.
 
----
-
 ## Step 5: Install Dependencies
 
 Install missing packages:
@@ -137,8 +138,6 @@ Install missing packages:
 | `jose` | Non-Next.js frameworks only (for JWT signing) |
 
 Use the project's package manager (see `../../../patterns/MANDATORY_RULES.md`).
-
----
 
 ## Step 6: Environment Variables
 
@@ -182,8 +181,6 @@ DRAFT_MODE_SECRET=run_openssl_rand_hex_32
 
 Only add variables that don't already exist. Preserve any existing values.
 
----
-
 ## Step 7: Final handoff
 
 After generating all files, tell the user:
@@ -200,8 +197,6 @@ After generating all files, tell the user:
 Treat the result as `scaffolded` if any token or secret still uses placeholders or if wrapper ownership stayed ambiguous. Report `production-ready` only when the generated or patched draft-mode flow uses intentional repo values and no ownership ambiguity remains.
 
 Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including an explicit `Unresolved placeholders` section.
-
----
 
 ## Verification Checklist
 

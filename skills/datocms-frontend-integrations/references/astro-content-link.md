@@ -4,18 +4,16 @@ Astro-specific wiring for `@datocms/astro/ContentLink`. Unlike React, Vue, and S
 
 ## Contents
 
-- [Shared Concepts](#shared-concepts)
-- [Setup](#setup)
-- [View Transitions Support](#view-transitions-support)
-- [Enabling Click-to-Edit](#enabling-click-to-edit)
-- [`<ContentLink />` Props](#contentlink-props)
-- [Data Attributes Reference](#data-attributes-reference)
-- [Group & Boundary Resolution Rules](#group-boundary-resolution-rules)
-- [Structured Text Integration](#structured-text-integration)
-- [Low-Level Utilities](#low-level-utilities)
-- [Troubleshooting](#troubleshooting)
-
----
+- Shared Concepts
+- Setup
+- View Transitions Support
+- Enabling Click-to-Edit
+- `<ContentLink />` Props
+- Data Attributes Reference
+- Group & Boundary Resolution Rules
+- Structured Text Integration
+- Low-Level Utilities
+- Troubleshooting
 
 ## Shared Concepts
 
@@ -26,8 +24,6 @@ Read [content-link-concepts.md](./content-link-concepts.md) first for the shared
 - shared data attributes, grouping rules, low-level controller utilities, and common troubleshooting
 
 Use this file for Astro-only component behavior, View Transitions notes, and supported props.
-
----
 
 ## Setup
 
@@ -60,8 +56,6 @@ import { ContentLink } from '@datocms/astro/ContentLink';
 
 Astro handles navigation synchronization automatically, including projects that use View Transitions.
 
----
-
 ## View Transitions Support
 
 The component automatically handles both scenarios:
@@ -70,8 +64,6 @@ The component automatically handles both scenarios:
 - **Without View Transitions**: Initializes correctly and handles navigation via standard page reloads
 
 No additional configuration needed — unlike React/Vue/Svelte, there are no `onNavigateTo` or `currentPath` props to wire up.
-
----
 
 ## Enabling Click-to-Edit
 
@@ -103,8 +95,6 @@ With options:
 
 Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily show click-to-edit overlays. Releasing the key hides them.
 
----
-
 ## `<ContentLink />` Props
 
 | Prop | Type | Default | Description |
@@ -113,8 +103,6 @@ Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily show click-to-ed
 | `stripStega` | boolean | `false` | Strip stega-encoded invisible characters from text content |
 
 **Note:** Unlike React/Vue/Svelte which also accept `onNavigateTo`, `currentPath`, and `root` props, Astro's `<ContentLink />` only has 2 props. Navigation is handled automatically.
-
----
 
 ## Data Attributes Reference
 
@@ -189,8 +177,6 @@ Without the boundary, clicking `page.author` would open the outer group's URL.
 | `data-datocms-contains-stega` | Added to elements with stega content (only when `stripStega` is false) |
 | `data-datocms-auto-content-link-url` | Added to elements identified as editable targets; contains the resolved edit URL |
 
----
-
 ## Group & Boundary Resolution Rules
 
 When stega content is found, the library walks up the DOM from that element:
@@ -198,8 +184,6 @@ When stega content is found, the library walks up the DOM from that element:
 1. **Finds `data-datocms-content-link-group`** — stamps that element as clickable target
 2. **Finds `data-datocms-content-link-boundary`** — stops traversal, stamps the starting element as clickable target
 3. **Reaches root without finding either** — stamps the starting element
-
----
 
 ## Structured Text Integration
 
@@ -280,8 +264,6 @@ import InlineTeamMember from '~/components/InlineTeamMember.astro';
 
 **Why link-to-record components don't need a boundary:** Record links are `<a>` tags wrapping text that belongs to the surrounding structured text — no separate editing target, no collision.
 
----
-
 ## Low-Level Utilities
 
 ### `stripStega`
@@ -325,8 +307,6 @@ console.log(revealStega(graphqlResponse));   // same object shape, markers visib
 - **Debugging**: Use `revealStega()` to see which fields in a GraphQL response carry stega; use `decodeStega()` to inspect a specific editing URL
 
 See [content-link-concepts.md → When to Strip Stega](./content-link-concepts.md#when-to-strip-stega) for the full rule. Note: DatoCMS `slug` field types are never stega-encoded and don't need stripping.
-
----
 
 ## Troubleshooting
 

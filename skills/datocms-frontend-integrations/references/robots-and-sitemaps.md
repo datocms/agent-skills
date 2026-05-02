@@ -4,12 +4,12 @@ Use this reference when generating `robots.txt`, `sitemap.xml`, sitemap indexes,
 
 ## Contents
 
-- [DatoCMS crawler behavior](#datocms-crawler-behavior)
-- [Order matters](#order-matters)
-- [Sitemaps](#sitemaps)
-- [User-agent suffixes](#user-agent-suffixes)
-- [Shared mapping contract](#shared-mapping-contract)
-- [Framework route shapes](#framework-route-shapes)
+- DatoCMS crawler behavior
+- Order matters
+- Sitemaps
+- User-agent suffixes
+- Shared mapping contract
+- Framework route shapes
 
 ## DatoCMS crawler behavior
 

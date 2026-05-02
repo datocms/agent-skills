@@ -1,16 +1,14 @@
 # Next.js App Router — Draft Mode Reference
 
-This reference contains the exact code patterns for implementing draft mode in a Next.js App Router project with DatoCMS. Sections are organized by feature — always follow `## Core`, then follow optional sections only for features the user selected.
+Exact code patterns for draft mode with DatoCMS. Follow `## Core` first, then optional sections for selected features.
 
 ## Contents
 
-- [Core](#core)
-- [Web Previews (Optional)](#web-previews-optional)
-- [Content Link (Optional)](#content-link-optional)
-- [Real-Time Updates (Optional)](#real-time-updates-optional)
-- [Cache Tags (Optional)](#cache-tags-optional)
-
----
+- Core
+- Web Previews (Optional)
+- Content Link (Optional)
+- Real-Time Updates (Optional)
+- Cache Tags (Optional)
 
 ## Core
 
@@ -73,12 +71,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 }
 ```
 
-Key points:
-
-- Uses Next.js built-in `draftMode()` from `next/headers`
-- No JWT needed — Next.js manages the `__prerender_bypass` cookie
-- Must call `makeDraftModeWorkWithinIframes()` after enable/disable to add `partitioned: true`
-- `export const dynamic = 'force-dynamic'` prevents caching of this route
+Uses Next.js `draftMode()` — no JWT needed. Call `makeDraftModeWorkWithinIframes()` after enable/disable to add `partitioned: true`. `export const dynamic = 'force-dynamic'` prevents caching.
 
 ### Disable Endpoint
 
@@ -122,10 +115,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 }
 ```
 
-Key points:
-
-- No token validation on disable (safe because it only reduces access)
-- Still validates the redirect URL to prevent open redirects
+No token validation on disable (safe). Still validates redirect URL to prevent open redirects.
 
 ### Utils
 
@@ -220,7 +210,7 @@ export function isRelativeUrl(path: string): boolean {
 
 **File:** `src/lib/datocms/executeQuery.ts`
 
-If the project already has an `executeQuery` wrapper, modify it to add the `includeDrafts` option. If not, create this file:
+Modify existing `executeQuery` wrapper or create:
 
 ```ts
 import { executeQuery as libExecuteQuery } from '@datocms/cda-client';
@@ -256,11 +246,7 @@ type ExecuteQueryOptions<Variables> = {
 };
 ```
 
-Key points:
-
-- Uses Next.js `force-cache` with tag-based invalidation
-- The `cacheTag` can be used with `revalidateTag('datocms')` in a webhook handler
-- Switches between published and draft tokens based on `includeDrafts`
+Uses Next.js `force-cache` with tag-based invalidation. Switches between published/draft tokens based on `includeDrafts`.
 
 ### Core Environment Variables
 
@@ -272,11 +258,7 @@ SECRET_API_TOKEN=                       # Shared secret for endpoint auth
 
 ### Core Dependencies
 
-Required (install if missing):
-
-- `serialize-error` — For serializing error objects in API responses
-
----
+Required: `serialize-error`
 
 ## Web Previews (Optional)
 
@@ -352,11 +334,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 }
 ```
 
-Key points:
-
-- Uses `deserializeRawItem` from `@datocms/rest-client-utils` to convert the raw item before passing to `recordToWebsiteRoute`
-- The request body contains `item` (the record) and `locale`
-- The Next.js version does NOT receive `itemType` in the body — it uses `item.__itemTypeId` instead
+Uses `deserializeRawItem` from `@datocms/rest-client-utils`. Request body contains `item` and `locale`. Next.js doesn't receive `itemType` — uses `item.__itemTypeId`.
 
 ### `recordToWebsiteRoute`
 
@@ -397,22 +375,13 @@ export async function recordToWebsiteRoute(
 
 ### Web Previews Dependencies
 
-- `@datocms/rest-client-utils` — For `deserializeRawItem` in the preview-links endpoint
-
----
+Required: `@datocms/rest-client-utils`
 
 ## Content Link (Optional)
 
 ### Query Function Content Link Addition
 
-Modify the `executeQuery` function from the Core section to add Content Link support. Add these two options inside the `libExecuteQuery` call:
-
-```ts
-contentLink: options?.includeDrafts ? 'v1' : undefined,
-baseEditingUrl: options?.includeDrafts ? process.env.DATOCMS_BASE_EDITING_URL : undefined,
-```
-
-The full query function with Content Link enabled:
+Modify `executeQuery` from Core to add Content Link support:
 
 ```ts
 import { executeQuery as libExecuteQuery } from '@datocms/cda-client';
@@ -498,7 +467,7 @@ export function ContentLink() {
 }
 ```
 
-Then add it to your root layout, only rendering when draft mode is enabled:
+Add to root layout, render only when draft mode enabled:
 
 ```tsx
 import { draftMode } from 'next/headers';
@@ -520,7 +489,7 @@ export default async function RootLayout({ children }) {
 
 ### Structured Text with Content Link
 
-When rendering Structured Text fields, wrap the component in a group and add boundaries to embedded blocks and inline records. This ensures clicks on the main text open the structured text field editor, while clicks on blocks/records open their own editor:
+Wrap Structured Text component in a group, add boundaries to embedded blocks and inline records:
 
 ```tsx
 import { StructuredText } from 'react-datocms';
@@ -552,11 +521,11 @@ function PageContent({ page }) {
 }
 ```
 
-Note: `renderLinkToRecord` does **not** need a boundary — record links wrap text that belongs to the structured text field, so clicking them correctly opens the structured text field editor.
+`renderLinkToRecord` doesn't need a boundary — record links wrap text belonging to the structured text field.
 
 ### Non-Text Field Example
 
-For fields that cannot contain stega encoding (numbers, booleans, dates, JSON), use `data-datocms-content-link-url` with the record's `_editingUrl`:
+For fields without stega encoding (numbers, booleans, dates, JSON), use `data-datocms-content-link-url` with `_editingUrl`:
 
 ```graphql
 query {
@@ -576,7 +545,7 @@ query {
 
 ### CSP Header for Web Previews Visual Tab
 
-To allow your site to be loaded in the Web Previews Visual tab iframe, add a Content-Security-Policy header. In `next.config.js`:
+Add Content-Security-Policy header in `next.config.js`:
 
 ```js
 const nextConfig = {
@@ -600,7 +569,7 @@ export default nextConfig;
 
 ### Stega Stripping
 
-Content Link embeds invisible characters in text fields. Use `stripStega()` from `@datocms/content-link` before string comparisons, SEO metadata, analytics, or URL generation. See `content-link-concepts.md` for full details and examples.
+Content Link embeds invisible characters in text fields. Use `stripStega()` from `@datocms/content-link` before string comparisons, SEO metadata, analytics, or URL generation. See `content-link-concepts.md` for full details.
 
 ### Content Link Environment Variables
 
@@ -610,13 +579,11 @@ DATOCMS_BASE_EDITING_URL=              # For Content Link, e.g. https://your-pro
 
 ### Content Link Dependencies
 
-- `@datocms/content-link` — For click-to-edit overlays and stega utilities
-
----
+Required: `@datocms/content-link`
 
 ## Real-Time Updates (Optional)
 
-For real-time updates in draft mode, create two helper components:
+Create two helper components for real-time updates in draft mode.
 
 ### `generatePageComponent`
 
@@ -687,7 +654,7 @@ export type GeneratePageComponentOptions<PageProps, Result, Variables> = {
 };
 ```
 
-**Note: Combining with Content Link** — If the user also selected Content Link, add these props to the `RealTimeComponent` render:
+**Note:** If user also selected Content Link, add these props to `RealTimeComponent` render:
 
 ```tsx
 contentLink={isDraftModeEnabled ? 'v1' : undefined}
@@ -748,7 +715,7 @@ export type RealtimeComponentType<PageProps, Result, Variables> = ComponentType<
 
 ### Usage Pattern
 
-In your page file (e.g., `src/app/blog/[slug]/page.tsx`):
+In page file (e.g., `src/app/blog/[slug]/page.tsx`):
 
 ```tsx
 'use client'; // The realtime component file must be a client component
@@ -763,7 +730,7 @@ export const RealtimeComponent = generateRealtimeComponent({
 });
 ```
 
-Then in the page's server component:
+In page's server component:
 
 ```tsx
 import { generatePageComponent } from '@/lib/datocms/realtime/generatePageComponent';
@@ -786,29 +753,25 @@ export default generatePageComponent({
 
 - `react-datocms` — For `useQuerySubscription` hook
 
----
-
 ## Cache Tags (Optional)
 
-Granular per-record cache invalidation using DatoCMS cache tags. This replaces the simple `cacheTag = 'datocms'` approach from Core (which revalidates **all** DatoCMS content on any change) with targeted invalidation — only pages affected by a content change are revalidated.
+Granular per-record cache invalidation using DatoCMS cache tags. Replaces Core's simple `cacheTag = 'datocms'` approach (revalidates **all** DatoCMS content) with targeted invalidation.
 
 ### When to Use
 
-Use cache tags when:
+- Many pages where full-site revalidation is too slow/wasteful
+- Want per-record or per-query granularity
+- Deploying on Vercel or platform supporting Next.js `revalidateTag()`
 
-- The site has many pages and full-site revalidation is too slow or wasteful
-- You want per-record or per-query granularity in cache invalidation
-- You are deploying on Vercel or any platform that supports Next.js `revalidateTag()`
-
-**Note:** This section covers the Next.js-specific `revalidateTag()` approach. For the CDN-first approach (Netlify, Cloudflare, Fastly, Bunny), see the `## Cache Tags (Optional)` section in the respective framework reference (`nuxt.md`, `sveltekit.md`, `astro.md`).
+Note: For CDN-first approach (Netlify, Cloudflare, Fastly, Bunny), see `## Cache Tags (Optional)` in respective framework reference.
 
 ### The 64-Tag Problem
 
-Next.js limits each `fetch()` call to **64 cache tags**. A single DatoCMS GraphQL query can return hundreds of tags (one per record, asset, model, etc. touched by the query). You cannot pass DatoCMS tags directly to `next: { tags: [...] }`.
+Next.js limits each `fetch()` to **64 cache tags**. DatoCMS queries can return hundreds. Use query ID indirection.
 
 ### Solution: Query ID Indirection
 
-Each query gets a stable **Query ID** (a string you choose). The `fetch` is tagged with only that single Query ID. A database table maps each Query ID to all the DatoCMS cache tags returned for that query. When a webhook fires with invalidated tags, the handler looks up which Query IDs are affected and calls `revalidateTag()` for each.
+Each query gets a stable **Query ID**. Fetch is tagged with that single Query ID. DB maps Query IDs to DatoCMS cache tags. Webhook looks up affected Query IDs and calls `revalidateTag()`.
 
 ### File Structure
 
@@ -825,7 +788,7 @@ src/app/api/
 
 **File:** `src/lib/datocms/executeQuery.ts`
 
-This version replaces the Core `executeQuery`. It is backward-compatible: when no `queryId` is provided, it falls back to the simple single-tag approach.
+Replaces Core `executeQuery`. Backward-compatible: no `queryId` → falls back to simple single-tag approach.
 
 ```ts
 import { rawExecuteQuery } from '@datocms/cda-client';
@@ -878,18 +841,13 @@ type ExecuteQueryOptions<Variables> = {
 };
 ```
 
-Key points:
-
-- When `queryId` is provided: uses `rawExecuteQuery` with `returnCacheTags: true`, reads the `x-cache-tags` header, persists the mapping to DB, and tags the fetch with `[queryId]`
-- When `queryId` is omitted: falls back to the simple `cacheTag = 'datocms'` approach (no DB interaction, no raw query)
-- Wrapped in React `cache()` to deduplicate identical calls within a single request
-- Reads `draftMode()` automatically, but allows explicit override via `options.includeDrafts`
+When `queryId` provided: uses `rawExecuteQuery` with `returnCacheTags: true`, reads `x-cache-tags` header, persists mapping to DB, tags fetch with `[queryId]`. When omitted: falls back to simple `cacheTag = 'datocms'` approach. Wrapped in React `cache()` to deduplicate calls. Reads `draftMode()` automatically.
 
 ### DB Abstraction
 
 **File:** `src/lib/datocms/cache-tags-db.ts`
 
-Interface + Turso (libSQL) implementation. Replace with `@vercel/postgres` or any other DB as needed.
+Interface + Turso (libSQL) implementation. Replace with `@vercel/postgres` or any DB:
 
 ```ts
 import { createClient } from '@libsql/client';
@@ -957,7 +915,7 @@ function createTursoDb(): CacheTagsDb {
 export const cacheTagsDb = createTursoDb();
 ```
 
-The schema is a simple join table: `query_cache_tags(query_id, tag)`. Each time a query runs, its previous tags are deleted and the new set is inserted.
+Schema: `query_cache_tags(query_id, tag)` join table. Each query run deletes previous tags and inserts new set.
 
 ### Webhook Route Handler
 
@@ -998,17 +956,13 @@ export async function POST(request: Request) {
 
 ### Page-Level Config
 
-Pages that use cache tags should be statically generated:
+Pages using cache tags should be statically generated:
 
 ```ts
 export const dynamic = 'force-static';
 ```
 
-Add this export to each page file that calls `executeQuery` with a `queryId`. This ensures pages are built at build time and only revalidated when the webhook fires.
-
 ### Usage Example
-
-In a page component, pass a stable `queryId`:
 
 ```tsx
 import { executeQuery } from '@/lib/datocms/executeQuery';
@@ -1027,7 +981,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 }
 ```
 
-The `queryId` should be stable and unique per query+variables combination. A simple pattern is `${page-type}-${identifier}`.
+Use stable `queryId` per query+variables. Pattern: `${page-type}-${identifier}`.
 
 ### Environment Variables
 
@@ -1039,6 +993,4 @@ TURSO_AUTH_TOKEN=                    # Turso auth token
 
 ### Dependencies
 
-- `@libsql/client` — Turso/libSQL client for the cache tags database
-
-Alternative DB clients: `@vercel/postgres` (Vercel Postgres), `@planetscale/database` (PlanetScale), or any SQL client. The schema is a simple two-column join table — adapt `cache-tags-db.ts` to your preferred database.
+Required: `@libsql/client` (Turso/libSQL). Alternatives: `@vercel/postgres`, `@planetscale/database`, or any SQL client. Schema is simple two-column join table — adapt `cache-tags-db.ts` to your preferred database.

@@ -4,17 +4,15 @@ Svelte component for rendering DatoCMS [Structured Text (DAST)](https://www.dato
 
 ## Contents
 
-- [Basic Usage](#basic-usage)
-- [Full GraphQL Fragment](#full-graphql-fragment)
-- [Custom Components (Predicate-Component Tuples)](#custom-components-predicate-component-tuples)
-- [Custom Node Rendering](#custom-node-rendering)
-- [DAST Node Reference](#dast-node-reference)
-- [Conditional Rendering with `isEmptyDocument`](#conditional-rendering-with-isemptydocument)
-- [Related Packages](#related-packages)
-- [Props Reference](#props-reference)
-- [Content Link Integration](#content-link-integration)
-
----
+- Basic Usage
+- Full GraphQL Fragment
+- Custom Components (Predicate-Component Tuples)
+- Custom Node Rendering
+- DAST Node Reference
+- Conditional Rendering with `isEmptyDocument`
+- Related Packages
+- Props Reference
+- Content Link Integration
 
 ## Basic Usage
 
@@ -43,8 +41,6 @@ query {
   }
 }
 ```
-
----
 
 ## Full GraphQL Fragment
 
@@ -101,8 +97,6 @@ query {
 ```
 
 **Critical:** Always include `id` and `__typename` on every `links`, `blocks`, and `inlineBlocks` entry via `... on RecordInterface`. The component uses `__typename` for matching in custom component renderers.
-
----
 
 ## Custom Components (Predicate-Component Tuples)
 
@@ -198,8 +192,6 @@ Inline block components receive `block` as a prop (the resolved record from the 
 {/if}
 ```
 
----
-
 ## Custom Node Rendering
 
 Override default rendering for any node type using predicate-component tuples with type guards from `datocms-structured-text-utils`:
@@ -265,8 +257,6 @@ Available type guards: `isHeading`, `isCode`, `isParagraph`, `isList`, `isListIt
 
 **Note:** If you override the rules for `inlineItem`, `itemLink`, `block`, or `inlineBlock` nodes via `components`, these take precedence over any other tuples for those node types.
 
----
-
 ## DAST Node Reference
 
 Each node type in a Structured Text document has specific properties available in custom components:
@@ -288,8 +278,6 @@ Each node type in a Structured Text document has specific properties available i
 | Item Link | `isItemLink` | `children`, `item` (record ID — resolved via `links` array), `meta` (optional) |
 | Inline Item | `isInlineItem` | `item` (record ID — resolved via `links` array) |
 
----
-
 ## Conditional Rendering with `isEmptyDocument`
 
 Use `isEmptyDocument()` to skip rendering when a Structured Text field is empty (contains only a single empty paragraph):
@@ -309,8 +297,6 @@ Use `isEmptyDocument()` to skip rendering when a Structured Text field is empty 
   {/if}
 </div>
 ```
-
----
 
 ## Related Packages
 
@@ -344,16 +330,12 @@ const html = toHtml(data.blogPost.content, {
 });
 ```
 
----
-
 ## Props Reference
 
 | Prop | Type | Required | Description |
 | - | - | - | - |
 | `data` | `StructuredText \| DastNode` | Yes | The structured text field value from DatoCMS |
 | `components` | `PredicateComponentTuple[]` | Only if document has `block`, `inlineBlock`, `inlineItem`, or `itemLink` nodes | Array of `[predicate, SvelteComponent]` tuples for custom rendering |
-
----
 
 ## Content Link Integration
 

@@ -1,14 +1,5 @@
 # Layouts
 
-## Quick Navigation
-
-- centered page shells
-- full-height plugin shells
-- toolbars and header rhythm
-- sections and section titles
-- sidebars and split layouts
-- layout anti-patterns to avoid
-
 Primary sources:
 
 - `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/Page/Page.tsx`
@@ -20,7 +11,19 @@ Primary sources:
 - `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_FullHeightScrollingLayout.css`
 - `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Toolbar.css`
 
-## 1. Centered page shells
+## Contents
+
+- Centered page shells
+- Page headers
+- Sections
+- Full-height shells
+- Toolbars
+- Sidebars and split layouts
+- Responsive considerations
+- Plugin pages are not marketing pages
+- Layout anti-patterns
+
+## Centered page shells
 
 Use the CMS `Page` rhythm for config screens and simpler pages.
 
@@ -40,7 +43,7 @@ Use the CMS `Page` rhythm for config screens and simpler pages.
 - `1200px`: pages with lists, tables, dual sections, or denser data
 - full width: inspectors or tool views that truly need it
 
-## 2. Page headers
+## Page headers
 
 CMS page headers are simple:
 
@@ -56,7 +59,7 @@ Use this order:
 
 Keep the explainer concise. It should clarify the screen, not become a marketing intro.
 
-## 3. Sections
+## Sections
 
 Primary source: `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Page.css`
 
@@ -75,7 +78,7 @@ Use sections for:
 - Use highlighted or destructive sections sparingly
 - Collapsible sections are normal for advanced settings, not for basic fields
 
-## 4. Full-height shells
+## Full-height shells
 
 Use the `FullHeightScrollingLayout` rhythm for plugin pages that behave more like CMS work areas than standard forms.
 
@@ -94,7 +97,7 @@ Structure:
 
 Do not stack multiple floating panels inside this shell. Let the shell do the structural work.
 
-## 5. Toolbars
+## Toolbars
 
 Primary source: `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Toolbar.css`
 
@@ -116,7 +119,7 @@ Public component path:
 
 Official doc: <https://www.datocms.com/docs/plugin-sdk/toolbar>
 
-## 6. Sidebars and split layouts
+## Sidebars and split layouts
 
 CMS sidebars are calm:
 
@@ -135,7 +138,7 @@ If the installed `datocms-react-ui` version does not provide a split helper, use
 
 Split-view doc: <https://www.datocms.com/docs/plugin-sdk/sidebars-and-split-views>
 
-## 7. Responsive considerations
+## Responsive considerations
 
 The CMS uses three PostCSS custom media breakpoints: `480px`, `1024px`, and `1700px` (mobile-first). These are **not** available in plugin CSS because they are PostCSS definitions, not standard `@media` queries.
 
@@ -152,7 +155,7 @@ Most plugin surfaces (sidebar panels, field extensions, modals) are narrow enoug
 - Toolbar actions stack vertically below `480px`
 - Split layouts collapse to a single column
 
-## 8. Plugin pages are not marketing pages
+## Plugin pages are not marketing pages
 
 Avoid:
 
@@ -165,7 +168,7 @@ Avoid:
 
 Default to the same tone as DatoCMS settings and work areas: calm, dense, readable, and task-first.
 
-## 9. Layout anti-patterns
+## Layout anti-patterns
 
 - too many nested bordered boxes
 - page titles inside cards

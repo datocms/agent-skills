@@ -6,16 +6,14 @@ See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, be
 
 ## Contents
 
-- [`<NakedImage />` vs `<Image />`](#nakedimage-vs-image-)
-- [Setup](#setup)
-- [GraphQL Query](#graphql-query)
-- [Basic Usage](#basic-usage)
-- [`<NakedImage />` Props](#nakedimage-props)
-- [`<Image />` Props](#image-props)
-- [Layout Modes (`<Image />` only)](#layout-modes-image-only)
-- [Handling Dynamic `data` Changes](#handling-dynamic-data-changes)
-
----
+- `<NakedImage />` vs `<Image />`
+- Setup
+- GraphQL Query
+- Basic Usage
+- `<NakedImage />` Props
+- `<Image />` Props
+- Layout Modes (`<Image />` only)
+- Handling Dynamic `data` Changes
 
 ## `<NakedImage />` vs `<Image />`
 
@@ -32,21 +30,15 @@ See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, be
 - Use `<NakedImage />` by default — minimal JS, simpler output
 - Use `<Image />` when you need crossfade effects, custom lazy-loading thresholds, or images with transparency
 
----
-
 ## Setup
 
 ```js
 import { Image, NakedImage } from '@datocms/svelte';
 ```
 
----
-
 ## GraphQL Query
 
 See `image-concepts.md` for the full query, field definitions, and best practices.
-
----
 
 ## Basic Usage
 
@@ -68,8 +60,6 @@ See `image-concepts.md` for the full query, field definitions, and best practice
 </div>
 ```
 
----
-
 ## `<NakedImage />` Props
 
 | Prop | Type | Default | Description |
@@ -90,8 +80,6 @@ See `image-concepts.md` for the full query, field definitions, and best practice
 | Event | Description |
 | - | - |
 | `on:load` | Emitted when the image has finished loading |
-
----
 
 ## `<Image />` Props
 
@@ -125,8 +113,6 @@ See `image-concepts.md` for the full query, field definitions, and best practice
 | - | - |
 | `on:load` | Emitted when the image has finished loading |
 
----
-
 ## Layout Modes (`<Image />` only)
 
 See `image-concepts.md` for the layout mode table. Use the `layout` prop on `<Image />` to select a mode.
@@ -143,8 +129,6 @@ See `image-concepts.md` for the layout mode table. Use the `layout` prop on `<Im
   />
 </div>
 ```
-
----
 
 ## Handling Dynamic `data` Changes
 

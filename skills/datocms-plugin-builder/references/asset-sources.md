@@ -2,6 +2,13 @@
 
 Asset sources add custom upload sources to the DatoCMS Media Area. When a user clicks "Upload" in the Media Area, they see the custom source alongside the default upload options.
 
+## Contents
+
+- Declaration: `assetSources`
+- Render: `renderAssetSource`
+- Complete Asset Source Example
+- Key Notes
+
 ## Declaration: `assetSources`
 
 ```ts

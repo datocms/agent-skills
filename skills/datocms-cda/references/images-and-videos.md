@@ -2,7 +2,15 @@
 
 Covers `responsiveImage` queries, imgix parameters, placeholder images, focal points, upload/asset fields, and Mux video integration.
 
----
+## Contents
+
+- `responsiveImage` Query
+- Common imgix Parameters
+- Placeholder Images
+- Focal Point
+- Upload / File Field Properties
+- Video (Mux Integration)
+- Complete Example
 
 ## `responsiveImage` Query
 
@@ -49,8 +57,6 @@ query {
 | `base64` | `String` | Base64-encoded Low Quality Image Placeholder (LQIP) |
 | `bgColor` | `String` | Background color placeholder (hex string, alternative to base64) |
 
----
-
 ## Common imgix Parameters
 
 DatoCMS supports **all** imgix URL API parameters. Common ones:
@@ -83,8 +89,6 @@ responsiveImage(
 **Warning:** Using `trim`, `padding`, or `rotation` imgix parameters causes the API to return incorrect `width` and `height` values. You must manually calculate and override these in your frontend.
 
 **Advanced imgix transformations** (text overlays, face detection cropping, color space, auto-enhance, red-eye removal, etc.) are all supported. See the full imgix URL API reference at <https://docs.imgix.com/apis/url> for the complete list of parameters.
-
----
 
 ## Placeholder Images
 
@@ -120,8 +124,6 @@ query {
 
 **`base64`** (inside `responsiveImage`) and **`blurUpThumb`** (on the file field) both provide LQIP thumbnails. `base64` is computed based on the imgix transformation parameters, while `blurUpThumb` is a fixed tiny thumbnail of the original image.
 
----
-
 ## Focal Point
 
 Images can have a focal point set in the DatoCMS admin. Query it and use with imgix's `crop: focalpoint` mode:
@@ -149,8 +151,6 @@ query {
 ```
 
 `focalPoint.x` and `focalPoint.y` are floats from 0 to 1 representing the relative position. When `crop: focalpoint` is used in imgix params, the focal point is automatically applied — you do not need to pass `fp-x` and `fp-y` manually.
-
----
 
 ## Upload / File Field Properties
 
@@ -193,8 +193,6 @@ url(imgixParams: { w: 200, h: 200, fit: crop })
 ```
 
 **Default optimization bypass:** DatoCMS projects apply automatic image optimization (typically `auto=format`) to all image URLs by default. To bypass these defaults on a specific URL, append `?skip-default-optimizations=true` to the raw image URL (not applicable when using `imgixParams` in GraphQL, which always override defaults for specified params).
-
----
 
 ## Video (Mux Integration)
 
@@ -249,8 +247,6 @@ query {
 | Svelte | `@datocms/svelte` | `<VideoPlayer>` |
 
 These components accept `data` (the video field result) and handle HLS playback automatically.
-
----
 
 ## Complete Example
 

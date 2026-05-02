@@ -2,7 +2,13 @@
 
 Maintenance mode, safe deployment sequences, and CI/CD integration.
 
----
+## Contents
+
+- Inputs to confirm before running commands
+- Maintenance Mode
+- Safe Deployment Sequence
+- Local Development Workflow
+- CI/CD Integration
 
 ## Inputs to confirm before running commands
 
@@ -13,8 +19,6 @@ Confirm these inputs when they are not already clear:
 - whether maintenance mode is acceptable for this release
 - whether promotion is manual-after-review or automatic in the proposed workflow
 - whether `--fast-fork` / `--force` are acceptable operationally
-
----
 
 ## Maintenance Mode
 
@@ -39,8 +43,6 @@ Use `--force` only as an explicit override when you understand that active editi
 ```bash
 npx datocms maintenance:off
 ```
-
----
 
 ## Safe Deployment Sequence
 
@@ -73,8 +75,6 @@ If editors are active and the team intentionally accepts the risk, you can add `
 4. **Promote** — atomically swap the migrated environment to primary
 5. **Maintenance off** — re-enable editing with the new schema in place
 
----
-
 ## Local Development Workflow
 
 For iterating on migrations during development:
@@ -90,7 +90,7 @@ npx datocms migrations:new "add author model" --ts
 npx datocms migrations:run --source=my-feature --in-place
 
 # 4. Verify the changes look correct
-npx datocms cma:call item_types list --environment=my-feature
+npx datocms cma:call itemTypes list --environment=my-feature
 
 # 5. If something went wrong, destroy and start over
 npx datocms environments:destroy my-feature
@@ -104,8 +104,6 @@ npx datocms environments:fork main my-feature
 # Edit migration script, then re-run
 npx datocms migrations:run --source=my-feature --in-place
 ```
-
----
 
 ## CI/CD Integration
 

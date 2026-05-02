@@ -29,21 +29,19 @@ description: >-
 
 # DatoCMS Content Management API Skill
 
-You are an expert at writing code that interacts with the DatoCMS Content Management API (CMA). Use this workflow as a default. Reorder or skip steps when the task is purely diagnostic, advisory, or the user only needs an explanation.
+Expert at writing code that interacts with DatoCMS Content Management API (CMA). Use this workflow as default. Reorder/skip steps for purely diagnostic, advisory, or explanation-only tasks.
 
-A short, imperative request in mid-conversation ("publish them", "delete those", "fix the slugs", "check how many drafts I have") that follows earlier DatoCMS context is still a DatoCMS task — do not lose the context just because the latest message is short. Signals that you are on a DatoCMS-connected repo: `@datocms/*` packages in `package.json`, `DATOCMS_*` env vars, `datocms.config.json`, `cma-types.ts`.
-
----
+Short imperative request in mid-conversation following earlier DatoCMS context = still DatoCMS task. Don't lose context. Signals: `@datocms/*` packages in `package.json`, `DATOCMS_*` env vars, `datocms.config.json`, `cma-types.ts`.
 
 ## Step 1: Detect Context
 
-If the project context is already established in this conversation (client package, authentication approach, environment targeting), skip broad detection below. Re-inspect only when a question cannot be answered from prior context.
+If project context already established in conversation, skip broad detection. Re-inspect only when question cannot be answered from prior context.
 
-### Step 1a — Bootstrap project awareness (CLI + `datocms link` is mandatory)
+### Step 1a — Bootstrap project awareness (CLI + `datocms link` mandatory)
 
-Any CMA work on a DatoCMS-connected repo requires agent-side visibility into the live project (models, fields, ids, record state). `datocms` installed + `datocms login` + `datocms link` is that bootstrap — treat it like `git init` or `npm install`: missing → fix first, do not route around.
+CMA work on DatoCMS-connected repo requires agent-side visibility into live project (models, fields, ids, record state). `datocms` installed + `datocms login` + `datocms link` = bootstrap. Treat like `git init` / `npm install`: missing → fix first.
 
-**Bootstrap flow** (only `datocms login` needs an interactive terminal; the rest the agent drives in non-TTY):
+**Bootstrap flow** (only `datocms login` needs interactive terminal):
 
 ```bash
 npm install --save-dev datocms        # if missing
@@ -52,52 +50,49 @@ npx datocms projects:list [hint] --json    # agent discovers siteId
 npx datocms link --site-id=<ID> [--organization-id=<ID>]   # agent links
 ```
 
-**Always confirm the target project with the user before running `datocms
-link`**, even when `projects:list` returns a single candidate. Show the candidate(s) (name, id, organization) and wait for an explicit yes. Do not treat "only one result" as consent — the user may have access to a project they did not mean to wire to this repo, and fixing a mis-linked project later is painful.
+**Always confirm target project with user before running `datocms link`**, even when `projects:list` returns single candidate. Show candidate(s) (name, id, organization) → wait for explicit yes. "Only one result" ≠ consent — user may have access to wrong project; fixing mis-linked project is painful.
 
-**Detection hints** (do not rely on `which datocms` — the CLI runs via `npx`):
+**Detection hints** (don't rely on `which datocms` — CLI runs via `npx`):
 
 - `datocms` in `package.json` devDependencies → CLI available
-- `datocms.config.json` with a `siteId` on the active profile → linked
+- `datocms.config.json` with `siteId` on active profile → linked
 - `npx datocms whoami` succeeds → OAuth session active
-- none of the above → drive the bootstrap above
+- none of above → drive bootstrap above
 
-**Token-in-`.env` is the exception.** An explicit `DATOCMS_API_TOKEN` is only for runtimes that cannot use OAuth: CI, server-side application code, cron, webhooks, shared repo scripts. Even there, the agent still needs CLI + link during development for project visibility.
+**Token-in-`.env` = exception.** Explicit `DATOCMS_API_TOKEN` only for runtimes that cannot use OAuth: CI, server-side application code, cron, webhooks, shared repo scripts. Agent still needs CLI + link during development for project visibility.
 
-**Learning the project's shape.** Once linked, run `npx datocms schema:inspect` (optionally with a model API key, id, or display name) to see the real models, blocks, fields, validators, fieldsets, nested blocks, and relationships — TOON output by default, `--json` for `| jq`. Use this any time the agent or user needs to understand the project structure before writing code, choosing the right field for a mutation, or deciding which model to query. Prefer it to composing `cma:call item_types list` / `fields list` by hand. Reference: `../datocms-cli/references/schema-inspect.md`.
+**Learning project's shape.** Once linked, run `npx datocms schema:inspect` (optionally with model API key, id, or display name) → see real models, blocks, fields, validators, fieldsets, nested blocks, relationships — TOON output by default, `--json` for `| jq`. Use any time agent/user needs to understand project structure before writing code, choosing right field for mutation, or deciding which model to query. Prefer to composing `cma:call itemTypes list` / `fields list` by hand. Reference: `../datocms-cli/references/schema-inspect.md`.
 
-**Red flag:** if you are about to say "paste a CMA token" or "add `DATOCMS_CMA_TOKEN=...` to `.env`" for a task the user is running interactively, stop. The right answer is the bootstrap above + the actual operation expressed as a `cma:call` / `cma:script` invocation (shapes in Step 4).
+**Red flag:** if about to say "paste a CMA token" or "add `DATOCMS_CMA_TOKEN=...` to `.env`" for task user is running interactively → stop. Right answer = bootstrap above + actual operation expressed as `cma:call` / `cma:script` invocation (shapes in Step 4).
 
 ### Step 1b — Package and project detection
 
-Once the auth approach is chosen, examine the project to determine the runtime and which CMA client package is available.
+Once auth approach chosen, examine project → determine runtime + which CMA client package available.
 
-1. Read `package.json` and check for these packages (in priority order):
-   - `@datocms/cma-client` — Universal/isomorphic package. **Recommended for most cases.** Works in any environment with native `fetch`. Only provide a `fetchFn` if your runtime lacks native Fetch API.
-   - `@datocms/cma-client-node` — Node.js-optimized. Adds upload helpers (`createFromLocalFile`, `createFromUrl`). Use when you need file-system upload convenience methods.
+1. Read `package.json`, check for these packages (priority order):
+   - `@datocms/cma-client` — Universal/isomorphic. **Recommended for most cases.** Works in any environment with native `fetch`. Only provide `fetchFn` if runtime lacks native Fetch API.
+   - `@datocms/cma-client-node` — Node.js-optimized. Adds upload helpers (`createFromLocalFile`, `createFromUrl`). Use when need file-system upload convenience methods.
    - `@datocms/cma-client-browser` — Browser-optimized. Adds `createFromFileOrBlob()` for File/Blob uploads.
 
-2. If none is installed and the task requires `buildClient()` code, recommend the appropriate package:
+2. If none installed and task requires `buildClient()` code → recommend appropriate package:
 
    - General / universal → `@datocms/cma-client`
    - Node.js project needing upload helpers → `@datocms/cma-client-node`
    - Browser-only project needing File/Blob uploads → `@datocms/cma-client-browser`
 
-   (For pure OAuth-path work via `cma:call` / `cma:script`, none of these need to be installed — the CLI workspace ships its own client.)
+   (For pure OAuth-path work via `cma:call` / `cma:script` — none of these need installation — CLI workspace ships its own client.)
 
-3. Search for existing `buildClient()` calls to understand how the project already configures the client (API token source, environment targeting, etc.).
+3. Search for existing `buildClient()` calls → understand how project already configures client (API token source, environment targeting, etc.).
 
-4. Only if the deliverable is unattended runtime code (see Step 1a): check for a `.env` or `.env.local` file and see whether a CMA-enabled `DATOCMS_API_TOKEN` (or similar) is already defined. If the only variable present is something read-only (`DATOCMS_READONLY_API_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`, a CDA token), flag that a separate CMA-enabled token is needed for that specific runtime — not for the agent's own introspection, which must go through CLI + link regardless.
+4. Only if deliverable = unattended runtime code (see Step 1a): check for `.env` or `.env.local` file → see whether CMA-enabled `DATOCMS_API_TOKEN` (or similar) already defined. If only variable present = something read-only (`DATOCMS_READONLY_API_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`, CDA token) → flag that separate CMA-enabled token needed for that specific runtime — not for agent's own introspection (must go through CLI + link regardless).
 
-5. Check for an existing `cma-types.ts` file to determine if CMA type generation is already set up. Do **not** proactively suggest setting up type generation. For `cma:docs` lookups, `cma:call`, and `cma:script` this skill owns the execution shape directly — see the cheat sheets in Step 4. For schema-change requests, see the decision tree in **Step 2.5** — it covers when this skill owns the work directly and when it routes to **datocms-cli** migrations. Otherwise route to **datocms-cli** for CLI-workflow topics (`schema:generate`, environment operations, imports, plugin management, multi-project sync, CI/CD).
+5. Check for existing `cma-types.ts` file → determine if CMA type generation already set up. Do **not** proactively suggest setting up type generation. For `cma:docs` lookups, `cma:call`, `cma:script` — this skill owns execution shape directly — see cheat sheets in Step 4. For schema-change requests → see decision tree in **Step 2.5** — covers when this skill owns work directly and when routes to **datocms-cli** migrations. Otherwise route to **datocms-cli** for CLI-workflow topics (`schema:generate`, environment operations, imports, plugin management, multi-project sync, CI/CD).
 
-**Token scope reminder** (only when an unattended runtime genuinely needs one): the token must have `can_access_cma: true` and a role with the permissions the task requires (publishing, editing schema, etc.). It does not need to be "full-access" — it should be scoped to the smallest set of models, actions, and environments that the runtime actually needs.
-
----
+**Token scope reminder** (only when unattended runtime genuinely needs one): token must have `can_access_cma: true` + role with permissions task requires (publishing, editing schema, etc.). Does not need to be "full-access" — should be scoped to smallest set of models, actions, environments that runtime actually needs.
 
 ## Step 2: Understand the Task
 
-Classify the user's task into one or more categories. Ask follow-up questions only when the request is ambiguous or the risk of a wrong assumption is high.
+Classify user's task into one or more categories. Ask follow-up questions only when request is ambiguous or risk of wrong assumption is high.
 
 - **Content operations** — Create, read, update, delete, publish, or unpublish records
 - **Upload operations** — Upload files, manage assets, update metadata, bulk tag
@@ -118,41 +113,36 @@ Classify the user's task into one or more categories. Ask follow-up questions on
 - **Saved filters** — Create or manage saved record/upload filter views
 - **Audit & debugging** — Query audit logs, inspect async job results, CMA-side search
 
-If the user's request is clear and falls into an obvious category, skip the clarifying questions and proceed directly.
+If user's request clear and falls into obvious category → skip clarifying questions, proceed directly.
 
----
+## Step 2.5: Schema changes — decide approach with user
 
-## Step 2.5: Schema changes — decide the approach with the user
-
-DatoCMS schema operations fall into four buckets. The choice of approach is not automatic — ask the user when the bucket is not obvious from the request, because reversibility and workflow preference matter more than which tool performs the mutation.
+DatoCMS schema operations fall into four buckets. Choice of approach ≠ automatic — ask user when bucket not obvious from request (reversibility + workflow preference matter more than which tool performs mutation).
 
 | Situation | What it covers | Approach |
 | - | - | - |
-| **Destructive schema change** | DROP a field, DROP a model, `bulk_destroy` records, lossy `field_type` changes (e.g. `string → json`, `json → string`, anything that discards stored values) | **Migration** via `datocms-cli` (`migrations:new`), against a forked sandbox first. Never run these against a primary environment without explicit, repeated user confirmation. |
-| **Reversible schema change** | Add a field, add a model or block, rename a field, toggle `required`, add or tighten a validation, reorder fieldsets | **Ask the user.** Both approaches are safe; pick by preference and context. Lean to a migration (`datocms-cli`) when the repo already uses a migrations workflow or the user is on a secondary branch — reviewable, reproducible. Direct mutation (`cma:call`, `cma:script` stdin-mode, or `cma:script` file-mode) is fine for quick iteration on a sandbox. Default to migration only when the user has no preference AND the repo shows migration conventions (`migrations/` directory, prior migration commits). |
-| **User-requested one-off** | Phrases like "quickly, without a migrations workflow", "just patch this", "one-off", "don't scaffold migrations for this" | **Honor the opt-out.** Use direct mutation via `cma:call` (single call with shape from `cma:docs`) or `cma:script` (stdin-mode for loops/multi-step, file-mode when the script is long enough that a heredoc hurts). Do not re-suggest migrations unless the change turns out to be a destructive schema change. |
-| **Content operation** | Publish, unpublish, delete individual records, fix slugs, bulk update a field value, re-tag uploads | No migration needed. Prefer `cma:call` for a single call; `cma:script` stdin-mode for loops, pagination, or multi-step logic; `cma:script` file-mode only when a heredoc becomes painful. Code that needs to be committed and replayed across environments is a migration (`datocms-cli`), not this skill. |
+| **Destructive schema change** | DROP a field, DROP a model, `bulk_destroy` records, lossy `field_type` changes (e.g. `string → json`, `json → string`, anything that discards stored values) | **Migration** via `datocms-cli` (`migrations:new`), against forked sandbox first. Never run these against primary environment without explicit, repeated user confirmation. |
+| **Reversible schema change** | Add a field, add a model or block, rename a field, toggle `required`, add or tighten a validation, reorder fieldsets | **Ask the user.** Both approaches safe; pick by preference + context. Lean to migration (`datocms-cli`) when repo already uses migrations workflow or user is on secondary branch — reviewable, reproducible. Direct mutation (`cma:call`, `cma:script` stdin-mode, or `cma:script` file-mode) fine for quick iteration on sandbox. Default to migration only when user has no preference AND repo shows migration conventions (`migrations/` directory, prior migration commits). |
+| **User-requested one-off** | Phrases like "quickly, without a migrations workflow", "just patch this", "one-off", "don't scaffold migrations for this" | **Honor the opt-out.** Use direct mutation via `cma:call` (single call with shape from `cma:docs`) or `cma:script` (stdin-mode for loops/multi-step, file-mode when script long enough that heredoc hurts). Do not re-suggest migrations unless change turns out to be destructive schema change. |
+| **Content operation** | Publish, unpublish, delete individual records, fix slugs, bulk update a field value, re-tag uploads | No migration needed. Prefer `cma:call` for single call; `cma:script` stdin-mode for loops, pagination, or multi-step logic; `cma:script` file-mode only when heredoc becomes painful. Code that needs to be committed and replayed across environments = migration (`datocms-cli`), not this skill. |
 
-Regardless of which skill is loaded, the **question to ask the user is the same** for a reversible schema change: _"Do you want this as a reviewable migration, or a direct mutation against a sandbox?"_ The answer determines which skill owns the follow-up — not which skill was loaded first.
+Regardless of which skill loaded — **question to ask user is same** for reversible schema change: _"Do you want this as a reviewable migration, or a direct mutation against a sandbox?"_ Answer determines which skill owns follow-up — not which skill was loaded first.
 
 **Cross-skill routing.**
 
-- User-requested one-offs, content operations, and the direct-mutation branch of a reversible schema change are this skill's core: `cma:call`, `cma:script` stdin-mode, and `cma:script` file-mode. Stay here and load the references in Step 3.
-- Destructive schema changes, the migration branch of a reversible schema change, and anything that must be committed/versioned/replayed across environments are better covered by **datocms-cli** (`migrations:new`, `migrations:run`). Switch when the change is destructive, when the repo already uses a migrations workflow, or when the user wants the change as a reviewable migration. The handoff is loading the sibling skill's references — do not bounce the user.
-- Unattended runtime code (CI, app server, webhook, long-lived automation) is a separate scenario — that is where a checked-in `buildClient()` script belongs. See Step 4 ("Client Setup").
-
----
+- User-requested one-offs, content operations, and direct-mutation branch of reversible schema change = this skill's core: `cma:call`, `cma:script` stdin-mode, `cma:script` file-mode. Stay here + load references in Step 3.
+- Destructive schema changes, migration branch of reversible schema change, and anything that must be committed/versioned/replayed across environments better covered by **datocms-cli** (`migrations:new`, `migrations:run`). Switch when change is destructive, when repo already uses migrations workflow, or when user wants change as reviewable migration. Handoff = loading sibling skill's references — do not bounce the user.
+- Unattended runtime code (CI, app server, webhook, long-lived automation) = separate scenario — where checked-in `buildClient()` script belongs. See Step 4 ("Client Setup").
 
 ## Step 3: Load References
 
-Two documentation sources are available — pick the right one for the question:
+Two documentation sources available — pick right one for question:
 
-1. **`npx datocms cma:docs <resource> <action>`** is the live, always-up-to-date source for endpoint shapes, payload attributes, validators, and client TypeScript signatures. Always reflects the installed client version — never stale. **Use it as the default for every "what does this endpoint accept / return" question.**
-2. **The reference files in this directory** carry opinionated mental models, decision trees, cross-cutting workflows, and pattern ordering invariants — things `cma:docs` doesn't know. **Use them for the "how should I approach this" questions.**
+1. **`npx datocms cma:docs <resource> <action>`** = live, always-up-to-date source for endpoint shapes, payload attributes, validators, client TypeScript signatures. Always reflects installed client version — never stale. **Use as default for every "what does this endpoint accept / return" question.** For all flags load **datocms-cli** skill + read `../datocms-cli/references/direct-cma-calls.md` § cma:docs first time this skill needs to consult endpoint documentation. That file = single source of truth for command; do not re-derive flags from this skill.
 
-> **`cma:docs` is a CLI command — its full surface (flags, naming convention, when to pass `--expand-types`) lives in the sibling skill.** Load the **datocms-cli** skill and read `../datocms-cli/references/direct-cma-calls.md` § cma:docs the first time this skill needs to consult endpoint documentation. That file is the single source of truth for the command; do not re-derive the flags from this skill.
+2. **Reference files in this directory** carry opinionated mental models, decision trees, cross-cutting workflows, pattern ordering invariants — things `cma:docs` doesn't know. **Use for "how should I approach this" questions.**
 
-When writing typed code (`buildBlockRecord<Schema.X>`, `client.items.create<Schema.X>`, …), consider passing `--types-depth 2` (or higher) to surface a deeper "Not expanded" type list, or `--expand-types <SpecificType>` to inline a single declaration. Reach for `--expand-types "*"` only as a last resort — its output is verbose.
+> **`cma:docs` = CLI command — its full surface (flags, naming convention, when to pass `--expand-types`) lives in sibling skill.**
 
 **Always load:**
 
@@ -160,10 +150,10 @@ When writing typed code (`buildBlockRecord<Schema.X>`, `client.items.create<Sche
 
 **Routing per task category — same two-step routine for every row:**
 
-1. Run `npx datocms cma:docs <resource> <action>` to fetch the live endpoint shape, payload attributes, and TS signatures.
-2. **Then load the reference listed below** for the workflow, mental model, ordering invariants, and gotchas `cma:docs` doesn't carry.
+1. Run `npx datocms cma:docs` → fetch live endpoint shape, payload attributes, TS signatures.
+2. **Then load reference listed below** for workflow, mental model, ordering invariants, gotchas `cma:docs` doesn't carry.
 
-Each reference opens with a reminder of the specific `cma:docs <resource>` to consult — never re-derive endpoint shapes from prose, always pull them live.
+Each reference opens with reminder of specific `cma:docs <resource>` to consult — never re-derive endpoint shapes from prose, always pull them live.
 
 | Task category | Reference |
 | - | - |
@@ -188,39 +178,34 @@ Each reference opens with a reminder of the specific `cma:docs <resource>` to co
 
 **Load cross-cutting references when needed:**
 
-- If the task involves localized fields in any context → also load `references/localization.md`
-- If the task uses `raw*()` methods, generated CMA types, advanced client behavior, or platform limits → also load `references/client-types-and-behaviors.md`
-- If the task involves modular content, single-block fields, DAST structured text, block traversal, or any per-locale backfill → also load `references/editing-records.md`
-- If the task involves listing many records → also load `references/filtering-and-pagination.md`
-- If the task is a migration script → also load `references/migration-patterns.md` plus whatever domain refs are needed
-- If the task involves video upload subtitles/tracks or upload tag management → also load `references/resource-gotchas.md` § Upload tracks and tags
-- If the task involves maintenance mode before a migration → also load `references/project-settings-and-usage.md`
-- If the task involves checking subscription limits before bulk operations → also load `references/project-settings-and-usage.md`
+If task:
 
----
+- involves localized fields in any context → also load `references/localization.md`
+- uses `raw*()` methods, generated CMA types, advanced client behavior, or platform limits → also load `references/client-types-and-behaviors.md`
+- involves modular content, single-block fields, DAST structured text, block traversal, or any per-locale backfill → also load `references/editing-records.md`
+- involves listing many records → also load `references/filtering-and-pagination.md`
+- \= migration script → also load `references/migration-patterns.md` plus whatever domain refs needed
+- involves video upload subtitles/tracks or upload tag management → also load `references/resource-gotchas.md` § Upload tracks and tags
+- involves maintenance mode before a migration → also load `references/project-settings-and-usage.md`
+- involves checking subscription limits before bulk operations → also load `references/project-settings-and-usage.md`
 
 ## Step 4: Generate the Solution
 
-When the response includes code, follow these default rules:
+When response includes code — follow these default rules:
 
-### Authentication (respect the Step 1a bootstrap)
+### Authentication (respect Step 1a bootstrap)
 
-- CLI + link is a prerequisite of Step 4, not a choice. If the project is not yet linked, fix that first (propose install + login + link) before writing any solution code.
-- For interactive / one-off work (the majority of CMA tasks), do not write `buildClient({ apiToken: ... })` code at all — output a `cma:call` invocation (single call with shape from `cma:docs`) or a `cma:script` invocation (stdin-mode for loops/multi-step, file-mode when a heredoc becomes painful) using the shapes below. The CLI handles auth silently via the linked project; no cross-skill hop needed.
-- Only when the deliverable is unattended runtime code (CI, server-side app, long-lived automation, repo-committed shared scripts) should the response include `buildClient()` + env-var token code.
+- CLI + link = prerequisite of Step 4, not choice. If project not yet linked → fix first (propose install + login + link) before writing any solution code.
+- For interactive / one-off work (majority of CMA tasks) — do not write `buildClient({ apiToken: ... })` code at all — output `cma:call` invocation (single call with shape from `cma:docs`) or `cma:script` invocation (stdin-mode for loops/multi-step, file-mode when heredoc becomes painful) using shapes below. CLI handles auth silently via linked project; no cross-skill hop needed.
+- Only when deliverable = unattended runtime code (CI, server-side app, long-lived automation, repo-committed shared scripts) should response include `buildClient()` + env-var token code.
 
 #### `cma:call` shape — do not invent REST-style flags
 
-`cma:call` is **positional** (`<RESOURCE> <METHOD>` + any URL placeholders as extra positional args), with JSON5 request bodies and query params passed via `--data` / `--params`. It is **not** a REST wrapper — there is no `--endpoint`, `--method`, `--query-params`, or `--body` flag.
+`cma:call` is **positional** (`<resourceCamelCase> <methodCamelCase>` + any URL placeholders as extra positional args), with JSON5 request bodies + query params passed via `--data` / `--params`. **Not** REST wrapper — no `--endpoint`, `--method`, `--query-params`, or `--body` flag. Use **camelCase** for resource/method names (matches JS client: `client.itemTypes.create`).
 
 ```bash
-# List + filter
 npx datocms cma:call items list --params='{filter: {type: "article"}}'
-
-# Single resource
 npx datocms cma:call items find <ITEM_ID>
-
-# Mutate (confirm environment first)
 npx datocms cma:call items update <ITEM_ID> --data='{title: "Updated"}'
 npx datocms cma:call items publish <ITEM_ID>
 
@@ -228,13 +213,13 @@ npx datocms cma:call items publish <ITEM_ID>
 npx datocms cma:call fields create <ITEM_TYPE_ID> --data='{label: "Title", api_key: "title", field_type: "string"}'
 ```
 
-`--data` / `--params` accept JSON5 (unquoted keys, single-quoted wrapping), which keeps shell escaping sane. If unsure about the exact resource/method/body shape, run `npx datocms cma:docs <resource> <action>` — that is the authoritative source.
+`--data` / `--params` accept JSON5 (unquoted keys, single-quoted wrapping) — keeps shell escaping sane. If unsure about exact resource/method/body shape → run `npx datocms cma:docs <resource> <action>` — that = authoritative source.
 
 #### `cma:script` shape — typed one-off TypeScript, two modes
 
-Use `cma:script` when a one-off task needs loops, branching, multiple dependent calls, or typed `Schema.*` record payloads. It has two modes with different ergonomics — pick by how the script is delivered, not by how "complex" it is.
+Use `cma:script` when one-off task needs loops, branching, multiple dependent calls, or typed `Schema.*` record payloads. Two modes with different ergonomics — pick by how script delivered, not by how "complex" it is.
 
-**stdin-mode** — top-level await, piped or heredoc. Zero setup. `client` (pre-authenticated) and `Schema` (project record types) are **ambient globals** inside a CLI-bundled workspace; `tsc --noEmit` type-checks before execution; `any` and `unknown` are rejected. Pre-installed packages available without install: `@datocms/cma-client-node`, `datocms-structured-text-*`, `parse5`. `export default` is not supported here — use file-mode if you want a function.
+**stdin-mode** — top-level await, piped or heredoc. Zero setup. `client` (pre-authenticated) + `Schema` (project record types) **ambient globals** inside CLI-bundled workspace; `tsc --noEmit` type-checks before execution; `any` + `unknown` rejected. Pre-installed packages available without install: `@datocms/cma-client-node`, `datocms-structured-text-*`, `parse5`. `export default` not supported here — use file-mode if want function.
 
 ```bash
 npx datocms cma:script <<'EOF'
@@ -243,7 +228,7 @@ console.log(items.length);
 EOF
 ```
 
-**file-mode** — `export default async function(client: Client)` in a `.ts` file on disk. Runs in the user's own TypeScript context (validation via editor LSP against your `tsconfig.json`, or an explicit `tsc --noEmit`; no CLI-side typecheck). Same throwaway scenario as stdin-mode — this is not "code to commit"; use it when a heredoc becomes painful (long script, fragile quoting with `$`/backticks, local helper imports, or you want to rerun by filename).
+**file-mode** — `export default async function(client: Client)` in `.ts` file on disk. Runs in user's own TypeScript context (validation via editor LSP against `tsconfig.json`, or explicit `tsc --noEmit`; no CLI-side typecheck). Same throwaway scenario as stdin-mode — not "code to commit"; use when heredoc becomes painful (long script, fragile quoting with `$`/backticks, local helper imports, or want to rerun by filename).
 
 ```ts
 // tmp/scripts/publish-drafts.ts
@@ -267,72 +252,68 @@ npx datocms cma:script tmp/scripts/publish-drafts.ts [--environment <env>]
 
 Rules of thumb:
 
-- **Use `cma:call` first** for a single call with a shape you can read from `cma:docs`. Reach for `cma:script` only when the task needs loops, pagination, branching, dependent calls, or typed `Schema.*` payloads.
+- **Use `cma:call` first** for single call with shape you can read from `cma:docs`. Reach for `cma:script` only when task needs loops, pagination, branching, dependent calls, or typed `Schema.*` payloads.
 - **stdin-mode for quick hacks**: pipes, heredocs, one-liners. No file on disk, no project prerequisites.
-- **file-mode when a heredoc hurts**: long script, nested quoting, local helper imports, or you want to rerun the file by name. Requires `datocms` reachable in `node_modules` from the file's directory; place the file in a gitignored scratch dir (`tmp/scripts/`, `scratch/`, `~/scratch/dato/`). Prefer a migration for code you want to commit, version, and replay across environments, and do not put file-mode scripts under `migrations/` — that directory is owned by `migrations:run`.
-- **Typed `Schema.*` in file-mode is opt-in**: run `npx datocms schema:generate ./datocms-schema.ts` next to the script and `import * as Schema from './datocms-schema'`. In stdin-mode `Schema.*` is ambient — no generation needed.
-- **Import path matters for promotion**: file-mode imports `Client` from `datocms/lib/cma-client-node` — the same import migrations use, so a file-mode script can be promoted into a migration with a plain `mv` into `migrations/` (signature matches too).
+- **file-mode when heredoc hurts**: long script, nested quoting, local helper imports, or want to rerun file by name. Requires `datocms` reachable in `node_modules` from file's directory; place file in gitignored scratch dir (`tmp/scripts/`, `scratch/`, `~/scratch/dato/`). Prefer migration for code you want to commit, version, and replay across environments; do not put file-mode scripts under `migrations/` — that directory owned by `migrations:run`.
+- **Typed `Schema.*` in file-mode = opt-in**: run `npx datocms schema:generate ./datocms-schema.ts` next to script + `import * as Schema from './datocms-schema'`. In stdin-mode `Schema.*` ambient — no generation needed.
+- **Import path matters for promotion**: file-mode imports `Client` from `datocms/lib/cma-client-node` — same import migrations use, so file-mode script can be promoted into migration with plain `mv` into `migrations/` (signature matches too).
 - **Redirect `2>/dev/null`** when piping stdin-mode stdout into `jq`.
-- **Pre-installed packages are stdin-only**. In file-mode, install what you need into your own `package.json`.
-- **Reach for a checked-in `buildClient()` script** only when the code must run unattended (CI, app server, webhook, long-lived automation). See "Client Setup" below.
+- **Pre-installed packages = stdin-only**. In file-mode, install what you need into own `package.json`.
+- **Reach for checked-in `buildClient()` script** only when code must run unattended (CI, app server, webhook, long-running automation). See "Client Setup" below.
 
-For advanced patterns (workspace flags, stdout shaping, long-running scripts), consult the **datocms-cli** skill.
+For advanced patterns (workspace flags, stdout shaping, long-running scripts) → consult **datocms-cli** skill.
 
 ### Client Setup (unattended-runtime code only)
 
-- Default to `buildClient()` from the detected package (Step 1b)
-- Read the API token from an environment variable; never hardcode it and never ask the user to paste it into the chat
-- Set the `environment` option when working with sandbox environments
+- Default to `buildClient()` from detected package (Step 1b)
+- Read API token from environment variable; never hardcode, never ask user to paste into chat
+- Set `environment` option when working with sandbox environments
 
 ### API Surface
 
-- Default to the simplified API (e.g., `client.items.create()`) because it handles serialization/deserialization automatically
-- Switch to `raw*()` methods only when the task explicitly needs raw JSON:API payloads, relationship metadata, or generated CMA schema types are intentionally part of the solution
+- Default to simplified API (e.g., `client.items.create()`) because it handles serialization/deserialization automatically
+- Switch to `raw*()` methods only when task explicitly needs raw JSON:API payloads, relationship metadata, or generated CMA schema types are intentionally part of solution
 
 ### Pagination
 
 - Prefer `*.listPagedIterator()` (for example `client.items.listPagedIterator()`) when iterating over collections
-- Avoid manual offset/limit pagination loops unless a resource genuinely lacks an iterator
+- Avoid manual offset/limit pagination loops unless resource genuinely lacks iterator
 - Use `for await...of` to consume async iterators
 
 ### Blocks
 
-- Prefer `buildBlockRecord()` when creating block records for the simplified API
-- Import it from the same package as `buildClient`
+- Prefer `buildBlockRecord()` when creating block records for simplified API
+- Import from same package as `buildClient`
 
 ### Error Handling
 
-- Catch `ApiError` for API failures — it provides `.errors` getter and `.findError()` method
+- Catch `ApiError` for API failures — provides `.errors` getter + `.findError()` method
 - Catch `TimeoutError` for request timeouts in long-running or request-heavy flows
-- Import both from the same package as `buildClient`
+- Import both from same package as `buildClient`
 
 ### TypeScript
 
-- Follow the TypeScript strictness rules: no `as unknown as`, no unnecessary `as` casts
+- Follow TypeScript strictness rules: no `as unknown as`, no unnecessary `as` casts
 - Let TypeScript infer types wherever possible
 - Use `import type { ... }` for type-only imports
 
----
-
 ## Step 5: Verify
 
-Before presenting the final code:
+Before presenting final code:
 
-1. **Project-awareness bootstrap** — Confirm the repo has the `datocms` npm package installed and the project is linked (`datocms.config.json` with a `siteId`, `npx datocms whoami` succeeds). If not, the final proposal must include the install + login + link sequence before any CMA operation. For interactive / one-off tasks the deliverable should be a `cma:call` / `cma:script` invocation (shapes in Step 4), not a `buildClient()` script that requires a token in `.env`. Only when the code will run unattended (CI, server-side app, long-lived automation) should a token-in-env solution be presented — and in that case the token must have CMA access enabled and the role permissions the task needs. Schema changes require a role with `can_edit_schema: true`.
-2. **Environment targeting** — If working with a sandbox, ensure the `environment` config option is set
-3. **Error handling** — Ensure `ApiError` is caught at appropriate boundaries
-4. **Pagination** — If the solution iterates a collection that could exceed a single page, prefer `listPagedIterator()`
-5. **Type safety** — Ensure no type assertions (`as`) are used to silence errors
-6. **Imports** — Ensure all imports come from the correct package (the one detected in Step 1)
-7. **Generated types** — If the solution intentionally uses generated CMA types (`cma-types.ts`), ensure the chosen path is typed end to end: simplified API generics by default, or `raw*()` / `RawApiTypes.Item<>` only when raw payload access is intentional
+1. **Project-awareness bootstrap** — Confirm repo has `datocms` npm package installed + project linked (`datocms.config.json` with `siteId`, `npx datocms whoami` succeeds). If not — final proposal must include install + login + link sequence before any CMA operation. For interactive / one-off tasks — deliverable should be `cma:call` / `cma:script` invocation (shapes in Step 4), not `buildClient()` script that requires token in `.env`. Only when code will run unattended (CI, server-side app, long-lived automation) should token-in-env solution be presented — + in that case token must have CMA access enabled + role permissions task needs. Schema changes require role with `can_edit_schema: true`.
+2. **Environment targeting** — If working with sandbox → ensure `environment` config option set
+3. **Error handling** — Ensure `ApiError` caught at appropriate boundaries
+4. **Pagination** — If solution iterates collection that could exceed single page → prefer `listPagedIterator()`
+5. **Type safety** — Ensure no type assertions (`as`) used to silence errors
+6. **Imports** — Ensure all imports come from correct package (one detected in Step 1)
+7. **Generated types** — If solution intentionally uses generated CMA types (`cma-types.ts`) → ensure chosen path typed end to end: simplified API generics by default, or `raw*()` / `RawApiTypes.Item<>` only when raw payload access intentional
 
-If the generated code is a script (migration, seeding, etc.), wrap it in an async function with proper error handling and progress reporting.
-
----
+If generated code = script (migration, seeding, etc.) → wrap in async function with proper error handling + progress reporting.
 
 ## Cross-Skill Routing
 
-This skill covers **content management via the REST CMA** (mutations, schema, uploads, webhooks, scripts). If the task involves any of the following, activate the companion skill:
+This skill covers **content management via REST CMA** (mutations, schema, uploads, webhooks, scripts). If task involves any of following → activate companion skill:
 
 | Condition | Route to |
 | - | - |

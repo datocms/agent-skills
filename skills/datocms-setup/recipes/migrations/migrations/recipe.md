@@ -1,68 +1,70 @@
-_Internal recipe for `datocms-setup`. Use this file only after the parent skill selects the `migrations` recipe and queues any prerequisites from `../../../references/recipe-manifest.json`._
+_Recipe for `datocms-setup`. Use only after parent skill selects `migrations` recipe and queues prerequisites from `../../../references/recipe-manifest.json`._
 
 # DatoCMS Migrations Setup
 
-You are an expert at setting up DatoCMS CLI migrations in existing projects. This recipe creates the minimum migrations baseline on top of an already-linked project. It does **not** install the CLI or link a project — that is the job of the `cli-bootstrap` prerequisite recipe.
+Expert at setting up DatoCMS CLI migrations in existing projects. Creates minimum migrations baseline on already-linked project. Does **not** install CLI or link project — `cli-bootstrap` prerequisite handles that.
 
-Follow these steps in order. Do not skip steps.
+Follow steps in order. Don't skip.
 
----
+## Contents
+
+- Step 1: Detect Context (silent)
+- Step 2: Ask Questions
+- Step 3: Load References
+- Step 4: Generate Code
+- Step 5: Install Dependencies
+- Step 6: Next Steps
+- Verification Checklist
 
 ## Step 1: Detect Context (silent)
 
-Silently examine the project:
+Examine project:
 
-Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
+Follow shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect recipe-specific signals below.
 
-1. **Node project** — Check for `package.json`. If missing, stop and tell the user this skill expects a JavaScript or TypeScript project with a package manifest.
-2. **Bootstrap state** — Check that the `datocms` npm package is installed and that `datocms.config.json` exists with a `siteId` in the active profile. If either is missing, surface `cli-bootstrap` as an unmet prerequisite and stop — do not install the CLI or touch `datocms.config.json` from this recipe.
-3. **Migrations directory** — Check for `migrations/`.
-4. **TypeScript** — Check for `tsconfig.json`.
-5. **Scripts** — Check `package.json` for `datocms:migrations:run`, `datocms:migrations:dry-run`, and `datocms:environments:list`.
+1. **Node project** — Check `package.json`. If missing, stop: skill expects JS/TS project with package manifest.
+2. **Bootstrap state** — Check `datocms` npm package installed and `datocms.config.json` exists with `siteId` in active profile. If either missing, surface `cli-bootstrap` as unmet prerequisite and stop — don't install CLI or touch `datocms.config.json` from this recipe.
+3. **Migrations directory** — Check `migrations/`.
+4. **TypeScript** — Check `tsconfig.json`.
+5. **Scripts** — Check `package.json` for `datocms:migrations:run`, `datocms:migrations:dry-run`, `datocms:environments:list`.
 
 ### Stop conditions
 
-- If `package.json` is missing, stop and explain that this setup targets Node projects only.
-- If the repo already has a materially different multi-profile CLI setup, patch in place by default and only ask if adopting the single-project baseline would override working behavior.
-- If `datocms` is not installed or the active profile has no `siteId`, stop and route back to the `cli-bootstrap` recipe.
-
----
+- `package.json` missing: explain setup targets Node projects only.
+- Repo already has materially different multi-profile CLI setup: patch in place by default, only ask if adopting single-project baseline would override working behavior.
+- `datocms` not installed or active profile has no `siteId`: stop and route back to `cli-bootstrap` recipe.
 
 ## Step 2: Ask Questions
 
-Infer first from the repo.
+Infer from repo first.
 
-Follow the zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
+Follow zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
 
-If you do ask, make it one concise question, put the recommended/default path first, and explain whether skipping it will leave placeholders, ownership, or project-specific values unresolved.
+If you do ask, make it one concise question, put recommended/default path first, explain whether skipping leaves placeholders, ownership, or project-specific values unresolved.
 
-Only ask if the existing `datocms.config.json` clearly uses multiple profiles, custom migration directories, a custom migration template, a custom migrations tsconfig, or other working conventions that would be changed by the single-project baseline.
+Only ask if existing `datocms.config.json` clearly uses multiple profiles, custom migration directories, custom migration template, custom migrations tsconfig, or other working conventions that single-project baseline would change.
 
-When you do ask, keep it narrow: confirm whether the current convention should be preserved in place or whether the repo wants to normalize to the default single-project baseline.
-
----
+When you do ask, keep it narrow: confirm whether current convention should be preserved in place or repo wants to normalize to default single-project baseline.
 
 ## Step 3: Load References
 
-Read only these references:
+Read only these:
 
 - `../../../../datocms-cli/references/cli-setup.md`
 - `../../../../datocms-cli/references/creating-migrations.md`
 - `../../../../datocms-cli/references/running-migrations.md`
 
----
-
 ## Step 4: Generate Code
 
-Make the minimum project changes needed for a working migrations workflow on top of the linked project.
+Make minimum project changes for working migrations workflow on linked project.
 
 ### Required project changes
 
-1. **Patch `datocms.config.json`** to add a `migrations` block to the active profile (created by `cli-bootstrap`):
+1. **Patch `datocms.config.json`** to add `migrations` block to active profile (created by `cli-bootstrap`):
    - `migrations.directory: "./migrations"`
    - `migrations.modelApiKey: "schema_migration"` Preserve `siteId`, `organizationId`, `logLevel`, and any existing fields.
-2. **Create `migrations/`** if it does not exist.
-3. **Patch `package.json` scripts** so it includes exactly these helpers:
+2. **Create `migrations/`** if missing.
+3. **Patch `package.json` scripts** to include exactly these helpers:
    - `datocms:migrations:run`
    - `datocms:migrations:dry-run`
    - `datocms:environments:list`
@@ -70,36 +72,32 @@ Make the minimum project changes needed for a working migrations workflow on top
 ### Mandatory rules
 
 - Use `npx datocms` in generated scripts
-- Preserve existing scripts and merge changes in place
-- Do not install the `datocms` npm package — `cli-bootstrap` owns that
-- Do not create or modify `datocms.config.json`'s `siteId` / `organizationId` / `apiTokenEnvName` — those are owned by `cli-bootstrap` (or, for CI-specific profiles, by `cli-profiles`)
-- Do not write `DATOCMS_API_TOKEN=...` (or any CMA token placeholder) to `.env.example` — the linked default profile resolves the token via OAuth at runtime. Token-in-env setup belongs to CI-specific recipes, not the interactive migrations baseline.
-- Do not create a custom migration template file
-- Do not create a migrations-specific tsconfig file
-- Do not add CI files
-- Do not create multiple CLI profiles
-
----
+- Preserve existing scripts, merge changes in place
+- Don't install `datocms` npm package — `cli-bootstrap` owns that
+- Don't create or modify `datocms.config.json`'s `siteId` / `organizationId` / `apiTokenEnvName` — owned by `cli-bootstrap` (or, for CI-specific profiles, by `cli-profiles`)
+- Don't write `DATOCMS_API_TOKEN=...` (or any CMA token placeholder) to `.env.example` — linked default profile resolves token via OAuth at runtime. Token-in-env setup belongs to CI-specific recipes, not interactive migrations baseline.
+- Don't create custom migration template file
+- Don't create migrations-specific tsconfig file
+- Don't add CI files
+- Don't create multiple CLI profiles
 
 ## Step 5: Install Dependencies
 
-No new dependencies in this recipe — the `datocms` npm package is installed by `cli-bootstrap`.
-
----
+No new dependencies — `datocms` npm package installed by `cli-bootstrap`.
 
 ## Step 6: Next Steps
 
-After generating the files, tell the user:
+After generating files, tell user:
 
-1. Create the first migration with the format that matches the repo:
+1. Create first migration with format matching repo:
 
-   - If TypeScript is detected, use:
+   - TypeScript detected:
 
    ```bash
    npx datocms migrations:new "describe the change" --ts
    ```
 
-   - If JavaScript is the repo convention, omit `--ts`.
+   - JavaScript repo convention: omit `--ts`.
 
 2. Dry-run before applying:
 
@@ -107,18 +105,16 @@ After generating the files, tell the user:
    npm run datocms:migrations:dry-run
    ```
 
-3. Optional follow-up recipe id: `migration-release-workflow` for a repeatable production rollout flow (may introduce CI-specific env token for unattended execution).
+3. Optional follow-up recipe id: `migration-release-workflow` for repeatable production rollout flow (may introduce CI-specific env token for unattended execution).
 
-4. Optional follow-up recipe id: `blueprint-sync` when they need one migration history shared across multiple DatoCMS projects.
-
----
+4. Optional follow-up recipe id: `blueprint-sync` when need one migration history shared across multiple DatoCMS projects.
 
 ## Verification Checklist
 
-Before presenting the result, verify:
+Before presenting result, verify:
 
-1. `datocms.config.json` active profile has both the `siteId` (from `cli-bootstrap`) and the new `migrations` block
+1. `datocms.config.json` active profile has both `siteId` (from `cli-bootstrap`) and new `migrations` block
 2. `migrations/` exists
-3. `package.json` contains the three required helper scripts
-4. No `DATOCMS_API_TOKEN` placeholder was written to `.env.example` by this recipe
-5. No custom template, custom tsconfig, CI file, or multi-profile config was added by default
+3. `package.json` contains three required helper scripts
+4. No `DATOCMS_API_TOKEN` placeholder written to `.env.example` by this recipe
+5. No custom template, custom tsconfig, CI file, or multi-profile config added by default

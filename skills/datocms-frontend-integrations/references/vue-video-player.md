@@ -4,15 +4,6 @@ See `video-player-concepts.md` for the shared GraphQL query, video field definit
 
 Vue 3 component for DatoCMS/Mux video streaming, designed to work with the `video` GraphQL query. Wraps the `<mux-player>` [web component](https://developer.mozilla.org/en-US/docs/Web/API/Web_components).
 
-## Contents
-
-- [Installation](#installation)
-- [Setup](#setup)
-- [Basic Usage](#basic-usage)
-- [Props](#props)
-
----
-
 ## Installation
 
 Requires `@mux/mux-player` as a peer dependency (note: **not** `@mux/mux-player-react`):
@@ -20,8 +11,6 @@ Requires `@mux/mux-player` as a peer dependency (note: **not** `@mux/mux-player-
 ```bash
 npm install vue-datocms @mux/mux-player
 ```
-
----
 
 ## Setup
 
@@ -41,8 +30,6 @@ import { VideoPlayer } from 'vue-datocms';
 </script>
 ```
 
----
-
 ## Basic Usage
 
 ```vue
@@ -59,8 +46,6 @@ const props = defineProps<{ data: any }>();
   </div>
 </template>
 ```
-
----
 
 ## Props
 

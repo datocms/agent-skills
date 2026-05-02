@@ -2,13 +2,18 @@
 
 Covers querying modular content fields: GraphQL union types, inline fragments, RecordInterface, single vs multiple block variants, and nested blocks.
 
----
+## Contents
+
+- How Modular Content Works in GraphQL
+- Fragment Querying
+- RecordInterface
+- Single vs Multiple Blocks
+- Nested Blocks
+- Complete Example
 
 ## How Modular Content Works in GraphQL
 
 Modular content fields are represented as GraphQL **union types**. Each block model becomes a `<BlockModelApiKey>Record` type. You query specific block types using **inline fragments**.
-
----
 
 ## Fragment Querying
 
@@ -50,8 +55,6 @@ query {
 
 **Important:** You must include a fragment for every block type you want to render. Blocks without a matching fragment are returned as empty objects (only the `__typename` field is available).
 
----
-
 ## RecordInterface
 
 All records (including block records) implement the `RecordInterface` GraphQL interface. This provides shared fields you can query without repeating them in every fragment:
@@ -78,8 +81,6 @@ content {
 This is a DRY pattern — `id` and `_modelApiKey` are queried once via `RecordInterface` instead of in every fragment.
 
 `_modelApiKey` is especially useful for frontend rendering: you can use it to map blocks to components (e.g., `_modelApiKey === "text_block"` → render `<TextBlock />`).
-
----
 
 ## Single vs Multiple Blocks
 
@@ -140,8 +141,6 @@ Or `null` if no block is set:
 }
 ```
 
----
-
 ## Nested Blocks
 
 Blocks can contain their own modular content fields, creating nested structures. Query them with the same fragment pattern applied recursively:
@@ -178,8 +177,6 @@ query {
   }
 }
 ```
-
----
 
 ## Complete Example
 

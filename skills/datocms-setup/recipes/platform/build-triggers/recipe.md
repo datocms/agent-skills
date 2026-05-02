@@ -8,7 +8,14 @@ See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
 
 Follow these steps in order. Do not skip steps.
 
----
+## Contents
+
+- Step 1: Detect Context (silent)
+- Step 2: Ask Questions
+- Step 3: Load References
+- Step 4: Generate Code
+- Step 5: Next Steps
+- Verification Checklist
 
 ## Step 1: Detect Context (silent)
 
@@ -35,8 +42,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 - If `package.json` is missing, stop and explain that this setup expects a Node project so it can add local sync and smoke-check scripts.
 - If an existing trigger-management setup is materially different, inspect it first and patch it in place by default instead of replacing it wholesale.
 
----
-
 ## Step 2: Ask Questions
 
 Infer first from the repo.
@@ -48,8 +53,6 @@ Only ask one explicit question if no `scripts/datocms-build-triggers.config.mjs`
 In that case, ask:
 
 > "Which starter build-trigger adapter should I scaffold: Vercel, Netlify, GitLab, or Custom? Recommended default: keep the strongest detected provider signal first; if the repo stays ambiguous, fall back to Custom and mark any provider-specific values as `scaffolded`. If you skip, I'll follow that default."
-
----
 
 ## Step 3: Load References
 
@@ -63,8 +66,6 @@ Also inspect these bundled assets only when generating files:
 
 - `scripts/datocms-sync-build-triggers.mjs`
 - `scripts/datocms-build-triggers-smoke.mjs`
-
----
 
 ## Step 4: Generate Code
 
@@ -179,8 +180,6 @@ Keep the CLI simple, Node-only, and oriented around direct operator checks.
 - Report `scaffolded` if any configured trigger still depends on placeholder site URLs, adapter ids, branch names, hook URLs, or tokens
 - Report `production-ready` only when every configured trigger can be created or updated from real repo values and the smoke-check helper can inspect or trigger them without additional placeholders
 
----
-
 ## Step 5: Next Steps
 
 After generating the files, tell the user:
@@ -192,8 +191,6 @@ After generating the files, tell the user:
 5. Whether the result is still `scaffolded`
 
 Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including an explicit `Unresolved placeholders` section.
-
----
 
 ## Verification Checklist
 

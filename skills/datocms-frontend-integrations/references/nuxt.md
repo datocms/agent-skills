@@ -1,16 +1,14 @@
 # Nuxt — Draft Mode Reference
 
-This reference contains the exact code patterns for implementing draft mode in a Nuxt project with DatoCMS. Sections are organized by feature — always follow `## Core`, then follow optional sections only for features the user selected.
+Nuxt draft mode patterns. Follow Core first, then optional sections.
 
 ## Contents
 
-- [Core](#core)
-- [Web Previews (Optional)](#web-previews-optional)
-- [Content Link (Optional)](#content-link-optional)
-- [Real-Time Updates (Optional)](#real-time-updates-optional)
-- [Cache Tags (Optional)](#cache-tags-optional)
-
----
+- Core
+- Web Previews (Optional)
+- Content Link (Optional)
+- Real-Time Updates (Optional)
+- Cache Tags (Optional)
 
 ## Core
 
@@ -70,9 +68,9 @@ export default eventHandler(async (event) => {
 
 Key points:
 
-- Uses Nuxt auto-imports: `eventHandler`, `getQuery`, `useRuntimeConfig`, `sendRedirect`, `createError`
-- Uses `url` as the redirect parameter name (not `redirect` like other frameworks)
-- Token comes from `useRuntimeConfig().secretApiToken`
+- Nuxt auto-imports: `eventHandler`, `getQuery`, `useRuntimeConfig`, `sendRedirect`, `createError`
+- `url` param (not `redirect`)
+- Token from `useRuntimeConfig().secretApiToken`
 
 ### Disable Endpoint
 
@@ -175,9 +173,9 @@ export function draftModeHeaders(): HeadersInit {
 
 Key points:
 
-- The JWT payload contains the actual draft CDA token (`datocmsDraftContentCdaToken`). This is decoded on the client to use for real-time subscriptions.
-- Uses `setCookie`, `deleteCookie`, `getCookie` from Nuxt/H3 auto-imports
-- Cookie options: `partitioned: true`, `secure: true`, `sameSite: 'none'`
+- JWT payload contains draft CDA token (`datocmsDraftContentCdaToken`) — decoded client-side for real-time
+- Nuxt/H3 auto-imports: `setCookie`, `deleteCookie`, `getCookie`
+- Cookie opts: `partitioned: true`, `secure: true`, `sameSite: 'none'`
 
 ### Utils
 
@@ -239,9 +237,9 @@ export function isRelativeUrl(path: string): boolean {
 
 Key points:
 
-- Uses `createError` from Nuxt auto-imports (H3)
-- Error handling uses `throw createError()` instead of returning a Response (Nuxt pattern)
-- The `ensureHttpMethods` helper validates HTTP methods
+- `createError` from Nuxt auto-imports (H3)
+- Throw errors, don't return Response
+- `ensureHttpMethods` validates HTTP methods
 
 ### `useDraftMode` Composable
 
@@ -268,9 +266,9 @@ export function useDraftMode() {
 
 Key points:
 
-- Decodes the JWT cookie on the client side to extract the draft CDA token
-- Returns `false` if no cookie or invalid JWT
-- Returns the decoded payload (with `datocmsDraftContentCdaToken`) if valid
+- Decodes JWT client-side to extract draft CDA token
+- Returns `false` if no cookie/invalid JWT
+- Returns decoded payload (`datocmsDraftContentCdaToken`) if valid
 
 ### Query Composable
 
@@ -323,13 +321,13 @@ export async function useQuery<Result, Variables>(
 
 Key points:
 
-- Uses `buildRequestInit` from `@datocms/cda-client` with Nuxt's `useFetch`
-- Token switching: draft token from decoded JWT cookie, published token from public runtime config
-- Returns the data directly (no real-time subscription in core version)
+- `buildRequestInit` from `@datocms/cda-client` with Nuxt's `useFetch`
+- Token: draft from JWT cookie, published from public config
+- Returns data directly (no real-time in core)
 
 ### Nuxt Config Additions
 
-Add the following to `nuxt.config.ts`:
+Add to `nuxt.config.ts`:
 
 ```ts
 export default defineNuxtConfig({
@@ -353,8 +351,8 @@ export default defineNuxtConfig({
 
 Key points:
 
-- Private config keys are set by `NUXT_` prefixed env vars
-- Public config keys are set by `NUXT_PUBLIC_` prefixed env vars
+- Private: `NUXT_` env vars
+- Public: `NUXT_PUBLIC_` env vars
 
 ### Core Environment Variables
 
@@ -368,18 +366,16 @@ NUXT_PUBLIC_DRAFT_MODE_COOKIE_NAME=                  # Cookie name, e.g. "datocm
 
 ### Core Dependencies
 
-Required (install if missing):
+Required:
 
-- `jsonwebtoken` — For signing/verifying JWT cookies
-- `@types/jsonwebtoken` — TypeScript types (dev dependency)
-- `serialize-error` — For serializing error objects
-- `jwt-decode` — For decoding JWT on the client side (used in `useDraftMode` composable)
+- `jsonwebtoken` — Sign/verify JWT cookies
+- `@types/jsonwebtoken` — TypeScript types (dev)
+- `serialize-error` — Serialize error objects
+- `jwt-decode` — Decode JWT client-side (`useDraftMode`)
 
-Optional for Web Previews helpers:
+Optional (Web Previews):
 
-- `@datocms/cma-client` — For `RawApiTypes` and `ApiTypes`
-
----
+- `@datocms/cma-client` — `RawApiTypes`, `ApiTypes`
 
 ## Web Previews (Optional)
 
@@ -468,11 +464,11 @@ export default eventHandler(async (event) => {
 
 Key points:
 
-- Uses `readBody` to parse the request body (Nuxt auto-import)
-- Uses `getRequestURL(event)` for the base URL
-- Uses `url` as the redirect query parameter (matching the enable/disable endpoints)
-- Receives `itemType` in the body and passes `itemType.id` to `recordToWebsiteRoute`
-- CORS is handled via `nuxt.config.ts` route rules (see below), not manual headers
+- `readBody` parses request body (Nuxt auto-import)
+- `getRequestURL(event)` for base URL
+- `url` as redirect param (matches enable/disable)
+- `itemType` in body → pass `itemType.id` to `recordToWebsiteRoute`
+- CORS via `nuxt.config.ts` route rules, not manual headers
 
 ### `recordToWebsiteRoute`
 
@@ -513,12 +509,12 @@ export function recordToWebsiteRoute(
 
 Key points:
 
-- Nuxt passes `itemTypeId` as a separate parameter (from `itemType.id` in the request body)
-- Switches on model ID strings (not api\_key)
+- Nuxt passes `itemTypeId` separately (from `itemType.id` in request body)
+- Switch on model ID strings (not `api_key`)
 
 ### Nuxt Config CORS Addition
 
-Add the CORS route rule to `nuxt.config.ts`:
+Add CORS route rule to `nuxt.config.ts`:
 
 ```ts
 export default defineNuxtConfig({
@@ -532,17 +528,15 @@ export default defineNuxtConfig({
 
 ### Web Previews Dependencies
 
-No additional dependencies beyond what Core requires.
-
----
+None beyond Core.
 
 ## Content Link (Optional)
 
 ### Note on Nuxt Content Link Support
 
-The Nuxt starter kit pattern does NOT currently use `contentLink` or `baseEditingUrl` in its query function. The `useDraftMode` composable decodes the JWT to get the token for real-time subscriptions, but does not pass Content Link options.
+Nuxt starter kit doesn't use `contentLink` or `baseEditingUrl` in query function. `useDraftMode` decodes JWT for real-time but doesn't pass Content Link options.
 
-To add Content Link support to Nuxt, modify the `useQuery` composable to include Content Link options when in draft mode:
+To add Content Link, modify `useQuery` composable:
 
 ```ts
 import { buildRequestInit } from '@datocms/cda-client';
@@ -593,7 +587,7 @@ export async function useQuery<Result, Variables>(
 
 ### Nuxt Config Content Link Addition
 
-Add the `baseEditingUrl` to the public runtime config in `nuxt.config.ts`:
+Add `baseEditingUrl` to public runtime config in `nuxt.config.ts`:
 
 ```ts
 export default defineNuxtConfig({
@@ -610,7 +604,7 @@ export default defineNuxtConfig({
 
 ### ContentLink Component Setup
 
-Create a client component that initializes Content Link with routing support for the Web Previews Visual tab. Wrap it in `<ClientOnly>` since it requires browser APIs:
+Create client component with routing for Web Previews Visual tab. Wrap in `<ClientOnly>` (requires browser APIs):
 
 **File:** `components/ContentLink.vue`
 
@@ -651,7 +645,7 @@ onUnmounted(() => {
 </template>
 ```
 
-Then add it to your layout, only rendering when draft mode is enabled. Wrap in `<ClientOnly>` since `createController` requires browser APIs:
+Add to layout, render only when draft mode enabled. Wrap in `<ClientOnly>`:
 
 ```vue
 <script setup lang="ts">
@@ -668,7 +662,7 @@ const draftMode = useDraftMode();
 
 ### Structured Text with Content Link
 
-When rendering Structured Text fields with `vue-datocms`, wrap the component in a group and add boundaries to embedded blocks and inline records:
+Render Structured Text with `vue-datocms`. Wrap in group, add boundaries to embedded blocks/inline records:
 
 ```vue
 <script setup lang="ts">
@@ -701,11 +695,11 @@ const props = defineProps<{ page: any }>();
 </template>
 ```
 
-Note: `renderLinkToRecord` does **not** need a boundary — record links wrap text that belongs to the structured text field, so clicking them correctly opens the structured text field editor.
+Note: `renderLinkToRecord` doesn't need boundary — record links wrap text in the structured text field, so clicking opens that field editor.
 
 ### Non-Text Field Example
 
-For fields that cannot contain stega encoding (numbers, booleans, dates, JSON), use `data-datocms-content-link-url` with the record's `_editingUrl`:
+Fields without stega (numbers, booleans, dates, JSON): use `data-datocms-content-link-url` with `_editingUrl`:
 
 ```graphql
 query {
@@ -727,7 +721,7 @@ query {
 
 ### CSP Header for Web Previews Visual Tab
 
-Nuxt already handles CORS via `routeRules`. For CSP (needed for the Visual tab iframe), add a route rule to `nuxt.config.ts`:
+Nuxt handles CORS via `routeRules`. For CSP (Visual tab iframe), add route rule to `nuxt.config.ts`:
 
 ```ts
 export default defineNuxtConfig({
@@ -745,7 +739,7 @@ export default defineNuxtConfig({
 
 ### Stega Stripping
 
-Content Link embeds invisible characters in text fields. Use `stripStega()` from `@datocms/content-link` before string comparisons, SEO metadata, analytics, or URL generation. See `content-link-concepts.md` for full details and examples.
+Content Link embeds invisible chars in text fields. Use `stripStega()` from `@datocms/content-link` before string comparisons, SEO metadata, analytics, URL generation. See `content-link-concepts.md`.
 
 ### Content Link Environment Variables
 
@@ -755,15 +749,13 @@ NUXT_PUBLIC_DATOCMS_BASE_EDITING_URL=   # For Content Link, e.g. https://your-pr
 
 ### Content Link Dependencies
 
-- `@datocms/content-link` — For click-to-edit overlays and stega utilities
-
----
+- `@datocms/content-link` — Click-to-edit overlays, stega utilities
 
 ## Real-Time Updates (Optional)
 
 ### Query Composable with Real-Time Subscription
 
-Replace the Core `useQuery` composable with this version that adds real-time subscription support:
+Replace Core `useQuery` with real-time subscription version:
 
 **File:** `composables/useQuery.ts`
 
@@ -829,31 +821,29 @@ export async function useQuery<Result, Variables>(
 
 Key points:
 
-- When draft mode is ON and running client-side, uses `useQuerySubscription` from `vue-datocms`
-- When draft mode is OFF or running server-side, returns data directly
+- Draft mode ON + client-side: `useQuerySubscription` from `vue-datocms`
+- Draft mode OFF or server-side: return data directly
 
-**Note: Combining with Content Link** — If the user also selected Content Link, add `contentLink` and `baseEditingUrl` to the `buildRequestInit` options (see Content Link section).
+**Note: Combining with Content Link** — Add `contentLink` and `baseEditingUrl` to `buildRequestInit` options (see Content Link section).
 
 ### Real-Time Dependencies
 
-- `vue-datocms` — For `useQuerySubscription` composable
-
----
+- `vue-datocms` — `useQuerySubscription` composable
 
 ## Cache Tags (Optional)
 
-CDN-first cache tag invalidation for Nuxt. Instead of revalidating all content on every change, this forwards DatoCMS cache tags to your CDN, which purges only the affected pages when content changes.
+CDN-first cache tag invalidation. Forwards DatoCMS cache tags to CDN; purges affected pages when content changes.
 
 ### When to Use
 
-- Your Nuxt site is deployed behind a CDN that supports tag-based purging (Netlify, Cloudflare, Fastly, Bunny)
-- You want per-record granularity in cache invalidation
+- Nuxt deployed behind CDN with tag-based purging (Netlify, Cloudflare, Fastly, Bunny)
+- Per-record cache invalidation granularity needed
 
-For the webhook payload structure and CDN header table, see `skills/datocms-cda/references/draft-caching-environments.md` → "Cache Tags".
+For webhook payload/CDN header table: `skills/datocms-cda/references/draft-caching-environments.md` → "Cache Tags".
 
 ### Modified Query Composable
 
-Switch from `executeQuery` to `rawExecuteQuery` to access the `x-cache-tags` response header. This version returns both data and cache tags:
+Switch `executeQuery` → `rawExecuteQuery` to access `x-cache-tags` header. Returns data + cache tags:
 
 **File:** `composables/useQueryWithCacheTags.ts`
 
@@ -884,7 +874,7 @@ export async function useQueryWithCacheTags<Result, Variables>(
 }
 ```
 
-Alternatively, use `rawExecuteQuery` directly in a Nuxt server route or server middleware to set CDN headers on the response:
+Or use `rawExecuteQuery` directly in Nuxt server route/middleware:
 
 **File:** `server/middleware/cache-tags.ts` (example pattern)
 
@@ -913,7 +903,7 @@ export async function fetchWithCacheTags<Result, Variables>(
 
 ### Setting CDN Headers
 
-In your Nuxt server routes or pages, set the CDN-specific header on the response:
+Set CDN-specific header on response in server routes/pages:
 
 ```ts
 // In a server route (server/api/...)
@@ -930,7 +920,7 @@ export default eventHandler(async (event) => {
 });
 ```
 
-For pages using `useResponseHeaders` in Nitro:
+For pages with `useResponseHeaders` in Nitro:
 
 ```ts
 // In a Nuxt page or layout (server-side rendering)
@@ -947,7 +937,7 @@ if (event) {
 
 **File:** `server/api/invalidate-cache.ts`
 
-Receives the DatoCMS cache tag invalidation webhook and calls your CDN's purge API:
+Receives DatoCMS cache tag invalidation webhook, calls CDN purge API:
 
 ```ts
 import { ensureHttpMethods } from '~/lib/api/utils';
@@ -988,7 +978,7 @@ export default eventHandler(async (event) => {
 
 ### Nuxt Config Cache Tags Addition
 
-Add the webhook secret and CDN-specific vars to `nuxt.config.ts`:
+Add webhook secret + CDN vars to `nuxt.config.ts`:
 
 ```ts
 export default defineNuxtConfig({
@@ -1016,4 +1006,4 @@ NUXT_CACHE_INVALIDATION_WEBHOOK_SECRET=   # Shared secret to verify webhook requ
 
 ### Cache Tags Dependencies
 
-No additional dependencies — `rawExecuteQuery` is provided by `@datocms/cda-client` which should already be installed.
+None — `rawExecuteQuery` from `@datocms/cda-client` (already installed).

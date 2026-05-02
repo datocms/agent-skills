@@ -6,15 +6,13 @@ See `realtime-concepts.md` for shared initialization options, connection status 
 
 ## Contents
 
-- [Basic Usage](#basic-usage)
-- [Store Signature](#store-signature)
-- [Initialization Options](#initialization-options)
-- [Connection Status](#connection-status)
-- [Error Object](#error-object)
-- [Integration with Draft Mode](#integration-with-draft-mode)
-- [Full Example with SEO and Images](#full-example-with-seo-and-images)
-
----
+- Basic Usage
+- Store Signature
+- Initialization Options
+- Connection Status
+- Error Object
+- Integration with Draft Mode
+- Full Example with SEO and Images
 
 ## Basic Usage
 
@@ -62,8 +60,6 @@ See `realtime-concepts.md` for shared initialization options, connection status 
 {/if}
 ```
 
----
-
 ## Store Signature
 
 ```ts
@@ -77,25 +73,17 @@ $: ({ data, error, status } = $subscription);
 
 **Important:** Unlike React's `useQuerySubscription` (returns plain objects) and Vue's `useQuerySubscription` (returns Vue `Ref` values), Svelte's `querySubscription` returns a **Svelte store**. Access values using the `$` prefix syntax.
 
----
-
 ## Initialization Options
 
 See `realtime-concepts.md` for the full options table shared across all frameworks.
-
----
 
 ## Connection Status
 
 See `realtime-concepts.md` for connection status values.
 
----
-
 ## Error Object
 
 See `realtime-concepts.md` for the error object shape.
-
----
 
 ## Integration with Draft Mode
 
@@ -120,8 +108,6 @@ When used in a draft mode context, pass the relevant options:
   $: ({ data, error, status } = $subscription);
 </script>
 ```
-
----
 
 ## Full Example with SEO and Images
 

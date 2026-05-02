@@ -2,7 +2,14 @@
 
 Covers offset pagination, auto-pagination for large collections, ordering, tree/hierarchical models, and query complexity costs.
 
----
+## Contents
+
+- Offset Pagination
+- Getting Total Count
+- `executeQueryWithAutoPagination()`
+- Ordering
+- Tree / Hierarchical Models
+- Complexity Cost Reference
 
 ## Offset Pagination
 
@@ -22,8 +29,6 @@ query {
 }
 ```
 
----
-
 ## Getting Total Count
 
 Use the meta query (`_all<PluralModel>Meta`) to get the total count. **Apply the same filters as the collection query.**
@@ -39,8 +44,6 @@ query ($first: IntType, $skip: IntType) {
   }
 }
 ```
-
----
 
 ## `executeQueryWithAutoPagination()`
 
@@ -71,8 +74,6 @@ const data = await executeQueryWithAutoPagination(query, {
 
 There is also `rawExecuteQueryWithAutoPagination` which returns `[Result, Response]` for accessing response headers.
 
----
-
 ## Ordering
 
 Use the `orderBy` argument with format `fieldApiKey_ASC` or `fieldApiKey_DESC`. Pass an array for multiple sort fields:
@@ -102,8 +103,6 @@ query {
 | `position` | `position_ASC` (sortable/tree models only) |
 
 Any scalar field on the model can also be used for ordering.
-
----
 
 ## Tree / Hierarchical Models
 
@@ -141,8 +140,6 @@ query {
 - Use `position_ASC` ordering to maintain the manual sort order from the DatoCMS UI
 - Filter a specific parent's children: `filter: { parent: { eq: "parent-record-id" } }`
 
----
-
 ## Complexity Cost Reference
 
 Every query has a complexity cost that must stay under **10,000,000**. Response headers `X-Complexity` and `X-Max-Complexity` report the actual and maximum values.
@@ -161,16 +158,16 @@ When a query exceeds the complexity limit, the API returns an error:
 
 | Query Type | Base Cost | Formula |
 | - | - | - |
-| Collection (`allXXX`) | 100 | 100 + (filters x 250) + (sorts x 250) + (page\_size x inner\_field\_costs) |
-| Single record (`xxx`) | 50 | 50 + (filters x 250) + inner\_field\_costs |
-| Single-instance model | 25 | 25 + inner\_field\_costs |
-| Meta count (`_allXXXMeta`) | 1,000 | 1,000 + (filters x 250) + inner\_field\_costs |
-| Inverse relationship | 100 | 100 + (filters x 250) + (sorts x 250) + (page\_size x inner\_field\_costs) |
-| Inverse relationship meta | 1,000 | 1,000 + (filters x 250) + inner\_field\_costs |
-| `_site` | 10 | 10 + inner\_field\_costs |
-| Upload collection (`allUploads`) | 100 | 100 + (filters x 250) + (sorts x 250) + (page\_size x inner\_field\_costs) |
-| Single upload (`upload`) | 50 | 50 + (filters x 250) + inner\_field\_costs |
-| Upload meta (`_allUploadsMeta`) | 1,000 | 1,000 + (filters x 250) + inner\_field\_costs |
+| Collection (`allXXX`) | 100 | 100 + (filters x 250) + (sorts x 250) + (page_size x inner_field_costs) |
+| Single record (`xxx`) | 50 | 50 + (filters x 250) + inner_field_costs |
+| Single-instance model | 25 | 25 + inner_field_costs |
+| Meta count (`_allXXXMeta`) | 1,000 | 1,000 + (filters x 250) + inner_field_costs |
+| Inverse relationship | 100 | 100 + (filters x 250) + (sorts x 250) + (page_size x inner_field_costs) |
+| Inverse relationship meta | 1,000 | 1,000 + (filters x 250) + inner_field_costs |
+| `_site` | 10 | 10 + inner_field_costs |
+| Upload collection (`allUploads`) | 100 | 100 + (filters x 250) + (sorts x 250) + (page_size x inner_field_costs) |
+| Single upload (`upload`) | 50 | 50 + (filters x 250) + inner_field_costs |
+| Upload meta (`_allUploadsMeta`) | 1,000 | 1,000 + (filters x 250) + inner_field_costs |
 
 Default page size for collections is 20. Page size = `first` argument value.
 

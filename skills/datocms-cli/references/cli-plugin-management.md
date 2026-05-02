@@ -4,7 +4,18 @@ Manage extensions to the DatoCMS CLI itself. These are **oclif CLI plugins** (np
 
 If the user's actual goal is importing content from WordPress or Contentful, load `references/importing-content.md` instead — it covers the specific importer plugins (`@datocms/cli-plugin-wordpress`, `@datocms/cli-plugin-contentful`).
 
----
+## Contents
+
+- Inputs to confirm before running commands
+- List installed plugins
+- List official available plugins
+- Install a plugin
+- Inspect a plugin
+- Link a plugin for local development
+- Remove a plugin
+- Reset all plugins
+- Update installed plugins
+- Guidance
 
 ## Inputs to confirm before running commands
 
@@ -13,8 +24,6 @@ Confirm these inputs when they are not already clear:
 - whether the goal is installing an official DatoCMS CLI plugin or a third-party/custom one
 - whether the plugin is being developed locally (`plugins:link`) or installed from npm
 - whether the action targets all plugins (`reset` / `update`) or a specific one
-
----
 
 ## List installed plugins
 
@@ -100,8 +109,6 @@ npx datocms plugins:update [-v]
 ```
 
 Updates all user-installed plugins to their latest versions.
-
----
 
 ## Guidance
 

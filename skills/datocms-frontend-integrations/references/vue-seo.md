@@ -4,19 +4,9 @@ See `seo-concepts.md` for the shared GraphQL query shape and tag concatenation p
 
 Utility for rendering SEO meta tags, social share tags, and favicons from DatoCMS's `_seoMetaTags` and `faviconMetaTags` GraphQL queries. Returns data in the format expected by `vue-meta` (Options API) or `@unhead/vue` (Composition API / Nuxt 3).
 
-## Contents
-
-- [GraphQL Queries](#graphql-queries)
-- [`toHead()`](#tohead)
-- [Utility Summary](#utility-summary)
-
----
-
 ## GraphQL Queries
 
 See `seo-concepts.md` for the query shape and tag concatenation pattern. Examples below assume tags are fetched as `data.page.seo` and `data.site.favicon`.
-
----
 
 ## `toHead()`
 
@@ -85,8 +75,6 @@ const metaTags = computed(() =>
 useHead(metaTags);
 </script>
 ```
-
----
 
 ## Utility Summary
 
