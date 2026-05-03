@@ -332,17 +332,25 @@ Example's tail covers post-walk hook: `content.document.children.push({ type: "p
 
 ## Localized fields and adding a locale
 
-Site update + per-item backfill in ONE script. Spread existing per-locale objects. \`\`\`ts await client.site.update({ locales: \["en", "it", "es"] });
+Site update + per-item backfill in ONE script. Spread existing per-locale objects.
 
-const items = await client.items.list\<Schema.FaqEntry>({ filter: { type: "faq_entry" }, version: "current" }); for (const it of items) { await client.items.update\<Schema.FaqEntry>(it.id, { question: { ...it.question, es: "..." }, answer:   { ...it.answer,   es: "..." }, }); }
+```ts
+await client.site.update({ locales: ["en", "it", "es"] });
 
-````
+const items = await client.items.list<Schema.FaqEntry>({ filter: { type: "faq_entry" }, version: "current" });
+for (const it of items) {
+  await client.items.update<Schema.FaqEntry>(it.id, {
+    question: { ...it.question, es: "..." },
+    answer:   { ...it.answer,   es: "..." },
+  });
+}
+```
 
 If TS rejects spread (typically because per-locale value nullable + `Update` shape requires non-null), cast precisely w/ request schema rather than reaching for `Record<string, string>`:
 
 ```ts
 question: { ...(currentItem.question as NonNullable<FieldValueInRequest<typeof currentItem, "question">>), es: "..." },
-````
+```
 
 For block-bearing localized fields same per-locale shape applies — each locale key holds whatever value field expects (array of blocks/IDs for `rich_text`, full object or `null` for `single_block`, DAST tree for `structured_text`).
 

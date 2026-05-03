@@ -288,7 +288,7 @@ async function addFrenchLocale() {
 
   let count = 0;
 
-  for await (const record of client.items.listPagedIterator({
+  for await (const record of client.items.listPagedIterator<Schema.BlogPost>({
     filter: { type: "blog_post" },
   })) {
     const updates: Record<string, unknown> = {};

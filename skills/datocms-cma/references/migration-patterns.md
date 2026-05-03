@@ -69,7 +69,7 @@ async function processAllRecords() {
   let processed = 0;
   let errors = 0;
 
-  for await (const record of client.items.listPagedIterator(
+  for await (const record of client.items.listPagedIterator<Schema.BlogPost>(
     { filter: { type: "blog_post" } },
     { perPage: 100 },
   )) {
@@ -103,7 +103,7 @@ async function processAllRecords() {
 async function addDefaultCategory() {
   let updated = 0;
 
-  for await (const record of client.items.listPagedIterator(
+  for await (const record of client.items.listPagedIterator<Schema.BlogPost>(
     { filter: { type: "blog_post" } },
     { perPage: 100 },
   )) {
@@ -125,7 +125,7 @@ async function addDefaultCategory() {
 async function publishAllDrafts() {
   const draftRecords = [];
 
-  for await (const record of client.items.listPagedIterator({
+  for await (const record of client.items.listPagedIterator<Schema.BlogPost>({
     filter: {
       type: "blog_post",
       fields: { _status: { eq: "draft" } },
@@ -207,7 +207,7 @@ async function migrateTextToStructuredText() {
   // Step 2: Migrate data from old text field to new structured text
   let migrated = 0;
 
-  for await (const record of client.items.listPagedIterator({
+  for await (const record of client.items.listPagedIterator<Schema.BlogPost>({
     filter: { type: "blog_post" },
   })) {
     const oldText = record.content;
@@ -270,7 +270,7 @@ async function resumableMigration() {
 
   let done = 0;
 
-  for await (const record of client.items.listPagedIterator(
+  for await (const record of client.items.listPagedIterator<Schema.BlogPost>(
     { filter: { type: "blog_post" } },
     { perPage: 100 },
   )) {

@@ -223,7 +223,7 @@ Use `cma:script` when one-off task needs loops, branching, multiple dependent ca
 
 ```bash
 npx datocms cma:script <<'EOF'
-const items = await client.items.list({ filter: { type: 'article' } });
+const items = await client.items.list<Schema.Article>({ filter: { type: 'article' } });
 console.log(items.length);
 EOF
 ```

@@ -9,7 +9,7 @@ Covers querying patterns for listing records: pagination, filtering, sorting, co
 Every paginated resource (`items`, `uploads`, `webhookCalls`, `buildEvents`, `itemVersions`) exposes `listPagedIterator()` alongside `list()`. Reach for the iterator unconditionally — manual offset/limit loops are an anti-pattern: they are easy to get wrong (off-by-one, infinite loop on empty pages, no resilience to mid-iteration deletions) and you do not need them.
 
 ```ts
-for await (const record of client.items.listPagedIterator(
+for await (const record of client.items.listPagedIterator<Schema.BlogPost>(
   { filter: { type: "blog_post" } },
   { perPage: 100, concurrency: 5 },
 )) { /* ... */ }

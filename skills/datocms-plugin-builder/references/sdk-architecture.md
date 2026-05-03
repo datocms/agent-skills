@@ -334,7 +334,7 @@ const client = buildClient({
 });
 
 // Example: Fetch all records for a model
-const records = await client.items.list({
+const records = await client.items.list<Schema.BlogPost>({
   filter: { type: 'blog_post' },
   page: { limit: 100 },
 });
