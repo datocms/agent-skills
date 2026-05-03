@@ -7,7 +7,7 @@ Use `cma:script` to run TypeScript script against Content Management API without
 - Command
 - Two Modes: stdin-mode and file-mode
 - Type Safety
-- Pre-Installed Packages (stdin-mode only)
+- Ambient globals (stdin-mode only)
 - Stdout and Composition
 - Targeting an Environment
 - Examples
@@ -35,7 +35,7 @@ Script path passed as positional argument (matches ergonomics of `tsx`, `bun`, `
 
 ### stdin-mode — top-level await with ambient globals
 
-Source comes from stdin (heredoc, pipe, or redirect). No file on disk, no project prerequisites. `client` (pre-authenticated CMA client) and `Schema` (project record types like `Schema.BlogPost`) available as ambient globals — no imports required. CLI runs script inside isolated workspace, type-checks with `tsc --noEmit`, then executes.
+Source comes from stdin (heredoc, pipe, or redirect). No file on disk, no project prerequisites. `client` (pre-authenticated CMA client), `Schema.*` (project record types like `Schema.BlogPost`), and every named export of `@datocms/cma-client-node`, `datocms-structured-text-utils`, `datocms-structured-text-dastdown` available as ambient globals — no imports required (e.g. `buildBlockRecord`, `duplicateBlockRecord`, `SchemaRepository`, `ApiTypes`, `mapNodes`, `findFirstNode`, `isHeading`, `parse`, `serialize`, …). CLI runs script inside isolated workspace, type-checks with `tsc --noEmit`, then executes.
 
 ```ts
 const types = await client.itemTypes.list();
@@ -43,7 +43,6 @@ console.log(types.map((t) => t.api_key));
 ```
 
 - Top-level await only. `export default` rejected in stdin-mode — use file-mode if you want function.
-- Pre-installed packages (see below) available without install.
 - Diagnostics surface only from CLI's workspace typecheck — your editor has no file to inspect.
 
 Use stdin-mode when:
@@ -75,7 +74,7 @@ export default async function (client: Client): Promise<void> {
 - `export default async function(client: Client)` required; top-level await rejected in file-mode (use stdin-mode for that).
 - `Client` imported from `datocms/lib/cma-client-node` — same import that migrations use. file-mode script can be promoted into migration with `mv tmp/scripts/publish-drafts.ts migrations/` (signature matches too).
 - Typed `Schema.*` **opt-in**: run `npx datocms schema:generate ./datocms-schema.ts` next to script and `import * as Schema from './datocms-schema'`. Without it, client still usable with generic types.
-- Pre-installed packages **not** available in file-mode. Install what you need into your own `package.json`.
+- Ambient globals **not** available in file-mode — write explicit `import` statements. Install whatever modules you need into your own `package.json`.
 - Requires `datocms` reachable in `node_modules` from file's directory. Place file in gitignored scratch dir — typically `tmp/scripts/`, `scratch/`, or `~/scratch/dato/`. Prefer migration for code you want to commit, version, and replay across environments, and do not put file-mode scripts under `migrations/` — that directory owned by `migrations:run`.
 
 Use file-mode when:
@@ -101,18 +100,19 @@ await client.items.create<Schema.Article>({
 
 **file-mode** does not run CLI-side typecheck. Type safety comes from your own project: your editor's LSP continuously against your `tsconfig.json`, or explicit `tsc --noEmit` you invoke yourself. This matches how `migrations:run` loads single file — no CLI-side typecheck there either. Malformed `Schema.Article` or missing field will surface in editor before you run script, or at runtime if you skip validation entirely.
 
-## Pre-Installed Packages (stdin-mode only)
+## Ambient globals (stdin-mode only)
 
-In **stdin-mode**, following packages importable without any install step — they live inside CLI workspace:
+stdin-mode spreads every named export of these 3 modules onto `globalThis` — no `import`:
 
-- `@datocms/cma-client-node`
-- `datocms-html-to-structured-text`
-- `datocms-structured-text-utils`
-- `datocms-structured-text-dastdown`
+- `@datocms/cma-client-node` — `buildBlockRecord`, `duplicateBlockRecord`, `isBlockOfType`, `SchemaRepository`, `ApiTypes.*`, `BlockInNestedResponse`, `FieldValueInRequest`, …
+- `datocms-structured-text-utils` — `mapNodes`, `findFirstNode`, `reduceNodes`, `isHeading`, `isParagraph`, `isSpan`, `isLink`, `isBlockWithItemOfType`, `isInlineBlockWithItemOfType`, …
+- `datocms-structured-text-dastdown` — `parse`, `serialize`
 
-In **file-mode**, CLI does not manage your dependencies — install whatever you need into `package.json` that covers your scratch dir. If import cannot be resolved when script runs, error surfaces from `tsxRequire`.
+Plus `client` (pre-authenticated) and `Schema.*` (project record types).
 
-If task needs package you don't want to install in file-mode and it isn't in stdin-mode allowlist, switch to repo script (see **datocms-cma**).
+Outside those 3 modules: unavailable in stdin-mode — switch to file-mode + `npm install` in scratch dir.
+
+file-mode: no managed deps, no injected globals — explicit `import`s + own `package.json`. Unresolved import → `tsxRequire` error at runtime. Need a package excluded from stdin-mode globals + don't want to install? Switch to repo script (see **datocms-cma**).
 
 ## Stdout and Composition
 

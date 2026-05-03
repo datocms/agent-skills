@@ -6,6 +6,8 @@ Mutate record fields — block-bearing fields (Modular Content `rich_text`, Sing
 
 Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.body) { ... }`. Always pass `Schema.X` as generic to typed helpers; never hand-roll JSON:API.
 
+> **`any` / `unknown` forbidden** — rejected pre-execution. Typed surface below (`Schema.X` generics, `FieldValueInRequest`, type-guard imports) makes them unnecessary. Untyped callback param → guard (`isSpan(c)`, `isBlockWithItemOfType(...)`), not `any`.
+
 ## Contents
 
 - Workflow
@@ -27,6 +29,11 @@ Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.
 4. `client.items.update<Schema.M>(id, { ... })`. Skip unchanged fields.
 
 ## Imports
+
+> Two runtime classes (terms used throughout this file):
+>
+> - **Ambient-globals** (`cma:script` stdin-mode, MCP `upsert_and_execute_{safe,unsafe}_script`): `client`, `Schema.*`, all 3 modules' named exports already on `globalThis` — skip imports below.
+> - **Explicit-import** (`cma:script` file-mode, migrations, repo scripts): import as shown.
 
 ```ts
 import {
@@ -96,7 +103,7 @@ currentItem.title; // string | null
 currentItem.question; // Record<string, string | null>
 ```
 
-In `cma:script` **stdin-mode** `Schema.*` is **ambient** — no import, no `schema:generate`, no `tsconfig` change. Call `await client.items.find<Schema.FaqEntry>(id)` and marker resolves. If TS reports `Cannot find name 'Schema'` you're in file-mode, where you must run `npx datocms schema:generate ./datocms-schema.ts` and `import * as Schema from "./datocms-schema"`.
+**Ambient-globals**: `Schema.*` ambient — no import, no `schema:generate`, no `tsconfig` change. **Explicit-import**: `Cannot find name 'Schema'` → run `npx datocms schema:generate ./datocms-schema.ts` next to script + `import * as Schema from "./datocms-schema"`.
 
 Same for `client.items.update<Schema.X>`, `client.items.create<Schema.X>`, `buildBlockRecord<Schema.B>`, `duplicateBlockRecord<Schema.B>`. `client.items.list` and `client.items.listPagedIterator` accept `<Schema.X>` when `filter.type` is set, or `<Schema.AnyModel>` when unset — always generic.
 

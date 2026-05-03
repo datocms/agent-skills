@@ -219,7 +219,7 @@ npx datocms cma:call fields create <ITEM_TYPE_ID> --data='{label: "Title", api_k
 
 Use `cma:script` when one-off task needs loops, branching, multiple dependent calls, or typed `Schema.*` record payloads. Two modes with different ergonomics — pick by how script delivered, not by how "complex" it is.
 
-**stdin-mode** — top-level await, piped or heredoc. Zero setup. `client` (pre-authenticated) + `Schema` (project record types) **ambient globals** inside CLI-bundled workspace; `tsc --noEmit` type-checks before execution; `any` + `unknown` rejected. Pre-installed packages available without install: `@datocms/cma-client-node`, `datocms-structured-text-*`, `parse5`. `export default` not supported here — use file-mode if want function.
+**stdin-mode** — top-level await, piped or heredoc. Zero setup. `client` (pre-authenticated), `Schema.*` (project record types), and every named export of `@datocms/cma-client-node`, `datocms-structured-text-utils`, `datocms-structured-text-dastdown` are **ambient globals** inside CLI-bundled workspace — no `import` needed (e.g. `buildBlockRecord`, `mapNodes`, `parse`, `serialize`, `SchemaRepository`, `ApiTypes`). `tsc --noEmit` type-checks before execution; `any` + `unknown` rejected. `export default` not supported here — use file-mode if want function. Anything outside those 3 modules (e.g. `datocms-html-to-structured-text`, `datocms-structured-text-to-{plain-text,html-string,markdown}`, `parse5`) is unavailable in stdin-mode — switch to file-mode and install it.
 
 ```bash
 npx datocms cma:script <<'EOF'
@@ -293,6 +293,7 @@ For advanced patterns (workspace flags, stdout shaping, long-running scripts) �
 
 ### TypeScript
 
+- **Never `any` / `unknown`** — ambient-globals runtimes (`cma:script` stdin-mode, MCP `upsert_and_execute_{safe,unsafe}_script`) reject pre-execution. Use typed primitives: `Schema.X` generics on every `client.items.*` call, `FieldValueInRequest<typeof rec, "field">` for collections built locally, type-guard imports (`isSpan`, `isHeading`, `isBlockWithItemOfType`, …) inside callbacks. Escape hatch: derive precise type via `ApiTypes.*`, never annotate `any`.
 - Follow TypeScript strictness rules: no `as unknown as`, no unnecessary `as` casts
 - Let TypeScript infer types wherever possible
 - Use `import type { ... }` for type-only imports

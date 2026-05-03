@@ -76,6 +76,8 @@ Modular Content, Structured Text, and Single Block fields are complex enough to 
 
 The `datocms-structured-text-dastdown` package serializes a DAST tree to a markdown-like string (and parses it back). For read-only use — displaying content, feeding to an LLM, extracting plain text, diffing — `serialize` alone is enough; `parse` is for the editing round-trip (see `editing-records.md` § Pass 1).
 
+> **Ambient-globals runtimes** (`cma:script` stdin-mode, MCP `upsert_and_execute_{safe,unsafe}_script`): `parse` / `serialize` already global — skip `import`. **Explicit-import runtimes** (`cma:script` file-mode, migrations): import as shown.
+
 ```ts
 import { serialize } from "datocms-structured-text-dastdown";
 
