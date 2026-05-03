@@ -238,7 +238,7 @@ import type { Client } from 'datocms/lib/cma-client-node';
 // import * as Schema from './datocms-schema';
 
 export default async function (client: Client): Promise<void> {
-  for await (const draft of client.items.listPagedIterator({
+  for await (const draft of client.items.listPagedIterator<Schema.AnyModel>({
     filter: { fields: { _status: { eq: 'draft' } } },
   })) {
     await client.items.publish(draft.id);

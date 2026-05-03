@@ -42,6 +42,8 @@ import {
   isBlockWithItemOfType, isInlineBlockWithItemOfType,
   isHeading, isParagraph, isSpan, isLink, isItemLink, isInlineItem,
 } from "datocms-structured-text-utils";
+
+import { parse, serialize } from "datocms-structured-text-dastdown";
 ```
 
 Every generated `Schema.X` is **both type and runtime value**. Value side exposes two typed constants:
@@ -96,7 +98,7 @@ currentItem.question; // Record<string, string | null>
 
 In `cma:script` **stdin-mode** `Schema.*` is **ambient** — no import, no `schema:generate`, no `tsconfig` change. Call `await client.items.find<Schema.FaqEntry>(id)` and marker resolves. If TS reports `Cannot find name 'Schema'` you're in file-mode, where you must run `npx datocms schema:generate ./datocms-schema.ts` and `import * as Schema from "./datocms-schema"`.
 
-Same rule applies to `client.items.update<Schema.X>`, `client.items.create<Schema.X>`, `buildBlockRecord<Schema.B>`, `duplicateBlockRecord<Schema.B>`. **`client.items.list` and `client.items.listPagedIterator` are exceptions** — return shape is generic untyped item, because result spans many models. When iterating list + meaning to mutate, do per-record `client.items.find<Schema.X>(it.id)` first; do **not** mutate off list result directly (`item.question` will be `unknown` and you'll reach for `Record<string, string>` cast — that's the smell you skipped find).
+Same for `client.items.update<Schema.X>`, `client.items.create<Schema.X>`, `buildBlockRecord<Schema.B>`, `duplicateBlockRecord<Schema.B>`. `client.items.list` and `client.items.listPagedIterator` accept `<Schema.X>` when `filter.type` is set, or `<Schema.AnyModel>` when unset — always generic.
 
 ## Prerequisites the workflow assumes
 
@@ -323,26 +325,17 @@ Example's tail covers post-walk hook: `content.document.children.push({ type: "p
 
 ## Localized fields and adding a locale
 
-Site update + per-item backfill in ONE script. Spread existing per-locale objects. Per-record `find<Schema.FaqEntry>` is typed source for spread — do **not** spread off `list` result, fields are `unknown`.
+Site update + per-item backfill in ONE script. Spread existing per-locale objects. \`\`\`ts await client.site.update({ locales: \["en", "it", "es"] });
 
-```ts
-await client.site.update({ locales: ["en", "it", "es"] });
+const items = await client.items.list\<Schema.FaqEntry>({ filter: { type: "faq_entry" }, version: "current" }); for (const it of items) { await client.items.update\<Schema.FaqEntry>(it.id, { question: { ...it.question, es: "..." }, answer:   { ...it.answer,   es: "..." }, }); }
 
-const items = await client.items.list({ filter: { type: "faq_entry" }, version: "current" });
-for (const it of items) {
-  const currentItem = await client.items.find<Schema.FaqEntry>(it.id);
-  await client.items.update<Schema.FaqEntry>(it.id, {
-    question: { ...currentItem.question, es: "..." },
-    answer:   { ...currentItem.answer,   es: "..." },
-  });
-}
-```
+````
 
 If TS rejects spread (typically because per-locale value nullable + `Update` shape requires non-null), cast precisely w/ request schema rather than reaching for `Record<string, string>`:
 
 ```ts
 question: { ...(currentItem.question as NonNullable<FieldValueInRequest<typeof currentItem, "question">>), es: "..." },
-```
+````
 
 For block-bearing localized fields same per-locale shape applies — each locale key holds whatever value field expects (array of blocks/IDs for `rich_text`, full object or `null` for `single_block`, DAST tree for `structured_text`).
 
