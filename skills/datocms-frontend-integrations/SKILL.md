@@ -45,6 +45,7 @@ Silently examine:
 3. **Existing Dato helpers** — `@datocms/cda-client`, query wrappers, image/Structured Text helpers, env vars
 4. **Existing integration markers** — draft mode endpoints, preview-links, Content Link, real-time subscriptions, cache-tag forwarding, search routes, robots/sitemap
 5. **File structure** — `src/` or root-level app directories
+6. **Starter-conventions markers** (gql.tada projects) — `gql.tada` in `package.json`, `lib/datocms/gqlUrlBuilder/` folder, project `<Text>` wrapper around `<StructuredText />`, co-located `fragments.ts` next to block / inline-record / link-to-record components. Presence of these = project follows the patterns in `references/url-builders.md` + `datocms-cda/references/fragment-patterns.md`.
 
 ### Stop conditions
 
@@ -187,6 +188,15 @@ Use `references/site-search-api.md` for Svelte / SvelteKit site-search work.
 
 Use `references/site-search-api.md` for Astro site-search work. For Astro video, use Mux web component directly or React integration when project already has it.
 
+### gql.tada starter-conventions references
+
+Load when project uses `gql.tada` AND task adds/extends a block, inline-record, link-to-record, routable model, or page query:
+
+- `references/url-builders.md` — per-model URL builders + `buildUrlFromGql()` dispatcher
+- `../datocms-cda/references/fragment-patterns.md` — masking discipline, `readFragment()` boundary, fragment composition, page-query rule
+
+Don't load when project uses plain `executeQuery` strings or codegen with hand-shaped types — patterns don't apply.
+
 ### Generic search and crawl references
 
 Load for framework-agnostic, non-widget-based, or crawler-specific:
@@ -274,5 +284,6 @@ Use companion skills when task leaves this bundle's sweet spot:
 | Full single-feature scaffolding | `datocms-setup` with matching recipe from Step 2 |
 | Shared CDA client wrapper or `executeQuery` baseline | `datocms-setup` for `cda-client` |
 | Writing or optimizing GraphQL queries for the CDA | `datocms-cda` |
+| gql.tada fragment-writing discipline (masking, composition, page query) | `datocms-cda` (`../datocms-cda/references/fragment-patterns.md`) |
 | Programmatic content management, schema changes, migration scripts, access control, or webhook creation via REST | `datocms-cma` |
 | Building a DatoCMS plugin | `datocms-plugin-builder` |

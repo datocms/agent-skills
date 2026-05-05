@@ -83,6 +83,7 @@ Read relevant references from `references/`. **Always** load core client referen
 | SEO & meta | `references/seo-and-meta.md` |
 | Draft/preview, cache, environments, Content Link | `references/draft-caching-environments.md` |
 | Type generation (gql.tada, graphql-codegen, types) | `references/type-generation.md` |
+| gql.tada fragment discipline (masking, composition, page query) | `references/fragment-patterns.md` |
 
 **Cross-cutting:**
 
@@ -91,6 +92,7 @@ Read relevant references from `references/`. **Always** load core client referen
 - Images in blocks → `references/images-and-videos.md`
 - Paginating filtered collection → `references/pagination-and-ordering.md`
 - Complex nesting → `references/pagination-and-ordering.md` for complexity costs
+- Writing/extending fragments in a `gql.tada` project → `references/fragment-patterns.md`
 
 ## Step 4: Mandatory Rules to Generate Code
 
@@ -144,6 +146,7 @@ Before presenting final code:
 9. **Structured text** — all relevant sub-fields included
 10. **Fetch integration** — framework-native `fetch`? use `buildRequestHeaders()` / `buildRequestInit()`
 11. **Type generation** — gql.tada or graphql-codegen? use project's `graphql()` function, check scalar mappings
+12. **gql.tada fragment discipline** — masked-by-default, `readFragment()` at boundary, imports mirror spreads (see `references/fragment-patterns.md`)
 
 ## Cross-Skill Routing
 

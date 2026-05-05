@@ -15,6 +15,8 @@ Vue 3 component for rendering DatoCMS [Structured Text (DAST)](https://www.datoc
 - Related Packages
 - Props Reference
 - Content Link Integration
+- Project Wrapper Component
+- Link-to-Record Component Shape
 
 ## Setup
 
@@ -435,3 +437,92 @@ function renderInlineBlock({ record }) {
 ```
 
 **Why `renderLinkToRecord` doesn't need a boundary:** Record links are `<a>` tags wrapping text that belongs to the surrounding structured text. They don't introduce a separate editing target, so no URL collision occurs.
+
+## Project Wrapper Component
+
+Don't import `<StructuredText />` from `vue-datocms` into pages directly — wrap once, use the wrapper everywhere. Conventionally exported as `<Text>` from `components/Text/index.vue` so it's visually distinct from the upstream component (and so Nuxt's auto-import doesn't shadow the named import inside the wrapper itself). Reasons:
+
+- Every render needs `data-datocms-content-link-group` for Visual Editing — wrapper enforces it so no page can forget.
+- Wrapper is the right place for project-wide `customNodeRules` (headings, code, etc.) so every structured-text field renders consistently without each caller restating them.
+
+Forward every prop via `$attrs`; intercept only `customNodeRules` to merge defaults:
+
+```vue
+<!-- components/Text/index.vue -->
+<template>
+  <div data-datocms-content-link-group>
+    <DatoStructuredText
+      v-bind="$attrs"
+      :customNodeRules="(mergedCustomNodeRules as any)"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { isCode, isHeading } from 'datocms-structured-text-utils';
+import { StructuredText as DatoStructuredText, renderNodeRule } from 'vue-datocms';
+import { HeadingWithAnchorLink, LazyCode } from '#components';
+
+defineOptions({ inheritAttrs: false });
+
+const attrs = useAttrs() as { customNodeRules?: unknown[] };
+
+const projectDefaultNodeRules = [
+  renderNodeRule(isCode, ({ node, key }) => h(LazyCode, { key, node })),
+  renderNodeRule(isHeading, ({ node, key, children }) =>
+    h(HeadingWithAnchorLink, { node, key }, () => children),
+  ),
+];
+
+const mergedCustomNodeRules = computed(() => [
+  ...(attrs.customNodeRules ?? []),
+  ...projectDefaultNodeRules,
+]);
+</script>
+```
+
+- **Why `inheritAttrs: false` + `$attrs` instead of `defineProps`?** Borrowing the upstream prop type via `defineProps<ExtractPublicPropTypes<typeof StructuredText>>()` looks clean but the Vue compiler can't generate runtime prop descriptors from a borrowed/computed type alias — `props.data` ends up `undefined` at runtime and the wrapper renders empty without any error. Forwarding `$attrs` sidesteps runtime registration entirely; cost is giving up call-site type-checking on the wrapper itself. Upstream component still type-checks its received props.
+- **Alias the upstream component on import** — `import { StructuredText as DatoStructuredText }`. Nuxt auto-imports the wrapper as `<StructuredText>` if you name the file that way, so the alias avoids a name collision inside the wrapper's own `<script>`. (Also why the public component is named `<Text>`.)
+- **Prepend caller's rules**, not append — earlier rules win, so caller-supplied rules must come first to take precedence over project defaults.
+- Heavy / client-only node renderers should use Nuxt's `Lazy*` prefix (`LazyCode`, `LazyBlocksVideoBlock`, …) so they aren't pulled into the page's initial JS bundle.
+
+## Link-to-Record Component Shape
+
+Link-to-record components have a different prop signature than blocks/inline records — `{ record, transformedMeta }` plus default `<slot />` for the link's children:
+
+```vue
+<!-- components/linkToRecords/PageLink/index.vue -->
+<template>
+  <NuxtLink v-bind="transformedMeta" :href="buildUrlForPage(unmaskedRecord)">
+    <slot />
+  </NuxtLink>
+</template>
+
+<script setup lang="ts">
+import type { TransformedMeta } from 'datocms-structured-text-generic-html-renderer';
+import { buildUrlForPage } from '~/lib/datocms/gqlUrlBuilder/page';
+import { type FragmentOf, readFragment } from '~/lib/datocms/graphql';
+import { PageLinkFragment } from './fragments';
+
+const props = defineProps<{
+  record: FragmentOf<typeof PageLinkFragment>;
+  transformedMeta: TransformedMeta;
+}>();
+
+const unmaskedRecord = readFragment(PageLinkFragment, props.record);
+</script>
+```
+
+The page's `renderLinkToRecord` callback bridges the renderer-supplied `children` array to Vue's slot:
+
+```ts
+const renderLinkToRecord = ({ record, children, transformedMeta }) => {
+  switch (record.__typename) {
+    case 'PageRecord':
+      return h(LinkToRecordsPageLink, { record, transformedMeta }, () => children);
+  }
+};
+```
+
+- **No `data-datocms-content-link-boundary`** on link-to-record components — renderer handles those boundaries. Inline-record components _do_ set it themselves.
+- **`v-bind="transformedMeta"`** so renderer-provided attributes (`target`, `rel`, …) are honored. `TransformedMeta` is `{ [k: string]: unknown } | null | undefined`; `v-bind` handles the nullable cases.

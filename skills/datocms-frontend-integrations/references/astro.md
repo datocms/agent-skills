@@ -626,16 +626,18 @@ When rendering Structured Text fields with `@datocms/astro`, wrap component in g
 
 ```astro
 ---
-import { StructuredText } from '@datocms/astro/StructuredText';
+import { StructuredText, ensureValidStructuredTextProps } from '@datocms/astro/StructuredText';
 import BlockComponent from './BlockComponent.astro';
 import InlineRecordComponent from './InlineRecordComponent.astro';
 ---
 
 <div data-datocms-content-link-group>
   <StructuredText
-    data={page.content}
-    blockComponents={{ my_block: BlockComponent }}
-    inlineBlockComponents={{ my_inline_block: InlineRecordComponent }}
+    {...ensureValidStructuredTextProps({
+      data: page.content,
+      blockComponents: { my_block: BlockComponent },
+      inlineBlockComponents: { my_inline_block: InlineRecordComponent },
+    })}
   />
 </div>
 ```

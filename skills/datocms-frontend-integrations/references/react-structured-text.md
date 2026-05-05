@@ -14,6 +14,8 @@ React component for rendering DatoCMS [Structured Text (DAST)](https://www.datoc
 - Related Packages
 - Props Reference
 - Content Link Integration
+- Project Wrapper Component
+- Link-to-Record Component Shape
 
 ## Basic Usage
 
@@ -360,3 +362,87 @@ When using Visual Editing (Content Link), Structured Text fields require special
 ```
 
 **Why `renderLinkToRecord` doesn't need a boundary:** Record links are `<a>` tags wrapping text that belongs to the surrounding structured text. They don't introduce a separate editing target, so no URL collision occurs.
+
+## Project Wrapper Component
+
+Don't import `<StructuredText />` from `react-datocms` into pages directly — wrap once, use the wrapper everywhere. Conventionally exported as `<Text>` from `src/components/Text/index.tsx` so it's visually distinct from the upstream component at call sites. Reasons:
+
+- Every render needs `data-datocms-content-link-group` for Visual Editing — wrapper enforces it so no page can forget.
+- Wrapper is the right place for project-wide `customNodeRules` (headings, code, etc.) so every structured-text field renders consistently without each caller restating them.
+
+Type the wrapper's props by borrowing from upstream `StructuredTextPropTypes`. Stay generic over `BlockRecord` / `LinkRecord` / `InlineBlockRecord`:
+
+```tsx
+import {
+  StructuredText,
+  type StructuredTextPropTypes,
+  renderNodeRule,
+} from 'react-datocms';
+import { type CdaStructuredTextRecord, isCode, isHeading } from 'datocms-structured-text-utils';
+
+export function Text<
+  BlockRecord extends CdaStructuredTextRecord = CdaStructuredTextRecord,
+  LinkRecord extends CdaStructuredTextRecord = CdaStructuredTextRecord,
+  InlineBlockRecord extends CdaStructuredTextRecord = CdaStructuredTextRecord,
+>({
+  customNodeRules,
+  ...props
+}: StructuredTextPropTypes<BlockRecord, LinkRecord, InlineBlockRecord>) {
+  return (
+    <div data-datocms-content-link-group>
+      <StructuredText<BlockRecord, LinkRecord, InlineBlockRecord>
+        {...props}
+        customNodeRules={[
+          ...(customNodeRules ?? []),
+          renderNodeRule(isCode, ({ node, key }) => <Code key={key} node={node} />),
+          renderNodeRule(isHeading, ({ node, key, children }) => (
+            <HeadingWithAnchorLink node={node} key={key}>
+              {children}
+            </HeadingWithAnchorLink>
+          )),
+        ]}
+      />
+    </div>
+  );
+}
+```
+
+- **Prepend caller's rules**, not append — `customNodeRules` resolves earlier rules first, so caller-supplied rules must come first to take precedence over project defaults.
+- Use `CdaStructuredTextRecord`, not the deprecated `Record` alias from `datocms-structured-text-utils`.
+- Heavy / client-only node renderers should use `next/dynamic` (e.g. `const Code = dynamic(() => import('@/components/Code'))`) so they aren't pulled into the page's initial JS bundle.
+
+## Link-to-Record Component Shape
+
+Link-to-record components have a different prop signature than blocks/inline records — `{ record, transformedMeta, children }`:
+
+```tsx
+import type { TransformedMeta } from 'datocms-structured-text-generic-html-renderer';
+import { PageUrlFragment, buildUrlForPage } from '@/lib/datocms/gqlUrlBuilder/page';
+
+export const PageLinkFragment = graphql(
+  /* GraphQL */ `
+    fragment PageLinkFragment on PageRecord {
+      ...PageUrlFragment
+    }
+  `,
+  [PageUrlFragment],
+);
+
+type Props = {
+  record: FragmentOf<typeof PageLinkFragment>;
+  transformedMeta: TransformedMeta;
+  children: ReactNode;
+};
+
+export default function PageLink({ record, transformedMeta, children }: Props) {
+  const unmaskedRecord = readFragment(PageLinkFragment, record);
+  return (
+    <Link {...transformedMeta} href={buildUrlForPage(unmaskedRecord)}>
+      {children}
+    </Link>
+  );
+}
+```
+
+- **No `data-datocms-content-link-boundary`** on link-to-record components — renderer handles those boundaries. Inline-record components _do_ set it themselves.
+- **Spread `{...transformedMeta}`** so renderer-provided attributes (`target`, `rel`, …) are honored.

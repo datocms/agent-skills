@@ -15,6 +15,8 @@ Astro component for rendering DatoCMS [Structured Text (DAST)](https://www.datoc
 - Conditional Rendering with `isEmptyDocument`
 - Related Packages
 - Content Link Integration
+- Project Wrapper Component
+- Link-to-Record Component Shape
 
 ## Setup
 
@@ -115,7 +117,7 @@ Unlike React (render props), Vue (`h()` render functions), or Svelte (predicate-
 
 ```astro
 ---
-import { StructuredText } from '@datocms/astro/StructuredText';
+import { StructuredText, ensureValidStructuredTextProps } from '@datocms/astro/StructuredText';
 import { executeQuery } from '@datocms/cda-client';
 
 import Cta from '~/components/Cta.astro';
@@ -129,19 +131,21 @@ const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
 <article>
   <h1>{blogPost.title}</h1>
   <StructuredText
-    data={blogPost.content}
-    blockComponents={{
-      CtaRecord: Cta,
-    }}
-    inlineBlockComponents={{
-      NewsletterSignupRecord: NewsletterSignup,
-    }}
-    inlineRecordComponents={{
-      TeamMemberRecord: InlineTeamMember,
-    }}
-    linkToRecordComponents={{
-      TeamMemberRecord: LinkToTeamMember,
-    }}
+    {...ensureValidStructuredTextProps({
+      data: blogPost.content,
+      blockComponents: {
+        CtaRecord: Cta,
+      },
+      inlineBlockComponents: {
+        NewsletterSignupRecord: NewsletterSignup,
+      },
+      inlineRecordComponents: {
+        TeamMemberRecord: InlineTeamMember,
+      },
+      linkToRecordComponents: {
+        TeamMemberRecord: LinkToTeamMember,
+      },
+    })}
   />
 </article>
 ```
@@ -210,17 +214,19 @@ Override default rendering for any node type using the `nodeOverrides` prop. Key
 
 ```astro
 ---
-import { StructuredText } from '@datocms/astro/StructuredText';
+import { StructuredText, ensureValidStructuredTextProps } from '@datocms/astro/StructuredText';
 import HeadingWithAnchorLink from '~/components/HeadingWithAnchorLink.astro';
 import Code from '~/components/Code.astro';
 ---
 
 <StructuredText
-  data={blogPost.content}
-  nodeOverrides={{
-    heading: HeadingWithAnchorLink,
-    code: Code,
-  }}
+  {...ensureValidStructuredTextProps({
+    data: blogPost.content,
+    nodeOverrides: {
+      heading: HeadingWithAnchorLink,
+      code: Code,
+    },
+  })}
 />
 ```
 
@@ -267,15 +273,17 @@ Override how marks (bold, italic, etc.) render using the `markOverrides` prop:
 
 ```astro
 ---
-import { StructuredText } from '@datocms/astro/StructuredText';
+import { StructuredText, ensureValidStructuredTextProps } from '@datocms/astro/StructuredText';
 import Strong from '~/components/Strong.astro';
 ---
 
 <StructuredText
-  data={blogPost.content}
-  markOverrides={{
-    strong: Strong,
-  }}
+  {...ensureValidStructuredTextProps({
+    data: blogPost.content,
+    markOverrides: {
+      strong: Strong,
+    },
+  })}
 />
 ```
 
@@ -292,7 +300,7 @@ import Strong from '~/components/Strong.astro';
 
 ## Strict Props Type Checking
 
-Since Astro doesn't support generics-typed components, use `ensureValidStructuredTextProps()` to strictly validate that all possible block and linked record types are managed. This is especially useful with [gql.tada](https://gql-tada.0no.co/):
+Astro doesn't support generics-typed components. Always wrap props with `ensureValidStructuredTextProps()` whenever passing custom components (`blockComponents`, `inlineBlockComponents`, `inlineRecordComponents`, `linkToRecordComponents`, `nodeOverrides`, `markOverrides`) — validates all possible block and linked record types are managed. Especially useful with [gql.tada](https://gql-tada.0no.co/):
 
 ```astro
 ---
@@ -448,7 +456,7 @@ Full example with Content Link integration:
 
 ```astro
 ---
-import { StructuredText } from '@datocms/astro/StructuredText';
+import { StructuredText, ensureValidStructuredTextProps } from '@datocms/astro/StructuredText';
 import Cta from '~/components/Cta.astro';
 import NewsletterSignup from '~/components/NewsletterSignup.astro';
 import InlineTeamMember from '~/components/InlineTeamMember.astro';
@@ -456,18 +464,82 @@ import InlineTeamMember from '~/components/InlineTeamMember.astro';
 
 <div data-datocms-content-link-group>
   <StructuredText
-    data={page.content}
-    blockComponents={{
-      CtaRecord: Cta,
-    }}
-    inlineBlockComponents={{
-      NewsletterSignupRecord: NewsletterSignup,
-    }}
-    inlineRecordComponents={{
-      TeamMemberRecord: InlineTeamMember,
-    }}
+    {...ensureValidStructuredTextProps({
+      data: page.content,
+      blockComponents: {
+        CtaRecord: Cta,
+      },
+      inlineBlockComponents: {
+        NewsletterSignupRecord: NewsletterSignup,
+      },
+      inlineRecordComponents: {
+        TeamMemberRecord: InlineTeamMember,
+      },
+    })}
   />
 </div>
 ```
 
 **Why link-to-record components don't need a boundary:** Record links are `<a>` tags wrapping text that belongs to the surrounding structured text. They don't introduce a separate editing target, so no URL collision occurs.
+
+## Project Wrapper Component
+
+Don't import `<StructuredText />` from `@datocms/astro` into pages directly — wrap once, use the wrapper everywhere. Reasons:
+
+- Every render needs `data-datocms-content-link-group` for Visual Editing — wrapper enforces it so no page can forget.
+- Wrapper is the right place for project-wide `nodeOverrides` (headings, code, etc.) so every structured-text field renders consistently without each caller restating them.
+
+Type the wrapper's props by borrowing from the upstream component via `ComponentProps<typeof StructuredText>` — transparently accepts everything `<StructuredText />` does without maintaining a parallel prop list:
+
+```astro
+---
+// src/components/StructuredText/index.astro
+import { StructuredText } from '@datocms/astro/StructuredText';
+import type { ComponentProps } from 'astro/types';
+
+type Props = ComponentProps<typeof StructuredText>;
+
+const { nodeOverrides, ...props } = Astro.props;
+---
+
+<div data-datocms-content-link-group>
+  <StructuredText
+    {...props}
+    nodeOverrides={{
+      // project defaults, e.g. `heading: HeadingWithAnchorLink`
+      ...nodeOverrides,
+    }}
+  />
+</div>
+```
+
+Spread caller's `nodeOverrides` **after** project defaults — caller can opt out of any project default.
+
+## Link-to-Record Component Shape
+
+Link-to-record components have a different prop signature than blocks/inline records — `{ node, attrs, record }`:
+
+```astro
+---
+// src/components/LinkToBlogPost.astro
+import type { TransformedMeta } from 'datocms-structured-text-generic-html-renderer';
+import type { ItemLink } from 'datocms-structured-text-utils';
+import { readFragment, type FragmentOf } from 'gql.tada';
+import { buildUrlForBlogPost } from '~/lib/datocms/gqlUrlBuilder/blogPost';
+import { BlogPostLinkFragment } from './fragments';
+
+interface Props {
+  node: ItemLink;
+  attrs: TransformedMeta;
+  record: FragmentOf<typeof BlogPostLinkFragment>;
+}
+
+const { record, attrs } = Astro.props;
+const unmaskedRecord = readFragment(BlogPostLinkFragment, record);
+---
+
+<a {...attrs} href={buildUrlForBlogPost(unmaskedRecord)}><slot /></a>
+```
+
+- **No `data-datocms-content-link-boundary`** on link-to-record components.
+- **Spread `{...attrs}`** so renderer-provided attributes (`target`, `rel`, …) are honored.
