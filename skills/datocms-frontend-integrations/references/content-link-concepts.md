@@ -376,7 +376,7 @@ Non-render uses:
 - **`split` / `replace` / regex** — manipulating string
 - **JSON to external systems** — analytics, third-party APIs, webhooks, structured logs. Invisible bytes survive serialization
 - **SEO, `<meta>`, `<title>`, Open Graph, JSON-LD** — search engines and social previews see raw bytes
-- **URL or slug generation** — building hrefs from text values
+- **URL/href generation from stega-carrying text** — slug-like values built from `title`/text fields. DatoCMS `slug` field type itself never carries stega — no strip needed (see field-type exception below)
 - **Analytics / tracking** — event names and properties should be clean
 - **`length` / `textContent` length checks** — stega inflates length
 - **Anything to database, cache key, persisted store**
@@ -385,8 +385,11 @@ Non-render uses:
 // Render: safe as-is
 <h1>{page.title}</h1>
 
-// Comparison: must strip
-const isHomepage = stripStega(page.slug) === 'home';
+// Slug field: never carries stega, use directly
+<Link href={`/blog/${page.slug}`}>...</Link>
+
+// Comparison on stega-carrying field: must strip
+if (stripStega(page.title) === 'Home') { ... }
 
 // SEO: must strip
 <meta name="description" content={stripStega(page.seoDescription)} />

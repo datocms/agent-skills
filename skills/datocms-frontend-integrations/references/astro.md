@@ -627,7 +627,6 @@ When rendering Structured Text fields with `@datocms/astro`, wrap component in g
 ```astro
 ---
 import { StructuredText } from '@datocms/astro/StructuredText';
-import { stripStega } from '@datocms/content-link';
 import BlockComponent from './BlockComponent.astro';
 import InlineRecordComponent from './InlineRecordComponent.astro';
 ---
@@ -712,7 +711,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
 ### Stega Stripping
 
-Content Link embeds invisible characters in text fields. Use `stripStega()` from `@datocms/content-link` before string comparisons, SEO metadata, analytics, or URL generation. See `content-link-concepts.md` for full details.
+Content Link embeds invisible characters in text fields. Use `stripStega()` from `@datocms/content-link` before string comparisons, SEO metadata, analytics, or URL generation from stega-carrying text. DatoCMS `slug` field type never carries stega — use directly. See `content-link-concepts.md` for full details and field-type exception list.
 
 ### Content Link Environment Variables
 

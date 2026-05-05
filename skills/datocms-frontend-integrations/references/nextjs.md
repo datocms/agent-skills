@@ -490,7 +490,6 @@ Wrap Structured Text component in a group, add boundaries to embedded blocks and
 
 ```tsx
 import { StructuredText } from 'react-datocms';
-import { stripStega } from '@datocms/content-link';
 
 function PageContent({ page }) {
   return (
@@ -508,7 +507,7 @@ function PageContent({ page }) {
           </span>
         )}
         renderLinkToRecord={({ record, children, transformedMeta }) => (
-          <a {...transformedMeta} href={`/posts/${stripStega(record.slug)}`}>
+          <a {...transformedMeta} href={`/posts/${record.slug}`}>
             {children}
           </a>
         )}
@@ -566,7 +565,7 @@ export default nextConfig;
 
 ### Stega Stripping
 
-Content Link embeds invisible characters in text fields. Use `stripStega()` from `@datocms/content-link` before string comparisons, SEO metadata, analytics, or URL generation. See `content-link-concepts.md` for full details.
+Content Link embeds invisible characters in text fields. Use `stripStega()` from `@datocms/content-link` before string comparisons, SEO metadata, analytics, or URL generation from stega-carrying text. DatoCMS `slug` field type never carries stega — use directly. See `content-link-concepts.md` for full details and field-type exception list.
 
 ### Content Link Environment Variables
 

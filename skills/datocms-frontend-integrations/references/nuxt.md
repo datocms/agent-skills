@@ -739,7 +739,7 @@ export default defineNuxtConfig({
 
 ### Stega Stripping
 
-Content Link embeds invisible chars in text fields. Use `stripStega()` from `@datocms/content-link` before string comparisons, SEO metadata, analytics, URL generation. See `content-link-concepts.md`.
+Content Link embeds invisible chars in text fields. Use `stripStega()` from `@datocms/content-link` before string comparisons, SEO metadata, analytics, URL generation from stega-carrying text. DatoCMS `slug` field type never carries stega — use directly. See `content-link-concepts.md`.
 
 ### Content Link Environment Variables
 
