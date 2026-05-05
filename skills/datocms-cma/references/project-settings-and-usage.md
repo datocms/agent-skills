@@ -2,7 +2,7 @@
 
 Covers project-level configuration and introspection: site, maintenance mode, public info, white-label, subscription limits/features, daily usage, usage counters.
 
-> For endpoint shapes, payload attributes, and TS signatures, consult `npx datocms cma:docs site <action> --types-depth 2`, `cma:docs maintenanceMode <action> --types-depth 2`, `cma:docs publicInfo <action> --types-depth 2`, `cma:docs whiteLabelSettings <action> --types-depth 2`, `cma:docs subscriptionLimits <action> --types-depth 2`, `cma:docs subscriptionFeatures <action> --types-depth 2`, `cma:docs dailyUsages <action> --types-depth 2`, or `cma:docs usageCounters <action> --types-depth 2` (raise the depth or use `--expand-types` for deeper nested types). This file only covers what the docs don't carry.
+> Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs {site|maintenanceMode|publicInfo|whiteLabelSettings|subscriptionLimits|subscriptionFeatures|dailyUsages|usageCounters} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
 ## `site.locales` — order is meaning
 

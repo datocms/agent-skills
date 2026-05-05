@@ -2,7 +2,7 @@
 
 Asset management: uploads, metadata, collections (folders), references.
 
-> For endpoint shapes, payload attributes, TS signatures: `npx datocms cma:docs uploads <action> --types-depth 2`, `cma:docs uploadRequest <action> --types-depth 2`, or `cma:docs uploadCollections <action> --types-depth 2` (raise depth or `--expand-types OnUploadProgressInfo`, `--expand-types CreateUploadFromLocalFileSchema` for deeper nested types). This file only covers what docs don't carry.
+> Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs {uploads|uploadRequest|uploadCollections} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
 ## Picking upload method
 

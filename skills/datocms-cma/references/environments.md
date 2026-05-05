@@ -2,7 +2,7 @@
 
 Covers sandbox environment management: forking, promoting, deleting.
 
-> For endpoint shapes, payload attributes, and TS signatures, consult `npx datocms cma:docs environments <action> --types-depth 2` (raise the depth or use `--expand-types` for deeper nested types). This file only covers what the docs don't carry.
+> Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs environments <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
 ## Mental model
 

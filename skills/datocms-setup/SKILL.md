@@ -28,18 +28,22 @@ Public setup entrypoint. Keep surface small, inspect repo first, load only neede
 ## Workflow
 
 1. Inspect repo silently before asking, follow `references/repo-conventions.md` + `patterns/MANDATORY_RULES.md`.
-2. Read `references/router.md`.
-3. Read `references/recipe-manifest.json`, pick smallest recipe/bundle for request.
-4. Use targeted mode for clear setup outcomes. Discovery mode only for broad/ambiguous:
+2. **Greenfield gate** — if no `package.json` and no `datocms.config.json`, ask link-vs-create per `patterns/MANDATORY_RULES.md` § Project link or create before any recipe selection. On "create" → wait for confirmation, queue `datocms-content-modeling` before any frontend recipe.
+3. Read `references/router.md`.
+4. Read `references/recipe-manifest.json`, pick smallest recipe/bundle for request.
+5. Use targeted mode for clear setup outcomes. Discovery mode only for broad/ambiguous:
    - **Stage A**: pick setup lane.
    - **Stage B**: ask smallest setup-specific follow-up only when repo inspection leaves high-impact decision unresolved.
-5. Queue prerequisites from manifest before dependents. Never tell user to invoke separate setup skill.
+6. Queue prerequisites from manifest before dependents. Never tell user to invoke separate setup skill.
    - `visual-editing`: always apply `draft-mode` + `content-link`.
    - Add `web-previews` unless user wants website-only click-to-edit.
    - Add `realtime` only if user asks or confirms in Stage B.
-6. Load only selected `recipes/<group>/<recipe>/recipe.md`, shared setup references, sibling-skill references.
-7. Patch existing code in-place by default.
-8. End with `patterns/OUTPUT_STATUS.md`: report `scaffolded` vs `production-ready`, summarize recipes, list unresolved placeholders.
+   - **Project baseline (TypeScript projects)**: queue `cma-types` alongside `cli-bootstrap` for any greenfield or first-time DatoCMS+TS setup. Default for a fully typed CMA experience; not opt-in.
+7. Load only selected `recipes/<group>/<recipe>/recipe.md`, shared setup references, sibling-skill references.
+8. Create todo list — one task per queued recipe + prerequisite, plus discrete sub-steps within each recipe (file edits, installs, env vars, verification). Mark complete as you go, never batch. Setup bundles always have many steps; todos keep progress visible and recoverable.
+9. Schema/modeling intent (add models, edit fields, design taxonomy) → `datocms-content-modeling`. Don't improvise schema here.
+10. Patch existing code in-place by default.
+11. End with `patterns/OUTPUT_STATUS.md`: report `scaffolded` vs `production-ready`, summarize recipes, list unresolved placeholders.
 
 ## Rules
 

@@ -39,8 +39,19 @@ Only ask a second pass when repo inspection still leaves a high-impact decision 
 - **Vercel overlay conflict** — If the repo signals existing Vercel Edit Mode / Vercel Content Link, ask one conflict-resolution question before changing overlays. Recommend **Dato Visual Editing** when the user asked for Web Previews, side-by-side editing, or the full visual-editing workflow. Recommend **preserving the existing Vercel overlays** when the user asked only for website click-to-edit and the current Vercel setup already works. Never do both.
 - **`site-search`** — Ask one-vs-many index topology only when the repo clearly exposes multiple top-level public sections and the correct boundaries cannot be inferred safely. Recommend one shared index first.
 - **`graphql-types`** — Preserve the repo’s existing type-generation approach when present. Default greenfield setups to `gql.tada`. Ask only when both approaches already coexist or when the user explicitly requests a choice.
+- **`cma-types`** — Default for any TypeScript project that touches the CMA. Provides a fully typed CMA experience end-to-end. Queue alongside `cli-bootstrap` on greenfield setups; do not gate behind explicit opt-in.
 - **`build-triggers`, `webhooks`, `cache-tags`, `cli-profiles`, `blueprint-sync`, `migration-release-workflow`** — Infer first, then ask the smallest explicit choice point with the recommended/default path first.
 - **`migrations` lane** — Ask one additional grouped follow-up only when needed to separate baseline migrations, named profiles, shared migration history, release helper, sandbox reset loop, and diff-based generation.
+
+## Sibling Skills (No Recipe)
+
+Some intents have no setup recipe — defer to a sibling DatoCMS skill, don't invent scaffolding here.
+
+| Intent | Sibling skill |
+| - | - |
+| Schema design, model vs block decisions, field shapes, taxonomy, content reuse, page-shaped schema refactor | `datocms-content-modeling` |
+
+Greenfield gate "create new project" → queue `datocms-content-modeling` after creation, before any frontend recipe. In-flight request to add/modify models → pause recipe, route to `datocms-content-modeling`, resume after schema decisions land.
 
 ## Prerequisite Rules
 

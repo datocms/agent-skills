@@ -2,7 +2,7 @@
 
 Covers querying patterns for listing records: pagination, filtering, sorting, counting.
 
-> For endpoint shapes, payload attributes, and TS signatures, consult `npx datocms cma:docs items instances --types-depth 2` (raise the depth or use `--expand-types ToItemHrefSchemaField` for the per-field-type filter operators, or `--expand-types FieldTypeToHrefFilter` for the operator-to-field-type map). For other paginated resources, swap the resource: `cma:docs uploads instances --types-depth 2`, `cma:docs webhookCalls instances --types-depth 2`, etc. This file only covers what the docs don't carry.
+> Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs {items|uploads|webhookCalls|buildEvents|itemVersions} instances` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
 ## Always use `listPagedIterator`
 

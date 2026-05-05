@@ -130,7 +130,7 @@ await client.itemTypes.create(
 
 **Modeling implication: menu organization = part of migration**, not cleanup. Script creates ten blocks? Should also place them. Default behavior wins, menu degrades one model at time.
 
-Full `itemTypes.create` API: `npx datocms cma:docs itemTypes create --types-depth 2` or `../../datocms-cma/references/schema.md`
+Full `itemTypes.create` API: `npx datocms cma:docs itemTypes create` or `../../datocms-cma/references/schema.md`
 
 ## Emoji prefixes — icon system
 

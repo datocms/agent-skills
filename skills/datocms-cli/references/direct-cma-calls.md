@@ -74,28 +74,28 @@ npx datocms cma:docs items
 # Describe a specific action — description, HTTP, client method signatures
 npx datocms cma:docs items create
 
-# Expand a collapsed example section
-npx datocms cma:docs items create --expand "Example: Basic example"
+# Expand a collapsed example section (pass `*` to expand all)
+npx datocms cma:docs items create --expand-details "Example: Basic example"
 
-# Inline TypeScript declarations for every reachable referenced type
+# Print only TS declarations for every reachable referenced type (suppresses docs/methods sections)
 npx datocms cma:docs items create --expand-types "*"
 
-# Inline declarations for specific named types only (repeatable)
+# Print only declarations for specific named types (suppresses docs/methods sections; repeatable)
 npx datocms cma:docs items create --expand-types ItemCreateSchema
 
-# Surface a deeper "Not expanded" type list (default depth: 2)
+# Raise the walk depth for the integrated "Not expanded" type list (default: 2)
 npx datocms cma:docs items create --types-depth 4
 ```
 
 | Flag | Description |
 | - | - |
-| `--expand <summary>` | Expand collapsed `<details>` by summary text (repeatable) |
-| `--expand-types <name>` | Inline full TS declarations for referenced types. `*` for everything reachable, or specific names (repeatable) |
-| `--types-depth <n>` | Walk depth for "Not expanded" type list without `--expand-types` (default 2) |
+| `--expand-details <summary>` | Expand collapsed `<details>` by summary text (repeatable). `*` expands all. Long sections (>2000 chars) auto-collapse otherwise |
+| `--expand-types <name>` | Print only TS declarations for referenced types — suppresses all other output. `*` for everything reachable, or specific names (repeatable) |
+| `--types-depth <n>` | Walk depth for the integrated "Not expanded" type list (default 2). No effect with `--expand-types "*"`, which has no depth limit |
 
 **Resource names camelCase** in `cma:docs`, matching JS client: `itemTypes` (not `item_types`), `scheduledPublication`, `uploadSmartTags`, `buildTriggers`, `auditLogEvents`. Same camelCase on client (`client.itemTypes.create`, etc.). Unsure? Run `npx datocms cma:docs` (no args) for full list.
 
-Writing typed mutations? Consider `--types-depth 2`+ for deeper type list, or `--expand-types <SpecificType>` to inline one declaration. `--expand-types "*"` is verbose — last resort.
+Writing typed mutations? Raise `--types-depth` past the default of 2 for a deeper integrated type list, or pass `--expand-types <SpecificType>` to print just that type's declaration on its own (rest of the docs is suppressed). `--expand-types "*"` is verbose — last resort.
 
 Recommended way to look up: request body schemas, required fields, query params, response shapes, TS signatures before constructing `cma:call` or CMA client code.
 

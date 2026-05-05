@@ -465,32 +465,29 @@ Key points:
 
 **File:** `src/lib/datocms/recordInfo.ts`
 
+When `cma-types` is in place, type the record with `RawApiTypes.Item<Schema.AnyModel>` for proper field typing inside each branch. Astro switches on `api_key` (not `__itemTypeId`), so narrowing happens manually — but the union still ensures `item.attributes` matches a real model.
+
 ```ts
 import type { RawApiTypes } from '@datocms/cma-client';
+import type * as Schema from '@/lib/datocms/cma-types';
 
 /**
  * Maps a DatoCMS record to its frontend URL. Used by the preview-links endpoint.
- *
- * Fill in cases for each of your content models. Use the model's API key
- * (the name you gave the model in DatoCMS, e.g., 'blog_post', 'page').
+ * Astro switches on the model's API key (e.g. 'blog_post') instead of model id.
  */
 export function recordToWebsiteRoute(
-  item: RawApiTypes.Item,
+  item: RawApiTypes.Item<Schema.AnyModel>,
   itemTypeApiKey: string,
   locale: string,
 ): string | null {
   switch (itemTypeApiKey) {
-    // Scaffolded example cases. Replace them before calling
-    // the Web Previews setup production-ready.
-    // TODO: Add your models here. Examples:
+    // Replace with your project's models.
     //
-    // case 'page': {
-    //   return `/page/${item.attributes.slug}`;
-    // }
+    // case 'page':
+    //   return `/${item.attributes.slug}`;
     //
-    // case 'blog_post': {
+    // case 'blog_post':
     //   return `/blog/${item.attributes.slug}`;
-    // }
 
     default:
       return null;

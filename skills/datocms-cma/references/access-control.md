@@ -2,7 +2,7 @@
 
 Covers roles, API tokens, users, invitations, and SSO.
 
-> For endpoint shapes, payload attributes, and TS signatures, consult `npx datocms cma:docs roles <action> --types-depth 2`, `cma:docs accessTokens <action> --types-depth 2`, `cma:docs users <action> --types-depth 2`, `cma:docs siteInvitations <action> --types-depth 2`, `cma:docs ssoUsers <action> --types-depth 2`, `cma:docs ssoGroups <action> --types-depth 2`, or `cma:docs ssoSettings <action> --types-depth 2` (raise the depth or use `--expand-types` for deeper nested types). This file only covers what the docs don't carry.
+> Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs {roles|accessTokens|users|siteInvitations|ssoUsers|ssoGroups|ssoSettings} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
 ## Permissions model
 

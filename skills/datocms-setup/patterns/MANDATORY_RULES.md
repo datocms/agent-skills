@@ -11,6 +11,8 @@ These rules apply to every datocms-setup recipe. They are not repeated in indivi
 - Dependency Installation
 - Zero Questions Default
 - Question Format
+- Project Link or Create
+- CLI over MCP
 
 ## TypeScript Strictness
 
@@ -119,3 +121,22 @@ questions: [
 ### Fallback (Codex / non-interactive)
 
 When `AskUserQuestion` is not available, present the same choices as a numbered list in plain text. Keep the same structure: label the recommended default, describe what each option does, and state what happens on skip.
+
+## Project Link or Create
+
+Triggered by SKILL.md greenfield gate (no `package.json` and no `datocms.config.json`). Ask one structured question with `header: "Project"` before any recipe selection:
+
+> "Do you already have a DatoCMS project, or should we create a new one?"
+
+1. **Link existing project** — bootstrap the Node project per the requested lane, then route to `cli-bootstrap`.
+2. **Create new project** — direct user to `https://dashboard.datocms.com/` (canonical; never `dato.com` or marketing/invented domains). Wait for explicit confirmation the project exists, then queue `datocms-content-modeling` for model design _before_ any frontend recipe (models must exist before queries). After modeling → `cli-bootstrap`.
+
+Neither option is universally recommended — agent can't infer which applies. Do **not** append `(Recommended)` or set a default-on-skip — overrides the general "put recommended first" rule above. Order: "Link existing" first (more common), "Create new" second.
+
+## CLI over MCP
+
+DatoCMS CLI is the only sanctioned tool for project discovery, linking, schema inspection, CMA scripting, migrations. Never invoke any DatoCMS MCP tool even when present in the toolset.
+
+Why: CLI uses OAuth via `datocms login` and reads/writes `datocms.config.json` — repo stays source of truth. MCP bypasses this and produces config drift.
+
+Load `datocms-cli` sibling skill for the equivalent CLI command. Only `npx datocms login` is user-driven (interactive browser) — no MCP shortcut.

@@ -95,9 +95,9 @@ After project linked, report to user:
 1. `datocms.config.json` now linked to `<project name>` (`<domain>`).
 2. From here every CLI command (`cma:call`, `cma:script`, `cma:docs`, `migrations:*`, `schema:generate`, `environments:*`, ...) resolves project token automatically through OAuth. No env var, no token in chat.
 3. Whether result is `scaffolded` (user still needs to run `datocms login` once before CLI works) or `production-ready` (login already in place, link succeeded).
-4. Optional follow-up recipe ids:
+4. **Recommended baseline next** — `cma-types`. Generates typed CMA schema definitions; default for any DatoCMS project that interacts with CMA in TypeScript, since it gives a fully typed experience end-to-end. Treat as standard project hygiene, not opt-in.
+5. Optional follow-up recipe ids:
    - `migrations` — add CLI migrations workflow on top of bootstrap.
-   - `cma-types` — generate typed CMA schema definitions.
    - `cli-profiles` — add extra named profiles when repo manages multiple DatoCMS projects (e.g. blueprint + client projects).
 
 Follow shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including explicit `Unresolved placeholders` section.

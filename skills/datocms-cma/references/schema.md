@@ -2,7 +2,7 @@
 
 Models define structure. Fields define attributes. Fieldsets group fields visually.
 
-> For endpoint shapes, payload attributes, and TS signatures, consult `npx datocms cma:docs itemTypes <action> --types-depth 2`, `cma:docs fields <action> --types-depth 2`, or `cma:docs fieldsets <action> --types-depth 2`. Per-field-type validator and appearance shapes not inlined at depth 2 — pass `--expand-types LinkFieldValidators` (or `StructuredTextFieldValidators`, `RichTextFieldValidators`, `SlugFieldValidators`, etc.) to drill. This file covers what docs don't carry.
+> Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs {itemTypes|fields|fieldsets} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
 ## Build order: model → fields → meta-relationships
 

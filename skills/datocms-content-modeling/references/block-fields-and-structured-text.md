@@ -28,6 +28,8 @@ Once you've decided something is a block (see `models-vs-blocks.md`), the next q
 
 **Blocks recreating native DAST nodes.** Structured Text already has `blockquote`, `code` (with language, highlight_lines), `list` / `listItem`, `heading`, `thematicBreak`, `link`. No need for `quote_block`, `code_block`, `list_block`, `heading_block`, `divider_block`, `link_block`. Duplicates editor toolbar, eats 500-block budget, two render paths. Use native via editor `nodes` parameter. Block models for _non-native_ shapes DAST doesn't cover — images, galleries, callouts with `tone` enum, embeds. See DAST cheatsheet below.
 
+**Image/gallery/video blocks with `caption` (or `image_alt` / `image_credit` / `image_label`) sibling fields.** Asset metadata already covers it — `alt`, `title`, `custom_data`, `focal_point` per-locale on every `file` / `gallery`, upload-level + per-record. Caption → `title` (short) or `custom_data` (rich). Image block = `file` field, optional layout enum (`tone`/`size`/`alignment`); never `file` + `caption` string. See `separation-of-concerns.md` § Don't recreate file/gallery metadata.
+
 ## Validators come in three flavors
 
 `structured_text` field has **three separate** allowlists. Not implied:

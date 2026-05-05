@@ -183,7 +183,7 @@ See `references/type-generation.md` for generating the project's `cma-types.ts` 
 
 ### Looking up a specific type
 
-For the exact, up-to-date shape of any `ApiTypes.*` / `RawApiTypes.*` type, run `npx datocms cma:docs <resource> <action>`. To inline a specific type declaration, consider `--expand-types <TypeName>` (e.g. `--expand-types ItemCreateSchema`); to walk a deeper "Not expanded" type list without inlining everything, consider `--types-depth 2` or higher. Reach for `--expand-types "*"` only as a last resort — its output is verbose. For the full command surface, load the **datocms-cli** skill and read `../../datocms-cli/references/direct-cma-calls.md` § cma:docs — that is the single source of truth.
+For the exact, up-to-date shape of any `ApiTypes.*` / `RawApiTypes.*` type, run `npx datocms cma:docs <resource> <action>`. To print just one specific type declaration on its own, use `--expand-types <TypeName>` (e.g. `--expand-types ItemCreateSchema`) — this suppresses the docs/methods sections and emits only the type. To extend the integrated "Not expanded" type list that ships with the regular docs view, raise `--types-depth` (default 2) to 3 or higher. Reach for `--expand-types "*"` only as a last resort — its output is verbose and `--types-depth` does not constrain it. For the full command surface, load the **datocms-cli** skill and read `../../datocms-cli/references/direct-cma-calls.md` § cma:docs — that is the single source of truth.
 
 ## Automatic Behaviors
 

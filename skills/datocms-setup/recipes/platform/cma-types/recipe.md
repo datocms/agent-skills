@@ -71,7 +71,7 @@ Generate only the standalone CMA type-generation setup.
 After generating the files, tell the user:
 
 1. Re-run `generate-cma-types` after schema changes
-2. Use the generated unions such as `AnyModel` and `AnyBlock` with `raw*()` CMA methods
+2. Generated module is the source of truth for a fully typed CMA experience: typed payloads on simplified `client.items.*` calls, `RawApiTypes.Item<Schema.AnyModel>` typing on raw items, `Schema.X.ID` / `Schema.X.REF` runtime constants instead of hardcoded model ids — useful anywhere code switches on `__itemTypeId` (e.g. `recordToWebsiteRoute`) or builds `item_type` references.
 3. Optional follow-up recipe id: `graphql-types` if they also want typed CDA queries
 
 ## Verification Checklist

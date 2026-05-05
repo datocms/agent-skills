@@ -2,7 +2,7 @@
 
 Records: model instances. Most-used CMA resource.
 
-> For endpoint shapes, payload attributes, and TS signatures, consult `npx datocms cma:docs items <action> --types-depth 2` or `cma:docs itemVersions <action> --types-depth 2` (raise the depth or use `--expand-types ItemCreateSchema`, `--expand-types ToItemAttributes` for deeper nested types). This file only covers what the docs don't carry.
+> Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs {items|itemVersions} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
 ## Contents
 

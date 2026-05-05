@@ -415,32 +415,29 @@ Key points:
 
 **File:** `src/lib/datocms/recordInfo.ts`
 
+Requires `cma-types` — generated types expose `Schema.X.ID` (literal-typed model id) and the `AnyModel` union, which discriminates `item.attributes` per branch.
+
 ```ts
 import type { RawApiTypes } from '@datocms/cma-client';
+import * as Schema from '$lib/datocms/cma-types';
 
 /**
  * Maps a DatoCMS record to its frontend URL. Used by the preview-links endpoint.
- *
- * Fill in cases for each of your content models. You can find model IDs
- * in DatoCMS under Settings → Models → click a model → the ID is in the URL.
  */
 export function recordToWebsiteRoute(
-  item: RawApiTypes.Item,
+  item: RawApiTypes.Item<Schema.AnyModel>,
   itemTypeId: string,
   locale: string,
 ): string | null {
   switch (itemTypeId) {
-    // Scaffolded example cases. Replace them before calling
-    // the Web Previews setup production-ready.
-    // TODO: Add your models here. Examples:
+    // Replace with your project's models. Each `case Schema.X.ID` narrows
+    // `item.attributes` to that model's fields — no `as` casts needed.
     //
-    // case 'YOUR_PAGE_MODEL_ID': {
-    //   return `/page/${item.attributes.slug}`;
-    // }
+    // case Schema.Page.ID:
+    //   return `/${item.attributes.slug}`;
     //
-    // case 'YOUR_BLOG_POST_MODEL_ID': {
+    // case Schema.BlogPost.ID:
     //   return `/blog/${item.attributes.slug}`;
-    // }
 
     default:
       return null;

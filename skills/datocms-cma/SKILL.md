@@ -33,6 +33,8 @@ Expert at writing code that interacts with DatoCMS Content Management API (CMA).
 
 Short imperative request in mid-conversation following earlier DatoCMS context = still DatoCMS task. Don't lose context. Signals: `@datocms/*` packages in `package.json`, `DATOCMS_*` env vars, `datocms.config.json`, `cma-types.ts`.
 
+**CLI only — never MCP.** DatoCMS CLI for all project/schema/CMA work. Never invoke any DatoCMS MCP tool even when present in toolset — CLI's OAuth + `datocms.config.json` keeps repo as source of truth, MCP causes config drift. Load `datocms-cli` for the equivalent command. Only `npx datocms login` is user-driven (interactive browser).
+
 ## Step 1: Detect Context
 
 If project context already established in conversation, skip broad detection. Re-inspect only when question cannot be answered from prior context.
@@ -122,15 +124,15 @@ DatoCMS schema operations fall into four buckets. Choice of approach ≠ automat
 | Situation | What it covers | Approach |
 | - | - | - |
 | **Destructive schema change** | DROP a field, DROP a model, `bulk_destroy` records, lossy `field_type` changes (e.g. `string → json`, `json → string`, anything that discards stored values) | **Migration** via `datocms-cli` (`migrations:new`), against forked sandbox first. Never run these against primary environment without explicit, repeated user confirmation. |
-| **Reversible schema change** | Add a field, add a model or block, rename a field, toggle `required`, add or tighten a validation, reorder fieldsets | **Ask the user.** Both approaches safe; pick by preference + context. Lean to migration (`datocms-cli`) when repo already uses migrations workflow or user is on secondary branch — reviewable, reproducible. Direct mutation (`cma:call`, `cma:script` stdin-mode, or `cma:script` file-mode) fine for quick iteration on sandbox. Default to migration only when user has no preference AND repo shows migration conventions (`migrations/` directory, prior migration commits). |
-| **User-requested one-off** | Phrases like "quickly, without a migrations workflow", "just patch this", "one-off", "don't scaffold migrations for this" | **Honor the opt-out.** Use direct mutation via `cma:call` (single call with shape from `cma:docs`) or `cma:script` (stdin-mode for loops/multi-step, file-mode when script long enough that heredoc hurts). Do not re-suggest migrations unless change turns out to be destructive schema change. |
-| **Content operation** | Publish, unpublish, delete individual records, fix slugs, bulk update a field value, re-tag uploads | No migration needed. Prefer `cma:call` for single call; `cma:script` stdin-mode for loops, pagination, or multi-step logic; `cma:script` file-mode only when heredoc becomes painful. Code that needs to be committed and replayed across environments = migration (`datocms-cli`), not this skill. |
+| **Reversible schema change** | Add a field, add a model or block, rename a field, toggle `required`, add or tighten a validation, reorder fieldsets | **Ask the user.** Both approaches safe; pick by preference + context. Lean to migration (`datocms-cli`) when repo already uses migrations workflow or user is on secondary branch — reviewable, reproducible. Direct mutation (`cma:call` for single call, `cma:script` stdin-mode for multi-step) fine for quick iteration on sandbox. Default to migration only when user has no preference AND repo shows migration conventions (`migrations/` directory, prior migration commits). |
+| **User-requested one-off** | Phrases like "quickly, without a migrations workflow", "just patch this", "one-off", "don't scaffold migrations for this" | **Honor the opt-out.** Use direct mutation via `cma:call` (single call with shape from `cma:docs`) or `cma:script` stdin-mode (loops, multi-step, dependent calls). Do not re-suggest migrations unless change turns out to be destructive schema change. |
+| **Content operation** | Publish, unpublish, delete individual records, fix slugs, bulk update a field value, re-tag uploads | No migration needed. Prefer `cma:call` for single call; `cma:script` stdin-mode for loops, pagination, or multi-step logic. Code that needs to be committed and replayed across environments = migration (`datocms-cli`), not this skill. |
 
 Regardless of which skill loaded — **question to ask user is same** for reversible schema change: _"Do you want this as a reviewable migration, or a direct mutation against a sandbox?"_ Answer determines which skill owns follow-up — not which skill was loaded first.
 
 **Cross-skill routing.**
 
-- User-requested one-offs, content operations, and direct-mutation branch of reversible schema change = this skill's core: `cma:call`, `cma:script` stdin-mode, `cma:script` file-mode. Stay here + load references in Step 3.
+- User-requested one-offs, content operations, and direct-mutation branch of reversible schema change = this skill's core: `cma:call`, `cma:script` stdin-mode (file-mode only as debug fallback — see Step 4). Stay here + load references in Step 3.
 - Destructive schema changes, migration branch of reversible schema change, and anything that must be committed/versioned/replayed across environments better covered by **datocms-cli** (`migrations:new`, `migrations:run`). Switch when change is destructive, when repo already uses migrations workflow, or when user wants change as reviewable migration. Handoff = loading sibling skill's references — do not bounce the user.
 - Unattended runtime code (CI, app server, webhook, long-lived automation) = separate scenario — where checked-in `buildClient()` script belongs. See Step 4 ("Client Setup").
 
@@ -196,7 +198,7 @@ When response includes code — follow these default rules:
 ### Authentication (respect Step 1a bootstrap)
 
 - CLI + link = prerequisite of Step 4, not choice. If project not yet linked → fix first (propose install + login + link) before writing any solution code.
-- For interactive / one-off work (majority of CMA tasks) — do not write `buildClient({ apiToken: ... })` code at all — output `cma:call` invocation (single call with shape from `cma:docs`) or `cma:script` invocation (stdin-mode for loops/multi-step, file-mode when heredoc becomes painful) using shapes below. CLI handles auth silently via linked project; no cross-skill hop needed.
+- For interactive / one-off work (majority of CMA tasks) — do not write `buildClient({ apiToken: ... })` code at all — output `cma:call` invocation (single call with shape from `cma:docs`) or `cma:script` stdin-mode (loops/multi-step) using shapes below. CLI handles auth silently via linked project; no cross-skill hop needed.
 - Only when deliverable = unattended runtime code (CI, server-side app, long-lived automation, repo-committed shared scripts) should response include `buildClient()` + env-var token code.
 
 #### `cma:call` shape — do not invent REST-style flags
@@ -215,11 +217,11 @@ npx datocms cma:call fields create <ITEM_TYPE_ID> --data='{label: "Title", api_k
 
 `--data` / `--params` accept JSON5 (unquoted keys, single-quoted wrapping) — keeps shell escaping sane. If unsure about exact resource/method/body shape → run `npx datocms cma:docs <resource> <action>` — that = authoritative source.
 
-#### `cma:script` shape — typed one-off TypeScript, two modes
+#### `cma:script` shape — stdin-mode is the main road; file-mode is debug-only
 
-Use `cma:script` when one-off task needs loops, branching, multiple dependent calls, or typed `Schema.*` record payloads. Two modes with different ergonomics — pick by how script delivered, not by how "complex" it is.
+Three main roads, picked by _deliverable shape_: stable/replayable → migration (`datocms-cli`); one-off interactive (loops, branching, dependent calls, typed `Schema.*`) → `cma:script` **stdin-mode**; code that runs inside the app/server/cron/webhook → checked-in `buildClient()` script (Step 4). **file-mode `cma:script` is none of these** — last-resort debug fallback only, when stdin-mode misbehaves and you need editor LSP, breakpoints, intermediate-state dumps, or a non-prebundled module to bisect. Long heredoc / "rerun by name" are not reasons — those belong in a migration or `buildClient()` script.
 
-**stdin-mode** — top-level await, piped or heredoc. Zero setup. `client` (pre-authenticated), `Schema.*` (project record types), and every named export of `@datocms/cma-client-node`, `datocms-structured-text-utils`, `datocms-structured-text-dastdown` are **ambient globals** inside CLI-bundled workspace — no `import` needed (e.g. `buildBlockRecord`, `mapNodes`, `parse`, `serialize`, `SchemaRepository`, `ApiTypes`). `tsc --noEmit` type-checks before execution; `any` + `unknown` rejected. `export default` not supported here — use file-mode if want function. Anything outside those 3 modules (e.g. `datocms-html-to-structured-text`, `datocms-structured-text-to-{plain-text,html-string,markdown}`, `parse5`) is unavailable in stdin-mode — switch to file-mode and install it.
+**stdin-mode** — top-level await, piped or heredoc. Zero setup. `client` (pre-authenticated), `Schema.*` (project record types), and every named export of `@datocms/cma-client-node`, `datocms-structured-text-utils`, `datocms-structured-text-dastdown` are **ambient globals** inside CLI-bundled workspace — no `import` needed (e.g. `buildBlockRecord`, `mapNodes`, `parse`, `serialize`, `SchemaRepository`, `ApiTypes`). `tsc --noEmit` type-checks before execution; `any` + `unknown` rejected. `export default` not supported here — drop to file-mode only when _debugging_ requires a function shape. Anything outside those 3 modules (e.g. `datocms-html-to-structured-text`, `datocms-structured-text-to-{plain-text,html-string,markdown}`, `parse5`) is unavailable in stdin-mode — debug fallback to file-mode and install it.
 
 ```bash
 npx datocms cma:script <<'EOF'
@@ -228,7 +230,7 @@ console.log(items.length);
 EOF
 ```
 
-**file-mode** — `export default async function(client: Client)` in `.ts` file on disk. Runs in user's own TypeScript context (validation via editor LSP against `tsconfig.json`, or explicit `tsc --noEmit`; no CLI-side typecheck). Same throwaway scenario as stdin-mode — not "code to commit"; use when heredoc becomes painful (long script, fragile quoting with `$`/backticks, local helper imports, or want to rerun by filename).
+**file-mode (debug fallback only)** — `export default async function(client: Client)` in `.ts` file on disk. Runs in user's own TypeScript context (editor LSP against `tsconfig.json`, or explicit `tsc --noEmit`; no CLI-side typecheck). See cap above for when to reach for it; not "code to commit".
 
 ```ts
 // tmp/scripts/publish-drafts.ts
@@ -252,14 +254,12 @@ npx datocms cma:script tmp/scripts/publish-drafts.ts [--environment <env>]
 
 Rules of thumb:
 
-- **Use `cma:call` first** for single call with shape you can read from `cma:docs`. Reach for `cma:script` only when task needs loops, pagination, branching, dependent calls, or typed `Schema.*` payloads.
-- **stdin-mode for quick hacks**: pipes, heredocs, one-liners. No file on disk, no project prerequisites.
-- **file-mode when heredoc hurts**: long script, nested quoting, local helper imports, or want to rerun file by name. Requires `datocms` reachable in `node_modules` from file's directory; place file in gitignored scratch dir (`tmp/scripts/`, `scratch/`, `~/scratch/dato/`). Prefer migration for code you want to commit, version, and replay across environments; do not put file-mode scripts under `migrations/` — that directory owned by `migrations:run`.
-- **Typed `Schema.*` in file-mode = opt-in**: run `npx datocms schema:generate ./datocms-schema.ts` next to script + `import * as Schema from './datocms-schema'`. In stdin-mode `Schema.*` ambient — no generation needed.
-- **Import path matters for promotion**: file-mode imports `Client` from `datocms/lib/cma-client-node` — same import migrations use, so file-mode script can be promoted into migration with plain `mv` into `migrations/` (signature matches too).
+- **`cma:call` first** for single call with shape from `cma:docs`. `cma:script` only when task needs loops, pagination, branching, dependent calls, or typed `Schema.*`.
+- **file-mode placement**: gitignored scratch dir (`tmp/scripts/`, `scratch/`, `~/scratch/dato/`). Never under `migrations/` — owned by `migrations:run`. Requires `datocms` reachable in `node_modules` from file's directory.
+- **Typed `Schema.*` in file-mode** opt-in: `npx datocms schema:generate ./datocms-schema.ts` + `import * as Schema from './datocms-schema'`. Ambient in stdin-mode.
+- **Promotion to migration**: file-mode imports `Client` from `datocms/lib/cma-client-node` — same import migrations use, so a debugged file-mode script can be `mv`'d into `migrations/`.
 - **Redirect `2>/dev/null`** when piping stdin-mode stdout into `jq`.
-- **Pre-installed packages = stdin-only**. In file-mode, install what you need into own `package.json`.
-- **Reach for checked-in `buildClient()` script** only when code must run unattended (CI, app server, webhook, long-running automation). See "Client Setup" below.
+- **Pre-installed packages = stdin-only**; file-mode installs into own `package.json`.
 
 For advanced patterns (workspace flags, stdout shaping, long-running scripts) → consult **datocms-cli** skill.
 
