@@ -103,9 +103,9 @@ Generate framework-specific cache tag invalidation files following the patterns 
 3. **Create webhook handler** at `src/app/api/revalidate/route.ts`:
    - Validate `Authorization: Bearer <CACHE_INVALIDATION_WEBHOOK_SECRET>`
    - Read tags from `body?.entity?.attributes?.tags`
-   - Call `revalidateTag('datocms')` for global tag
+   - Call `revalidateTag('datocms', { expire: 0 })` for global tag (`{ expire: 0 }` = immediate expiration, required for webhook-driven invalidation)
    - Look up affected `queryId`s via `cacheTagsDb.findQueryIdsForTags(tags)`
-   - Call `revalidateTag(queryId)` for each
+   - Call `revalidateTag(queryId, { expire: 0 })` for each
 
 ### Nuxt
 
@@ -284,7 +284,7 @@ Follow `../../../patterns/OUTPUT_STATUS.md` for final handoff, including explici
 
 1. `executeQuery` uses `rawExecuteQuery` with `returnCacheTags: true`, reads `x-cache-tags` header
 2. Next.js: `queryId` passed to `rawExecuteQuery`, tags stored via `cacheTagsDb.storeTags()`
-3. Next.js: Webhook calls `revalidateTag()` for global `'datocms'` and affected `queryId`s
+3. Next.js: Webhook calls `revalidateTag(tag, { expire: 0 })` for global `'datocms'` and affected `queryId`s
 4. Next.js: Pages export `dynamic = 'force-static'`
 5. Nuxt/SvelteKit/Astro: Tags forwarded as CDN headers with correct name
 6. Nuxt/SvelteKit/Astro: Webhook calls CDN purge API with tags

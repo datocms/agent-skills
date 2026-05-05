@@ -170,12 +170,12 @@ Non-obvious entries are intentional: `link` resolves through to linked record's 
 
 Either `'table'` or `'compact'`. These are **two very different layouts**, not just density variants — pick based on model's role, not on visual taste.
 
-- `'table'` (default, and what you almost always want) — full-width table view with one column per configured field, image previews, saved views, advanced filters, sorting by column. This is standard "list of records" experience editors expect.
+- `'table'` — full-width table view with one column per configured field, image previews, saved views, advanced filters, sorting by column. This is standard "list of records" experience editors expect.
 - `'compact'` — narrow vertical **sidebar** of records on left, with selected record opening to right of it. No image previews. No advanced filters — only plain text-search box. No per-column sorting. Trade-off is that editors can edit record while still seeing surrounding list.
 
-`'compact'` only appropriate for **small reference / taxonomy-style models** where collection is short, records are tiny (often just label), and editors mostly jump between records to make small edits — example `Tag`, `Category`, `Redirect`, `Author`. Anything larger (blog posts, products, pages) belongs on `'table'`: editors need filters, saved views, and image previews that compact hides.
+**API default is `'compact'` when attribute omitted** — not what you usually want. Always set `'table'` explicitly on `itemTypes.create` unless model is genuinely a small reference / taxonomy collection.
 
-If in doubt, leave it at default (`'table'`).
+`'compact'` only appropriate for **small reference / taxonomy-style models** where collection is short, records are tiny (often just label), and editors mostly jump between records to make small edits — example `Tag`, `Category`, `Redirect`, `Author`. Anything larger (blog posts, products, pages) belongs on `'table'`: editors need filters, saved views, and image previews that compact hides.
 
 (Typo'd alias `collection_appeareance` exists in API surface; ignore it and use `collection_appearance`.)
 
@@ -242,6 +242,7 @@ For model-vs-block decision itself, see `models-vs-blocks.md`.
 - **Skipping `title_field` / `image_preview_field` / `excerpt_field` on user-facing models.** Site ships with empty meta tags whenever editor forgets SEO field. Wire fallbacks.
 - **Wiring `presentation_title_field` to SEO title field.** SEO title optimized for search engines, not for editor recognition. Use separate human-friendly field for admin preview.
 - **Setting `sortable: true` on model with thousands of records.** Manual drag-and-drop doesn't scale. Use `ordering_field` or `ordering_meta` for high-cardinality models.
+- **Omitting `collection_appearance` on a regular model.** API defaults to `'compact'` (sidebar layout) — editors lose filters, saved views, image previews, column sort. Set `'table'` explicitly unless model is a small reference / taxonomy collection.
 - **Leaving `draft_mode_active: false` on non-block model.** Always on by default — unused draft mode costs nothing, retrofitting it later does.
 - **Setting `draft_saving_active: true` without `draft_mode_active`.** No effect — drafts don't exist without draft mode.
 - **`all_locales_required: true` on editorial content.** Editors stop being able to publish until every translation is in. Almost always wrong outside of legal/structured-data contexts.

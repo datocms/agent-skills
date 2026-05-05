@@ -935,13 +935,14 @@ export async function POST(request: Request) {
   const tags: string[] = body?.entity?.attributes?.tags ?? [];
 
   // Always revalidate the global "datocms" tag for queries that don't use queryId
-  revalidateTag(cacheTag);
+  // `{ expire: 0 }` = immediate expiration (required for webhook-driven invalidation)
+  revalidateTag(cacheTag, { expire: 0 });
 
   // Look up which Query IDs are affected by the invalidated tags
   const affectedQueryIds = await cacheTagsDb.findQueryIdsForTags(tags);
 
   for (const queryId of affectedQueryIds) {
-    revalidateTag(queryId);
+    revalidateTag(queryId, { expire: 0 });
   }
 
   return NextResponse.json({
