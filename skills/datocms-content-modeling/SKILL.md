@@ -1,31 +1,20 @@
 ---
 name: datocms-content-modeling
 description: >-
-  Principles and decision frameworks for designing DatoCMS content models —
-  schema architecture, field shapes, content reuse, taxonomies,
-  separation of content from presentation, and admin UI organization
-  (Content tab and Schema tab menus). Use when the task is a modeling
-  *decision* rather than an implementation: should this be a model or a
-  block, single_block vs Modular Content vs Structured Text, when to use
-  references vs embedded blocks, how to organize taxonomies (flat / tree /
-  faceted), how to refactor a presentation-shaped or page-shaped schema
-  into reusable structured content, how many locales × blocks fit inside
-  the 300 KB / 500-block / 5-level record limits, how to organize the
-  admin UI so editors and devs aren't overwhelmed, or how to configure
-  a model's behaviour and presentation (singleton, draft mode,
-  all_locales_required, sortable vs tree vs ordering_field vs
-  ordering_meta, presentation_title_field vs title_field,
-  collection_appearance, inverse_relationships_enabled), or how to
-  configure individual fields (which validators and which editor
-  appearance to pick — enum + string_select pairing, slug auto-fill,
-  required_alt_title, structured_text node/mark allowlists, framed vs
-  frameless single_block, etc.). Also use when reviewing a schema for
-  reusability, editor ergonomics, or omnichannel fitness.
-  For *creating* the schema once a decision is made, route to
-  `datocms-cli` (migrations, the safe default) or `datocms-cma`
-  (programmatic schema mutation). For querying or rendering the resulting
-  content, route to `datocms-cda` and `datocms-frontend-integrations`.
-  For validator and cascade-strategy detail, route to
+  Decision frameworks for DatoCMS content modeling — schema shape, field
+  choice, content reuse, taxonomies, content vs presentation, admin UI
+  organization. Use for modeling *decisions*, not implementation: model vs
+  block; single_block vs Modular Content vs Structured Text; references vs
+  embedded blocks; taxonomy shape (flat/tree/faceted); refactoring page-shaped
+  schemas to reusable content; fitting 300 KB / 500-block / 5-level record
+  limits; model behaviour (singleton, draft mode, all_locales_required,
+  sortable/tree/ordering_field, presentation_title_field,
+  collection_appearance, inverse_relationships_enabled); field config
+  (validator + appearance — enum + string_select, slug auto-fill,
+  required_alt_title, structured_text allowlists, framed vs frameless
+  single_block). Also schema review (reuse, editor ergonomics, omnichannel).
+  *Creating* schema → `datocms-cli` or `datocms-cma`. Query/render →
+  `datocms-cda` + `datocms-frontend-integrations`. Validators + cascade:
   `datocms-cma/references/schema.md`.
 ---
 

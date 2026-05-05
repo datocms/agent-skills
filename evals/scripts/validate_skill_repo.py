@@ -41,6 +41,7 @@ SKILL_GLOB_PATTERNS = (
     "skills/*/SKILL.md",
 )
 RECIPE_GLOB_PATTERN = "skills/datocms-setup/recipes/*/*/recipe.md"
+CODEX_DESCRIPTION_MAX_CHARS = 1024
 EVAL_FIXTURE_SUFFIX = "-skill-eval.json"
 EVAL_RESULT_SUFFIX = "-eval-results.json"
 SETUP_ROUTER_EVAL_FILENAME = "datocms-setup-router-eval.json"
@@ -335,6 +336,15 @@ def _validate_metadata(skill_file: Path, frontmatter: SkillFrontmatter, errors: 
             errors.append(
                 f"{metadata_path}: omit policy.allow_implicit_invocation for explicit-only skills"
             )
+
+
+def _validate_description_length(skill_file: Path, frontmatter: SkillFrontmatter, errors: list[str]) -> None:
+    length = len(frontmatter.description)
+    if length > CODEX_DESCRIPTION_MAX_CHARS:
+        overflow = length - CODEX_DESCRIPTION_MAX_CHARS
+        errors.append(
+            f"{skill_file}: description is {length} chars — exceeds Codex {CODEX_DESCRIPTION_MAX_CHARS}-char limit by {overflow}"
+        )
 
 
 def _validate_scaffold_contract(skill_file: Path, frontmatter: SkillFrontmatter, errors: list[str]) -> None:
@@ -1179,6 +1189,7 @@ def main() -> int:
         _validate_banned_skill_body_patterns(skill_file, errors)
         _validate_routed_skill_names(skill_file, canonical_skill_names, errors)
         _validate_metadata(skill_file, frontmatter, errors)
+        _validate_description_length(skill_file, frontmatter, errors)
         _validate_scaffold_contract(skill_file, frontmatter, errors)
 
     for recipe_file in recipe_files:
@@ -1209,6 +1220,7 @@ def main() -> int:
     print(f"[ok] validated {len(recipe_files)} internal setup recipes")
     print("[ok] reference paths resolve")
     print("[ok] metadata files are present and synced")
+    print(f"[ok] skill descriptions fit within Codex {CODEX_DESCRIPTION_MAX_CHARS}-char limit")
     print("[ok] routed skill names match frontmatter names")
     print("[ok] scaffold-capable skills declare scaffolded vs production-ready states")
     print("[ok] canonical eval fixtures cover every skill and contain positive/negative cases")

@@ -1,5 +1,5 @@
 # synced_from_name: datocms-cli
-# synced_from_description_sha256: 9f3b261960f86bd266997465ad131f1f657e949fc74830f9bb88512bc448ff30
+# synced_from_description_sha256: 60965f3aeda09b4856fc3a4c97d03a228bad30c80af838e2f541b8c62c526d58
 interface:
   display_name: "DatoCMS CLI"
   short_description: "Run DatoCMS CLI migrations, imports, envs, and plugins"

@@ -1,5 +1,5 @@
 # synced_from_name: datocms-frontend-integrations
-# synced_from_description_sha256: 8592447442aa6866aa448ea8f9daa55ca5cc07f1884866da08adc5521f184db8
+# synced_from_description_sha256: dc23b6f2080d564d3a43a79303a5f3146ce9ef7f2c2b074a49559931512c4e9d
 interface:
   display_name: "DatoCMS Front-End Integrations"
   short_description: "Wire DatoCMS previews, visual editing, and site wiring"

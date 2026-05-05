@@ -1,22 +1,19 @@
 ---
 name: datocms-setup
 description: >-
-  Single entry point for one-shot, end-to-end DatoCMS project setup
-  orchestration — the only skill that bundles prerequisites, chains related
-  recipes, and takes a greenfield or partially configured project to a
-  working state in one pass. Covers five setup lanes: (1) frontend foundation
-  (bootstrap a new Next.js/Nuxt/SvelteKit/Astro integration from scratch);
-  (2) frontend features (draft mode, visual editing, web previews, content
-  link, real-time updates, responsive images, SEO, robots/sitemaps, site
-  search, revalidation/cache tags — applied together with their
-  prerequisites); (3) migrations (CLI profiles, baseline migrations, shared
-  histories, release workflow, sandbox reset loops, diff-based generation);
-  (4) onboarding imports (WordPress, Contentful — content plus assets);
-  (5) platform automation (CMA scripting patterns and project-level
-  automation). Use when the user wants a named outcome scaffolded in full
-  rather than a single file patched, when multiple related features need to
-  land together (e.g. "set up visual editing" implies draft mode + content
-  link + web previews), or when the request is a broad "set up X" that needs
+  Single entry point for one-shot, end-to-end DatoCMS project setup — bundles
+  prerequisites, chains recipes, takes a greenfield or partial project to
+  working state in one pass. Five lanes: (1) frontend foundation (bootstrap
+  Next.js/Nuxt/SvelteKit/Astro from scratch); (2) frontend features (draft
+  mode, visual editing, web previews, content link, real-time updates,
+  responsive images, SEO, robots/sitemaps, site search, revalidation/cache
+  tags — applied with prerequisites); (3) migrations (CLI profiles, baseline
+  migrations, shared histories, release workflow, sandbox reset loops,
+  diff-based generation); (4) onboarding imports (WordPress, Contentful —
+  content + assets); (5) platform automation (CMA scripting + project-level
+  automation). Use when user wants a named outcome scaffolded in full, when
+  related features must land together (e.g. "set up visual editing" → draft
+  mode + content link + web previews), or for broad "set up X" needing
   routing to the smallest matching recipe bundle.
 disable-model-invocation: true
 ---

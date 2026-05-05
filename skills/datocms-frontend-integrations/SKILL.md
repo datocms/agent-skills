@@ -1,22 +1,20 @@
 ---
 name: datocms-frontend-integrations
 description: >-
-  Patch, extend, or explain DatoCMS front-end integration code inside an
-  existing web project (Next.js App Router, Nuxt, SvelteKit, Astro, plus
+  Patch, extend, or explain DatoCMS front-end integration code in an existing
+  web project (Next.js App Router, Nuxt, SvelteKit, Astro, plus
   React/Vue/Svelte component usage). Use for targeted, per-concern work —
   adding a draft mode endpoint, wiring Preview Links / Visual Editing flows,
-  fixing Content Link overlays, tuning real-time preview
-  updates/subscriptions, setting up cache-tag invalidation/revalidation flows
-  (Next.js revalidateTag or CDN purge by tags), adding robots/sitemap wiring,
-  or hooking up crawler-safe search integration. Also the go-to skill for
-  framework component/hook wiring with react-datocms, vue-datocms,
-  @datocms/svelte, and @datocms/astro: Image/SRCImage/datocms-image,
-  StructuredText, VideoPlayer (React/Vue/Svelte), SEO/meta helpers
-  (renderMetaTags/toHead/Seo), QuerySubscription/QueryListener realtime
-  patterns, ContentLink components, and Site Search (React/Vue). Prefer this
-  skill whenever the user is modifying a live codebase one concern at a time,
-  asking a framework-specific API question, or mixing several front-end
-  concerns in the same patch.
+  fixing Content Link overlays, tuning real-time preview subscriptions,
+  setting up cache-tag invalidation/revalidation (Next.js revalidateTag or
+  CDN purge by tags), adding robots/sitemap wiring, hooking up crawler-safe
+  search. Also the go-to skill for framework component/hook wiring with
+  react-datocms, vue-datocms, @datocms/svelte, @datocms/astro:
+  Image/SRCImage/datocms-image, StructuredText, VideoPlayer (React/Vue/Svelte),
+  SEO/meta helpers (renderMetaTags/toHead/Seo), QuerySubscription/QueryListener
+  realtime, ContentLink components, Site Search (React/Vue). Prefer when
+  modifying a live codebase one concern at a time, asking a framework-specific
+  API question, or mixing several front-end concerns in the same patch.
 ---
 
 # DatoCMS Front-End Integrations Skill

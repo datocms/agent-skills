@@ -1,25 +1,19 @@
 ---
 name: datocms-cli
 description: >-
-  Work with the DatoCMS CLI tool (datocms) for command-line migrations,
-  schema type generation, schema inspection, direct one-off CMA calls,
-  typed one-off TypeScript CMA scripts, environment operations, deployment
-  workflows, and multi-project profile syncing. Use when users ask for
-  datocms CLI commands or scripts such as migrations:new, migrations:run,
-  schema:generate, schema:inspect (dump models, blocks, fields, validators,
-  appearance, fieldsets, nested blocks, referenced/embedding models for
-  agents or humans to understand the project structure),
-  cma:call, cma:docs, cma:script (for ad-hoc typed TypeScript scripts with
-  ambient client/Schema globals), migration scaffolding for
-  models/fields/blocks, CLI setup with datocms.config.json and profiles,
-  OAuth authentication (login, logout, whoami), discovering accessible
-  projects (projects:list), project linking (link, unlink),
-  environment commands (list/fork/promote/rename/destroy),
-  maintenance-mode toggling, CI/CD migration pipelines, blueprint/client
-  project sync, imports from WordPress or Contentful (including
-  assets/content), and CLI plugin management (plugins:install, plugins:add,
-  plugins:available, plugins:link for local plugin development,
-  plugins:remove, plugins:update, plugins:reset, plugins:inspect).
+  DatoCMS CLI (datocms) — command-line migrations, schema codegen, schema
+  inspection, one-off CMA calls, typed TypeScript CMA scripts, env operations,
+  deployment workflows, multi-project profile syncing. Use for datocms CLI
+  commands/scripts: migrations:new, migrations:run; schema:generate;
+  schema:inspect (dump models, blocks, fields, validators, appearance,
+  fieldsets, nested blocks, referenced/embedding models); cma:call, cma:docs,
+  cma:script (ad-hoc typed TS with ambient client/Schema globals); migration
+  scaffolding for models/fields/blocks; CLI setup via datocms.config.json +
+  profiles; OAuth (login/logout/whoami); projects:list; project link/unlink;
+  env list/fork/promote/rename/destroy; maintenance-mode toggle; CI/CD
+  migration pipelines; blueprint/client project sync; imports from WordPress
+  or Contentful (assets + content); CLI plugin management
+  (plugins:install/add/available/link/remove/update/reset/inspect).
 ---
 
 # DatoCMS CLI Skill

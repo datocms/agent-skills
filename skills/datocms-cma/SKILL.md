@@ -1,30 +1,20 @@
 ---
 name: datocms-cma
 description: >-
-  Write programmatic Node.js or TypeScript scripts that drive the DatoCMS
-  Content Management API using @datocms/cma-client, @datocms/cma-client-node,
-  or @datocms/cma-client-browser — the code-first companion for content-heavy
-  and automation work. Prefer this skill whenever the task needs real code for
-  records, uploads, or project automation — including short mid-conversation
-  asks like "publish them", "fix those slugs", "delete all drafts", or "bulk
-  import this CSV", and longer checked-in scripts. Covers four areas:
-  (1) content operations — create/update/delete/publish records, bulk
-  import/export and CSV pipelines, pagination over large record sets, asset
-  uploads from URL or local files with metadata, structured text and block
-  payload edits; (2) environment and project governance — fork/promote
-  environments, webhooks and build triggers, project settings and maintenance
-  mode, scheduled publish/unpublish workflows, audit logs, usage analytics,
-  subscription limits; (3) access control and typed flows — roles and API
-  tokens, upload tracks and tags, generated CMA schema types for type-safe
-  record operations; (4) schema and UI configuration when the user explicitly
-  bypasses the migrations workflow or wants schema mutations embedded in a
-  larger script — models, fields, blocks, saved filters, dashboard and schema
-  menus, plugin install and configuration. For ordinary schema changes inside
-  a project with a migrations workflow or a secondary environment, prefer
-  `datocms-cli` migrations as the safe default; reach for this skill only
-  when the user opts out or the mutation is part of a broader automation.
-  Works for both one-off execution via `cma:call` / `cma:script` and
-  checked-in `buildClient()` scripts for reusable or unattended code.
+  Node.js/TypeScript scripts driving the DatoCMS Content Management API via
+  @datocms/cma-client (-node/-browser). Code-first companion for content +
+  automation work. Use for record/upload/project-automation code — short asks
+  ("publish them", "fix those slugs", "delete all drafts", "bulk import this
+  CSV") and checked-in scripts. Covers: (1) content ops — CRUD + publish
+  records, bulk import/export, CSV pipelines, pagination, asset uploads
+  (URL/file) with metadata, structured-text + block payload edits; (2) env +
+  governance — fork/promote envs, webhooks, build triggers, project settings,
+  maintenance mode, scheduled publish/unpublish, audit logs, usage analytics,
+  subscription limits; (3) access + typed flows — roles, API tokens, upload
+  tracks/tags, generated CMA types; (4) schema/UI mutation only when user opts
+  out of migrations or embeds it in automation. Ordinary schema changes →
+  `datocms-cli` migrations. Runs via `cma:call`/`cma:script` or checked-in
+  `buildClient()` scripts.
 ---
 
 # DatoCMS Content Management API Skill
