@@ -2,74 +2,26 @@
 
 Covers roles, API tokens, users, invitations, and SSO.
 
-> Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs {roles|accessTokens|users|siteInvitations|ssoUsers|ssoGroups|ssoSettings} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
+> **For payloads, field shapes, enums, defaults, and TS sigs, always run `npx datocms cma:docs <resource> [<action>]`** (add `--expand-types '*'` for full TS definitions). Resources here: `roles`, `accessTokens`, `users`, `siteInvitations`, `ssoUsers`, `ssoGroups`, `ssoSettings`. The schema docs are exhaustive — including the permissions model, the discriminated unions on each `positive_*` / `negative_*` entry, inheritance resolution, action enums, environment scoping, and per-resource gotchas. This file only carries operational advice that doesn't fit on a schema page.
 
-## Permissions model
+## Roles
 
-DatoCMS roles use a **positive/negative permission model**: positive permission arrays grant; negative permission arrays revoke (overriding any positive grant — useful for "all access except X" patterns).
+The biggest footgun is **wholesale array replacement on `roles.update`** — every `positive_*` / `negative_*` array sent in the payload replaces the stored one as a unit, so a naive "patch one entry" update silently erases everything else. Read the role first and forward the entries you don't want to change, or use the `client.roles.updateCurrentEnvironmentPermissions(...)` helper (records + uploads in the current environment only — build trigger / search index / other-environment entries still need a raw `update`). See `cma:docs roles update` for the full warning and the helper signature.
 
-Four parallel permission arrays on a role:
-
-- `positive_item_type_permissions` / `negative_item_type_permissions` — per-model record actions
-- `positive_upload_permissions` / `negative_upload_permissions` — asset actions
-- `positive_build_trigger_permissions` / `negative_build_trigger_permissions` — build trigger actions
-
-The complete computed permission set (own + inherited via `inherits_permissions_from`) lives in `meta.final_permissions` on a fetched role — read it when debugging "why does this user not see X?".
-
-### `environments_access` levels
-
-Top-level enum on a role, **not** a per-permission flag:
-
-| Value | Effect |
-| - | - |
-| `"all"` | Every environment, primary + sandboxes |
-| `"primary_only"` | Primary only |
-| `"sandbox_only"` | Any sandbox, never primary |
-| `"none"` | No environment access (rare; for tokens that never touch records) |
-
-### Item type permission scoping
-
-Beyond `environment` and `item_type`, the per-permission record entry takes optional fields that narrow the grant — these often surprise:
-
-- `action` — `"all" | "read" | "create" | "update" | "duplicate" | "delete" | "publish" | "edit_creator" | "take_over" | "move_to_stage"`. `"all"` is **CRUD + publish**, not "everything ever" (e.g. it does not include `take_over`).
-- `on_creator` — `"anyone" | "self" | "role" | null`. Restrict the grant to records the actor created (`"self"`), or anyone with the same role (`"role"`). Null = no creator restriction.
-- `localization_scope` — `null | "all" | "localized" | "not_localized"`. Used together with `locale` to grant write access to specific locales only. Required when locking down per-locale editing.
-- `workflow` / `on_stage` / `to_stage` — required only for the `move_to_stage` action and workflow-aware grants.
-
-### Upload permission actions
-
-Different enum from item types: `"all" | "read" | "create" | "update" | "delete" | "edit_creator" | "replace_asset" | "move"`. `"replace_asset"` is its own grant — `"update"` covers metadata but not file replacement; `"move"` covers reorganizing across upload collections.
-
-### Role inheritance
-
-```ts
-inherits_permissions_from: [{ id: baseRoleId, type: "role" }]
-```
-
-Inherited permissions are unioned with own positives, minus own negatives. The resolved set lives in `meta.final_permissions` (read-only).
+The standard "custom role" recipe is `roles.duplicate` → rename → `update`, not constructing a permission tree from scratch. To make targeted adjustments, prefer a single positive `action: "all"` entry plus `negative_*` entries to subtract — the resolved set lives in `meta.final_permissions` on every role response and is what to read when debugging "why can't this credential do X?".
 
 ## API tokens
 
-The `token` string value is **only returned on `create` and `regenerateToken`** — every other read returns `token: null`. Persist it at creation time or you will need to regenerate it (which invalidates the previous value).
+`regenerateToken` invalidates the previous secret immediately. Schedule the rollout to every consumer (deploys, CI secrets, edge configs, mobile builds) **before** calling it on a production token, otherwise traffic between the rotation and the rollout 401s.
 
-`can_access_cda`, `can_access_cda_preview`, `can_access_cma` are **independent** booleans — a token can have any combination. A "CMA token" with only `can_access_cma: true` cannot read CDA content; a token with `can_access_cda_preview: true` reads draft content via the public CDA endpoint.
-
-`regenerateToken("token-id")` returns a new `token` value and invalidates the old one immediately — coordinate rollouts to consumers before calling it on a production token.
-
-## Site invitations
-
-`invitation_link` is, like the access token value, **only returned on create / resend** — list/find responses set it to `null`. Capture it at creation time.
-
-`expired: true` means the link no longer works; call `client.siteInvitations.resend(id)` to mint a fresh link with the same role binding.
+Built-in factory tokens (the seeded read-only API token, etc.) carry a non-null `hardcoded_type` and reject `accessTokens.update` with `NON_EDITABLE_ACCESS_TOKEN`. They can still be deleted and rotated — useful to know when a "normalize all tokens" script trips on them.
 
 ## SSO
 
-**`ssoUsers` is read-only on attributes.** First name, last name, email, active status, group membership are all managed by the identity provider (SAML / SCIM). Only the `role` assignment can be modified, and even then only via group membership in most setups.
+**`ssoUsers` attributes are managed by the IdP, not the CMA** — there is no `update` action on the resource. First name, last name, email, active status, and group membership all sync from SAML/SCIM; role assignment is the only human-controllable lever, typically driven through group mapping rather than directly per user.
 
-`client.ssoUsers.copyUsers()` — bulk-import the project's existing email-based users as SSO users. Useful as a one-time migration when enabling SSO on a project that already has collaborators.
+**Always set `ssoGroups.priority` explicitly** when an SSO user can land in multiple groups. The role from the highest-priority group wins; relying on undefined ordering between equal priorities is not stable across requests.
 
-**`ssoGroups.priority` resolves the role conflict** when one SSO user belongs to multiple groups: the role from the **highest-priority** group wins. Always set `priority` explicitly when creating overlapping groups; default ordering is not stable.
+**Set `ssoSettings.default_role` to a low-privilege role** (e.g. read-only). It applies to any new SSO user that doesn't match a group — leaving it as a full editor turns "we forgot to map this group" into a silent privilege escalation.
 
-`client.ssoGroups.copyRoles(groupId)` — sync the role assignments from the IdP for a single group.
-
-`client.ssoSettings.default_role` — assigned to any new SSO user that doesn't match a group. Set it to a low-privilege role (e.g. read-only viewer) rather than leaving it as full editor.
+`client.ssoUsers.copyUsers()` and `client.ssoGroups.copyRoles(groupId)` are one-shot migration helpers — useful when first enabling SSO on a project that already has email-based collaborators, not part of normal operation.

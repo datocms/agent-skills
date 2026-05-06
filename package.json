@@ -16,11 +16,11 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@datocms/cma-client-node": "^5.4.14",
+    "@datocms/cma-client-node": "^5.4.17",
     "@datocms/dashboard-client": "^5.4.9",
     "@types/node": "^22.19.17",
     "concurrent-promise-queue": "^1.0.10",
-    "datocms": "^4.0.24",
+    "datocms": "^4.0.26",
     "dotenv": "^16.4.5",
     "gpt-tokenizer": "^3.4.0",
     "husky": "^9.1.7",
