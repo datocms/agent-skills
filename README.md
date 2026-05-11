@@ -59,7 +59,17 @@ Skills are namespaced under the plugin (e.g. `/datocms:datocms-cda`). Enable aut
 
 ### Codex
 
-From a Codex session, open the plugin picker with `/plugins`, choose **DatoCMS Local Plugins**, and install `datocms`. Restart Codex if the marketplace doesn't appear on first open.
+```bash
+codex plugin marketplace add datocms/agent-skills
+```
+
+Then open a Codex session and install from the plugin picker:
+
+```bash
+/plugins
+```
+
+Choose **DatoCMS** and "Install plugin"
 
 ### Cursor, Windsurf, GitHub Copilot, and other agents
 
