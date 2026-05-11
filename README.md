@@ -55,7 +55,7 @@ Pick the install method for your agent. The marketplace install for Claude Code 
 /plugin install datocms@datocms-skills
 ```
 
-Skills are namespaced under the plugin (e.g. `/datocms:datocms-cda`). Enable auto-update from `/plugin` → **Marketplaces** → `datocms-skills`, or update manually with `claude plugin update datocms@datocms-skills`.
+Skills are namespaced under the plugin (e.g. `/datocms-cda`). Enable auto-update from `/plugin` → **Marketplaces** → `datocms-skills`, or update manually with `claude plugin update datocms@datocms-skills`.
 
 ### Codex
 
@@ -129,16 +129,16 @@ You don't need to invoke the auto-triggered skills — describe what you want in
 
 | Platform | Invocation |
 | - | - |
-| Claude Code | `/datocms:datocms-setup <your request>` |
+| Claude Code | `/datocms-setup <your request>` |
 | Codex | `$datocms-setup <your request>` |
 
 Phrase the prompt as the outcome you want. Terms like `content link`, `visual editing`, `click-to-edit`, or `draft mode` help the router pick the right recipe.
 
 ```text
-/datocms:datocms-setup install visual editing in this project
-/datocms:datocms-setup set up draft mode and web previews
-/datocms:datocms-setup add migrations and a release workflow
-/datocms:datocms-setup set up click-to-edit overlays for draft pages
+/datocms-setup install visual editing in this project
+/datocms-setup set up draft mode and web previews
+/datocms-setup add migrations and a release workflow
+/datocms-setup set up click-to-edit overlays for draft pages
 ```
 
 If a prerequisite is missing (e.g. draft mode is needed before web previews), setup queues it in the same run instead of requiring a second call.
