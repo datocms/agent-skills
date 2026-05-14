@@ -29,11 +29,11 @@ If you're shipping code, you want Skills.
 
 ## What's covered
 
-Skills ship as two coherent packs. Pick the one that matches your work — the marketplace install for Claude Code and Codex brings both, while the universal `npx skills` installer can opt into a single pack.
+Skills ship as two coherent packs. Pick the one that matches your work — the marketplace install for Claude Code and Codex brings the full set, while the universal `npx skills` installer can opt into a single pack.
 
 ### Project Pack — for building with DatoCMS
 
-Six skills covering everyday DatoCMS development. Most trigger automatically based on your prompt:
+Skills covering everyday DatoCMS development. Most trigger automatically based on your prompt:
 
 - **Content modeling** — schema-design decisions: model vs block, references vs embedded blocks, taxonomies, field shapes, validators, editor appearances.
 - **Reading content** — GraphQL queries against the Content Delivery API with filters, pagination, localization, Structured Text, responsive images, SEO, and typed queries.
@@ -44,7 +44,7 @@ Six skills covering everyday DatoCMS development. Most trigger automatically bas
 
 ### Plugin Pack — for extending the DatoCMS dashboard
 
-Three skills for building DatoCMS plugins:
+Skills for building DatoCMS plugins:
 
 - **Plugin scaffolding** — bootstrap a brand-new plugin (Vite/React, initial surfaces).
 - **Plugin maintenance** — patch and extend an existing plugin: hooks, field extensions, sidebars, validations.
@@ -56,7 +56,7 @@ For the full list of skill names, internal setup recipes, and routing rules see 
 
 ## Install
 
-Pick the install method for your agent. The marketplace install for Claude Code and Codex brings both packs (all nine skills); the universal `npx skills` installer can opt into a single pack.
+Pick the install method for your agent. The marketplace install for Claude Code and Codex brings the full set; the universal `npx skills` installer can opt into a single pack.
 
 ### Claude Code (recommended)
 
@@ -108,7 +108,7 @@ Update later with `npx skills update`. For scopes, single-skill installs, and de
 
 ### Claude.ai (web)
 
-Upload skill `.zip` files via **Customize → Skills** in [claude.ai](https://claude.ai). Pre-built zips live in the [`zips/`](zips/) folder — one per skill. Upload the six Project Pack zips, the three Plugin Pack zips, or all nine.
+Upload skill `.zip` files via **Customize → Skills** in [claude.ai](https://claude.ai). Pre-built zips live in the [`zips/`](zips/) folder — one per skill. Upload the Project Pack zips, the Plugin Pack zips, or the full set.
 
 ---
 
@@ -217,6 +217,6 @@ Helpers to manage SEO, images, video and Structured Text coming from your DatoCM
 
 - [**Plugin Examples**](https://github.com/datocms/plugins) - Example plugins we've made that extend the editor/admin dashboard
 - [**Starter Projects**](https://www.datocms.com/marketplace/starters) - Example website implementations for popular frameworks
-- [**All Public Repositories**](https://github.com/orgs/datocms/repositories?q=&type=public&language=&sort=stargazers)
+- [**All Public Repositories**](https://github.com/orgs/datocms/repositories?q=\&type=public\&language=\&sort=stargazers)
 
 <!--datocms-autoinclude-footer end-->
