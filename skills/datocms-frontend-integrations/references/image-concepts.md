@@ -55,4 +55,4 @@ Components that support layout modes (React `<Image />`, Vue `<datocms-image>`) 
 | `responsive` | Scales both down and up with viewport |
 | `fill` | Stretches to fill parent element (parent must have `position: relative`) |
 
-Lightweight variants (React `<SRCImage />`, Vue `<datocms-naked-image>`, Svelte `<NakedImage>`, Astro `<DatocmsImage>`) render a single `<picture>` element with native lazy loading and do not support layout modes.
+Lightweight variants (React `<RSCImage />`, Vue `<datocms-naked-image>`, Svelte `<NakedImage>`, Astro `<DatocmsImage>`) render a single `<picture>` element with native lazy loading and do not support layout modes.

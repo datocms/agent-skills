@@ -24,7 +24,7 @@ Generates React `<meta>`, `<link>`, and `<title>` elements. Works with `react-he
 ### With react-helmet
 
 ```jsx
-import { renderMetaTags } from 'react-datocms';
+import { renderMetaTags } from 'react-datocms/seo';
 import { Helmet } from 'react-helmet';
 
 function Page({ data }) {
@@ -39,7 +39,7 @@ function Page({ data }) {
 ### With React 19+ (no external library)
 
 ```jsx
-import { renderMetaTags } from 'react-datocms';
+import { renderMetaTags } from 'react-datocms/seo';
 
 function Page({ data }) {
   return (
@@ -55,7 +55,7 @@ function Page({ data }) {
 Generates an HTML string of `<meta>` and `<link>` tags for server-side rendering:
 
 ```js
-import { renderMetaTagsToString } from 'react-datocms';
+import { renderMetaTagsToString } from 'react-datocms/seo';
 
 const html = `
   <html>
@@ -71,7 +71,7 @@ const html = `
 Generates a `Metadata` object for Next.js `generateMetadata` export:
 
 ```ts
-import { toNextMetadata } from 'react-datocms';
+import { toNextMetadata } from 'react-datocms/seo';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { homepage } = await getHomepageContent();
@@ -86,7 +86,7 @@ Generates an array of `MetaDescriptor` objects for Remix v2 `meta` export:
 
 ```ts
 import type { MetaFunction } from 'remix';
-import { toRemixMeta } from 'react-datocms';
+import { toRemixMeta } from 'react-datocms/seo';
 
 export const meta: MetaFunction = ({ data: { post } }) => {
   return toRemixMeta(post.seo);
@@ -96,7 +96,7 @@ export const meta: MetaFunction = ({ data: { post } }) => {
 **Note on favicons in Remix:** The `links` export doesn't receive loader data. Render favicons using `renderMetaTags` in your root component instead:
 
 ```jsx
-import { renderMetaTags } from 'react-datocms';
+import { renderMetaTags } from 'react-datocms/seo';
 
 export default function App() {
   const { site } = useLoaderData();
@@ -121,7 +121,7 @@ export default function App() {
 For legacy Remix v1, use `toRemixV1Meta()` which returns an object instead of an array:
 
 ```ts
-import { toRemixV1Meta } from 'react-datocms';
+import { toRemixV1Meta } from 'react-datocms/seo';
 
 export const meta: MetaFunction = ({ data: { post } }) => {
   return toRemixV1Meta(post.seo);

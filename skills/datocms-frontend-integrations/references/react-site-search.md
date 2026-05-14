@@ -23,7 +23,7 @@ npm install react-datocms @datocms/cma-client-browser
 ## Basic Usage
 
 ```jsx
-import { useSiteSearch } from 'react-datocms';
+import { useSiteSearch } from 'react-datocms/use-site-search';
 import { buildClient } from '@datocms/cma-client-browser';
 
 const client = buildClient({ apiToken: 'YOUR_API_TOKEN' });
@@ -110,7 +110,7 @@ Uses [`react-paginate`](https://www.npmjs.com/package/react-paginate) for pagina
 ```jsx
 import { buildClient } from '@datocms/cma-client-browser';
 import ReactPaginate from 'react-paginate';
-import { useSiteSearch } from 'react-datocms';
+import { useSiteSearch } from 'react-datocms/use-site-search';
 import { useState } from 'react';
 
 const client = buildClient({ apiToken: 'YOUR_API_TOKEN' });

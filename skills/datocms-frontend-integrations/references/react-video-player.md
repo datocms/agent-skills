@@ -15,7 +15,7 @@ npm install react-datocms @mux/mux-player-react
 ## Basic Usage
 
 ```jsx
-import { VideoPlayer } from 'react-datocms';
+import { VideoPlayer } from 'react-datocms/video-player';
 
 function BlogPost({ data }) {
   return (
@@ -51,7 +51,7 @@ All other props are forwarded directly to `<MuxPlayer />`.
 For custom player wrappers, use `useVideoPlayer` to transform DatoCMS video data into `<MuxPlayer />` props:
 
 ```jsx
-import { useVideoPlayer } from 'react-datocms';
+import { useVideoPlayer } from 'react-datocms/use-video-player';
 import MuxPlayer from '@mux/mux-player-react';
 
 function CustomPlayer({ videoData }) {

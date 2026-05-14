@@ -489,7 +489,7 @@ export default async function RootLayout({ children }) {
 Wrap Structured Text component in a group, add boundaries to embedded blocks and inline records:
 
 ```tsx
-import { StructuredText } from 'react-datocms';
+import { StructuredText } from 'react-datocms/structured-text';
 
 function PageContent({ page }) {
   return (
@@ -664,7 +664,7 @@ baseEditingUrl={isDraftModeEnabled ? process.env.DATOCMS_BASE_EDITING_URL : unde
 ```tsx
 import type { TadaDocumentNode } from 'gql.tada';
 import type { ComponentType } from 'react';
-import { type EnabledQueryListenerOptions, useQuerySubscription } from 'react-datocms';
+import { type EnabledQueryListenerOptions, useQuerySubscription } from 'react-datocms/use-query-subscription';
 import type { ContentComponentType } from './generatePageComponent';
 
 /**

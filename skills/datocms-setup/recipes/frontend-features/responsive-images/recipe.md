@@ -96,7 +96,7 @@ Generate smallest reusable responsive-image setup that fits repo.
 
 ### Wrapper defaults
 
-- **React / Next.js:** default to `<SRCImage />`; support opt-in path to `<Image />` only for transparency, crossfade, or custom intersection tuning
+- **React / Next.js:** default to `<RSCImage />`; support opt-in path to `<Image />` only for transparency, crossfade, or custom intersection tuning
 - **Vue / Nuxt:** default to `<NakedImage>`; support opt-in path to `<Image>`
 - **SvelteKit:** default to `<NakedImage />`; support opt-in path to `<Image />`
 - **Astro:** wrap native `@datocms/astro/Image` component only

@@ -1,6 +1,6 @@
 # Astro Image Component — `<Image />`
 
-Astro component for progressive/responsive images from DatoCMS, designed to work with the `responsiveImage` GraphQL query. Unlike React (which offers `<SRCImage />` and `<Image />`) and Svelte (which offers `<NakedImage />` and `<Image />`), `@datocms/astro` provides a **single `<Image />`** component that is completely native with zero JavaScript footprint.
+Astro component for progressive/responsive images from DatoCMS, designed to work with the `responsiveImage` GraphQL query. Unlike React (which offers `<RSCImage />` and `<Image />`) and Svelte (which offers `<NakedImage />` and `<Image />`), `@datocms/astro` provides a **single `<Image />`** component that is completely native with zero JavaScript footprint.
 
 See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, and best practices.
 
@@ -77,7 +77,7 @@ const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
 
 | Feature | React | Svelte | Astro |
 | - | - | - | - |
-| Components | `<SRCImage />` (zero JS) + `<Image />` (crossfade) | `<NakedImage />` (minimal JS) + `<Image />` (crossfade) | Single `<Image />` (zero JS) |
+| Components | `<RSCImage />` (zero JS) + `<Image />` (crossfade) | `<NakedImage />` (minimal JS) + `<Image />` (crossfade) | Single `<Image />` (zero JS) |
 | Import | `from 'react-datocms'` | `from '@datocms/svelte'` | `from '@datocms/astro/Image'` |
 | Layout modes | `intrinsic`, `fixed`, `responsive`, `fill` | `intrinsic`, `fixed`, `responsive`, `fill` | Not applicable (native `<picture>`) |
 | Crossfade | `<Image />` only | `<Image />` only | Not available |

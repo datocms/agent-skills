@@ -217,7 +217,7 @@ For non-framework contexts (search indexing, emails, APIs), use these utility pa
 The framework components accept custom renderers for blocks, inline records, inline blocks, and record links:
 
 ```tsx
-import { StructuredText } from "react-datocms";
+import { StructuredText } from "react-datocms/structured-text";
 
 <StructuredText
   data={post.content}

@@ -10,7 +10,7 @@ description: >-
   CDN purge by tags), adding robots/sitemap wiring, hooking up crawler-safe
   search. Also the go-to skill for framework component/hook wiring with
   react-datocms, vue-datocms, @datocms/svelte, @datocms/astro:
-  Image/SRCImage/datocms-image, StructuredText, VideoPlayer (React/Vue/Svelte),
+  Image/RSCImage/datocms-image, StructuredText, VideoPlayer (React/Vue/Svelte),
   SEO/meta helpers (renderMetaTags/toHead/Seo), QuerySubscription/QueryListener
   realtime, ContentLink components, Site Search (React/Vue). Prefer when
   modifying a live codebase one concern at a time, asking a framework-specific

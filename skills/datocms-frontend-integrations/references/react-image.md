@@ -1,4 +1,4 @@
-# React Image Components — `<SRCImage />` and `<Image />`
+# React Image Components — `<RSCImage />` and `<Image />`
 
 React components for progressive/responsive images from DatoCMS, designed to work with the `responsiveImage` GraphQL query.
 
@@ -6,17 +6,17 @@ See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, be
 
 ## Contents
 
-- `<SRCImage />` vs `<Image />`
+- `<RSCImage />` vs `<Image />`
 - GraphQL Query
 - Basic Usage
-- `<SRCImage />` Props
+- `<RSCImage />` Props
 - `<Image />` Props
 - Layout Modes (`<Image />` only)
 - Handling Dynamic `data` Changes
 
-## `<SRCImage />` vs `<Image />`
+## `<RSCImage />` vs `<Image />`
 
-| | `<SRCImage />` | `<Image />` |
+| | `<RSCImage />` | `<Image />` |
 | - | - | - |
 | Component type | React Server Component | Client Component |
 | JS footprint | None (zero JS) | Has JS bundle |
@@ -27,7 +27,7 @@ See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, be
 
 **When to use which:**
 
-- Use `<SRCImage />` by default — zero JS, simpler output, works as RSC
+- Use `<RSCImage />` by default — zero JS, simpler output, works as RSC
 - Use `<Image />` when you need crossfade effects, custom lazy-loading thresholds, or images with transparency
 
 ## GraphQL Query
@@ -37,7 +37,8 @@ See `image-concepts.md` for the full query, field definitions, and best practice
 ## Basic Usage
 
 ```jsx
-import { Image, SRCImage } from 'react-datocms';
+import { Image } from 'react-datocms/image';
+import { RSCImage } from 'react-datocms/rsc-image';
 
 function BlogPost({ data }) {
   return (
@@ -45,7 +46,7 @@ function BlogPost({ data }) {
       <h1>{data.blogPost.title}</h1>
 
       {/* Server Component — native lazy loading, zero JS */}
-      <SRCImage data={data.blogPost.cover.responsiveImage} />
+      <RSCImage data={data.blogPost.cover.responsiveImage} />
 
       {/* Client Component — IntersectionObserver, crossfade */}
       <Image data={data.blogPost.cover.responsiveImage} />
@@ -54,7 +55,7 @@ function BlogPost({ data }) {
 }
 ```
 
-## `<SRCImage />` Props
+## `<RSCImage />` Props
 
 | Prop | Type | Default | Description |
 | - | - | - | - |

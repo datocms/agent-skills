@@ -33,7 +33,7 @@ First, make sure your shared query layer already enables Content Link for draft 
 Then mount the React component in a root layout or provider (it renders no visible UI):
 
 ```jsx
-import { ContentLink } from 'react-datocms';
+import { ContentLink } from 'react-datocms/content-link';
 
 function App() {
   return (
@@ -54,7 +54,7 @@ For full [Web Previews plugin](https://www.datocms.com/marketplace/plugins/i/dat
 ```jsx
 'use client';
 
-import { ContentLink as DatoContentLink } from 'react-datocms';
+import { ContentLink as DatoContentLink } from 'react-datocms/content-link';
 import { useRouter, usePathname } from 'next/navigation';
 
 export function ContentLink() {
@@ -91,7 +91,7 @@ export default function RootLayout({ children }) {
 ### React Router
 
 ```jsx
-import { ContentLink as DatoContentLink } from 'react-datocms';
+import { ContentLink as DatoContentLink } from 'react-datocms/content-link';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 export function ContentLink() {
@@ -152,7 +152,7 @@ Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily show click-to-ed
 For programmatic control over Visual Editing behavior:
 
 ```ts
-import { useContentLink } from 'react-datocms';
+import { useContentLink } from 'react-datocms/use-content-link';
 
 const {
   controller,           // Underlying controller instance
@@ -177,7 +177,7 @@ const {
 ### Custom Editing Toolbar Example
 
 ```jsx
-import { useContentLink } from 'react-datocms';
+import { useContentLink } from 'react-datocms/use-content-link';
 import { useState } from 'react';
 
 function EditingToolbar() {
@@ -341,7 +341,7 @@ Structured Text fields need special handling:
 Removes stega encoding from any data type:
 
 ```ts
-import { stripStega } from 'react-datocms';
+import { stripStega } from 'react-datocms/use-content-link';
 
 stripStega("Hello world")           // clean string
 stripStega({ name: "John", age: 30 }) // clean object
@@ -353,7 +353,7 @@ stripStega(["First", "Second"])      // clean array
 Extracts editing metadata from stega-encoded content:
 
 ```ts
-import { decodeStega } from 'react-datocms';
+import { decodeStega } from 'react-datocms/use-content-link';
 
 const decoded = decodeStega(text);
 if (decoded) {
@@ -367,7 +367,7 @@ if (decoded) {
 Replaces each invisible stega segment with a visible `[STEGA:/editor/...]` marker. Preserves the input shape — strings stay strings, objects/arrays keep their structure. Use this whenever a stega-related bug is suspected, since `console.log` alone shows nothing (the encoding is zero-width Unicode):
 
 ```ts
-import { revealStega } from 'react-datocms';
+import { revealStega } from 'react-datocms/use-content-link';
 
 console.log(revealStega(page.title));        // "Hello[STEGA:/editor/...]"
 console.log(revealStega(graphqlResponse));   // same object shape, markers visible inside strings

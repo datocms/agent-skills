@@ -7,7 +7,7 @@ See `realtime-concepts.md` for shared initialization options, connection status 
 ## Basic Usage
 
 ```jsx
-import { useQuerySubscription } from 'react-datocms';
+import { useQuerySubscription } from 'react-datocms/use-query-subscription';
 
 function App() {
   const { status, error, data } = useQuerySubscription({

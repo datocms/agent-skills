@@ -22,7 +22,7 @@ React component for rendering DatoCMS [Structured Text (DAST)](https://www.datoc
 For simple Structured Text fields (no blocks, links, or inline records), query only `value`:
 
 ```jsx
-import { StructuredText } from 'react-datocms';
+import { StructuredText } from 'react-datocms/structured-text';
 
 function BlogPost({ data }) {
   return (
@@ -158,7 +158,7 @@ Use `renderBlock`, `renderInlineRecord`, `renderLinkToRecord`, and `renderInline
 Override default rendering for any node type using `customNodeRules` with `renderNodeRule`. Import type guards from `datocms-structured-text-utils`.
 
 ```jsx
-import { renderNodeRule, StructuredText } from 'react-datocms';
+import { renderNodeRule, StructuredText } from 'react-datocms/structured-text';
 import { isHeading, isCode } from 'datocms-structured-text-utils';
 import { render as toPlainText } from 'datocms-structured-text-to-plain-text';
 
@@ -207,7 +207,7 @@ The `renderNodeRule` callback receives `{ node, children, key, ancestors, adapte
 Override how marks (bold, italic, etc.) render using `customMarkRules` with `renderMarkRule`:
 
 ```jsx
-import { renderMarkRule, StructuredText } from 'react-datocms';
+import { renderMarkRule, StructuredText } from 'react-datocms/structured-text';
 
 <StructuredText
   data={data.blogPost.content}
@@ -256,7 +256,7 @@ Each node type in a Structured Text document has specific properties available i
 Use `isEmptyDocument()` to skip rendering when a Structured Text field is empty (contains only a single empty paragraph):
 
 ```jsx
-import { StructuredText } from 'react-datocms';
+import { StructuredText } from 'react-datocms/structured-text';
 import { isEmptyDocument } from 'datocms-structured-text-utils';
 
 function BlogPost({ data }) {
@@ -377,7 +377,7 @@ import {
   StructuredText,
   type StructuredTextPropTypes,
   renderNodeRule,
-} from 'react-datocms';
+} from 'react-datocms/structured-text';
 import { type CdaStructuredTextRecord, isCode, isHeading } from 'datocms-structured-text-utils';
 
 export function Text<
