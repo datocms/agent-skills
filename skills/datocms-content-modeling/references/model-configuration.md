@@ -5,7 +5,7 @@ Models in DatoCMS carry many attributes beyond fields. Most decisions made once 
 ## Contents
 
 - Three camps, not two
-- Reserved model `api_key` values
+- `api_key` validation: format + reserved + must be singular
 - Field-reference attributes need two-step create
 - Behaviour — lifecycle
 - Behaviour — ordering (mutually-exclusive set)
@@ -27,17 +27,22 @@ Common framing splits attributes into "UI" vs "behaviour." Misses third camp tha
 
 UI vs SEO-fallback split is trap: `title_field` and `presentation_title_field` _look_ similar but live in different worlds. See § "Don't confuse `title_field` with `presentation_title_field`."
 
-## Reserved model `api_key` values
+## `api_key` validation: format + reserved + must be singular
 
-Following identifiers reserved and **cannot be used as model's `api_key`** — collide with GraphQL CDA's built-in `Site` query surface (`_site`, `_allItems`, etc.), API rejects at create time:
+Three gates at create/update, both models and blocks.
+
+**Format** — `/\A[a-z](([a-z0-9]|_(?![_0-9]))*[a-z0-9])\z/`. Starts `a-z`, body `a-z0-9_`, no trailing `_`, no `__`, no `_<digit>`. Rejected: `Hero`, `_hero`, `hero_`, `hero__block`, `image_2_block`. OK: `hero_block`, `image2_block`.
+
+**Reserved** — collide with GraphQL `Site` surface (`_site`, `_allItems`, etc.):
 
 ```
 id, find, site, environment, available_locales, item_types,
-single_instance_item_types, collection_item_types, items_of_type,
-model
+single_instance_item_types, collection_item_types, items_of_type, model
 ```
 
-Pick different `api_key` (example `model_definition` instead of `model`, `place` instead of `site`).
+Pick alternative (`model_definition`, `place`).
+
+**Must be singular** — model/block `api_key` must be the singular form of an English noun. Only the **trailing segment** of an underscore-joined identifier is checked. `articles`, `site_settings`, `hero_blocks`, `image_galleries` ✗. `article`, `site_setting`, `hero_block`, `news`, `series` ✓. `heroes_block` ✓ (trailing `block` is singular; prefix untouched). Display `name` can stay plural — only `api_key` is checked. Field `api_key`s are **not** subject to this rule — only models and blocks.
 
 ## Field-reference attributes need two-step create
 
@@ -238,6 +243,8 @@ For model-vs-block decision itself, see `models-vs-blocks.md`.
 
 ## Common mistakes
 
+- **Plural model `api_key`.** `articles`, `site_settings`, `categories`, `news_items` all rejected. Use singular (`article`, `site_setting`, `category`, `news_item`). Display `name` can stay plural — only `api_key` is checked.
+- **`api_key` with uppercase, leading `_`, trailing `_`, double `__`, or `_<digit>`.** Rejected by format regex. `Hero`, `hero_`, `image_2_block` all fail; use `hero`, `hero_block`, `image2_block`.
 - **Setting `singleton: true` and then needing two records.** Hard to walk back. Default to non-singleton; promote later only if "exactly one" constraint is genuinely permanent.
 - **Skipping `title_field` / `image_preview_field` / `excerpt_field` on user-facing models.** Site ships with empty meta tags whenever editor forgets SEO field. Wire fallbacks.
 - **Wiring `presentation_title_field` to SEO title field.** SEO title optimized for search engines, not for editor recognition. Use separate human-friendly field for admin preview.

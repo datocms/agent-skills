@@ -83,6 +83,8 @@ Why:
 
 Applies to _all_ block models — shared frameless blocks (`bloggable_block`, `cardable_block`) and single-use. Only unsuffixed blocks here = old negative examples.
 
+`_block` suffix interacts cleanly with the model-level "must be singular" gate (see `model-configuration.md` § "`api_key` validation"): only the trailing segment is checked, and `block` is already singular, so `hero_block`, `heroes_block`, `image_gallery_block` all pass. The one trap: don't pluralize the suffix itself — `hero_blocks` is rejected.
+
 ## Quick examples
 
 | Content | Model/block | Why |
