@@ -7,7 +7,7 @@
     {
       "name": "datocms",
       "source": "./",
-      "description": "DatoCMS skills for content delivery, content management, content modeling, CLI workflows, frontend integrations, plugin development, plugin UI design, plugin scaffolding, project setup, and feedback drafting",
+      "description": "DatoCMS skills for content delivery, content management, content modeling, CLI workflows, frontend integrations, plugin development, plugin UI design, plugin scaffolding, and project setup",
       "keywords": [
         "datocms",
         "cms",
@@ -17,9 +17,7 @@
         "content-management",
         "content-modeling",
         "plugins",
-        "migrations",
-        "feedback",
-        "support"
+        "migrations"
       ]
     }
   ]

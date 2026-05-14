@@ -1,7 +1,7 @@
 {
   "name": "datocms",
   "version": "1.2.2",
-  "description": "DatoCMS skills for content delivery, content management, content modeling, CLI workflows, frontend integrations, plugin development, plugin UI design, plugin scaffolding, project setup, and feedback drafting",
+  "description": "DatoCMS skills for content delivery, content management, content modeling, CLI workflows, frontend integrations, plugin development, plugin UI design, plugin scaffolding, and project setup",
   "author": {
     "name": "DatoCMS",
     "url": "https://www.datocms.com"
@@ -17,15 +17,13 @@
     "content-management",
     "content-modeling",
     "plugins",
-    "migrations",
-    "feedback",
-    "support"
+    "migrations"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "DatoCMS",
-    "shortDescription": "DatoCMS development, plugins, setup, and feedback",
-    "longDescription": "10 focused skills for DatoCMS: query content (CDA/GraphQL), manage records and schema (CMA), make content-modeling decisions (models vs blocks, taxonomies, reuse, limits, admin UI), run CLI workflows and migrations, integrate with frontend frameworks (Next.js, Nuxt, Astro, SvelteKit), build and design DatoCMS plugins, scaffold new plugin projects, orchestrate one-time project setup including draft mode, visual editing, previews, and imports, and draft sanitized feedback for stuck skills/MCP workflows.",
+    "shortDescription": "Content delivery, management, modeling, CLI, frontend integrations, plugin dev, and project setup for DatoCMS",
+    "longDescription": "10 focused skills for DatoCMS: query content (CDA/GraphQL), manage records and schema (CMA), make content-modeling decisions (models vs blocks, taxonomies, reuse, limits, admin UI), run CLI workflows and migrations, integrate with frontend frameworks (Next.js, Nuxt, Astro, SvelteKit), build and design DatoCMS plugins, scaffold new plugin projects, and orchestrate one-time project setup including draft mode, visual editing, previews, and imports.",
     "developerName": "DatoCMS",
     "category": "cms",
     "capabilities": [
@@ -37,8 +35,7 @@
       "plugin-development",
       "plugin-design",
       "plugin-scaffolding",
-      "project-setup",
-      "feedback-drafting"
+      "project-setup"
     ],
     "websiteURL": "https://www.datocms.com"
   }
