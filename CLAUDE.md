@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-DatoCMS skills repository — 9 public skills that provide focused AI-tool guidance for content delivery, content management, content modeling, CLI workflows, frontend integrations, plugin development, plugin UI design, plugin scaffolding, and project setup. Ships as static markdown; no build or bundle step.
+DatoCMS skills repository — public skills that provide focused AI-tool guidance for content delivery, content management, content modeling, CLI workflows, frontend integrations, plugin development, plugin UI design, plugin scaffolding, and project setup. Ships as static markdown; no build or bundle step.
 
 ## Repository Structure
 
@@ -14,7 +14,7 @@ DatoCMS skills repository — 9 public skills that provide focused AI-tool guida
 - `skills/<skill-name>/SKILL.md` — skill definition (YAML frontmatter + markdown body)
 - `skills/<skill-name>/references/` — detailed reference docs imported by the skill
 - `skills/<skill-name>/agents/openai.yaml` — Codex agent interface config, must stay synced with SKILL.md frontmatter
-- `skills/datocms-setup/` — special orchestrator skill that routes to 25 internal recipes via `references/recipe-manifest.json`
+- `skills/datocms-setup/` — special orchestrator skill that routes to internal recipes via `references/recipe-manifest.json`
 - `evals/` — trigger evaluation framework (Python scripts, JSON fixtures, result snapshots)
 - `docs/` — longer reference material
 - `local/` — local-only scratch (gitignored)

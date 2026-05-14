@@ -4,7 +4,7 @@ Use the root [README](../README.md#install) for the fast local install commands.
 
 ## When To Use This Page
 
-- You only want one skill instead of the full set.
+- You want an individual skill instead of the full set.
 - You want a detached copy instead of symlinks.
 - You want the canonical path map for each shipped skill.
 - You want details on the Claude Code plugin install.
@@ -26,7 +26,7 @@ Skills are namespaced as `/datocms:<skill-name>` (e.g. `/datocms:datocms-cda`).
 
 ### Installation Scopes
 
-Plugins can be installed at three scopes, each with different visibility and persistence:
+Plugins can be installed at different scopes, each with different visibility and persistence:
 
 | Scope | Flag | Where it lives | Who sees it | Version-controlled? |
 | - | - | - | - | - |
@@ -57,7 +57,7 @@ Plugins can be installed at three scopes, each with different visibility and per
 
 Plugins are **cached locally** after installation. When the plugin is updated upstream (new commit + version bump in `plugin.json`), users need to update their local copy.
 
-**Auto-update:** For third-party marketplaces (like this one), auto-update is disabled by default. To enable it:
+**Auto-update:** For third-party marketplaces (like this marketplace), auto-update is disabled by default. To enable it:
 
 1. Run `/plugin` to open the plugin manager
 2. Go to the **Marketplaces** tab
@@ -102,7 +102,7 @@ Inside a Codex session from this repo, open the plugin picker:
 /plugins
 ```
 
-Choose the **DatoCMS Local Plugins** marketplace and install `datocms`. All 10 skills are bundled into the plugin automatically. If the repo marketplace is not visible yet, restart Codex and open `/plugins` again.
+Choose the **DatoCMS Local Plugins** marketplace and install `datocms`. The shipped skills are bundled into the plugin automatically. If the repo marketplace is not visible yet, restart Codex and open `/plugins` again.
 
 ### Updates
 
@@ -114,9 +114,9 @@ For published distribution, keep the plugin version in `.codex-plugin/plugin.jso
 
 If the Plugin Directory is not available or you prefer manual control, use the `$skill-installer` approach described in the [README](../README.md#codex-fallback--skill-installer). The `$skill-installer` copies skill files into `~/.codex/skills/` as frozen snapshots with no auto-update.
 
-## Single-Skill Install
+## Individual Skill Install
 
-If you only need one skill, link just that folder by its canonical name.
+If you only need an individual skill, link just that folder by its canonical name.
 
 Example:
 
@@ -157,4 +157,4 @@ cp -R "$repo_root/skills/datocms-cda/." "$skills_dir/datocms-cda"
 - `skills/datocms-plugin-scaffold`
 - `skills/datocms-setup`
 
-`datocms-setup` already contains its internal recipes, shared references, and recipe-local scripts/assets, so there is no second setup bundle to install.
+`datocms-setup` already contains its internal recipes, shared references, and recipe-local scripts/assets, so there is no separate setup bundle to install.

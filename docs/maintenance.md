@@ -72,7 +72,7 @@ For a structural checklist that confirms the repo is ready for Codex-local plugi
 
 ## Repo-internal helper skills
 
-This repo ships two dev-only helper skills (`eval-triggers`, `validate`) under both `.claude/skills/` and `.agents/skills/` so Claude Code and Codex can trigger them while working _on_ the repo. These must **not** be installed by end users.
+This repo ships dev-only helper skills (`eval-triggers`, `validate`) under both `.claude/skills/` and `.agents/skills/` so Claude Code and Codex can trigger them while working _on_ the repo. These must **not** be installed by end users.
 
 The Claude Code and Codex plugin manifests (`.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`) already scope `skills` to `./skills/`, so plugin installs are clean. The `npx skills` CLI, however, walks every known skills directory in the cloned repo. To hide a skill from `npx skills` discovery, add this to its frontmatter:
 
