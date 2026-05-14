@@ -15,7 +15,7 @@ Follow steps in order. No skipping.
 - Step 3: Load References
 - Step 4: Generate code
 - Step 5: Install dependencies
-- Step 6: Final handoff
+- Step 6: Install plugin and final handoff
 - Verification checklist
 
 ## Step 1: Detect Context (silent)
@@ -50,10 +50,13 @@ Follow shared repo inspection conventions in `../../../references/repo-conventio
 
 7. **Installed deps** — Check `package.json` for `@datocms/rest-client-utils` and `@datocms/cma-client`.
 
+8. **CLI link state** — Check for `datocms.config.json` at repo root. Baseline assumption: present (repo linked via `npx datocms link`). If missing, Step 6 falls back to manual handoff.
+
 ### Stop conditions
 
 - If draft mode missing, record `draft-mode` as prerequisite and continue after applied. Don't tell user to run another recipe manually.
 - If preview-links endpoint exists, inspect first and update in place by default.
+- If `datocms.config.json` missing, ask user to run `npx datocms link` before proceeding so Step 6 can auto-install. If user declines, continue with manual-handoff fallback.
 
 ## Step 2: Ask Questions
 
@@ -125,19 +128,20 @@ Create or patch preview-links integration using smallest safe changes.
 - Reuse existing draft-mode error helpers when available
 - Return successful empty `previewLinks` payload for unmatched records instead of throwing if matching framework reference pattern
 
-### Plugin-side handoff
+### Plugin-side configuration
 
-Always generate stable plugin-configuration handoff in final response naming:
+Resolve these values — they feed both the auto-install script (Step 6) and the manual-fallback paste instructions:
 
-- frontend label (default `Primary` unless multiple frontends chosen)
-- Preview Links API endpoint
-- Draft Mode URL
-- initial path default (`/` unless repo clearly indicates different entry route)
-- viewport preset recommendation (`desktop` + `mobile` unless repo already exposes stronger convention)
-- custom headers or query-secret expectation
-- unresolved model-to-route mappings
+| Handoff value | Default | Maps to plugin parameter |
+| - | - | - |
+| frontend label | `Production` (or `Primary` when multiple frontends chosen) | `frontends[].name` |
+| Preview Links API endpoint | `${baseUrl}/api/preview-links?token=${SECRET_API_TOKEN}` | `frontends[].previewWebhook` |
+| Draft Mode URL | `${baseUrl}/api/draft-mode/enable?token=${SECRET_API_TOKEN}` | `frontends[].visualEditing.enableDraftModeUrl` |
+| Initial path | `/` unless repo clearly indicates different entry route | `frontends[].visualEditing.initialPath` |
 
-Handoff required even when code otherwise production-ready.
+Plus top-level `parameters.startOpen: true` to open sidebar preview by default.
+
+Always echo resolved values back to user in final response (audit + confirmation gate) even when code otherwise production-ready.
 
 ### Output status
 
@@ -155,12 +159,31 @@ Install missing packages only when selected framework pattern needs them:
 
 Use project's package manager (see `../../../patterns/MANDATORY_RULES.md`).
 
-## Step 6: Final handoff
+## Step 6: Install plugin and final handoff
 
-After generating all files, tell user:
+Default path: programmatic install via CMA (CLI link assumed from Step 1).
+
+### Auto-install (default, CLI linked)
+
+1. Echo resolved `frontends[]` config from "Plugin-side configuration" back to user.
+2. Confirm before executing — writes to live DatoCMS project.
+3. Pick execution surface based on repo:
+   - **Repo has `migrations/`** → scaffold `npx datocms migrations:new "install web previews plugin" --ts` and write the install body into the generated file. User runs `npx datocms migrations:run` to apply. CLI tracks the run, so reruns are safe.
+   - **No migrations setup** → one-off via `npx datocms cma:script` stdin.
+4. Install body: two CMA calls — `client.plugins.create({ package_name: 'datocms-plugin-web-previews' })` then `client.plugins.update(plugin.id, { parameters: { frontends, startOpen: true } })`. See `../../../../datocms-frontend-integrations/references/web-previews-concepts.md` § Programmatic install.
+5. Before `create`, call `client.plugins.list()` and reuse existing instance via `update` if `package_name` already matches (keeps `cma:script` reruns safe; the migration surface gets idempotency from the CLI tracker).
+6. Report the plugin id and which surface was used.
+
+### Manual fallback (no CLI link)
+
+Print the resolved `frontends[]` field values as paste instructions for DatoCMS → Settings → Plugins → Web Previews.
+
+### Final response
+
+After install or manual handoff, tell user:
 
 1. which route helper reused or whether new TODO mappings scaffolded
-2. exact plugin handoff values for Web Previews
+2. resolved plugin configuration values (and whether auto-installed or manual-paste required)
 3. whether result `scaffolded` or `production-ready`
 4. optional follow-up recipe ids still making sense: `content-link`, `realtime`, or `visual-editing`
 
@@ -178,3 +201,4 @@ Before presenting final result, verify:
 6. CSP `frame-ancestors 'self' https://plugins-cdn.datocms.com` configured when needed
 7. final handoff includes plugin configuration block and explicit `Unresolved placeholders` section
 8. `production-ready` only reported when no TODO route mappings remain
+9. auto-install path: resolved `frontends[]` echoed to user and confirmed before calling `client.plugins.create` / `client.plugins.update`; existing plugin instance reused via `update` instead of duplicate `create`

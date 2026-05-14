@@ -12,7 +12,7 @@ DatoCMS Web Previews plugin integration reference.
 - `reloadPreviewOnRecordUpdate`
 - Visual Editing Tab and Content Link
 - CSP Requirements
-- Plugin Installation Steps
+- Plugin Installation
 - Dependencies
 
 ## What the Web Previews Plugin Is
@@ -211,15 +211,63 @@ For iframe preview and Visual editing tab to work, frontend must allow being emb
 frame-ancestors 'self' https://plugins-cdn.datocms.com
 ```
 
-## Plugin Installation Steps
+## Plugin Installation
+
+Baseline: DatoCMS CLI present and repo linked via `npx datocms link` (so `datocms.config.json` exists and `cma:script` auth works out of the box). Default to programmatic install. Fall back to manual UI only when CLI not linked.
+
+### Programmatic install (default)
+
+Two-step CMA call — `plugins.create` installs the package, `plugins.update` writes parameters. Execution surface depends on repo:
+
+- **One-off** — `npx datocms cma:script` stdin or file. No tracking; re-running tries to recreate (catch existing instance first with `client.plugins.list()`).
+- **Migration script** (preferred when repo has `migrations/`) — `npx datocms migrations:new "install web previews plugin" --ts` scaffolds a file exporting `async function(client: Client)`. CLI tracks runs via `schema_migration` model, so install only happens once per environment. Idempotent + versioned + replays on `migrations:run` against forked envs.
+
+```ts
+const plugin = await client.plugins.create({
+  package_name: 'datocms-plugin-web-previews',
+});
+
+await client.plugins.update(plugin.id, {
+  parameters: {
+    frontends: [
+      {
+        name: 'Production',
+        previewWebhook: `${baseUrl}/api/preview-links?token=${SECRET_API_TOKEN}`,
+        visualEditing: {
+          enableDraftModeUrl: `${baseUrl}/api/draft-mode/enable?token=${SECRET_API_TOKEN}`,
+          initialPath: '/',
+        },
+      },
+    ],
+    startOpen: true,
+  },
+});
+```
+
+### `parameters.frontends[]` shape
+
+Plugin-specific, not in `cma:docs plugins create`. One entry per frontend:
+
+| Key | Type | Required | Notes |
+| - | - | - | - |
+| `name` | string | yes | Frontend label (`Production`, `Staging`, etc.) |
+| `previewWebhook` | string | yes | Absolute URL of preview-links endpoint, including secret token query param |
+| `visualEditing.enableDraftModeUrl` | string | only for Visual editing tab + Content Link | Absolute URL of draft-mode enable endpoint with secret token. Omit `visualEditing` entirely for sidebar-only setups |
+| `visualEditing.initialPath` | string | no | Default path when Visual editing tab opens (defaults to `/`) |
+
+Top-level `parameters.startOpen: true` opens sidebar preview by default.
+
+### Confirm before executing
+
+Plugin install writes to live DatoCMS project. Echo resolved `frontends[]` config back to user and confirm before calling `plugins.create` / `plugins.update`.
+
+### Manual UI fallback
+
+If CLI not linked, instruct user:
 
 1. DatoCMS → Settings → Plugins → Add new
-2. Search "Web Previews" in marketplace
-3. Install plugin
-4. Configure frontend:
-   - Set preview webhook URL to preview-links endpoint (e.g., `https://your-site.com/api/preview-links?token=YOUR_SECRET_API_TOKEN`)
-   - If using Visual editing: set "Draft mode URL" to enable endpoint (e.g., `https://your-site.com/api/draft-mode/enable?token=YOUR_SECRET_API_TOKEN`)
-   - Optionally set initial path, viewport presets, iframe allow attributes
+2. Search "Web Previews" in marketplace, install
+3. Open plugin settings, paste the same `frontends[]` values into the form (preview webhook URL, draft mode URL, initial path, viewport presets, custom headers)
 
 ## Dependencies
 
