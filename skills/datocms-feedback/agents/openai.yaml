@@ -1,5 +1,5 @@
 # synced_from_name: datocms-feedback
-# synced_from_description_sha256: f53bf10cde55cf12ea9ab52f054145f48f8e9be117fe7ee551cfd3f5c41c3552
+# synced_from_description_sha256: 85bd8e06cea40e72ce6e828ba35d79dee30f39d9aca4fd58707c613b5e4baa60
 interface:
   display_name: "DatoCMS Feedback"
   short_description: "Draft sanitized feedback for stuck DatoCMS workflows"

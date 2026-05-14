@@ -1,10 +1,10 @@
 {
-  "generated_at_utc": "2026-05-14T10:56:46.708815+00:00",
+  "generated_at_utc": "2026-05-14T12:11:34.398933+00:00",
   "threshold": 0.5,
   "skills": [
     {
       "skill_name": "datocms-feedback",
-      "description": "Draft sanitized feedback emails to support@datocms.com about frustrating DatoCMS skills or MCP experiences. Use when users explicitly ask to report, email, or summarize feedback about skills/MCP, or when the skills/MCP workflow has clearly reached a dead end after repeated loops, wrong routing, unresolved misunderstandings, or no credible next step. Do not use for ordinary first failures, retryable MCP/command/API errors, validation feedback, schema discovery misses, missing environment values, project/plugin bugs, or setup problems where another DatoCMS skill can still continue. In inferred frustration cases, offer to draft first and wait; draft immediately only when user asks.",
+      "description": "Draft sanitized feedback emails to support@datocms.com about frustrating DatoCMS skills or MCP experiences. Use only when users explicitly ask to report, email, or summarize feedback about DatoCMS skills/MCP, or when the skills/MCP workflow has clearly reached a dead end after repeated loops, wrong routing, unresolved misunderstandings, or no credible next step. Do not use for ordinary first failures, retryable MCP/command/API errors, validation feedback, schema discovery misses, missing environment values, project/plugin bugs, or setup problems where another DatoCMS skill can still continue.",
       "source_file": "evals/feedback/results/frontmatter/raw/datocms-feedback-eval-results.json",
       "total": 40,
       "reported_passed": 40,

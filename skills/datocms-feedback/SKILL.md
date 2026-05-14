@@ -2,27 +2,27 @@
 name: datocms-feedback
 description: >-
   Draft sanitized feedback emails to support@datocms.com about frustrating
-  DatoCMS skills or MCP experiences. Use when users explicitly ask to report,
-  email, or summarize feedback about skills/MCP, or when the skills/MCP
-  workflow has clearly reached a dead end after repeated loops, wrong routing,
-  unresolved misunderstandings, or no credible next step. Do not use for
-  ordinary first failures, retryable MCP/command/API errors, validation
-  feedback, schema discovery misses, missing environment values, project/plugin
-  bugs, or setup problems where another DatoCMS skill can still continue. In
-  inferred frustration cases, offer to draft first and wait; draft immediately
-  only when user asks.
+  DatoCMS skills or MCP experiences. Use only when users explicitly ask to
+  report, email, or summarize feedback about DatoCMS skills/MCP, or when the
+  skills/MCP workflow has clearly reached a dead end after repeated loops,
+  wrong routing, unresolved misunderstandings, or no credible next step. Do not
+  use for ordinary first failures, retryable MCP/command/API errors, validation
+  feedback, schema discovery misses, missing environment values,
+  project/plugin bugs, or setup problems where another DatoCMS skill can still
+  continue.
 ---
 
 # DatoCMS Feedback
 
 Draft a sanitized support email when a DatoCMS skills or MCP workflow is stuck or frustrating. This is an escape hatch, not a fixing workflow.
 
-## Activation gate
+## Before doing anything visible
 
-Use this skill only in one of these cases:
+Decide whether this is actually a feedback case before offering or drafting anything.
 
-1. **Direct request** — the user asks to draft, report, email, or summarize feedback about DatoCMS skills or MCP.
-2. **Clear dead end** — the skills/MCP flow has looped, routed wrong repeatedly, misunderstood the user repeatedly, or has no credible next step.
+- If the user explicitly asked to draft, report, email, or summarize feedback about DatoCMS skills or MCP, draft immediately.
+- If this skill loaded because frustration or a dead end is inferred, do not draft immediately. Offer once and wait for confirmation.
+- If there is still a credible next retry, do not mention feedback. Continue the active DatoCMS workflow instead.
 
 Do not use this skill for normal trial-and-correction. A single failed command, MCP call, API error, validation response, schema discovery miss, missing environment value, or setup failure is expected and should stay with the active DatoCMS workflow when there is a clear retry.
 
