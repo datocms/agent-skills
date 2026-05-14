@@ -102,7 +102,7 @@ Inside a Codex session from this repo, open the plugin picker:
 /plugins
 ```
 
-Choose the **DatoCMS Local Plugins** marketplace and install `datocms`. All 10 skills are bundled into the plugin automatically. If the repo marketplace is not visible yet, restart and open `/plugins` again.
+Choose the **DatoCMS Local Plugins** marketplace and install `datocms`. All 10 skills are bundled into the plugin automatically. If the repo marketplace is not visible yet, restart Codex and open `/plugins` again.
 
 ### Updates
 

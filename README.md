@@ -29,7 +29,7 @@ If you're shipping code, you want Skills.
 
 ## What's covered
 
-Skills ship as two coherent packs. Pick the one that matches your work — the marketplace install brings the full set, while the universal `npx skills` installer can opt into a single pack.
+Skills ship as two coherent packs. Pick the one that matches your work — the marketplace install for Claude Code and Codex brings the full set, while the universal `npx skills` installer can opt into a single pack.
 
 ### Project Pack — for building with DatoCMS
 
@@ -56,7 +56,7 @@ For the full list of skill names, internal setup recipes, and routing rules see 
 
 ## Install
 
-Pick the install method for your environment. The marketplace install brings the full set; the universal `npx skills` installer can opt into a single pack.
+Pick the install method for your agent. The marketplace install for Claude Code and Codex brings the full set; the universal `npx skills` installer can opt into a single pack.
 
 ### Claude Code (recommended)
 
