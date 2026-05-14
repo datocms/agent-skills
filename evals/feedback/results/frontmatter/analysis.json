@@ -1,0 +1,743 @@
+{
+  "generated_at_utc": "2026-05-14T10:56:46.708815+00:00",
+  "threshold": 0.5,
+  "skills": [
+    {
+      "skill_name": "datocms-feedback",
+      "description": "Draft sanitized feedback emails to support@datocms.com about frustrating DatoCMS skills or MCP experiences. Use when users explicitly ask to report, email, or summarize feedback about skills/MCP, or when the skills/MCP workflow has clearly reached a dead end after repeated loops, wrong routing, unresolved misunderstandings, or no credible next step. Do not use for ordinary first failures, retryable MCP/command/API errors, validation feedback, schema discovery misses, missing environment values, project/plugin bugs, or setup problems where another DatoCMS skill can still continue. In inferred frustration cases, offer to draft first and wait; draft immediately only when user asks.",
+      "source_file": "evals/feedback/results/frontmatter/raw/datocms-feedback-eval-results.json",
+      "total": 40,
+      "reported_passed": 40,
+      "reported_accuracy": 1.0,
+      "threshold_accuracy": 1.0,
+      "tp": 10,
+      "tn": 30,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "unstable_count": 0,
+      "avg_trigger_rate_true": 1.0,
+      "avg_trigger_rate_false": 0.0,
+      "query_modes": [
+        {
+          "query_mode": "implicit",
+          "total": 8,
+          "reported_passed": 8,
+          "reported_accuracy": 1.0,
+          "threshold_accuracy": 1.0,
+          "tp": 6,
+          "tn": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "unstable_count": 0,
+          "avg_trigger_rate_true": 1.0,
+          "avg_trigger_rate_false": 0.0
+        },
+        {
+          "query_mode": "explicit",
+          "total": 2,
+          "reported_passed": 2,
+          "reported_accuracy": 1.0,
+          "threshold_accuracy": 1.0,
+          "tp": 2,
+          "tn": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "unstable_count": 0,
+          "avg_trigger_rate_true": 1.0,
+          "avg_trigger_rate_false": 0.0
+        },
+        {
+          "query_mode": "overlap",
+          "total": 30,
+          "reported_passed": 30,
+          "reported_accuracy": 1.0,
+          "threshold_accuracy": 1.0,
+          "tp": 2,
+          "tn": 28,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "unstable_count": 0,
+          "avg_trigger_rate_true": 1.0,
+          "avg_trigger_rate_false": 0.0
+        }
+      ],
+      "queries": [
+        {
+          "query": "Draft an email to support@datocms.com about the DatoCMS MCP getting stuck.",
+          "should_trigger": true,
+          "query_mode": "explicit",
+          "boundary_with": [],
+          "trigger_rate": 1.0,
+          "triggers": 1,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": true,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "Use datocms-feedback to summarize the failed skills/MCP experience for support.",
+          "should_trigger": true,
+          "query_mode": "explicit",
+          "boundary_with": [],
+          "trigger_rate": 1.0,
+          "triggers": 1,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": true,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "Help me report feedback to DatoCMS: the MCP kept looping and I gave up.",
+          "should_trigger": true,
+          "query_mode": "implicit",
+          "boundary_with": [],
+          "trigger_rate": 1.0,
+          "triggers": 1,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": true,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The DatoCMS skills kept misunderstanding my setup and I want to send support a summary.",
+          "should_trigger": true,
+          "query_mode": "implicit",
+          "boundary_with": [],
+          "trigger_rate": 1.0,
+          "triggers": 1,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": true,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "This skill routed wrong three times; help me report feedback to DatoCMS.",
+          "should_trigger": true,
+          "query_mode": "implicit",
+          "boundary_with": [],
+          "trigger_rate": 1.0,
+          "triggers": 1,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": true,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "This DatoCMS MCP flow has looped several times and I want DatoCMS to know what went wrong.",
+          "should_trigger": true,
+          "query_mode": "implicit",
+          "boundary_with": [],
+          "trigger_rate": 1.0,
+          "triggers": 1,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": true,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "I am frustrated with how the DatoCMS setup skill keeps asking for the same thing; draft feedback I can email.",
+          "should_trigger": true,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-setup"
+          ],
+          "trigger_rate": 1.0,
+          "triggers": 1,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": true,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "We have tried the same MCP update five times, it keeps returning to the same invalid payload, and I want a support email describing the loop.",
+          "should_trigger": true,
+          "query_mode": "implicit",
+          "boundary_with": [],
+          "trigger_rate": 1.0,
+          "triggers": 1,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": true,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The skills never converged after repeated wrong routing between setup and frontend integrations. Please write a concise report for DatoCMS support.",
+          "should_trigger": true,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-setup",
+            "datocms-frontend-integrations"
+          ],
+          "trigger_rate": 1.0,
+          "triggers": 1,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": true,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "I'm done trying to make this MCP workflow work. Prepare a sanitized summary I can send to support.",
+          "should_trigger": true,
+          "query_mode": "implicit",
+          "boundary_with": [],
+          "trigger_rate": 1.0,
+          "triggers": 1,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": true,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The MCP call returned a validation error for a field ID; retry with the corrected field name.",
+          "should_trigger": false,
+          "query_mode": "implicit",
+          "boundary_with": [],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The MCP says the 'category' field does not exist on article. Inspect the model fields and try the update again.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cma"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "That API error tells us the enum must be draft or published. Use the allowed enum value and rerun the call.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cma"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The MCP returned an error that explains the allowed enum values; use that error message and continue.",
+          "should_trigger": false,
+          "query_mode": "implicit",
+          "boundary_with": [],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The first update failed because the record is not published yet. Publish it first, then retry the same change.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cma"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The tool call failed once with a 422, but now we know the nested block payload shape. Fix the payload and keep going.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cma"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "It errored because the environment is sandbox, not main. Switch the environment option and rerun.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cli",
+            "datocms-cma"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The first migration failed because the model already exists; inspect the schema and adjust the migration.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cli"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The migration threw a duplicate field error. Rename the field in the migration and run it again.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cli"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "npx datocms migrations:run failed because I am not logged in. Run login and then continue the migration workflow.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cli",
+            "datocms-setup"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The generated migration targeted the wrong field API key. Inspect schema:inspect output and regenerate the patch.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cli"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The GraphQL query failed because the slug field is missing; inspect available fields and try again.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cda"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The GraphQL response says _allArticles does not accept that filter. Check the schema and rewrite the filter.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cda"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The query failed on the first try because draft mode needs includeDrafts. Add includeDrafts and keep going.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cda",
+            "datocms-frontend-integrations"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The script hit a missing DATOCMS_API_TOKEN value; add the env var and rerun it.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cma"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The setup recipe says DATOCMS_READONLY_TOKEN is missing. Add the placeholder to .env.example and continue wiring the query client.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-setup",
+            "datocms-frontend-integrations"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The preview route returned 401 because the secret does not match. Update the local env value and retry the preview link.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-frontend-integrations",
+            "datocms-setup"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "This visual editing setup is broken and annoying; fix the overlay in this Next.js project.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-frontend-integrations",
+            "datocms-setup"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "Fix visual editing in this Next.js project; the overlay is not showing up.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-frontend-integrations",
+            "datocms-setup"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "This plugin UI looks bad; make the config screen match the DatoCMS dashboard.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-plugin-design-system"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "This content model is frustrating; help me decide whether testimonials should be blocks or records.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-content-modeling"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "This migration flow is driving me crazy, but keep debugging the failed release workflow and get it passing.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cli",
+            "datocms-setup"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The MCP result is wrong, but do not give up: inspect the record shape and try a narrower update.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cma"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "This is broken. Continue from the error message and make the import script work.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cma",
+            "datocms-cli"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The upload failed because the remote URL timed out. Retry the asset upload with a local file stream.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-cma"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The DatoCMS plugin hook failed because connect() does not expose that method. Inspect the SDK docs and patch the hook.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-plugin-builder"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The scaffolded plugin fails to start because Vite cannot resolve the SDK. Fix dependencies and keep the scaffold small.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-plugin-scaffold",
+            "datocms-plugin-builder"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The Structured Text renderer throws on inline records. Inspect the allowed blocks and update the renderer.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-frontend-integrations",
+            "datocms-cda"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "The site search setup returned zero results. Check crawler config and keep debugging the search route.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-setup",
+            "datocms-frontend-integrations"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        },
+        {
+          "query": "I got an error from the setup skill saying it needs the project linked first. Link the project and continue setup.",
+          "should_trigger": false,
+          "query_mode": "overlap",
+          "boundary_with": [
+            "datocms-setup",
+            "datocms-cli"
+          ],
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 1,
+          "reported_pass": true,
+          "threshold_predicted_trigger": false,
+          "threshold_pass": true,
+          "unstable": false
+        }
+      ]
+    }
+  ],
+  "aggregate": {
+    "total": 40,
+    "reported_passed": 40,
+    "reported_accuracy": 1.0,
+    "threshold_accuracy": 1.0,
+    "tp": 10,
+    "tn": 30,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "unstable_count": 0,
+    "avg_trigger_rate_true": 1.0,
+    "avg_trigger_rate_false": 0.0,
+    "query_modes": [
+      {
+        "query_mode": "implicit",
+        "total": 8,
+        "reported_passed": 8,
+        "reported_accuracy": 1.0,
+        "threshold_accuracy": 1.0,
+        "tp": 6,
+        "tn": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "unstable_count": 0,
+        "avg_trigger_rate_true": 1.0,
+        "avg_trigger_rate_false": 0.0
+      },
+      {
+        "query_mode": "explicit",
+        "total": 2,
+        "reported_passed": 2,
+        "reported_accuracy": 1.0,
+        "threshold_accuracy": 1.0,
+        "tp": 2,
+        "tn": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "unstable_count": 0,
+        "avg_trigger_rate_true": 1.0,
+        "avg_trigger_rate_false": 0.0
+      },
+      {
+        "query_mode": "overlap",
+        "total": 30,
+        "reported_passed": 30,
+        "reported_accuracy": 1.0,
+        "threshold_accuracy": 1.0,
+        "tp": 2,
+        "tn": 28,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "unstable_count": 0,
+        "avg_trigger_rate_true": 1.0,
+        "avg_trigger_rate_false": 0.0
+      }
+    ]
+  }
+}

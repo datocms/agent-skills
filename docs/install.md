@@ -102,7 +102,7 @@ Inside a Codex session from this repo, open the plugin picker:
 /plugins
 ```
 
-Choose the **DatoCMS Local Plugins** marketplace and install `datocms`. All 9 skills are bundled into the plugin automatically. If the repo marketplace is not visible yet, restart Codex and open `/plugins` again.
+Choose the **DatoCMS Local Plugins** marketplace and install `datocms`. All 10 skills are bundled into the plugin automatically. If the repo marketplace is not visible yet, restart and open `/plugins` again.
 
 ### Updates
 
@@ -151,6 +151,7 @@ cp -R "$repo_root/skills/datocms-cda/." "$skills_dir/datocms-cda"
 - `skills/datocms-cma`
 - `skills/datocms-content-modeling`
 - `skills/datocms-frontend-integrations`
+- `skills/datocms-feedback`
 - `skills/datocms-plugin-builder`
 - `skills/datocms-plugin-design-system`
 - `skills/datocms-plugin-scaffold`

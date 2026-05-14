@@ -15,6 +15,7 @@ The root [README](../README.md#public-skills) is the short version. This page ke
 | `datocms-content-modeling` | `skills/datocms-content-modeling` | Schema-design decisions: models vs blocks, block-bearing fields, reuse, taxonomies, limits, admin UI organization, model and field configuration |
 | `datocms-frontend-integrations` | `skills/datocms-frontend-integrations` | Framework integration patterns for draft mode, previews, live updates, rendering, and search |
 | `datocms-setup` | `skills/datocms-setup` | One-time setup orchestrator that routes to internal recipes for frontend, migrations, onboarding, and platform work |
+| `datocms-feedback` | `skills/datocms-feedback` | Draft sanitized support emails when DatoCMS skills or MCP workflows get stuck |
 
 ## Public Prompt Examples
 
@@ -30,6 +31,7 @@ $datocms-plugin-builder patch the config screen in this plugin
 $datocms-plugin-design-system make this plugin config screen feel native to DatoCMS
 $datocms-plugin-scaffold scaffold a new sidebar panel plugin for this project
 $datocms-setup install content link in this project
+$datocms-feedback draft an email to support@datocms.com about this stuck MCP workflow
 ```
 
 `datocms-frontend-integrations` and `datocms-setup` are the two public skills that are most important to call explicitly when you want deterministic routing.

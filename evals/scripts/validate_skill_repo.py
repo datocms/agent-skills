@@ -43,6 +43,9 @@ SKILL_GLOB_PATTERNS = (
 RECIPE_GLOB_PATTERN = "skills/datocms-setup/recipes/*/*/recipe.md"
 CODEX_DESCRIPTION_MAX_CHARS = 1024
 EVAL_FIXTURE_SUFFIX = "-skill-eval.json"
+EVAL_FIXTURE_EXCLUDED_DIRS = {
+    "results",
+}
 EVAL_RESULT_SUFFIX = "-eval-results.json"
 SETUP_ROUTER_EVAL_FILENAME = "datocms-setup-router-eval.json"
 RESULTS_MANIFEST_NAME = "manifest.json"
@@ -456,18 +459,32 @@ def _validate_eval_fixture_payload(
         errors.append(f"{path}: eval fixture must include both positive and negative cases")
 
 
+def _iter_eval_fixture_paths(repo_root: Path) -> list[Path]:
+    eval_dir = repo_root / "evals"
+    paths: list[Path] = []
+
+    for path in sorted(eval_dir.glob(f"**/*{EVAL_FIXTURE_SUFFIX}")):
+        rel_parts = path.relative_to(eval_dir).parts
+        if any(part in EVAL_FIXTURE_EXCLUDED_DIRS for part in rel_parts[:-1]):
+            continue
+        paths.append(path)
+
+    return paths
+
+
 def _validate_eval_fixture_coverage(
     repo_root: Path,
     canonical_skill_names: set[str],
     errors: list[str],
 ) -> None:
-    eval_dir = repo_root / "evals"
-    actual_paths = sorted(eval_dir.glob(f"*{EVAL_FIXTURE_SUFFIX}"))
+    actual_paths = _iter_eval_fixture_paths(repo_root)
     actual_names = set()
+    paths_by_name: dict[str, list[Path]] = {}
 
     for path in actual_paths:
         skill_name = path.name[: -len(EVAL_FIXTURE_SUFFIX)]
         actual_names.add(skill_name)
+        paths_by_name.setdefault(skill_name, []).append(path)
 
         if skill_name not in canonical_skill_names:
             errors.append(
@@ -476,10 +493,16 @@ def _validate_eval_fixture_coverage(
 
         _validate_eval_fixture_payload(path, skill_name, canonical_skill_names, errors)
 
+    for skill_name, paths in sorted(paths_by_name.items()):
+        if len(paths) <= 1:
+            continue
+        joined = ", ".join(path.relative_to(repo_root).as_posix() for path in paths)
+        errors.append(f"evals: duplicate fixture for `{skill_name}`: {joined}")
+
     missing_names = sorted(canonical_skill_names - actual_names)
     for skill_name in missing_names:
         errors.append(
-            f"evals/{skill_name}{EVAL_FIXTURE_SUFFIX}: missing canonical eval fixture"
+            f"evals/**/{skill_name}{EVAL_FIXTURE_SUFFIX}: missing canonical eval fixture"
         )
 
 
@@ -900,10 +923,23 @@ def _validate_result_fixture_sync(
             errors.append(f"{path}: result file must include list `results`")
             continue
 
-        fixture_path = repo_root / "evals" / f"{skill_name.strip()}{EVAL_FIXTURE_SUFFIX}"
-        if not fixture_path.exists():
-            errors.append(f"{path}: missing canonical fixture `{fixture_path.name}` for freshness check")
+        fixture_paths = [
+            fixture_path
+            for fixture_path in _iter_eval_fixture_paths(repo_root)
+            if fixture_path.name == f"{skill_name.strip()}{EVAL_FIXTURE_SUFFIX}"
+        ]
+        if not fixture_paths:
+            errors.append(
+                f"{path}: missing canonical fixture `{skill_name.strip()}{EVAL_FIXTURE_SUFFIX}` for freshness check"
+            )
             continue
+        if len(fixture_paths) > 1:
+            joined = ", ".join(
+                fixture_path.relative_to(repo_root).as_posix() for fixture_path in fixture_paths
+            )
+            errors.append(f"{path}: multiple canonical fixtures for freshness check: {joined}")
+            continue
+        fixture_path = fixture_paths[0]
 
         try:
             fixture_rows = json.loads(fixture_path.read_text(encoding="utf-8"))

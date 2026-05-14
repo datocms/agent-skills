@@ -29,7 +29,7 @@ If you're shipping code, you want Skills.
 
 ## What's covered
 
-Skills ship as two coherent packs. Pick the one that matches your work — the marketplace install for Claude Code and Codex brings both, while the universal `npx skills` installer can opt into a single pack.
+Skills ship as two coherent packs plus a shared feedback helper. Pick the install that matches your work — the marketplace install brings the full set, while the universal `npx skills` installer can opt into a single pack or helper.
 
 ### Project Pack — for building with DatoCMS
 
@@ -50,13 +50,17 @@ Three skills for building DatoCMS plugins:
 - **Plugin maintenance** — patch and extend an existing plugin: hooks, field extensions, sidebars, validations.
 - **Plugin design system** — restyle plugin UI to feel native to the DatoCMS dashboard.
 
+### Feedback helper — for stuck workflows
+
+One shared helper drafts sanitized feedback emails to <support@datocms.com> when a skills/MCP workflow is stuck or frustrating. It stays out of normal retry/error flows.
+
 For the full list of skill names, internal setup recipes, and routing rules see [`docs/skill-catalog.md`](docs/skill-catalog.md).
 
 ---
 
 ## Install
 
-Pick the install method for your agent. The marketplace install for Claude Code and Codex brings both packs (all nine skills); the universal `npx skills` installer can opt into a single pack.
+Pick the install method for your environment. The marketplace install brings both packs plus the feedback helper (all ten skills); the universal `npx skills` installer can opt into a single pack or helper.
 
 ### Claude Code (recommended)
 
@@ -83,7 +87,7 @@ Choose **DatoCMS** and "Install plugin"
 
 ### Cursor, Windsurf, GitHub Copilot, and other agents
 
-Install one pack:
+Install one pack or the feedback helper:
 
 ```bash
 # Project Pack
@@ -98,7 +102,12 @@ npx skills add datocms/agent-skills \
   --skill datocms-plugin-scaffold --skill datocms-plugin-builder --skill datocms-plugin-design-system
 ```
 
-Or both packs:
+```bash
+# Feedback helper
+npx skills add datocms/agent-skills --skill datocms-feedback
+```
+
+Or the full set:
 
 ```bash
 npx skills add datocms/agent-skills
@@ -108,7 +117,7 @@ Update later with `npx skills update`. For scopes, single-skill installs, and de
 
 ### Claude.ai (web)
 
-Upload skill `.zip` files via **Customize → Skills** in [claude.ai](https://claude.ai). Pre-built zips live in the [`zips/`](zips/) folder — one per skill. Upload the six Project Pack zips, the three Plugin Pack zips, or all nine.
+Upload skill `.zip` files via **Customize → Skills** in [claude.ai](https://claude.ai). Pre-built zips live in the [`zips/`](zips/) folder — one per skill. Upload the six Project Pack zips, the three Plugin Pack zips, the feedback zip, or all ten.
 
 ---
 
@@ -132,6 +141,7 @@ You don't need to invoke the auto-triggered skills — describe what you want in
 - "Import this CSV into the authors model"
 - "Make my plugin config screen match the DatoCMS style"
 - "Create a new DatoCMS plugin from scratch"
+- "The DatoCMS MCP flow keeps looping; draft feedback for support"
 
 ### The setup skill (explicit)
 
@@ -217,6 +227,6 @@ Helpers to manage SEO, images, video and Structured Text coming from your DatoCM
 
 - [**Plugin Examples**](https://github.com/datocms/plugins) - Example plugins we've made that extend the editor/admin dashboard
 - [**Starter Projects**](https://www.datocms.com/marketplace/starters) - Example website implementations for popular frameworks
-- [**All Public Repositories**](https://github.com/orgs/datocms/repositories?q=&type=public&language=&sort=stargazers)
+- [**All Public Repositories**](https://github.com/orgs/datocms/repositories?q=\&type=public\&language=\&sort=stargazers)
 
 <!--datocms-autoinclude-footer end-->

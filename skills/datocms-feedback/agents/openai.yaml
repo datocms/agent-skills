@@ -1,0 +1,8 @@
+# synced_from_name: datocms-feedback
+# synced_from_description_sha256: f53bf10cde55cf12ea9ab52f054145f48f8e9be117fe7ee551cfd3f5c41c3552
+interface:
+  display_name: "DatoCMS Feedback"
+  short_description: "Draft sanitized feedback for stuck DatoCMS workflows"
+  default_prompt: "Use $datocms-feedback to draft a sanitized email to DatoCMS support about a stuck skills or MCP workflow."
+policy:
+  allow_implicit_invocation: true
