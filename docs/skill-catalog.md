@@ -14,7 +14,7 @@ The root [README](../README.md#public-skills) is the short version. This page ke
 | `datocms-cda` | `skills/datocms-cda` | Content delivery queries, GraphQL reads, media, SEO, and typed queries |
 | `datocms-content-modeling` | `skills/datocms-content-modeling` | Schema-design decisions: models vs blocks, block-bearing fields, reuse, taxonomies, limits, admin UI organization, model and field configuration |
 | `datocms-frontend-integrations` | `skills/datocms-frontend-integrations` | Framework integration patterns for draft mode, previews, live updates, rendering, and search |
-| `datocms-setup` | `skills/datocms-setup` | Setup orchestrator that routes to internal recipes for frontend, migrations, onboarding, and platform work |
+| `datocms-setup` | `skills/datocms-setup` | One-time setup orchestrator that routes to internal recipes for frontend, migrations, onboarding, and platform work |
 | `datocms-feedback` | `skills/datocms-feedback` | Draft sanitized support emails when DatoCMS skills or MCP workflows get stuck |
 
 ## Public Prompt Examples
@@ -45,7 +45,7 @@ $datocms-feedback draft an email to support@datocms.com about this stuck MCP wor
 | `frontend-foundation` | `cda-client`, `draft-mode`, `web-previews`, `content-link`, `realtime`, `cache-tags`, `graphql-types` | Query baseline, previews, visual editing, live preview, cache invalidation, typed queries |
 | `frontend-features` | `responsive-images`, `structured-text`, `video-player`, `site-search`, `seo`, `robots-sitemaps` | Rendering and discovery add-ons layered on top of the foundation |
 | `migrations` | `migrations`, `migration-release-workflow`, `blueprint-sync`, `sandbox-iteration`, `cli-profiles`, `migration-autogenerate` | Schema workflow, release, and environment tooling |
-| `onboarding` | `contentful-import`, `wordpress-import` | Import helpers |
+| `onboarding` | `contentful-import`, `wordpress-import` | One-shot import helpers |
 | `platform` | `cma-types`, `webhooks`, `build-triggers` | Project-level automation and schema tooling |
 
 ## Setup Routing Rules
@@ -56,7 +56,7 @@ $datocms-feedback draft an email to support@datocms.com about this stuck MCP wor
 
 ## Explicit Prompt Examples
 
-Call `datocms-setup` explicitly, then describe the outcome in plain language. For Content Link, prompts like these should route to the `content-link` recipe and queue `draft-mode` when needed:
+Call `datocms-setup` explicitly, then describe the outcome in plain language. For Content Link, prompts like these should route to the `content-link` recipe and queue `draft-mode` first when needed:
 
 ```text
 $datocms-setup install content link in this project
