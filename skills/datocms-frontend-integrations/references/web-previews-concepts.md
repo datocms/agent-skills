@@ -148,28 +148,30 @@ routeRules: {
 
 Maps DatoCMS record to frontend URL. Used by preview-links endpoint.
 
-Pattern varies by framework:
-
-- **Next.js** — Switches on `item.__itemTypeId` (deserialized item's model ID). Uses `deserializeRawItem` from `@datocms/rest-client-utils` to convert raw item.
-- **Nuxt, SvelteKit** — Switches on `itemTypeId` parameter (from `itemType.id` in request body)
-- **Astro** — Switches on `itemType.attributes.api_key` (model's API key string, e.g., `'blog_post'`)
+Same pattern across all frameworks: deserialize the raw item with `deserializeRawItem` from `@datocms/rest-client-utils`, then switch on `item.__itemTypeId`. With `cma-types` in place, each `case Schema.X.ID` narrows `item.attributes` to that model's fields — no `as` casts needed.
 
 Skeleton:
 
 ```ts
-function recordToWebsiteRoute(item, itemTypeIdentifier, locale) {
-  switch (itemTypeIdentifier) {
-    case 'YOUR_MODEL_ID_OR_API_KEY': {
-      return `/your-path/${item.attributes.slug}`;
-    }
-    // Add more cases for each content model
+import type { RawApiTypes } from '@datocms/cma-client';
+import * as Schema from '@/lib/datocms/cma-types';
+
+export async function recordToWebsiteRoute(
+  item: RawApiTypes.Item<Schema.AnyModel>,
+  _locale: string,
+): Promise<string | null> {
+  switch (item.__itemTypeId) {
+    // case Schema.Page.ID:
+    //   return `/${item.attributes.slug}`;
+    // case Schema.BlogPost.ID:
+    //   return `/blog/${item.attributes.slug}`;
     default:
       return null;
   }
 }
 ```
 
-User must fill in their own models. Provide TODO comments showing examples.
+User must fill in their own models. Provide commented-out examples.
 
 ## `reloadPreviewOnRecordUpdate`
 
@@ -224,4 +226,4 @@ frame-ancestors 'self' https://plugins-cdn.datocms.com
 Preview-links endpoint requires:
 
 - `@datocms/cma-client` — For `RawApiTypes.Item` and `ApiTypes.ItemType` types, and `ApiError` for error handling
-- `@datocms/rest-client-utils` — **Next.js only**, for `deserializeRawItem` to convert raw JSON:API item before passing to `recordToWebsiteRoute`
+- `@datocms/rest-client-utils` — for `deserializeRawItem` to convert raw JSON:API item before passing to `recordToWebsiteRoute`

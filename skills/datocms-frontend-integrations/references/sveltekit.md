@@ -340,6 +340,7 @@ Optional for Web Previews helpers:
 ```ts
 import { env as privateEnv } from '$env/dynamic/private';
 import { recordToWebsiteRoute } from '$lib/datocms/recordInfo';
+import { deserializeRawItem } from '@datocms/rest-client-utils';
 import { json } from '@sveltejs/kit';
 import { handleUnexpectedError, invalidRequestResponse, withCORS } from '../utils';
 import type { RequestHandler } from './$types';
@@ -371,9 +372,9 @@ export const POST: RequestHandler = async ({ url, request }) => {
       return invalidRequestResponse('Invalid token', 401);
     }
 
-    const { item, itemType, locale } = await request.json();
+    const { item, locale } = await request.json();
 
-    const recordUrl = recordToWebsiteRoute(item, itemType.id, locale);
+    const recordUrl = await recordToWebsiteRoute(deserializeRawItem(item), locale);
 
     const response: WebPreviewsResponse = { previewLinks: [] };
 
@@ -408,7 +409,7 @@ export const POST: RequestHandler = async ({ url, request }) => {
 
 Key points:
 
-- Receives `itemType` in the body and passes `itemType.id` to `recordToWebsiteRoute`
+- Uses `deserializeRawItem` from `@datocms/rest-client-utils` so `recordToWebsiteRoute` can switch on `item.__itemTypeId`
 - Uses `redirect` as the query parameter name (same as Next.js)
 
 ### `recordToWebsiteRoute`
@@ -424,12 +425,11 @@ import * as Schema from '$lib/datocms/cma-types';
 /**
  * Maps a DatoCMS record to its frontend URL. Used by the preview-links endpoint.
  */
-export function recordToWebsiteRoute(
+export async function recordToWebsiteRoute(
   item: RawApiTypes.Item<Schema.AnyModel>,
-  itemTypeId: string,
-  locale: string,
-): string | null {
-  switch (itemTypeId) {
+  _locale: string,
+): Promise<string | null> {
+  switch (item.__itemTypeId) {
     // Replace with your project's models. Each `case Schema.X.ID` narrows
     // `item.attributes` to that model's fields — no `as` casts needed.
     //
@@ -447,7 +447,7 @@ export function recordToWebsiteRoute(
 
 ### Web Previews Dependencies
 
-No additional dependencies beyond what Core requires.
+Required: `@datocms/rest-client-utils`
 
 ## Content Link (Optional)
 

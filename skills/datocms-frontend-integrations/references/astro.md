@@ -390,6 +390,7 @@ Optional for Web Previews helpers:
 ```ts
 import type { APIRoute } from 'astro';
 import { SECRET_API_TOKEN } from 'astro:env/server';
+import { deserializeRawItem } from '@datocms/rest-client-utils';
 import { recordToWebsiteRoute } from '~/lib/datocms/recordInfo';
 import { handleUnexpectedError, invalidRequestResponse, json, withCORS } from '../utils';
 
@@ -420,10 +421,9 @@ export const POST: APIRoute = async ({ url, request }) => {
       return invalidRequestResponse('Invalid token', 401);
     }
 
-    const { item, itemType, locale } = await request.json();
+    const { item, locale } = await request.json();
 
-    // Astro uses itemType.attributes.api_key (the model's API key string)
-    const recordUrl = recordToWebsiteRoute(item, itemType.attributes.api_key, locale);
+    const recordUrl = await recordToWebsiteRoute(deserializeRawItem(item), locale);
 
     const response: WebPreviewsResponse = { previewLinks: [] };
 
@@ -458,35 +458,33 @@ export const POST: APIRoute = async ({ url, request }) => {
 
 Key points:
 
-- **Astro uses `itemType.attributes.api_key`** (model's API key string like `'blog_post'`), NOT numeric model ID. Differs from Next.js/Nuxt/SvelteKit — `api_key` approach preferred (human-readable, stable)
 - Uses custom `json()` helper from utils
 
 ### `recordToWebsiteRoute`
 
 **File:** `src/lib/datocms/recordInfo.ts`
 
-When `cma-types` is in place, type the record with `RawApiTypes.Item<Schema.AnyModel>` for proper field typing inside each branch. Astro switches on `api_key` (not `__itemTypeId`), so narrowing happens manually — but the union still ensures `item.attributes` matches a real model.
+Requires `cma-types` — generated types expose `Schema.X.ID` (literal-typed model id) and the `AnyModel` union, which discriminates `item.attributes` per branch.
 
 ```ts
 import type { RawApiTypes } from '@datocms/cma-client';
-import type * as Schema from '@/lib/datocms/cma-types';
+import * as Schema from '@/lib/datocms/cma-types';
 
 /**
  * Maps a DatoCMS record to its frontend URL. Used by the preview-links endpoint.
- * Astro switches on the model's API key (e.g. 'blog_post') instead of model id.
  */
-export function recordToWebsiteRoute(
+export async function recordToWebsiteRoute(
   item: RawApiTypes.Item<Schema.AnyModel>,
-  itemTypeApiKey: string,
-  locale: string,
-): string | null {
-  switch (itemTypeApiKey) {
-    // Replace with your project's models.
+  _locale: string,
+): Promise<string | null> {
+  switch (item.__itemTypeId) {
+    // Replace with your project's models. Each `case Schema.X.ID` narrows
+    // `item.attributes` to that model's fields — no `as` casts needed.
     //
-    // case 'page':
+    // case Schema.Page.ID:
     //   return `/${item.attributes.slug}`;
     //
-    // case 'blog_post':
+    // case Schema.BlogPost.ID:
     //   return `/blog/${item.attributes.slug}`;
 
     default:
@@ -494,11 +492,6 @@ export function recordToWebsiteRoute(
   }
 }
 ```
-
-Key points:
-
-- **Switches on API key strings** (e.g., `'page'`, `'blog_post'`), NOT model IDs
-- Different from Next.js, Nuxt, SvelteKit which use model IDs
 
 ### Astro Config Web Previews Addition
 
@@ -517,7 +510,7 @@ export default defineConfig({
 
 ### Web Previews Dependencies
 
-No additional dependencies beyond Core.
+Required: `@datocms/rest-client-utils`
 
 ## Content Link (Optional)
 

@@ -384,13 +384,13 @@ Optional (Web Previews):
 **File:** `server/api/preview-links/index.ts`
 
 ```ts
-import type { ApiTypes, RawApiTypes } from '@datocms/cma-client';
+import type { RawApiTypes } from '@datocms/cma-client';
+import { deserializeRawItem } from '@datocms/rest-client-utils';
 import { ensureHttpMethods, handleUnexpectedError } from '~/lib/api/utils';
 import { recordToWebsiteRoute } from '~/lib/datocms/recordInfo';
 
 type WebPreviewsRequestBody = {
   item: RawApiTypes.Item;
-  itemType: ApiTypes.ItemType;
   locale: string;
 };
 
@@ -425,11 +425,11 @@ export default eventHandler(async (event) => {
       throw createError({ message: 'Invalid token', status: 401 });
     }
 
-    const { item, itemType, locale } = await readBody<WebPreviewsRequestBody>(event, {
+    const { item, locale } = await readBody<WebPreviewsRequestBody>(event, {
       strict: true,
     });
 
-    const url = recordToWebsiteRoute(item, locale, itemType.id);
+    const url = await recordToWebsiteRoute(deserializeRawItem(item), locale);
 
     const response: WebPreviewsResponse = { previewLinks: [] };
 
@@ -467,50 +467,41 @@ Key points:
 - `readBody` parses request body (Nuxt auto-import)
 - `getRequestURL(event)` for base URL
 - `url` as redirect param (matches enable/disable)
-- `itemType` in body → pass `itemType.id` to `recordToWebsiteRoute`
+- Uses `deserializeRawItem` from `@datocms/rest-client-utils` so `recordToWebsiteRoute` can switch on `item.__itemTypeId`
 - CORS via `nuxt.config.ts` route rules, not manual headers
 
 ### `recordToWebsiteRoute`
 
 **File:** `lib/datocms/recordInfo.ts`
 
+Requires `cma-types` — generated types expose `Schema.X.ID` (literal-typed model id) and the `AnyModel` union, which discriminates `item.attributes` per branch.
+
 ```ts
 import type { RawApiTypes } from '@datocms/cma-client';
+import * as Schema from '~/lib/datocms/cma-types';
 
 /**
  * Maps a DatoCMS record to its frontend URL. Used by the preview-links endpoint.
- *
- * Fill in cases for each of your content models. You can find model IDs
- * in DatoCMS under Settings → Models → click a model → the ID is in the URL.
  */
-export function recordToWebsiteRoute(
-  item: RawApiTypes.Item,
+export async function recordToWebsiteRoute(
+  item: RawApiTypes.Item<Schema.AnyModel>,
   _locale: string,
-  itemTypeId: string,
-) {
-  switch (itemTypeId) {
-    // Scaffolded example cases. Replace them before calling
-    // the Web Previews setup production-ready.
-    // TODO: Add your models here. Examples:
+): Promise<string | null> {
+  switch (item.__itemTypeId) {
+    // Replace with your project's models. Each `case Schema.X.ID` narrows
+    // `item.attributes` to that model's fields — no `as` casts needed.
     //
-    // case 'YOUR_PAGE_MODEL_ID': {
-    //   return `/page/${item.attributes.slug}`;
-    // }
+    // case Schema.Page.ID:
+    //   return `/${item.attributes.slug}`;
     //
-    // case 'YOUR_BLOG_POST_MODEL_ID': {
+    // case Schema.BlogPost.ID:
     //   return `/blog/${item.attributes.slug}`;
-    // }
 
     default:
       return null;
   }
 }
 ```
-
-Key points:
-
-- Nuxt passes `itemTypeId` separately (from `itemType.id` in request body)
-- Switch on model ID strings (not `api_key`)
 
 ### Nuxt Config CORS Addition
 
@@ -528,7 +519,7 @@ export default defineNuxtConfig({
 
 ### Web Previews Dependencies
 
-None beyond Core.
+Required: `@datocms/rest-client-utils`
 
 ## Content Link (Optional)
 
