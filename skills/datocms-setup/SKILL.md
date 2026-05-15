@@ -25,7 +25,7 @@ Public setup entrypoint. Keep surface small, inspect repo first, load only neede
 ## Workflow
 
 1. Inspect repo silently before asking, follow `references/repo-conventions.md` + `patterns/MANDATORY_RULES.md`.
-2. **Greenfield gate** — if no `package.json` and no `datocms.config.json`, ask link-vs-create per `patterns/MANDATORY_RULES.md` § Project link or create before any recipe selection. On "create" → wait for confirmation, queue `datocms-content-modeling` before any frontend recipe.
+2. **Greenfield gate** — if no `package.json` and no `datocms.config.json`, ask link-vs-create per `patterns/MANDATORY_RULES.md` § Project link or create before any recipe selection. On "create" → wait for confirmation, queue `datocms-content-modeling` before any frontend recipe. For frontend-framework targets, also surface the official DatoCMS tech starter before any scaffolding — see **Tech Starters** below. If the user picks the starter, guide clone + env-var config only and skip recipe scaffolding entirely.
 3. Read `references/router.md`.
 4. Read `references/recipe-manifest.json`, pick smallest recipe/bundle for request.
 5. Use targeted mode for clear setup outcomes. Discovery mode only for broad/ambiguous:
@@ -41,6 +41,23 @@ Public setup entrypoint. Keep surface small, inspect repo first, load only neede
 9. Schema/modeling intent (add models, edit fields, design taxonomy) → `datocms-content-modeling`. Don't improvise schema here.
 10. Patch existing code in-place by default.
 11. End with `patterns/OUTPUT_STATUS.md`: report `scaffolded` vs `production-ready`, summarize recipes, list unresolved placeholders.
+
+## Tech Starters
+
+Official DatoCMS tech starters already ship with draft mode, Web Previews, Content Link, real-time updates, and typed GraphQL queries. Always offer one for a greenfield frontend project — scaffolding from scratch produces a redundant, inferior baseline.
+
+| Framework | GitHub | Marketplace |
+|---|---|---|
+| Next.js | https://github.com/datocms/nextjs-starter-kit | https://www.datocms.com/marketplace/starters/next-js-starter-kit |
+| Nuxt | https://github.com/datocms/nuxt-starter-kit | https://www.datocms.com/marketplace/starters/nuxt-starter-kit |
+| SvelteKit | https://github.com/datocms/sveltekit-starter-kit | https://www.datocms.com/marketplace/starters/sveltekit-starter-kit |
+| Astro | https://github.com/datocms/astro-starter-kit | https://www.datocms.com/marketplace/starters/astro-starter-kit |
+
+**Flow:**
+1. Identify the target framework from the user's request or the Stage A question.
+2. Surface the starter: _"This directory is empty. The official DatoCMS [Framework] starter already includes draft mode, Web Previews, Content Link, and real-time updates. Do you want to start from it, or scaffold from scratch?"_
+3. **User picks starter** → guide `git clone <repo>`, fill in env vars, stop — skip all recipe scaffolding.
+4. **User declines** → continue from step 3 of the Workflow.
 
 ## Rules
 
