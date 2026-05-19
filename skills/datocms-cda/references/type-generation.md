@@ -35,10 +35,10 @@ npm install --save-dev dotenv-cli
 Add to `package.json` scripts:
 
 ```json
-"generate-schema": "dotenv -c -- bash -c 'gql.tada generate schema https://graphql.datocms.com --header \"X-Exclude-Invalid: true\" --header \"Authorization: $DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN\"'"
+"generate-schema": "dotenv -c -- bash -c 'gql.tada generate schema https://graphql.datocms.com --header \"X-Exclude-Invalid: true\" --header \"Authorization: $DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN\" && gql.tada generate-output'"
 ```
 
-Run `npm run generate-schema` to produce `schema.graphql` at the project root. Re-run after model changes.
+Two commands chained — `generate schema` fetches `schema.graphql`, `generate-output` writes the `.d.ts` from it. Always run together; the `.d.ts` is stale without a fresh schema. Re-run after model changes. The tsconfig plugin (below) regenerates the `.d.ts` live in the IDE, but CI builds need this script before `tsc`.
 
 > **Token env var:** The command above uses `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` (the setup recipe convention). If your project uses a different name like `DATOCMS_CDA_TOKEN`, adjust the command accordingly.
 
@@ -97,16 +97,6 @@ export type { FragmentOf, ResultOf, VariablesOf } from 'gql.tada';
 ```
 
 The `scalars` object maps DatoCMS custom GraphQL scalars to TypeScript types. See `client-and-config.md` for the full scalar reference.
-
-### CI / Build Output
-
-The tsconfig plugin generates types in the IDE, but CI builds need an explicit output step. Add to `package.json` scripts:
-
-```json
-"generate-output": "gql.tada generate output"
-```
-
-Run `npm run generate-schema && npm run generate-output` in CI before `tsc` or the framework build.
 
 ### Key Exports
 
