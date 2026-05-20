@@ -40,7 +40,7 @@ If the user agrees, generate the URL.
 
 Base: `https://www.datocms.com/support`. Query params URL-encoded via `encodeURIComponent`.
 
-- `topics=spontaneous-feedback` — fixed slug for skills/MCP feedback. Required — form does not render without it.
+- `topics=technical-support/ai-integration-issues` — fixed slug for skills/MCP feedback (URL-encode the `/` as `%2F`). Required — form does not render without it.
 - `subject=<short subject>` — one line.
 - `body=<sanitized message>` — see body rules.
 
