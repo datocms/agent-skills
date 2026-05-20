@@ -87,9 +87,9 @@ Update later with `npx skills update`. For scopes, single-skill installs, and de
 
 ### Claude.ai (web)
 
-On the web you can't run CLI commands or edit local files, so most development-focused skills don't apply. The ones worth uploading are **content modeling** (`datocms-content-modeling`) and **writing content & automation** (`datocms-cma`) — best paired with the [DatoCMS MCP server](https://www.datocms.com/docs/mcp-server), which lets the agent read and update your project directly from the conversation.
+On the web you can't run CLI commands or edit local files, so most development-focused skills don't apply. The ones worth uploading are [`datocms-content-modeling.zip`](zips/datocms-content-modeling.zip) (content modeling) and [`datocms-cma.zip`](zips/datocms-cma.zip) (writing content & automation) — best paired with the [DatoCMS MCP server](https://www.datocms.com/docs/mcp-server), which lets the agent read and update your project directly from the conversation.
 
-Upload skill `.zip` files via **Customize → Skills** in [claude.ai](https://claude.ai). Pre-built zips live in the [`zips/`](zips/) folder.
+Upload the `.zip` files via **Customize → Skills** in [claude.ai](https://claude.ai). The full set of pre-built zips lives in the [`zips/`](zips/) folder.
 
 ---
 
