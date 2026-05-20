@@ -8,17 +8,17 @@ Use this checklist when you want to confirm the repo is ready for Codex-local pl
 - `.agents/plugins/marketplace.json` exists and exposes the repo as a local Codex plugin marketplace entry.
 - Every public skill ships as `skills/<skill-name>/SKILL.md`.
 - Every public skill has synced `agents/openai.yaml` metadata.
-- Every public skill has a canonical eval fixture at `evals/<skill-name>-skill-eval.json`.
-- Every included public skill has a checked-in result file at `evals/results/<skill-name>-eval-results.json`.
+- Every public skill has a canonical eval fixture at `evals/fixtures/trigger/<skill-name>.json`.
+- Every included public skill has a checked-in result file at `evals/results/trigger/<skill-name>/<track>/<source>/results.json`.
 
 ## Validation commands
 
 Run these from the repo root:
 
 ```bash
-python3 evals/scripts/validate_skill_repo.py --repo-root .
-python3 evals/scripts/validate_skill_repo.py --repo-root . --require-fresh-results-sync
-python3 evals/scripts/validate_skill_repo.py --repo-root . --require-clean-git
+python3 evals/scripts/validate_skill_repo.py
+python3 evals/scripts/validate_skill_repo.py --require-fresh-results-sync
+python3 evals/scripts/validate_skill_repo.py --require-clean-git
 ```
 
 ## What “golden” means here

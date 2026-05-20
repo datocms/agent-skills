@@ -24,13 +24,13 @@ Run from the repo root before publishing or opening a PR:
 
 ```bash
 # Base validation: metadata sync, eval fixture coverage, repo invariants
-python3 evals/scripts/validate_skill_repo.py --repo-root .
+python3 evals/scripts/validate_skill_repo.py
 
 # Pre-publish gate: also requires a clean working tree
-python3 evals/scripts/validate_skill_repo.py --repo-root . --require-clean-git
+python3 evals/scripts/validate_skill_repo.py --require-clean-git
 
 # Optional: fail if checked-in eval results are stale
-python3 evals/scripts/validate_skill_repo.py --repo-root . --require-fresh-results-sync
+python3 evals/scripts/validate_skill_repo.py --require-fresh-results-sync
 ```
 
 For the full eval workflow (running, interpreting, and updating snapshots) see [`evals/README.md`](../evals/README.md). **Do not run evals proactively** — they are expensive. Only run them when explicitly investigating trigger quality.
@@ -93,4 +93,4 @@ metadata:
 - Each skill ships a Codex agent interface config at `skills/<skill-name>/agents/openai.yaml` that **must stay synced** with the SKILL.md frontmatter. The validator checks this.
 - Detailed reference docs go under `skills/<skill-name>/references/`.
 - `datocms-setup` is the special orchestrator and routes to internal recipes via `references/recipe-manifest.json`. Recipes live under `skills/datocms-setup/recipes/<lane>/<recipe-id>/`.
-- Every public skill needs a canonical eval fixture at `evals/<skill-name>-skill-eval.json` and a checked-in results snapshot at `evals/results/<skill-name>-eval-results.json`.
+- Every public skill needs a canonical eval fixture at `evals/fixtures/trigger/<skill-name>.json` and a checked-in results snapshot at `evals/results/trigger/<skill-name>/<track>/<source>/results.json`.

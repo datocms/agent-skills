@@ -34,11 +34,9 @@ ALLOW_IMPLICIT_RE = re.compile(
 SKILL_GLOB_PATTERNS = (
     "skills/*/SKILL.md",
 )
-EVAL_FIXTURE_SUFFIX = "-skill-eval.json"
-EVAL_FIXTURE_ROOT = "evals"
-EVAL_FIXTURE_EXCLUDED_DIRS = {
-    "results",
-}
+TRIGGER_FIXTURES_ROOT = "evals/fixtures/trigger"
+RESULTS_ROOT = "evals/results"
+TRIGGER_KIND = "trigger"
 
 
 @dataclass
@@ -159,41 +157,24 @@ def extract_metadata(skill_path: Path) -> SkillMetadata:
     )
 
 
-def fixture_candidates(repo_root: Path, skill_name: str) -> list[Path]:
-    eval_root = repo_root / EVAL_FIXTURE_ROOT
-    pattern = f"**/{skill_name}{EVAL_FIXTURE_SUFFIX}"
-    candidates: list[Path] = []
-
-    for path in sorted(eval_root.glob(pattern)):
-        rel_parts = path.relative_to(eval_root).parts
-        if any(part in EVAL_FIXTURE_EXCLUDED_DIRS for part in rel_parts[:-1]):
-            continue
-        candidates.append(path)
-
-    return candidates
+def fixture_path_for_skill(repo_root: Path, skill_name: str) -> Path:
+    return repo_root / TRIGGER_FIXTURES_ROOT / f"{skill_name}.json"
 
 
 def discover_eval_configs(repo_root: Path) -> list[SkillEvalConfig]:
     configs: list[SkillEvalConfig] = []
     missing_fixtures: list[str] = []
-    duplicate_fixtures: list[str] = []
 
     for skill_path in iter_skill_files(repo_root):
         skill_name, _description = extract_frontmatter(skill_path)
-        candidates = fixture_candidates(repo_root, skill_name)
+        eval_path = fixture_path_for_skill(repo_root, skill_name)
 
-        if not candidates:
+        if not eval_path.exists():
             missing_fixtures.append(
-                f"{skill_name}: expected {EVAL_FIXTURE_ROOT}/**/{skill_name}{EVAL_FIXTURE_SUFFIX}"
+                f"{skill_name}: expected {TRIGGER_FIXTURES_ROOT}/{skill_name}.json"
             )
             continue
 
-        if len(candidates) > 1:
-            rels = ", ".join(path.relative_to(repo_root).as_posix() for path in candidates)
-            duplicate_fixtures.append(f"{skill_name}: {rels}")
-            continue
-
-        eval_path = candidates[0]
         configs.append(
             SkillEvalConfig(
                 skill_name=skill_name,
@@ -202,15 +183,9 @@ def discover_eval_configs(repo_root: Path) -> list[SkillEvalConfig]:
             )
         )
 
-    messages = []
     if missing_fixtures:
         lines = "\n".join(f"- {item}" for item in missing_fixtures)
-        messages.append(f"missing canonical trigger-eval fixtures:\n{lines}")
-    if duplicate_fixtures:
-        lines = "\n".join(f"- {item}" for item in duplicate_fixtures)
-        messages.append(f"duplicate trigger-eval fixtures:\n{lines}")
-    if messages:
-        raise ValueError("\n".join(messages))
+        raise ValueError(f"missing canonical trigger-eval fixtures:\n{lines}")
 
     return sorted(configs, key=lambda config: config.skill_name)
 
@@ -374,10 +349,20 @@ def build_prompt(
     raise ValueError(f"unsupported source: {source}")
 
 
+def result_path_for(
+    results_root: Path,
+    skill_name: str,
+    track: str,
+    source: str,
+) -> Path:
+    return results_root / TRIGGER_KIND / skill_name / track / source / "results.json"
+
+
 def evaluate_skill(
     repo_root: Path,
     config: SkillEvalConfig,
-    output_dir: Path,
+    results_root: Path,
+    track: str,
     model: str | None,
     source: str,
     prediction_runner: PredictionRunner,
@@ -435,8 +420,8 @@ def evaluate_skill(
         },
     }
 
-    output_name = f"{skill_name}-eval-results.json"
-    output_path = output_dir / output_name
+    output_path = result_path_for(results_root, skill_name, track, source)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
     return {

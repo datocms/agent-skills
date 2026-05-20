@@ -23,10 +23,10 @@ DatoCMS skills repository — public skills that provide focused AI-tool guidanc
 
 ```bash
 # Validate repo invariants and metadata sync
-python3 evals/scripts/validate_skill_repo.py --repo-root .
+python3 evals/scripts/validate_skill_repo.py
 
 # Validate with clean-git gate (pre-publish)
-python3 evals/scripts/validate_skill_repo.py --repo-root . --require-clean-git
+python3 evals/scripts/validate_skill_repo.py --require-clean-git
 ```
 
 **Never run evals proactively** — they are expensive. Only run when explicitly asked. See `evals/README.md` for the full eval workflow.

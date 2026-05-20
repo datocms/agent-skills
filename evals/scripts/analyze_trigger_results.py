@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 """Analyze skill trigger-eval result files.
 
-This script accepts result files with either pure JSON or a human-readable preamble
-followed by JSON (the format currently used in this repository).
+Produces a cross-skill summary (gate + unweighted F1 stats + per-skill table)
+under `<results-dir>/_summary/<track>/<source>/summary.{json,md}`.
+
+Each result file may be pure JSON or a human-readable preamble followed by JSON
+(the format currently used in this repository).
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import statistics
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -16,8 +20,12 @@ from typing import Any
 
 DEFAULT_QUERY_MODE = "implicit"
 KNOWN_QUERY_MODES = ("implicit", "explicit", "overlap")
-RESULTS_MANIFEST_NAME = "manifest.json"
-DEFAULT_RESULTS_DIR = "evals/results"
+DEFAULT_RESULTS_DIR = "evals/results/trigger"
+DEFAULT_TRACK = "claude"
+DEFAULT_SOURCE = "frontmatter"
+DEFAULT_TRIGGER_THRESHOLD = 0.5
+DEFAULT_F1_THRESHOLD = 0.90
+SUMMARY_DIR_NAME = "_summary"
 
 
 @dataclass
@@ -156,44 +164,6 @@ def _load_result_file(path: Path) -> dict[str, Any]:
     return payload
 
 
-def _load_results_manifest(results_dir: Path) -> dict[str, Any] | None:
-    manifest_path = results_dir / RESULTS_MANIFEST_NAME
-    if not manifest_path.exists():
-        return None
-
-    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if not isinstance(payload, dict):
-        raise ValueError(f"{manifest_path}: expected object JSON")
-
-    included_skills = payload.get("included_skills", [])
-    excluded_skills = payload.get("excluded_skills", {})
-
-    if not isinstance(included_skills, list) or any(
-        not isinstance(item, str) or not item.strip() for item in included_skills
-    ):
-        raise ValueError(f"{manifest_path}: `included_skills` must be a string array")
-
-    if not isinstance(excluded_skills, dict) or any(
-        not isinstance(key, str)
-        or not key.strip()
-        or not isinstance(value, str)
-        or not value.strip()
-        for key, value in excluded_skills.items()
-    ):
-        raise ValueError(
-            f"{manifest_path}: `excluded_skills` must be an object of skill -> reason"
-        )
-
-    return {
-        "track_name": str(payload.get("track_name", "")).strip(),
-        "included_skills": sorted({item.strip() for item in included_skills}),
-        "excluded_skills": {
-            key.strip(): value.strip()
-            for key, value in sorted(excluded_skills.items(), key=lambda item: item[0])
-        },
-    }
-
-
 def _summarize_query_items(query_items: list[QueryEvaluation]) -> dict[str, Any]:
     tp = tn = fp = fn = 0
     reported_passed = 0
@@ -328,14 +298,52 @@ def _build_skill_summary(payload: dict[str, Any], source_file: Path, threshold: 
     )
 
 
-def _aggregate(skills: list[SkillSummary]) -> dict[str, Any]:
-    all_queries = [query for skill in skills for query in skill.queries]
-    summary = _summarize_query_items(all_queries)
-
+def _compute_gate(skills: list[SkillSummary], f1_threshold: float) -> dict[str, Any]:
+    below = [
+        {"skill_name": skill.skill_name, "f1": skill.f1}
+        for skill in skills
+        if skill.f1 < f1_threshold
+    ]
+    below.sort(key=lambda item: (item["f1"], item["skill_name"]))
+    total = len(skills)
     return {
-        **summary,
-        "query_modes": [asdict(item) for item in _build_query_mode_summaries(all_queries)],
+        "passed": not below,
+        "total_skills": total,
+        "skills_above_threshold": total - len(below),
+        "skills_below_threshold": below,
     }
+
+
+def _stats(values: list[float]) -> dict[str, float]:
+    if not values:
+        return {"median": 0.0, "min": 0.0, "max": 0.0, "mean": 0.0}
+    return {
+        "median": statistics.median(values),
+        "min": min(values),
+        "max": max(values),
+        "mean": statistics.fmean(values),
+    }
+
+
+def _compute_unweighted_stats(skills: list[SkillSummary]) -> dict[str, Any]:
+    return {
+        "f1": _stats([skill.f1 for skill in skills]),
+        "precision": _stats([skill.precision for skill in skills]),
+        "recall": _stats([skill.recall for skill in skills]),
+        "reported_accuracy": _stats([skill.reported_accuracy for skill in skills]),
+    }
+
+
+def _argmin(skills: list[SkillSummary], key) -> SkillSummary | None:
+    if not skills:
+        return None
+    return min(skills, key=key)
+
+
+def _argmax(skills: list[SkillSummary], key) -> SkillSummary | None:
+    if not skills:
+        return None
+    return max(skills, key=key)
 
 
 def _preview(text: str, limit: int = 180) -> str:
@@ -345,63 +353,52 @@ def _preview(text: str, limit: int = 180) -> str:
     return f"{normalized[: limit - 3]}..."
 
 
-def _render_markdown(report: dict[str, Any]) -> str:
+def _render_markdown(report: dict[str, Any], skills: list[SkillSummary]) -> str:
     lines: list[str] = []
-    lines.append("# Trigger Eval Analysis")
+    lines.append("# Trigger Eval Summary")
     lines.append("")
     lines.append(f"Generated at: {report['generated_at_utc']}")
-    lines.append(f"Threshold: `{report['threshold']}`")
+    lines.append(f"Track / source: `{report['track']}` / `{report['source']}`")
+    lines.append(f"Trigger threshold (per-query): `{report['threshold']}`")
+    lines.append(f"F1 gate threshold: `{report['threshold_f1']}`")
     lines.append("")
 
-    coverage = report.get("coverage")
-    if isinstance(coverage, dict):
-        track_name = str(coverage.get("track_name", "")).strip()
-        included_skills = coverage.get("included_skills", [])
-        excluded_skills = coverage.get("excluded_skills", {})
-
-        if track_name:
-            lines.append(f"Coverage manifest: `{track_name}`")
+    gate = report["gate"]
+    threshold_pct = report["threshold_f1"] * 100
+    lines.append("## Gate")
+    lines.append("")
+    if gate["passed"]:
         lines.append(
-            "Coverage: "
-            f"{len(included_skills)} included skill(s), "
-            f"{len(excluded_skills)} explicit exclusion(s)."
+            f"PASS — {gate['skills_above_threshold']}/{gate['total_skills']} skills "
+            f"at or above F1 {threshold_pct:.1f}%."
         )
-        if excluded_skills:
-            for skill_name, reason in excluded_skills.items():
-                lines.append(f"- Excluded `{skill_name}`: {reason}")
+    else:
+        lines.append(
+            f"FAIL — {len(gate['skills_below_threshold'])}/{gate['total_skills']} skills "
+            f"below F1 {threshold_pct:.1f}%:"
+        )
         lines.append("")
-
-    aggregate = report["aggregate"]
-    lines.append(
-        "Overall: "
-        f"{aggregate['reported_passed']}/{aggregate['total']} reported-pass "
-        f"({aggregate['reported_accuracy']:.1%}), "
-        f"precision {aggregate['precision']:.1%}, "
-        f"recall {aggregate['recall']:.1%}, "
-        f"F1 {aggregate['f1']:.1%}."
-    )
+        for item in gate["skills_below_threshold"]:
+            lines.append(f"- `{item['skill_name']}` — F1 {item['f1']:.1%}")
     lines.append("")
 
-    aggregate_modes = aggregate.get("query_modes", [])
-    if len(aggregate_modes) > 1:
-        lines.append("## Overall By Query Mode")
-        lines.append("")
-        lines.append("| Query Mode | Total | Reported Pass | Precision | Recall | F1 | Unstable |")
-        lines.append("|---|---:|---:|---:|---:|---:|---:|")
-        for mode_summary in aggregate_modes:
-            lines.append(
-                "| "
-                f"{mode_summary['query_mode']} | "
-                f"{mode_summary['total']} | "
-                f"{mode_summary['reported_passed']}/{mode_summary['total']} "
-                f"({mode_summary['reported_accuracy']:.1%}) | "
-                f"{mode_summary['precision']:.1%} | "
-                f"{mode_summary['recall']:.1%} | "
-                f"{mode_summary['f1']:.1%} | "
-                f"{mode_summary['unstable_count']} |"
-            )
-        lines.append("")
+    f1_stats = report["stats_unweighted"]["f1"]
+    f1_min_skill = _argmin(skills, key=lambda s: s.f1)
+    f1_max_skill = _argmax(skills, key=lambda s: s.f1)
+    lines.append("## Unweighted F1 Stats")
+    lines.append("")
+    lines.append(f"- Median: {f1_stats['median']:.1%}")
+    lines.append(f"- Mean: {f1_stats['mean']:.1%}")
+    if f1_min_skill is not None:
+        lines.append(f"- Min: {f1_stats['min']:.1%} (`{f1_min_skill.skill_name}`)")
+    if f1_max_skill is not None:
+        lines.append(f"- Max: {f1_stats['max']:.1%} (`{f1_max_skill.skill_name}`)")
+    lines.append("")
+    lines.append("Each skill counts once. No case-weighted averaging across skills.")
+    lines.append("")
 
+    lines.append("## Per-Skill")
+    lines.append("")
     lines.append("| Skill | Reported Pass | Precision | Recall | F1 | FN | FP | Unstable |")
     lines.append("|---|---:|---:|---:|---:|---:|---:|---:|")
     for skill in report["skills"]:
@@ -474,7 +471,13 @@ def _render_markdown(report: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def _build_report(result_files: list[Path], threshold: float, results_dir: Path) -> dict[str, Any]:
+def _build_report(
+    result_files: list[Path],
+    threshold: float,
+    f1_threshold: float,
+    track: str,
+    source: str,
+) -> tuple[dict[str, Any], list[SkillSummary]]:
     skill_summaries = [
         _build_skill_summary(_load_result_file(path), path, threshold)
         for path in result_files
@@ -484,7 +487,12 @@ def _build_report(result_files: list[Path], threshold: float, results_dir: Path)
 
     report = {
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "track": track,
+        "source": source,
         "threshold": threshold,
+        "threshold_f1": f1_threshold,
+        "gate": _compute_gate(skill_summaries, f1_threshold),
+        "stats_unweighted": _compute_unweighted_stats(skill_summaries),
         "skills": [
             {
                 **{
@@ -497,20 +505,20 @@ def _build_report(result_files: list[Path], threshold: float, results_dir: Path)
             }
             for skill in skill_summaries
         ],
-        "aggregate": _aggregate(skill_summaries),
     }
-
-    coverage = _load_results_manifest(results_dir)
-    if coverage is not None:
-        report["coverage"] = coverage
-
-    return report
+    return report, skill_summaries
 
 
-def _discover_files(results_dir: Path, pattern: str) -> list[Path]:
-    files = sorted(results_dir.glob(pattern))
+def _discover_files(results_dir: Path, track: str, source: str) -> list[Path]:
+    files = sorted(
+        path
+        for path in results_dir.glob(f"*/{track}/{source}/results.json")
+        if not path.relative_to(results_dir).parts[0].startswith("_")
+    )
     if not files:
-        raise ValueError(f"no files found in {results_dir} matching pattern '{pattern}'")
+        raise ValueError(
+            f"no result files found under {results_dir}/<skill>/{track}/{source}/results.json"
+        )
     return files
 
 
@@ -519,50 +527,100 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--results-dir",
         default=DEFAULT_RESULTS_DIR,
-        help=f"Directory containing result files (default: {DEFAULT_RESULTS_DIR})",
+        help=(
+            "Trigger results root scanned as <results-dir>/<skill>/<track>/<source>/results.json "
+            f"(default: {DEFAULT_RESULTS_DIR})"
+        ),
     )
     parser.add_argument(
-        "--pattern",
-        default="*-eval-results.json",
-        help="Glob pattern inside results dir (default: *-eval-results.json)",
+        "--track",
+        default=DEFAULT_TRACK,
+        help=f"Track to analyze (default: {DEFAULT_TRACK})",
+    )
+    parser.add_argument(
+        "--source",
+        default=DEFAULT_SOURCE,
+        help=f"Routing source to analyze (default: {DEFAULT_SOURCE})",
     )
     parser.add_argument(
         "--threshold",
         type=float,
-        default=0.5,
-        help="Trigger threshold used to classify query-level predictions (default: 0.5)",
+        default=DEFAULT_TRIGGER_THRESHOLD,
+        help=(
+            "Per-query trigger threshold used to classify predictions "
+            f"(default: {DEFAULT_TRIGGER_THRESHOLD})"
+        ),
+    )
+    parser.add_argument(
+        "--threshold-f1",
+        type=float,
+        default=DEFAULT_F1_THRESHOLD,
+        help=(
+            "F1 gate threshold: gate fails when any skill's F1 is below this value "
+            f"(default: {DEFAULT_F1_THRESHOLD})"
+        ),
     )
     parser.add_argument(
         "--output-json",
-        help="Optional path for machine-readable report JSON",
+        help=(
+            "Path for the machine-readable summary JSON "
+            "(default: <results-dir>/_summary/<track>/<source>/summary.json)"
+        ),
     )
     parser.add_argument(
         "--output-markdown",
-        help="Optional path for human-readable markdown summary",
+        help=(
+            "Path for the human-readable summary markdown "
+            "(default: <results-dir>/_summary/<track>/<source>/summary.md)"
+        ),
+    )
+    parser.add_argument(
+        "--no-write",
+        action="store_true",
+        help="Print the markdown summary to stdout without writing summary files.",
+    )
+    parser.add_argument(
+        "--fail-on-gate",
+        action="store_true",
+        help="Exit with status 1 when the F1 gate fails (default: exit 0).",
     )
     return parser.parse_args()
+
+
+def _default_summary_paths(results_dir: Path, track: str, source: str) -> tuple[Path, Path]:
+    base = results_dir / SUMMARY_DIR_NAME / track / source
+    return base / "summary.json", base / "summary.md"
 
 
 def main() -> int:
     args = parse_args()
     results_dir = Path(args.results_dir)
 
-    result_files = _discover_files(results_dir, args.pattern)
-    report = _build_report(result_files, args.threshold, results_dir)
+    result_files = _discover_files(results_dir, args.track, args.source)
+    report, skills = _build_report(
+        result_files,
+        args.threshold,
+        args.threshold_f1,
+        args.track,
+        args.source,
+    )
 
-    markdown = _render_markdown(report)
+    markdown = _render_markdown(report, skills)
     print(markdown, end="")
 
-    if args.output_json:
-        output_json = Path(args.output_json)
+    if not args.no_write:
+        default_json, default_md = _default_summary_paths(results_dir, args.track, args.source)
+        output_json = Path(args.output_json) if args.output_json else default_json
+        output_markdown = Path(args.output_markdown) if args.output_markdown else default_md
+
         output_json.parent.mkdir(parents=True, exist_ok=True)
         output_json.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
-    if args.output_markdown:
-        output_markdown = Path(args.output_markdown)
         output_markdown.parent.mkdir(parents=True, exist_ok=True)
         output_markdown.write_text(markdown, encoding="utf-8")
 
+    if args.fail_on_gate and not report["gate"]["passed"]:
+        return 1
     return 0
 
 

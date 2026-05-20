@@ -10,50 +10,48 @@ metadata:
 
 Before running, ask the user which eval source to run unless they already specified it in `$ARGUMENTS`:
 
-- **Codex only** — uses `run_claude_trigger_eval.py`
-- **Codex only** — uses `run_codex_trigger_eval.py`
-- **Both** — runs both runners sequentially
-
-Pick a descriptive label for the run. Default to today's date if none provided.
+- **Claude Code only** — uses `run_trigger_eval.py --track claude`
+- **Codex only** — uses `run_trigger_eval.py --track codex`
+- **Both** — runs both tracks sequentially
 
 **Step 1 — Classify:**
 
-For Codex:
+The runner writes to the canonical layout at `evals/results/trigger/<skill>/<track>/<source>/results.json`. You do not pass an output directory.
+
+For Claude Code:
+
 ```bash
-python3 evals/scripts/run_claude_trigger_eval.py \
-  --repo-root . \
-  --output-dir evals/results/adHocRuns/<date>-<label>/raw \
-  --source combined
+python3 evals/scripts/run_trigger_eval.py --track claude --source combined
 ```
 
 For Codex:
+
 ```bash
-python3 evals/scripts/run_codex_trigger_eval.py \
-  --repo-root . \
-  --output-dir evals/results/adHocRuns/<date>-<label>/raw
+python3 evals/scripts/run_trigger_eval.py --track codex
 ```
 
 **Step 2 — Analyze:**
 
 ```bash
 python3 evals/scripts/analyze_trigger_results.py \
-  --results-dir evals/results/adHocRuns/<date>-<label>/raw \
-  --output-json evals/results/adHocRuns/<date>-<label>/analysis.json \
-  --output-markdown evals/results/adHocRuns/<date>-<label>/analysis.md
+  --track claude --source frontmatter
 ```
 
-Report the key metrics: recall, precision, F1, and any false negatives/positives.
+This writes the cross-skill summary to `evals/results/trigger/_summary/<track>/<source>/summary.{json,md}`. Report:
+
+- The gate verdict (pass/fail at F1 ≥ 0.90, with the list of skills below threshold).
+- Per-skill precision, recall, F1.
+- Any noteworthy false negatives / positives.
 
 **Step 3 — Compare (optional):**
 
-If the user provides a baseline path or there is a recent baseline in `evals/results/adHocRuns/`, compare:
+If the user provides a baseline summary or you have one from a previous run:
 
 ```bash
 python3 evals/scripts/compare_trigger_runs.py \
-  --baseline <baseline>/analysis.json \
-  --candidate evals/results/adHocRuns/<date>-<label>/analysis.json \
-  --output-markdown evals/results/adHocRuns/<date>-<label>/comparison.md \
-  --output-json evals/results/adHocRuns/<date>-<label>/comparison.json
+  --baseline <baseline-summary>.json \
+  --candidate evals/results/trigger/_summary/<track>/<source>/summary.json \
+  --output-markdown local/comparison.md
 ```
 
-Summarize regressions and improvements.
+Summarize regressions and improvements. For ad-hoc baselines that should not be committed, store them under `local/` (gitignored).

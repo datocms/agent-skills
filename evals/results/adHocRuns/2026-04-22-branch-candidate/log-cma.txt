@@ -1,2 +1,0 @@
-[done] datocms-cma: 27/28 -> /Users/stefanoverna/trash/datocms-llm-skills/evals/results/adHocRuns/2026-04-22-branch-candidate/raw/datocms-cma-eval-results.json
-[summary] overall 27/28 (96.4%)

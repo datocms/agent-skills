@@ -9,7 +9,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-DEFAULT_FIXTURE = "evals/datocms-setup-router-eval.json"
+DEFAULT_FIXTURE = "evals/fixtures/router/datocms-setup.json"
 DEFAULT_ROUTER_PATH = "skills/datocms-setup/references/router.md"
 DEFAULT_MANIFEST_PATH = "skills/datocms-setup/references/recipe-manifest.json"
 ALLOWED_STAGE_B = (

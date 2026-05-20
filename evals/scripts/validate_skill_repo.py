@@ -42,13 +42,10 @@ SKILL_GLOB_PATTERNS = (
 )
 RECIPE_GLOB_PATTERN = "skills/datocms-setup/recipes/*/*/recipe.md"
 CODEX_DESCRIPTION_MAX_CHARS = 1024
-EVAL_FIXTURE_SUFFIX = "-skill-eval.json"
-EVAL_FIXTURE_EXCLUDED_DIRS = {
-    "results",
-}
-EVAL_RESULT_SUFFIX = "-eval-results.json"
-SETUP_ROUTER_EVAL_FILENAME = "datocms-setup-router-eval.json"
-RESULTS_MANIFEST_NAME = "manifest.json"
+TRIGGER_FIXTURES_DIR = "evals/fixtures/trigger"
+TRIGGER_RESULTS_DIR = "evals/results/trigger"
+SETUP_ROUTER_FIXTURE_PATH = "evals/fixtures/router/datocms-setup.json"
+SETUP_ROUTER_MATRIX_PATH = "evals/fixtures/router/datocms-setup.matrix.md"
 DEFAULT_QUERY_MODE = "implicit"
 ALLOWED_QUERY_MODES = {
     "implicit",
@@ -460,16 +457,8 @@ def _validate_eval_fixture_payload(
 
 
 def _iter_eval_fixture_paths(repo_root: Path) -> list[Path]:
-    eval_dir = repo_root / "evals"
-    paths: list[Path] = []
-
-    for path in sorted(eval_dir.glob(f"**/*{EVAL_FIXTURE_SUFFIX}")):
-        rel_parts = path.relative_to(eval_dir).parts
-        if any(part in EVAL_FIXTURE_EXCLUDED_DIRS for part in rel_parts[:-1]):
-            continue
-        paths.append(path)
-
-    return paths
+    fixtures_dir = repo_root / TRIGGER_FIXTURES_DIR
+    return sorted(fixtures_dir.glob("*.json"))
 
 
 def _validate_eval_fixture_coverage(
@@ -479,12 +468,10 @@ def _validate_eval_fixture_coverage(
 ) -> None:
     actual_paths = _iter_eval_fixture_paths(repo_root)
     actual_names = set()
-    paths_by_name: dict[str, list[Path]] = {}
 
     for path in actual_paths:
-        skill_name = path.name[: -len(EVAL_FIXTURE_SUFFIX)]
+        skill_name = path.stem
         actual_names.add(skill_name)
-        paths_by_name.setdefault(skill_name, []).append(path)
 
         if skill_name not in canonical_skill_names:
             errors.append(
@@ -493,93 +480,11 @@ def _validate_eval_fixture_coverage(
 
         _validate_eval_fixture_payload(path, skill_name, canonical_skill_names, errors)
 
-    for skill_name, paths in sorted(paths_by_name.items()):
-        if len(paths) <= 1:
-            continue
-        joined = ", ".join(path.relative_to(repo_root).as_posix() for path in paths)
-        errors.append(f"evals: duplicate fixture for `{skill_name}`: {joined}")
-
     missing_names = sorted(canonical_skill_names - actual_names)
     for skill_name in missing_names:
         errors.append(
-            f"evals/**/{skill_name}{EVAL_FIXTURE_SUFFIX}: missing canonical eval fixture"
+            f"{TRIGGER_FIXTURES_DIR}/{skill_name}.json: missing canonical eval fixture"
         )
-
-
-def _load_results_manifest(
-    results_dir: Path,
-    canonical_skill_names: set[str],
-    errors: list[str],
-) -> tuple[set[str], dict[str, str]] | None:
-    manifest_path = results_dir / RESULTS_MANIFEST_NAME
-    if not manifest_path.exists():
-        return None
-
-    try:
-        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        errors.append(f"{manifest_path}: invalid JSON ({exc})")
-        return None
-
-    if not isinstance(payload, dict):
-        errors.append(f"{manifest_path}: manifest root must be an object")
-        return None
-
-    included_skills = payload.get("included_skills")
-    excluded_skills = payload.get("excluded_skills")
-
-    if not isinstance(included_skills, list) or any(
-        not isinstance(item, str) or not item.strip() for item in included_skills
-    ):
-        errors.append(f"{manifest_path}: `included_skills` must be a string array")
-        return None
-
-    if not isinstance(excluded_skills, dict) or any(
-        not isinstance(key, str)
-        or not key.strip()
-        or not isinstance(value, str)
-        or not value.strip()
-        for key, value in excluded_skills.items()
-    ):
-        errors.append(f"{manifest_path}: `excluded_skills` must map skill names to reasons")
-        return None
-
-    included_set: set[str] = set()
-    for skill_name in included_skills:
-        normalized = skill_name.strip()
-        if normalized in included_set:
-            errors.append(f"{manifest_path}: duplicate included skill `{normalized}`")
-            continue
-        included_set.add(normalized)
-        if normalized not in canonical_skill_names:
-            errors.append(f"{manifest_path}: unknown included skill `{normalized}`")
-
-    excluded_map: dict[str, str] = {}
-    for skill_name, reason in excluded_skills.items():
-        normalized = skill_name.strip()
-        if normalized in excluded_map:
-            errors.append(f"{manifest_path}: duplicate excluded skill `{normalized}`")
-            continue
-        excluded_map[normalized] = reason.strip()
-        if normalized not in canonical_skill_names:
-            errors.append(f"{manifest_path}: unknown excluded skill `{normalized}`")
-
-    overlap = sorted(included_set & set(excluded_map))
-    for skill_name in overlap:
-        errors.append(f"{manifest_path}: skill `{skill_name}` cannot be both included and excluded")
-
-    manifest_skill_names = included_set | set(excluded_map)
-    missing_skills = sorted(canonical_skill_names - manifest_skill_names)
-    for skill_name in missing_skills:
-        errors.append(
-            f"{manifest_path}: missing coverage decision for canonical skill `{skill_name}`"
-        )
-
-    extra_skills = sorted(manifest_skill_names - canonical_skill_names)
-    for skill_name in extra_skills:
-        errors.append(f"{manifest_path}: unknown skill `{skill_name}` listed in coverage manifest")
-
-    return included_set, excluded_map
 
 
 def _validate_eval_result_names(
@@ -587,51 +492,43 @@ def _validate_eval_result_names(
     canonical_skill_names: set[str],
     errors: list[str],
 ) -> None:
-    results_dir = repo_root / "evals" / "results"
-    manifest = _load_results_manifest(results_dir, canonical_skill_names, errors)
+    results_dir = repo_root / TRIGGER_RESULTS_DIR
+    if not results_dir.exists():
+        return
 
-    if manifest is None:
-        expected_included_skills = canonical_skill_names
-        expected_excluded_skills: dict[str, str] = {}
-    else:
-        expected_included_skills, expected_excluded_skills = manifest
+    actual_skill_dirs = {
+        path.name
+        for path in results_dir.iterdir()
+        if path.is_dir() and not path.name.startswith("_")
+    }
 
-    actual_result_skills: set[str] = set()
-    for path in sorted(results_dir.glob(f"*{EVAL_RESULT_SUFFIX}")):
+    extra_skills = sorted(actual_skill_dirs - canonical_skill_names)
+    for skill_name in extra_skills:
+        errors.append(
+            f"{results_dir / skill_name}: result directory does not match any canonical skill name"
+        )
+
+    for results_path in sorted(results_dir.glob("*/*/*/results.json")):
+        rel_parts = results_path.relative_to(results_dir).parts
+        if rel_parts[0].startswith("_"):
+            continue
+
+        skill_name = rel_parts[0]
+
         try:
-            payload = _extract_json_payload(path.read_text(encoding="utf-8"), path)
+            payload = _extract_json_payload(results_path.read_text(encoding="utf-8"), results_path)
         except ValueError as exc:
             errors.append(str(exc))
             continue
 
-        skill_name = payload.get("skill_name")
-        if not isinstance(skill_name, str) or not skill_name.strip():
-            errors.append(f"{path}: result file must include string `skill_name`")
+        embedded_name = payload.get("skill_name")
+        if not isinstance(embedded_name, str) or not embedded_name.strip():
+            errors.append(f"{results_path}: result file must include string `skill_name`")
             continue
-
-        normalized_skill_name = skill_name.strip()
-        actual_result_skills.add(normalized_skill_name)
-
-        expected_name = f"{normalized_skill_name}{EVAL_RESULT_SUFFIX}"
-        if path.name != expected_name:
+        if embedded_name.strip() != skill_name:
             errors.append(
-                f"{path}: result filename should be `{expected_name}` to match canonical skill name"
+                f"{results_path}: embedded skill_name `{embedded_name.strip()}` does not match directory `{skill_name}`"
             )
-
-        if normalized_skill_name in expected_excluded_skills:
-            errors.append(
-                f"{path}: result file exists for explicitly excluded skill `{normalized_skill_name}`"
-            )
-        elif normalized_skill_name not in expected_included_skills:
-            errors.append(
-                f"{path}: result file is not covered by the published results manifest"
-            )
-
-    missing_results = sorted(expected_included_skills - actual_result_skills)
-    for skill_name in missing_results:
-        errors.append(
-            f"evals/results/{skill_name}{EVAL_RESULT_SUFFIX}: missing checked-in result for included skill"
-        )
 
 
 def _load_setup_recipe_ids(repo_root: Path, errors: list[str]) -> set[str]:
@@ -728,7 +625,7 @@ def _extract_manual_matrix_negative_controls(path: Path, errors: list[str]) -> l
 
 
 def _validate_setup_router_eval(repo_root: Path, errors: list[str]) -> None:
-    fixture_path = repo_root / "evals" / SETUP_ROUTER_EVAL_FILENAME
+    fixture_path = repo_root / SETUP_ROUTER_FIXTURE_PATH
     if not fixture_path.exists():
         errors.append(f"{fixture_path}: missing datocms-setup router eval fixture")
         return
@@ -764,7 +661,7 @@ def _validate_setup_router_eval(repo_root: Path, errors: list[str]) -> None:
         errors.append(f"{manifest_path}: unable to load recipe ids for router eval validation")
         return
 
-    manual_matrix_path = repo_root / "evals" / "datocms-setup-manual-matrix.md"
+    manual_matrix_path = repo_root / SETUP_ROUTER_MATRIX_PATH
     expected_negative_controls = set(_extract_manual_matrix_negative_controls(manual_matrix_path, errors))
 
     covered_recipe_ids: set[str] = set()
@@ -905,9 +802,14 @@ def _validate_result_fixture_sync(
     repo_root: Path,
     errors: list[str],
 ) -> None:
-    results_dir = repo_root / "evals" / "results"
+    results_dir = repo_root / TRIGGER_RESULTS_DIR
+    fixtures_dir = repo_root / TRIGGER_FIXTURES_DIR
 
-    for path in sorted(results_dir.glob(f"*{EVAL_RESULT_SUFFIX}")):
+    for path in sorted(results_dir.glob("*/*/*/results.json")):
+        rel_parts = path.relative_to(results_dir).parts
+        if rel_parts[0].startswith("_"):
+            continue
+
         try:
             payload = _extract_json_payload(path.read_text(encoding="utf-8"), path)
         except ValueError as exc:
@@ -923,23 +825,11 @@ def _validate_result_fixture_sync(
             errors.append(f"{path}: result file must include list `results`")
             continue
 
-        fixture_paths = [
-            fixture_path
-            for fixture_path in _iter_eval_fixture_paths(repo_root)
-            if fixture_path.name == f"{skill_name.strip()}{EVAL_FIXTURE_SUFFIX}"
-        ]
-        if not fixture_paths:
-            errors.append(
-                f"{path}: missing canonical fixture `{skill_name.strip()}{EVAL_FIXTURE_SUFFIX}` for freshness check"
-            )
+        fixture_path = fixtures_dir / f"{skill_name.strip()}.json"
+        if not fixture_path.exists():
+            rel = fixture_path.relative_to(repo_root).as_posix()
+            errors.append(f"{path}: missing canonical fixture `{rel}` for freshness check")
             continue
-        if len(fixture_paths) > 1:
-            joined = ", ".join(
-                fixture_path.relative_to(repo_root).as_posix() for fixture_path in fixture_paths
-            )
-            errors.append(f"{path}: multiple canonical fixtures for freshness check: {joined}")
-            continue
-        fixture_path = fixture_paths[0]
 
         try:
             fixture_rows = json.loads(fixture_path.read_text(encoding="utf-8"))
@@ -1260,7 +1150,9 @@ def main() -> int:
     print("[ok] routed skill names match frontmatter names")
     print("[ok] scaffold-capable skills declare scaffolded vs production-ready states")
     print("[ok] canonical eval fixtures cover every skill and contain positive/negative cases")
-    print("[ok] checked-in eval results match canonical names and declared coverage")
+    print(
+        f"[ok] result directories under {TRIGGER_RESULTS_DIR} match canonical skill names and embedded skill_name"
+    )
     print("[ok] datocms-setup router eval fixture is present and covers recipes and Stage B branches")
     if args.require_fresh_results_sync:
         print("[ok] checked-in root eval result rows match canonical fixtures")

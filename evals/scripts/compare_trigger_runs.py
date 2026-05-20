@@ -13,7 +13,6 @@ from pathlib import Path
 from typing import Any
 
 DEFAULT_QUERY_MODE = "implicit"
-KNOWN_QUERY_MODES = ("implicit", "explicit", "overlap")
 
 
 @dataclass
@@ -39,26 +38,6 @@ class SkillDelta:
     delta_fp: int
 
 
-@dataclass
-class QueryModeDelta:
-    query_mode: str
-    baseline_total: int
-    candidate_total: int
-    delta_total: int
-    baseline_reported_accuracy: float
-    candidate_reported_accuracy: float
-    delta_reported_accuracy: float
-    baseline_recall: float
-    candidate_recall: float
-    delta_recall: float
-    baseline_precision: float
-    candidate_precision: float
-    delta_precision: float
-    baseline_f1: float
-    candidate_f1: float
-    delta_f1: float
-
-
 def _load_report(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
@@ -68,23 +47,16 @@ def _load_report(path: Path) -> dict[str, Any]:
     return payload
 
 
-def _mode_sort_key(query_mode: str) -> tuple[int, str]:
-    try:
-        return (KNOWN_QUERY_MODES.index(query_mode), query_mode)
-    except ValueError:
-        return (len(KNOWN_QUERY_MODES), query_mode)
-
-
 def _index_skills(report: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return {str(skill["skill_name"]): skill for skill in report["skills"]}
 
 
-def _index_query_modes(report: dict[str, Any]) -> dict[str, dict[str, Any]]:
-    aggregate = report.get("aggregate", {})
-    query_modes = aggregate.get("query_modes", [])
-    if not isinstance(query_modes, list):
-        return {}
-    return {str(mode["query_mode"]): mode for mode in query_modes}
+def _unweighted_f1(report: dict[str, Any]) -> float:
+    skills = report.get("skills") or []
+    if not skills:
+        return 0.0
+    values = [float(skill.get("f1", 0.0)) for skill in skills]
+    return sum(values) / len(values)
 
 
 def _collect_deltas(baseline: dict[str, Any], candidate: dict[str, Any]) -> list[SkillDelta]:
@@ -118,42 +90,6 @@ def _collect_deltas(baseline: dict[str, Any], candidate: dict[str, Any]) -> list
                 baseline_fp=int(b["fp"]),
                 candidate_fp=int(c["fp"]),
                 delta_fp=int(c["fp"]) - int(b["fp"]),
-            )
-        )
-
-    return deltas
-
-
-def _collect_query_mode_deltas(
-    baseline: dict[str, Any], candidate: dict[str, Any]
-) -> list[QueryModeDelta]:
-    baseline_modes = _index_query_modes(baseline)
-    candidate_modes = _index_query_modes(candidate)
-
-    shared_modes = sorted(set(baseline_modes) & set(candidate_modes), key=_mode_sort_key)
-    deltas: list[QueryModeDelta] = []
-
-    for query_mode in shared_modes:
-        b = baseline_modes[query_mode]
-        c = candidate_modes[query_mode]
-        deltas.append(
-            QueryModeDelta(
-                query_mode=query_mode,
-                baseline_total=int(b["total"]),
-                candidate_total=int(c["total"]),
-                delta_total=int(c["total"]) - int(b["total"]),
-                baseline_reported_accuracy=float(b["reported_accuracy"]),
-                candidate_reported_accuracy=float(c["reported_accuracy"]),
-                delta_reported_accuracy=float(c["reported_accuracy"]) - float(b["reported_accuracy"]),
-                baseline_recall=float(b["recall"]),
-                candidate_recall=float(c["recall"]),
-                delta_recall=float(c["recall"]) - float(b["recall"]),
-                baseline_precision=float(b["precision"]),
-                candidate_precision=float(c["precision"]),
-                delta_precision=float(c["precision"]) - float(b["precision"]),
-                baseline_f1=float(b["f1"]),
-                candidate_f1=float(c["f1"]),
-                delta_f1=float(c["f1"]) - float(b["f1"]),
             )
         )
 
@@ -245,7 +181,6 @@ def _render_markdown(
     baseline: dict[str, Any],
     candidate: dict[str, Any],
     deltas: list[SkillDelta],
-    query_mode_deltas: list[QueryModeDelta],
     improvements: list[dict[str, Any]],
     regressions: list[dict[str, Any]],
 ) -> str:
@@ -257,38 +192,13 @@ def _render_markdown(
     lines.append(f"Candidate: `{candidate_path}`")
     lines.append("")
 
-    b_agg = baseline["aggregate"]
-    c_agg = candidate["aggregate"]
-
+    b_mean = _unweighted_f1(baseline)
+    c_mean = _unweighted_f1(candidate)
     lines.append(
-        "Overall reported pass: "
-        f"{b_agg['reported_passed']}/{b_agg['total']} ({float(b_agg['reported_accuracy']):.1%}) -> "
-        f"{c_agg['reported_passed']}/{c_agg['total']} ({float(c_agg['reported_accuracy']):.1%}) "
-        f"({_fmt_delta(float(c_agg['reported_accuracy']) - float(b_agg['reported_accuracy']))})"
-    )
-    lines.append(
-        "Overall recall / precision / F1: "
-        f"{float(b_agg['recall']):.1%}/{float(b_agg['precision']):.1%}/{float(b_agg['f1']):.1%} -> "
-        f"{float(c_agg['recall']):.1%}/{float(c_agg['precision']):.1%}/{float(c_agg['f1']):.1%}"
+        f"Unweighted mean F1 (per-skill): {b_mean:.1%} -> {c_mean:.1%} "
+        f"({_fmt_delta(c_mean - b_mean)})"
     )
     lines.append("")
-
-    if query_mode_deltas:
-        lines.append("## Overall By Query Mode")
-        lines.append("")
-        lines.append("| Query Mode | Total Δ | Pass Δ | Recall Δ | Precision Δ | F1 Δ |")
-        lines.append("|---|---:|---:|---:|---:|---:|")
-        for delta in query_mode_deltas:
-            lines.append(
-                "| "
-                f"{delta.query_mode} | "
-                f"{delta.delta_total:+d} | "
-                f"{_fmt_delta(delta.delta_reported_accuracy)} | "
-                f"{_fmt_delta(delta.delta_recall)} | "
-                f"{_fmt_delta(delta.delta_precision)} | "
-                f"{_fmt_delta(delta.delta_f1)} |"
-            )
-        lines.append("")
 
     lines.append("| Skill | Pass Δ | Recall Δ | Precision Δ | F1 Δ | FN Δ | FP Δ |")
     lines.append("|---|---:|---:|---:|---:|---:|---:|")
@@ -339,14 +249,14 @@ def main() -> int:
     candidate = _load_report(candidate_path)
 
     deltas = _collect_deltas(baseline, candidate)
-    query_mode_deltas = _collect_query_mode_deltas(baseline, candidate)
     improvements, regressions = _query_changes(baseline, candidate)
 
     payload = {
         "baseline": str(baseline_path),
         "candidate": str(candidate_path),
+        "baseline_mean_f1_unweighted": _unweighted_f1(baseline),
+        "candidate_mean_f1_unweighted": _unweighted_f1(candidate),
         "skill_deltas": [delta.__dict__ for delta in deltas],
-        "query_mode_deltas": [delta.__dict__ for delta in query_mode_deltas],
         "query_improvements": improvements,
         "query_regressions": regressions,
     }
@@ -357,7 +267,6 @@ def main() -> int:
         baseline,
         candidate,
         deltas,
-        query_mode_deltas,
         improvements,
         regressions,
     )

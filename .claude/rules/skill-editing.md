@@ -11,12 +11,12 @@ paths:
 Each skill's `agents/openai.yaml` tracks its source via `synced_from_name` and `synced_from_description_sha256`. After changing a SKILL.md `name` or `description` field, update the corresponding `openai.yaml` to match and run validation:
 
 ```bash
-python3 evals/scripts/validate_skill_repo.py --repo-root .
+python3 evals/scripts/validate_skill_repo.py
 ```
 
 ## Eval Fixture Requirement
 
-Every shipped skill must have a matching eval fixture at `evals/<skill-name>-skill-eval.json`. If you add a new skill, create its fixture.
+Every shipped skill must have a matching eval fixture at `evals/fixtures/trigger/<skill-name>.json`. If you add a new skill, create its fixture.
 
 ## Trigger Boundary Refinement
 
