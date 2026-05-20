@@ -34,6 +34,11 @@ ALLOW_IMPLICIT_RE = re.compile(
 SKILL_GLOB_PATTERNS = (
     "skills/*/SKILL.md",
 )
+EVAL_FIXTURE_SUFFIX = "-skill-eval.json"
+EVAL_FIXTURE_ROOT = "evals"
+EVAL_FIXTURE_EXCLUDED_DIRS = {
+    "results",
+}
 
 
 @dataclass
@@ -154,30 +159,58 @@ def extract_metadata(skill_path: Path) -> SkillMetadata:
     )
 
 
+def fixture_candidates(repo_root: Path, skill_name: str) -> list[Path]:
+    eval_root = repo_root / EVAL_FIXTURE_ROOT
+    pattern = f"**/{skill_name}{EVAL_FIXTURE_SUFFIX}"
+    candidates: list[Path] = []
+
+    for path in sorted(eval_root.glob(pattern)):
+        rel_parts = path.relative_to(eval_root).parts
+        if any(part in EVAL_FIXTURE_EXCLUDED_DIRS for part in rel_parts[:-1]):
+            continue
+        candidates.append(path)
+
+    return candidates
+
+
 def discover_eval_configs(repo_root: Path) -> list[SkillEvalConfig]:
     configs: list[SkillEvalConfig] = []
     missing_fixtures: list[str] = []
+    duplicate_fixtures: list[str] = []
 
     for skill_path in iter_skill_files(repo_root):
         skill_name, _description = extract_frontmatter(skill_path)
-        eval_file = Path("evals") / f"{skill_name}-skill-eval.json"
-        eval_path = repo_root / eval_file
+        candidates = fixture_candidates(repo_root, skill_name)
 
-        if not eval_path.exists():
-            missing_fixtures.append(f"{skill_name}: expected {eval_file.as_posix()}")
+        if not candidates:
+            missing_fixtures.append(
+                f"{skill_name}: expected {EVAL_FIXTURE_ROOT}/**/{skill_name}{EVAL_FIXTURE_SUFFIX}"
+            )
             continue
 
+        if len(candidates) > 1:
+            rels = ", ".join(path.relative_to(repo_root).as_posix() for path in candidates)
+            duplicate_fixtures.append(f"{skill_name}: {rels}")
+            continue
+
+        eval_path = candidates[0]
         configs.append(
             SkillEvalConfig(
                 skill_name=skill_name,
-                eval_file=eval_file.as_posix(),
+                eval_file=eval_path.relative_to(repo_root).as_posix(),
                 skill_file=skill_path.relative_to(repo_root).as_posix(),
             )
         )
 
+    messages = []
     if missing_fixtures:
         lines = "\n".join(f"- {item}" for item in missing_fixtures)
-        raise ValueError(f"missing canonical trigger-eval fixtures:\n{lines}")
+        messages.append(f"missing canonical trigger-eval fixtures:\n{lines}")
+    if duplicate_fixtures:
+        lines = "\n".join(f"- {item}" for item in duplicate_fixtures)
+        messages.append(f"duplicate trigger-eval fixtures:\n{lines}")
+    if messages:
+        raise ValueError("\n".join(messages))
 
     return sorted(configs, key=lambda config: config.skill_name)
 

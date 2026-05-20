@@ -20,7 +20,7 @@ This repo now keeps all eval outputs under one root:
 
 - `*.json`: trigger test cases (`query`, `should_trigger`).
 - Fixtures may also declare `query_mode` (`implicit`, `explicit`, `overlap`) and `boundary_with` for overlap cases.
-- Canonical fixture naming is `evals/<skill-name>-skill-eval.json` for every shipped skill.
+- Canonical fixture filenames are `<skill-name>-skill-eval.json`. Most live directly under `evals/`; dedicated suites may live under a focused subfolder such as `evals/feedback/`.
 - `datocms-setup-router-eval.json`: machine-readable routing cases for `datocms-setup` (`query`, `should_route`, `expected_recipes`, `expected_stage_a`, `expected_stage_b`).
 - `results/*.json`: canonical current raw run outputs (JSON or text preamble + JSON).
 - `results/manifest.json`: declares which checked-in current result files are intentionally published.
@@ -74,7 +74,7 @@ python3 evals/scripts/run_codex_trigger_eval.py \
   --output-dir evals/results/adHocRuns/2026-03-06-candidate/raw
 ```
 
-The runner auto-discovers every public `SKILL.md` in `skills/` and expects a matching `evals/<skill-name>-skill-eval.json` fixture for each one.
+The runner auto-discovers every public `SKILL.md` in `skills/` and expects a matching `<skill-name>-skill-eval.json` fixture under `evals/` or one of its non-results subfolders.
 
 Fixture metadata guidelines:
 
