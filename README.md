@@ -29,11 +29,9 @@ If you're shipping code, you want Skills.
 
 ## What's covered
 
-Skills ship as two coherent packs. Pick the one that matches your work — the marketplace install for Claude Code and Codex brings the full set, while the universal `npx skills` installer can opt into a single pack.
+The skills are designed to work together — they cross-link and reinforce each other, so the default install brings the full set. Most trigger automatically based on your prompt; `datocms-setup` is invoked explicitly.
 
-### Project Pack — for building with DatoCMS
-
-Skills covering everyday DatoCMS development. Most trigger automatically based on your prompt:
+**Building with DatoCMS**
 
 - **Content modeling** — schema-design decisions: model vs block, references vs embedded blocks, taxonomies, field shapes, validators, editor appearances.
 - **Reading content** — GraphQL queries against the Content Delivery API with filters, pagination, localization, Structured Text, responsive images, SEO, and typed queries.
@@ -42,9 +40,7 @@ Skills covering everyday DatoCMS development. Most trigger automatically based o
 - **Frontend integrations** — draft mode, Web Previews, Visual Editing, Content Link, real-time preview subscriptions, cache-tag invalidation, SEO/sitemap wiring across Next.js, Nuxt, SvelteKit, and Astro.
 - **One-shot setup** (`datocms-setup`) — the only skill you invoke explicitly. Bootstraps multi-step flows like "set up visual editing" in a single command, queueing prerequisites automatically.
 
-### Plugin Pack — for extending the DatoCMS dashboard
-
-Skills for building DatoCMS plugins:
+**Extending the DatoCMS dashboard**
 
 - **Plugin scaffolding** — bootstrap a brand-new plugin (Vite/React, initial surfaces).
 - **Plugin maintenance** — patch and extend an existing plugin: hooks, field extensions, sidebars, validations.
@@ -56,7 +52,7 @@ For the full list of skill names, internal setup recipes, and routing rules see 
 
 ## Install
 
-Pick the install method for your agent. The marketplace install for Claude Code and Codex brings the full set; the universal `npx skills` installer can opt into a single pack.
+Pick the install method for your agent. Every installer brings the full set by default — the skills are cross-linked and meant to work together.
 
 ### Claude Code (recommended)
 
@@ -83,23 +79,6 @@ Choose **DatoCMS** and "Install plugin"
 
 ### Cursor, Windsurf, GitHub Copilot, and other agents
 
-Install one pack:
-
-```bash
-# Project Pack
-npx skills add datocms/agent-skills \
-  --skill datocms-content-modeling --skill datocms-cda --skill datocms-cma \
-  --skill datocms-cli --skill datocms-frontend-integrations --skill datocms-setup
-```
-
-```bash
-# Plugin Pack
-npx skills add datocms/agent-skills \
-  --skill datocms-plugin-scaffold --skill datocms-plugin-builder --skill datocms-plugin-design-system
-```
-
-Or both packs:
-
 ```bash
 npx skills add datocms/agent-skills
 ```
@@ -108,7 +87,9 @@ Update later with `npx skills update`. For scopes, single-skill installs, and de
 
 ### Claude.ai (web)
 
-Upload skill `.zip` files via **Customize → Skills** in [claude.ai](https://claude.ai). Pre-built zips live in the [`zips/`](zips/) folder — one per skill. Upload the Project Pack zips, the Plugin Pack zips, or the full set.
+On the web you can't run CLI commands or edit local files, so most development-focused skills don't apply. The ones worth uploading are **content modeling** (`datocms-content-modeling`) and **writing content & automation** (`datocms-cma`) — best paired with the [DatoCMS MCP server](https://www.datocms.com/docs/mcp-server), which lets the agent read and update your project directly from the conversation.
+
+Upload skill `.zip` files via **Customize → Skills** in [claude.ai](https://claude.ai). Pre-built zips live in the [`zips/`](zips/) folder.
 
 ---
 
