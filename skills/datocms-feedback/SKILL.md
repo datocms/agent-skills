@@ -14,67 +14,85 @@ description: >-
 
 # DatoCMS Feedback
 
-Draft a sanitized support email when a DatoCMS skills or MCP workflow is stuck or frustrating. This is an escape hatch, not a fixing workflow.
+Prefilled `datocms.com/support` URL when a DatoCMS skills/MCP workflow is stuck. Escape hatch, not a fixing workflow.
 
 ## Before doing anything visible
 
-Decide whether this is actually a feedback case before offering or drafting anything.
+- User explicitly asked to report/file/summarize feedback about DatoCMS skills/MCP → generate immediately.
+- Frustration or dead end inferred → do not generate. Offer once, wait for confirmation.
+- Credible retry exists → do not mention feedback. Stay in the active DatoCMS workflow.
 
-- If the user explicitly asked to draft, report, email, or summarize feedback about DatoCMS skills or MCP, draft immediately.
-- If this skill loaded because frustration or a dead end is inferred, do not draft immediately. Offer once and wait for confirmation.
-- If there is still a credible next retry, do not mention feedback. Continue the active DatoCMS workflow instead.
+Not for trial-and-correction. Single failed command, MCP call, API error, validation response, schema miss, missing env value, or setup failure stays with the active workflow when a retry path exists.
 
-Do not use this skill for normal trial-and-correction. A single failed command, MCP call, API error, validation response, schema discovery miss, missing environment value, or setup failure is expected and should stay with the active DatoCMS workflow when there is a clear retry.
-
-If the problem is a project, schema, frontend, migration, or plugin issue that can still be fixed, route back to the relevant DatoCMS skill instead of drafting feedback.
+Project/schema/frontend/migration/plugin issue still fixable → route to the relevant DatoCMS skill.
 
 ## If frustration is inferred
 
-Do not draft the email immediately. Offer once, then wait:
+Offer once, then wait:
 
 ```text
-It looks like this may have gone past the normal retry-and-correct loop. Sorry about that. These workflows are still evolving, and clear feedback helps us understand where the experience broke down. If you want, I can draft a short email to support@datocms.com with the goal, where the skills/MCP flow got stuck, and relevant runtime context.
+It looks like this may have gone past the normal retry-and-correct loop. Sorry about that. These workflows are still evolving, and clear feedback helps us understand where the experience broke down. If you want, I can build a prefilled DatoCMS support link with the goal, where the skills/MCP flow got stuck, and relevant runtime context.
 ```
 
-If the user agrees, draft the email.
+If the user agrees, generate the URL.
 
-## Drafting rules
+## URL shape
 
-- Once drafting starts, output only the email draft.
-- Address it to `support@datocms.com` and include a subject line.
+Base: `https://www.datocms.com/support`. Query params URL-encoded via `encodeURIComponent`.
+
+- `topics=spontaneous-feedback` — fixed slug for skills/MCP feedback. Required — form does not render without it.
+- `subject=<short subject>` — one line.
+- `body=<sanitized message>` — see body rules.
+
+Append `#form` anchor — page scrolls to the form on load.
+
+## Body rules
+
 - Write from the user's point of view.
-- Include the attempted goal, whether skills/MCP/both were involved, visible runtime context, visible reasoning level, what failed, and what the user expected instead.
+- Include: attempted goal, whether skills/MCP/both were involved, visible runtime context, visible reasoning level, what failed, expected outcome.
 - Use `not visible from this conversation` for nonessential missing details.
-- Ask at most one short question before drafting, and only when a missing detail is necessary for support to understand the report.
-- Keep raw details short. Include command names, call names, or short safe error excerpts only when useful.
-- Do not include secrets, tokens, auth headers, private content, user-identifying details, full request/response payloads, raw transcript dumps, or long local paths.
-- Do not apologize on DatoCMS's behalf inside the email body.
+- Ask at most one short question before generating, only when a missing detail is necessary for support to understand the report.
+- Keep raw details short. Command names, call names, short safe error excerpts only when useful.
+- No secrets, tokens, auth headers, private content, user-identifying details, full request/response payloads, raw transcript dumps, long local paths.
+- No apology on DatoCMS's behalf inside the body.
+- Keep plaintext body under \~4000 chars — encoded URL must fit edge limits (Vercel \~14 KB). Trim if longer.
+- No `Hi DatoCMS support,` / `Thanks,` salutations — the form is not an email.
 
-## Email shape
+## Body shape
 
-Use this shape unless the conversation clearly calls for a shorter draft:
+Unless conversation calls for shorter:
 
 ```text
-To: support@datocms.com
-Subject: Feedback on DatoCMS skills/MCP workflow
-
-Hi DatoCMS support,
-
 I ran into a frustrating issue while trying to use the DatoCMS skills/MCP workflow.
 
-I was trying to [goal]. The workflow involved [skills/MCP/both/not visible from this conversation].
+Goal: [goal].
+Workflow involved: [skills/MCP/both/not visible from this conversation].
 
-What seemed to happen was [short sanitized summary of the loop, wrong routing, repeated misunderstanding, or dead end].
+What happened: [short sanitized summary of the loop, wrong routing, repeated misunderstanding, or dead end].
 
-Relevant context:
+Context:
 - Runtime/client: [visible value or not visible from this conversation]
 - Runtime identifier: [visible value or not visible from this conversation]
 - Reasoning level: [visible value or not visible from this conversation]
 - Safe error excerpt: [short excerpt or not included]
 
-I expected [expected outcome], but I could not get there because [impact].
+Expected: [expected outcome]. Could not get there because: [impact].
 
-I am sharing this so you can understand where the skills/MCP experience broke down and improve the workflow.
-
-Thanks,
+Sharing so you can see where the skills/MCP experience broke down.
 ```
+
+## Output flow
+
+Two steps. Do not build or reveal the URL on step 1.
+
+**Step 1 — show draft body.** Output the sanitized body text (what lands in the textarea) for review. End with: "Want me to open the prefilled support page in your browser?"
+
+**Step 2 — open the link.** After user confirms, build the URL and open:
+
+- macOS: `open '<url>'`
+- Linux: `xdg-open '<url>'`
+- Windows: `start '' '<url>'`
+
+Single-quote the URL — shell would otherwise interpret `&` and `#`. Echo the URL on its own line as a clickable fallback.
+
+No "I drafted...", no recap.
