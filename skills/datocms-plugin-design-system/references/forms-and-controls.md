@@ -49,7 +49,7 @@ Labels should be short and concrete. Use helper text only when the field needs c
 - sales copy
 - vague reassurance
 
-Secondary text should usually use `var(--light-body-color)` and `var(--font-size-s)`.
+Secondary text should usually use `var(--color--ink-subtle)` and `var(--font-size-s)`.
 
 ## Validation
 
@@ -57,8 +57,8 @@ Primary source: `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_form
 
 CMS validation is close to the field:
 
-- invalid label turns alert-colored
-- control border changes to alert color
+- invalid label uses `var(--color--ink-danger)`
+- control border changes to `var(--color--danger-soft--border)`
 - error text sits directly below the field
 
 Plugins should do the same. Do not surface every validation issue as a toast.
@@ -136,21 +136,22 @@ Raw fallback path:
 
 ### Visual treatment
 
-- Inputs: opacity `0.5`–`0.6`, `cursor: not-allowed`, `var(--disabled-bg-color)` background
-- Buttons: `var(--light-bg-color)` background, `rgb(0 0 0 / 0.2)` text, `cursor: not-allowed`
+- Inputs: opacity `0.5`–`0.6`, `cursor: not-allowed`, `var(--color--disabled--surface)` background, `var(--color--disabled--ink)` text
+- Buttons: `var(--color--disabled--surface)` background, `var(--color--disabled--ink)` text, `cursor: not-allowed`
 
 ```css
 .input:disabled,
 .textarea:disabled,
 .select:disabled {
-  background: var(--disabled-bg-color);
+  background: var(--color--disabled--surface);
+  color: var(--color--disabled--ink);
   cursor: not-allowed;
   opacity: 0.6;
 }
 
 .buttonDisabled {
-  background: var(--light-bg-color);
-  color: rgb(0 0 0 / 0.2);
+  background: var(--color--disabled--surface);
+  color: var(--color--disabled--ink);
   cursor: not-allowed;
 }
 ```

@@ -108,7 +108,7 @@ Keep modals narrow in scope and limited in vertical complexity.
 
 ### Backdrops
 
-Plugins should use `ctx.openModal()` to open modals — the CMS handles the backdrop overlay automatically. `--backdrop-color` and `--backdrop-linear-gradient` are **not** available inside Canvas, so do not attempt to build a custom backdrop. If you need a dimming layer within a plugin surface for a local popover, use a simple `rgb(0 0 0 / 0.3)` overlay.
+Plugins should use `ctx.openModal()` to open modals — the CMS handles the backdrop overlay automatically. `--backdrop-color` and `--backdrop-linear-gradient` are **not** available inside Canvas, so do not attempt to build a custom backdrop. If you need a dimming layer within a plugin surface for a local popover, use `var(--color--backdrop--surface)`.
 
 ## Outlets
 

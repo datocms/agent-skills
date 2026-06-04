@@ -100,6 +100,14 @@ Guardrails:
 - Keep custom CSS local and variable-driven.
 - If public component close but incomplete, compose around it.
 
+### Dark-mode compatibility
+
+- Keep plugin UI inside `<Canvas ctx={ctx}>`; upgrade `datocms-react-ui` and `datocms-plugin-sdk` to the repo-approved 2.2.x line before relying on semantic theme tokens.
+- Prefer semantic Canvas tokens: `--color--surface`, `--color--surface-muted`, `--color--surface-hover`, `--color--surface-raised`, `--color--ink`, `--color--ink-subtle`, `--color--ink-muted`, `--color--ink-placeholder`, `--color--border`, `--color--border-hover`, `--color--primary--surface`, `--color--primary--ink`, `--color--primary-soft--surface`, `--color--primary-soft--ink`, `--color--focus--border`, `--color--focus--outline`, `--color--danger-soft--surface`, `--color--danger-soft--ink`, `--color--danger-soft--border`, and the matching warning/success tokens.
+- Replace legacy theme vars and hardcoded light colors in plugin UI: avoid `white`, `#fff`, `#f5f5f5`, `#333`, `--border-color`, `--light-bg-color`, `--lighter-bg-color`, `--base-body-color`, `--light-body-color`, `--accent-color`, and `--alert-color`, except for true media previews, brand marks, or color swatches.
+- Match token context: neutral UI uses `surface/ink/border`; primary actions use `primary`; tinted notices use `*-soft`; status text on neutral surfaces uses `ink-danger`, `ink-warning`, or `ink-success`; focus states use `focus`.
+- Theme custom graphs, canvases, overlays, and inline styles explicitly; verify both light and dark mode plus the plugin build.
+
 For "native" UI, optimize in order:
 
 1. structure
