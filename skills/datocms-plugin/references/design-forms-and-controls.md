@@ -136,14 +136,14 @@ Raw fallback path:
 
 ### Visual treatment
 
-- Inputs: opacity `0.5`–`0.6`, `cursor: not-allowed`, `var(--disabled-bg-color)` background
+- Inputs: opacity `0.5`–`0.6`, `cursor: not-allowed`, `var(--color--disabled--surface)` background
 - Buttons: `var(--color--disabled--surface)` background, `var(--color--disabled--ink)` text, `cursor: not-allowed`
 
 ```css
 .input:disabled,
 .textarea:disabled,
 .select:disabled {
-  background: var(--disabled-bg-color);
+  background: var(--color--disabled--surface);
   cursor: not-allowed;
   opacity: 0.6;
 }

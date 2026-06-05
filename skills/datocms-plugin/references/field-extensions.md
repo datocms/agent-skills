@@ -354,7 +354,7 @@ export default function WordCount({ ctx }: Props) {
   return (
     <Canvas ctx={ctx}>
       {wordCount > 0 && (
-        <div style={{ fontSize: '12px', color: 'var(--light-body-color)' }}>
+        <div style={{ fontSize: '12px', color: 'var(--color--ink-subtle)' }}>
           {wordCount} {wordCount === 1 ? 'word' : 'words'}
         </div>
       )}

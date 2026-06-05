@@ -135,7 +135,10 @@ export default function ColorPickerModal({ ctx }: Props) {
                 backgroundColor: color,
                 borderRadius: '4px',
                 cursor: 'pointer',
-                border: selected === color ? '3px solid var(--accent-color)' : '3px solid transparent',
+                border:
+                  selected === color
+                    ? '3px solid var(--color--focus--border)'
+                    : '3px solid transparent',
               }}
             />
           ))}

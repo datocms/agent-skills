@@ -6,9 +6,10 @@ description: >-
   create a new plugin project, patch an existing plugin, add or adjust plugin
   hooks, field extensions, config screens, sidebars, pages, modals, asset
   sources, dropdown actions, lifecycle hooks, browser CMA flows, plugin
-  permissions, package metadata, or make plugin UI feel native to the DatoCMS
-  dashboard. Route standalone CMA scripts to datocms-cma and frontend website
-  integrations to datocms-frontend-integrations.
+  permissions, package metadata, dark mode upgrades, semantic color-token
+  migrations, or make plugin UI feel native to the DatoCMS dashboard. Route
+  standalone CMA scripts to datocms-cma and frontend website integrations to
+  datocms-frontend-integrations.
 ---
 
 # DatoCMS Plugin
@@ -29,7 +30,7 @@ Choose mode:
 
 - **Existing plugin:** package already exists and user asks to patch, add, maintain, fix, release-prep, or restyle. Default here.
 - **New plugin:** user asks to create/scaffold/bootstrap a new plugin folder or no plugin project exists.
-- **Design pass:** request mentions native UI, design system, styling, layout, density, spacing, theme, dark mode, polish, dashboard fit, forms, tables, panels, or controls.
+- **Design pass:** request mentions native UI, design system, styling, layout, density, spacing, theme, dark mode, semantic tokens, legacy CSS variables, hardcoded colors, polish, dashboard fit, forms, tables, panels, or controls.
 - **Mixed:** normal; combine hook/scaffold work with design guidance in one pass.
 
 Use local reference repos only as read-only calibration when available:
@@ -92,6 +93,7 @@ Always start design work with:
 
 Then load only the touched visual area:
 
+- Dark mode upgrades, legacy CSS variables, hardcoded colors, `ctx.theme`, or `ctx.colorScheme` -> `references/dark-mode-upgrade.md`
 - Layouts, pages, split views, toolbars -> `references/design-layouts.md`
 - Forms, controls, settings -> `references/design-forms-and-controls.md`
 - Dropdowns, tabs, tables, lists, notices -> `references/design-navigation-feedback-and-data-display.md`

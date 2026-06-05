@@ -40,6 +40,14 @@
     "should_trigger": true
   },
   {
+    "query": "Upgrade this existing DatoCMS plugin from legacy CSS variables to semantic color tokens so it works in dark mode.",
+    "should_trigger": true
+  },
+  {
+    "query": "Migrate hardcoded colors and ctx.theme color usage in this DatoCMS plugin to dark-mode-compatible Canvas tokens.",
+    "should_trigger": true
+  },
+  {
     "query": "Patch this existing DatoCMS plugin settings page and make the updated UI feel native while keeping the behavior the same.",
     "should_trigger": true
   },

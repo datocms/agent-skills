@@ -236,8 +236,12 @@ export default function ContentBrowser({ ctx }: Props) {
               cursor: 'pointer',
               backgroundColor:
                 selectedModelId === model!.id
-                  ? 'var(--light-bg-color)'
+                  ? 'var(--color--selected--surface)'
                   : 'transparent',
+              color:
+                selectedModelId === model!.id
+                  ? 'var(--color--selected--ink)'
+                  : 'var(--color--ink)',
             }}
             onClick={() => handleShowRecords(model!.id)}
           >
@@ -247,7 +251,7 @@ export default function ContentBrowser({ ctx }: Props) {
 
         {ctx.highlightedItemId && (
           <div style={{ marginTop: '16px' }}>
-            <p style={{ fontSize: 'var(--font-size-s)', color: 'var(--light-body-color)' }}>
+            <p style={{ fontSize: 'var(--font-size-s)', color: 'var(--color--ink-subtle)' }}>
               Highlighted: {ctx.highlightedItemId}
             </p>
           </div>

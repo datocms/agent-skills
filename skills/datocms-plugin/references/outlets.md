@@ -117,10 +117,10 @@ export default function DraftBanner({ ctx }: Props) {
       <div
         style={{
           padding: '12px 16px',
-          backgroundColor: 'var(--warning-bg-color)',
+          backgroundColor: 'var(--color--warning-soft--surface)',
           borderRadius: '4px',
           fontSize: 'var(--font-size-s)',
-          color: 'var(--base-body-color)',
+          color: 'var(--color--warning-soft--ink)',
         }}
       >
         This record is still a draft. It will not appear on the live site until
@@ -227,7 +227,7 @@ export default function CollectionBanner({ ctx }: Props) {
           justifyContent: 'space-between',
           alignItems: 'center',
           padding: '12px 16px',
-          backgroundColor: 'var(--light-bg-color)',
+          backgroundColor: 'var(--color--surface-muted)',
           borderRadius: '4px',
         }}
       >
