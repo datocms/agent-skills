@@ -360,7 +360,7 @@ connect({
 
 ## Styling
 
-For inline styles, use CSS custom properties from `<Canvas>` (see `sdk-architecture.md`). For component-scoped styles, use **CSS Modules** (`.module.css` files) — Vite supports them out of the box:
+For inline styles, use CSS custom properties from `<Canvas>` (see `sdk-context-and-cma.md`). For component-scoped styles, use **CSS Modules** (`.module.css` files) — Vite supports them out of the box:
 
 ```tsx
 import styles from './MyComponent.module.css';

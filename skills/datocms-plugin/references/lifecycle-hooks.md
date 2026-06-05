@@ -18,7 +18,7 @@ Called once when the plugin first loads. Use for initialization, parameter migra
 onBoot(ctx: OnBootCtx): void
 ```
 
-`OnBootCtx` has all base context properties and methods (see `sdk-architecture.md`). No sizing utilities are relevant since this hook has no visible UI.
+`OnBootCtx` has all base context properties and methods (see `sdk-context-and-cma.md`). No sizing utilities are relevant since this hook has no visible UI.
 
 ### Example: Parameter Migration
 

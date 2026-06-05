@@ -2,7 +2,7 @@
 
 Use this only when implementation style is unclear from the target plugin. Inspect the local examples directly when available; do not copy blindly.
 
-Reference root: `/Users/marcelofinamorvieira/datoCMS/pluginsmove/plugins`.
+Reference root: `/Users/marcelofinamorvieira/datoCMS/dev/plugins`.
 
 ## Repo shape
 
@@ -25,7 +25,7 @@ Most maintained plugins use:
 - CSS Modules or plugin-local CSS, not shared runtime code
 - `npm run build` as the minimum code-change check
 
-Use the target plugin's versions and package manager first. Only use these baselines for fresh scaffolds or when the target has no precedent.
+Use the target plugin's versions and package manager first. Use these baselines only for fresh scaffolds or when the target has no precedent. Check `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk` for the current SDK/UI version before scaffolding.
 
 ## Examples worth inspecting
 

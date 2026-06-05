@@ -32,7 +32,7 @@ Do not import private classes or copy CMS bundles into plugins. Read these files
 | Base element defaults | `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/_base.css` | text input padding, focus ring, border treatment, body typography, scrollbar behavior |
 | SDK runtime tokens | `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk/packages/react-ui/src/generateStyleFromCtx/index.ts` | how `ctx.cssDesignTokens` and legacy theme vars reach `<Canvas>` |
 | Canvas runtime | `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk/packages/react-ui/src/Canvas/index.tsx` | `ctx.colorScheme`, document color-scheme behavior, context provider, and resizer behavior |
-| Canvas-provided vars | `skills/datocms-plugin/references/sdk-architecture.md` | safe plugin-facing variable names inside `<Canvas>` |
+| Canvas-provided vars | `skills/datocms-plugin/references/sdk-context-and-cma.md` | safe plugin-facing context, endpoint, and variable names inside `<Canvas>` |
 | Motion and easing defaults | `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/_css-variables.css`, `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_button.css` | transition durations, easing curves, hover/active opacity |
 
 ## Layout shells

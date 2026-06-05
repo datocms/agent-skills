@@ -153,7 +153,7 @@ const client = buildClient({
 - Catch errors and report them with `ctx.alert()`.
 - Prefer asset-source `ctx.select()` over CMA upload creation when possible.
 
-See `sdk-architecture.md` for full CMA pattern.
+See `sdk-context-and-cma.md` for the full browser CMA pattern.
 
 ## Permission additions that stay aligned
 

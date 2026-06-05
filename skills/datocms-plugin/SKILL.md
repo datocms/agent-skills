@@ -14,7 +14,7 @@ description: >-
 
 # DatoCMS Plugin
 
-Work repo-first. Inspect current plugin shape before changing it. Use the smallest implementation that fits the requested surface and keeps the plugin native to DatoCMS.
+Work repo-first. Inspect the current plugin shape before changing it. Use the smallest implementation that fits the requested surface and keeps the plugin native to DatoCMS. Prefer fresh source over remembered guidance.
 
 ## Step 1: Classify the request
 
@@ -33,12 +33,14 @@ Choose mode:
 - **Design pass:** request mentions native UI, design system, styling, layout, density, spacing, theme, dark mode, semantic tokens, legacy CSS variables, hardcoded colors, polish, dashboard fit, forms, tables, panels, or controls.
 - **Mixed:** normal; combine hook/scaffold work with design guidance in one pass.
 
-Use local reference repos only as read-only calibration when available:
+Use sources in this order:
 
-- `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk` for current SDK/runtime and public component source.
-- `/Users/marcelofinamorvieira/datoCMS/pluginsmove/plugins` for current DatoCMS plugin implementation patterns.
+1. The target plugin's own files: package versions, package manager, scripts, hooks, naming, and UI style.
+2. Current SDK/UI source when API or component behavior matters: `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk`, especially `packages/sdk` and `packages/react-ui`.
+3. Local maintained examples when the target lacks precedent: `/Users/marcelofinamorvieira/datoCMS/dev/plugins`.
+4. Public docs only after local code cannot answer.
 
-Do not modify those reference repos unless the user explicitly targets them.
+Treat the SDK/UI and example-plugin repos as read-only calibration unless the user explicitly targets them.
 
 ## Step 2: Ask only for missing essentials
 
@@ -58,7 +60,8 @@ Start with project code. Load only the direct reference needed.
 
 - Follow-up maintenance shortcuts -> `references/rapid-patterns.md`
 - Hook wiring, render pairs, sizing -> `references/connect-conventions.md`
-- Full SDK/runtime details -> `references/sdk-architecture.md`
+- Hook wiring, frame sizing, Canvas, and render helper details -> `references/sdk-connect-and-frames.md`
+- Base `ctx`, entity repos, form values, browser CMA, and endpoint details -> `references/sdk-context-and-cma.md`
 - Current maintained plugin patterns -> `references/current-plugin-patterns.md` when target code has no clear precedent
 - Permissions and access token -> `references/permissions.md`
 - Form values, localized values, Structured Text Slate shape -> `references/form-values.md`
@@ -86,14 +89,15 @@ Start with project code. Load only the direct reference needed.
 
 ### Design references
 
-Always start design work with:
+For dark-mode-only migrations, start with `references/dark-mode-upgrade.md`. Add `references/design-foundations.md` only when token or theme decisions are unclear, and `references/design-raw-css-fallbacks.md` only when rewriting local CSS shells.
+
+For other native UI work, start with:
 
 - `references/design-foundations.md`
 - `references/design-datocms-react-ui-bridge.md`
 
 Then load only the touched visual area:
 
-- Dark mode upgrades, legacy CSS variables, hardcoded colors, `ctx.theme`, or `ctx.colorScheme` -> `references/dark-mode-upgrade.md`
 - Layouts, pages, split views, toolbars -> `references/design-layouts.md`
 - Forms, controls, settings -> `references/design-forms-and-controls.md`
 - Dropdowns, tabs, tables, lists, notices -> `references/design-navigation-feedback-and-data-display.md`
@@ -105,6 +109,7 @@ Then load only the touched visual area:
 
 ### Existing plugin mode
 
+- For follow-up edits, reopen only the touched render branch, component, helper, CSS file, and the one narrow reference that applies. Do not repeat full hook discovery unless the code no longer answers the request.
 - Patch the existing declaration, render switch, component, helper, or CSS module directly.
 - Do not reorganize files during small changes.
 - Add a helper/file only when it reduces total complexity or is reused by touched surfaces.
@@ -115,7 +120,7 @@ Then load only the touched visual area:
 
 - Create the smallest working Vite/React plugin version.
 - Add only needed entrypoints and dependencies.
-- Prefer current `datocms-plugin-sdk`, `datocms-react-ui`, React, Vite, and TypeScript patterns found in nearby maintained plugins unless user requests otherwise.
+- Prefer current `datocms-plugin-sdk`, `datocms-react-ui`, React, Vite, and TypeScript baselines from `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk` and nearby maintained examples unless user requests otherwise.
 - For marketplace plugins: use `datocms-plugin-` package naming, `datocms-plugin` keyword, homepage, and minimal `datoCmsPlugin.permissions`.
 - For private plugins: keep package metadata minimal and note that permissions are granted from the installed plugin settings.
 

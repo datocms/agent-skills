@@ -422,7 +422,7 @@ const isLocalized = ctx.field.attributes.localized;
 
 - **Editor extensions must respect `ctx.disabled`**: When `ctx.disabled` is `true` (workflow state, permissions, record locking), editor **must** prevent all user input. Correctness requirement — without it, users can edit locked records.
 
-- **ctx recreation in iframes**: The `ctx` object is recreated on every message from parent window, triggering `useEffect` even when values appear identical. Use `useDeepCompareEffect` from `use-deep-compare-effect` instead of `useEffect` when depending on `ctx` properties. See `sdk-architecture.md`.
+- **ctx recreation in iframes**: The `ctx` object is recreated on every message from parent window, triggering `useEffect` even when values appear identical. Use `useDeepCompareEffect` from `use-deep-compare-effect` instead of `useEffect` when depending on `ctx` properties. See `sdk-context-and-cma.md`.
 
 - **`toggleField()` destroys plugin iframes**: When field is hidden via `ctx.toggleField(path, false)`, its plugin iframes are **completely destroyed**. When field is shown again, iframes are recreated from scratch — all React state is lost. If you need to persist state across visibility changes, store it in plugin parameters or outside React tree.
 

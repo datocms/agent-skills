@@ -1,6 +1,6 @@
 # Connect Conventions Reference
 
-Load this file before `sdk-architecture.md` when the task only needs hook wiring or render-surface conventions.
+Load this file before `sdk-connect-and-frames.md` when the task only needs hook wiring or render-surface conventions.
 
 ## Quick checklist
 
@@ -62,9 +62,9 @@ Use `<Canvas ctx={ctx} noAutoResizer>` for imposed-size surfaces:
 - `renderInspector`
 - `renderInspectorPanel`
 
-## When to load the larger architecture reference
+## When to load the split SDK references
 
-Load `references/sdk-architecture.md` only when you need deeper SDK details, such as:
+Load `references/sdk-connect-and-frames.md` when you need exact frame, Canvas, or render-helper details. Load `references/sdk-context-and-cma.md` when you need context/API details, such as:
 
 - base `ctx` methods or repositories beyond the touched surface
 - plugin CMA usage details
