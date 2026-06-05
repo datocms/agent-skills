@@ -12,17 +12,15 @@ Use this reference when an existing plugin must move from legacy DatoCMS color v
 - Hardcoded colors and custom values
 - Runtime theme migration
 - Hook and surface discovery
-- Browser verification
 
 ## Workflow
 
-1. Make a task list before editing. Include dependency update, static searches, token migration, hook discovery, one verification task for each rendered surface, static re-checks, and build.
+1. Make a task list before editing. Include dependency update, static searches, token migration, hook discovery, one coverage check for each rendered surface, static re-checks, and build.
 2. Upgrade `datocms-react-ui` and `datocms-plugin-sdk` with the project package manager. Use `npm install datocms-react-ui@latest datocms-plugin-sdk@latest` only for npm projects.
 3. Search `src/` for deprecated variables, hardcoded colors, inline color styles, `ctx.theme` color usage, and fixed SVG fills.
 4. Replace legacy variables and hardcoded colors with semantic `--color--...` tokens chosen by meaning, not by visual similarity.
-5. Inspect the top-level `connect()` call, discover the hooks the plugin registers, then add one verification task per distinct rendered surface.
-6. Verify every surface in dark mode with the browser workflow available in the environment. Screenshots are useful only for visual inspection; use DOM snapshots or page state checks for navigation and setup.
-7. Re-run static searches and the plugin build. Remaining color literals should be intentional custom colors with dark-mode overrides.
+5. Inspect the top-level `connect()` call, discover the hooks the plugin registers, and inspect each rendered surface so the migration covers all plugin UI entry points.
+6. Re-run static searches and the plugin build. Remaining color literals should be intentional custom colors with dark-mode overrides.
 
 ## Static searches
 
@@ -117,6 +115,8 @@ Replace common fixed colors with tokens:
 - gray borders -> `--color--border`
 - selected list rows -> `--color--selected--surface` plus `--color--selected--ink`
 
+Do not solve normal UI theming with fixed dark wrappers, hardcoded dark backgrounds, manual light/dark color maps, or theme-branching style objects. Use semantic Canvas tokens instead. Branch on the color scheme only when CSS tokens cannot represent the choice.
+
 Keep fixed colors only when they are genuinely custom, such as a brand illustration, data visualization palette, or third-party widget API. Define those as local custom properties and add a dark-mode override:
 
 ```css
@@ -134,23 +134,30 @@ Keep fixed colors only when they are genuinely custom, such as a brand illustrat
 
 - `ctx.theme` is legacy for color decisions because it is pinned to light-mode values. Do not use it to build new colors.
 - Prefer CSS variables inside `<Canvas>`. They track the active DatoCMS theme automatically.
-- Use `ctx.cssDesignTokens` only when a JavaScript API needs a concrete token value.
-- Use `ctx.colorScheme` only for non-CSS branching: choosing an image asset, third-party widget theme, or syntax-highlighting theme.
+- Use `ctx.cssDesignTokens` only when a JavaScript API needs a concrete token value, such as a third-party component library, portal, widget API, or theme object.
+- Do not pass Canvas-scoped `var(--color--...)` strings into libraries that hoist styles outside `<Canvas>` or render into a separate root. Use concrete values from `ctx.cssDesignTokens` for those bridges.
+- Use `ctx.colorScheme` only for non-CSS branching: choosing an image asset, library mode flag, third-party widget preset, or syntax-highlighting theme.
 
 ```tsx
-const syntaxTheme = ctx.colorScheme === 'dark' ? 'github-dark' : 'github-light';
-const borderColor = ctx.cssDesignTokens['--color--border'];
+const widgetTheme = {
+  mode: ctx.colorScheme,
+  colors: {
+    background: ctx.cssDesignTokens['--color--surface'],
+    border: ctx.cssDesignTokens['--color--border'],
+    text: ctx.cssDesignTokens['--color--ink'],
+  },
+};
 ```
 
 ## Hook and surface discovery
 
-Search the entrypoint before browser verification:
+Search the entrypoint before finishing the migration:
 
 ```bash
 grep -rE "overrideFieldExtensions|renderFieldExtension|renderPage|renderModal|renderAssetSource|renderItemFormSidebar|renderItemFormOutlet|renderManualFieldExtensionConfigScreen|customMarksForStructuredTextField|manualFieldExtensions" src/
 ```
 
-Verify each registered surface, not just the first iframe that appears:
+Inspect each registered surface, not just the first iframe that appears:
 
 - `overrideFieldExtensions` / `renderFieldExtension`: create or open a record with a matching field type.
 - `manualFieldExtensions` / `renderFieldExtension`: assign the plugin as the field editor, then open a record.
@@ -160,21 +167,3 @@ Verify each registered surface, not just the first iframe that appears:
 - `renderAssetSource`: open the media picker and inspect the custom source.
 - `renderItemFormSidebar` / `renderItemFormOutlet`: assign the plugin to the model surface, then open a record.
 - Structured Text customizations: open a field configured with the target customization and inspect the toolbar, mark, block, or addon UI.
-
-## Browser verification
-
-Start the plugin dev server and use the printed localhost URL. If the default Vite port is busy, use the actual port from terminal output.
-
-Install the local plugin into a disposable DatoCMS project or update its URL in an existing test project. Use the project’s normal CLI or CMA workflow; do not require a login if a bearer token plus `--api-token` can perform the setup.
-
-In dark mode, check every rendered surface for:
-
-- readable text and helper labels
-- visible borders and dividers
-- correct neutral, selected, disabled, warning, success, and danger surfaces
-- visible hover and focus states
-- modals, dropdowns, tooltips, and popovers opened from the plugin
-- custom SVG icons inheriting text color through `currentColor`
-- third-party widgets or custom visualizations using dark-mode-aware options
-
-Finish with the project build script, usually `npm run build`, `pnpm build`, or `yarn build`.
