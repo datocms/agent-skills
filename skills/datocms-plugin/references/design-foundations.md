@@ -115,11 +115,16 @@ Prefer the semantic `--color--...` tokens exposed by `<Canvas>`.
 
 - `--color--ink` for primary text
 - `--color--ink-subtle` for secondary text and helper copy
+- `--color--ink-muted` for very de-emphasized copy
 - `--color--ink-placeholder` for placeholders only
+- `--color--ink-disabled` for disabled copy
 - `--color--surface` for page background and neutral panels
 - `--color--surface-muted` for quiet surfaces
+- `--color--surface-hover` for hovered neutral rows and cards
 - `--color--surface-raised` for dropdowns, modals, and popovers
 - `--color--border` and `--color--border-hover` for structure
+
+Use these tokens directly in normal plugin CSS. Do not create local aliases that only rename Canvas tokens, such as `--plugin-border: var(--color--border)` or `--text-light: var(--color--ink-subtle)`. Local custom properties are fine for real product customization, component sizing, spacing, or non-Canvas values.
 
 ### State colors
 
@@ -130,6 +135,8 @@ Use context pairs together:
 - `--color--success-soft--surface`, `--color--success-soft--ink`, `--color--success-soft--border` for success
 - `--color--primary--surface`, `--color--primary--ink`, `--color--primary--border` for the main action
 - `--color--primary-soft--surface`, `--color--primary-soft--ink`, `--color--primary-soft--border` for quiet branded accents
+- `--color--selected--surface`, `--color--selected--surface-hover`, `--color--selected--ink`, `--color--selected--border` for selected rows, cards, and choices
+- `--color--disabled--surface` and `--color--disabled--ink` for disabled controls
 - `--color--focus--outline` and `--color--focus--border` for focus rings
 
 Do not mix ink from one context with surface from another. Context pairs are contrast-balanced together, especially in dark mode.
@@ -140,17 +147,24 @@ The SDK still exposes legacy theme variables and `ctx.theme`, but new plugin CSS
 
 ### OKLCH and derived colors
 
-DatoCMS uses OKLCH internally for color manipulation. Plugins should use `color-mix(in oklch, ...)` for derived colors:
+DatoCMS uses OKLCH internally for color manipulation, but plugins should not recreate normal UI hierarchy with derived colors. Prefer semantic Canvas tokens for text hierarchy, selected states, disabled states, focus rings, borders, status surfaces, and standard elevation.
 
 ```css
 .focusRing {
   box-shadow: 0 0 0 3px var(--color--focus--outline);
 }
 
-.subtleBg {
-  background: color-mix(in oklch, var(--color--primary--surface) 8%, transparent);
+.caption {
+  color: var(--color--ink-subtle);
+}
+
+.selectedRow {
+  background: var(--color--selected--surface);
+  color: var(--color--selected--ink);
 }
 ```
+
+Use `color-mix(...)` only for intentional effects outside the default design system, such as media overlays, data visualization, vendor widgets, artwork, or a user-requested custom tint that cannot be expressed by semantic tokens.
 
 ## What Canvas actually injects
 
@@ -160,9 +174,15 @@ Source: `datocms-react-ui/src/generateStyleFromCtx/index.ts` and `datocms-react-
 
 ### Available inside Canvas
 
-**Neutral:** `--color--surface`, `--color--surface-hover`, `--color--surface-muted`, `--color--surface-raised`, `--color--surface-raised-hover`, `--color--surface-raised-active`, `--color--ink`, `--color--ink-subtle`, `--color--ink-muted`, `--color--ink-placeholder`, `--color--border`, `--color--border-hover`
+For exact token names and descriptions, load `design-tokens.md`. It is the complete catalog of DatoCMS color/shadow tokens supplied through `ctx.cssDesignTokens`.
 
-**Contexts:** `--color--primary--*`, `--color--primary-soft--*`, `--color--danger-soft--*`, `--color--warning-soft--*`, `--color--success-soft--*`, `--color--selected--*`, `--color--disabled--*`, `--color--focus--*`, `--color--progress--*`, `--color--tooltip--*`, `--color--code--*`
+Quick selection guide:
+
+- neutral UI: surface, ink, and border tokens
+- primary/primary-soft: project brand actions and quiet brand accents
+- selected/disabled/focus: interaction states
+- danger, warning, success, diff, and status: keep each context family together
+- overlay, backdrop, stacked, tooltip, code, progress, scrollbar, and field-group tokens: use only for their named surface type
 
 **Typography:** `--base-font-family`, `--monospaced-font-family`, `--font-weight-bold`, all `--font-size-*` tokens
 
@@ -185,14 +205,15 @@ Using a CMS-only variable in plugin CSS will silently resolve to its initial val
 
 ## Theme bridging pattern
 
-Use Canvas variables first. Only mirror runtime values into custom vars when a third-party component requires a local token name.
+Use Canvas variables first. Do not bridge ordinary plugin UI through local aliases when the CSS can use `var(--color--...)` or `var(--shadow--...)` directly.
+
+Only mirror runtime values into custom vars when a third-party component, vendor widget, or data visualization requires a local token name or concrete value.
 
 ```tsx
 import type { CSSProperties } from 'react';
 
 const style = {
-  '--plugin-brand-surface': 'var(--color--primary--surface)',
-  '--plugin-brand-ink': 'var(--color--primary--ink)',
+  '--vendor-accent': ctx.cssDesignTokens['--color--primary--surface'],
 } as CSSProperties;
 
 return (
@@ -213,6 +234,8 @@ return (
   color: var(--color--ink-link);
 }
 ```
+
+If a third-party library hoists portals or generated styles outside the `<Canvas>` scope, pass concrete values from `ctx.cssDesignTokens`. Use `ctx.colorScheme` only for non-CSS choices such as library mode flags, external widget presets, alternate assets, or syntax-highlighting themes.
 
 ## Native-feel heuristics
 

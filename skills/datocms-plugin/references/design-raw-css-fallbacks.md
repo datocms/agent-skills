@@ -324,4 +324,9 @@ Use `0.2s` and `var(--material-ease)` as the default transition for interactive 
 - import CMS bundle CSS
 - reuse private class names like `.Page__title` or `.SidebarPanel__header`
 - hardcode a new color system unrelated to Canvas vars
+- define local color or shadow aliases that only rename Canvas tokens
+- use `color-mix(...)` to simulate helper text, disabled text, selected rows, borders, focus rings, or status panels
+- mix context families, such as danger ink on a primary surface or selected ink on a warning surface
 - bring in a generic dashboard template when a local wrapper is enough
+
+Reach for `color-mix(...)` or local color variables only for real customization outside standard Canvas semantics: media overlays, charts, vendor widgets, artwork, or user-requested product colors.

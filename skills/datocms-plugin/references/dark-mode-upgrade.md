@@ -83,6 +83,8 @@ Choose the token by what the rule means, not by color similarity.
 
 Keep context pairs together. If a panel uses `--color--danger-soft--surface`, its text should usually use `--color--danger-soft--ink`, not primary or neutral ink.
 
+For exact semantic token names and descriptions, load `design-tokens.md`; it documents the complete current color/shadow token catalog supplied through `ctx.cssDesignTokens`.
+
 ## Replace hardcoded colors
 
 Common substitutions:
@@ -96,6 +98,19 @@ Common substitutions:
 - borders -> `--color--border` or `--color--border-hover`
 - focus halo -> `--color--focus--outline`
 - primary action -> `--color--primary--surface` + `--color--primary--ink`
+
+Use semantic Canvas tokens directly for normal plugin UI. Do not introduce custom properties that only rename Canvas tokens, and do not use `color-mix(...)` to simulate text hierarchy, selected states, disabled states, neutral borders, focus rings, or standard status colors.
+
+Prefer full semantic families:
+
+- helper text -> `--color--ink-subtle`; muted copy -> `--color--ink-muted`; placeholders -> `--color--ink-placeholder`; disabled copy -> `--color--disabled--ink`
+- neutral hover -> `--color--surface-hover`
+- selected options -> `--color--selected--surface`, `--color--selected--surface-hover`, `--color--selected--border`, `--color--selected--ink`
+- disabled controls -> `--color--disabled--surface` + `--color--disabled--ink`; use `--color--border` when a disabled control still needs a boundary
+- danger, warning, success, and diff UI -> keep `surface`, `ink`, and `border` from the same context family
+- standard elevation -> `--shadow--raised`, `--shadow--lifted`, `--shadow--floating`, or `--shadow--ambient`
+
+Keep `color-mix(...)` or local custom variables only for real customization outside default Canvas semantics, such as media overlays, data visualization, vendor widgets, artwork, or user-requested product colors.
 
 For real custom colors such as brand artwork, charts, or vendor widgets, define a local variable with a dark-mode override:
 

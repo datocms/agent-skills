@@ -88,6 +88,7 @@ For other native UI work, start with:
 
 - `references/design-foundations.md`
 - `references/design-datocms-react-ui-bridge.md`
+- Full token catalog -> `references/design-tokens.md` when choosing exact semantic tokens or auditing token coverage.
 
 Then load only the touched visual area:
 
