@@ -1,6 +1,6 @@
 # Design Tokens
 
-Use this reference when choosing exact DatoCMS Canvas semantic tokens or auditing token coverage in plugin UI. Keep `SKILL.md` compact; load this file only when token vocabulary matters.
+Full catalog of DatoCMS Canvas color and shadow tokens available through `ctx.cssDesignTokens`. Use these tokens semantically in plugin UI, preferring direct Canvas tokens over local aliases, hardcoded colors, or derived color transformations.
 
 ## Contents
 
@@ -24,7 +24,7 @@ Use this reference when choosing exact DatoCMS Canvas semantic tokens or auditin
 - Use custom variables or `color-mix(...)` only for real customization outside Canvas semantics: media overlays, data visualization, vendor widgets, artwork, or user-requested product colors.
 - If a third-party library hoists styles or portals outside `<Canvas>`, pass concrete values from `ctx.cssDesignTokens`; otherwise prefer CSS `var(--color--...)` inside `<Canvas>`.
 
-The catalog below is the complete current color/shadow vocabulary supplied through `ctx.cssDesignTokens`.
+The catalog below covers the color/shadow vocabulary supplied through `ctx.cssDesignTokens`.
 
 ## Neutral text, surface, and border
 

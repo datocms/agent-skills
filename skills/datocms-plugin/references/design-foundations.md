@@ -141,6 +141,8 @@ Use context pairs together:
 
 Do not mix ink from one context with surface from another. Context pairs are contrast-balanced together, especially in dark mode.
 
+Selected/current/active choices are not primary actions. If a row, image card, chip, tab, dropdown option, model filter, icon choice, or picker option is chosen or currently active, use the selected family for its surface, ink, and border. Reserve primary tokens for the main submit/action button or an intentional brand accent, not for selection state.
+
 ### Project theme colors
 
 The SDK still exposes legacy theme variables and `ctx.theme`, but new plugin CSS should use semantic color tokens first. Use `ctx.colorScheme` only for non-CSS branching such as third-party widget themes, image assets, or syntax-highlighting presets.
@@ -161,6 +163,11 @@ DatoCMS uses OKLCH internally for color manipulation, but plugins should not rec
 .selectedRow {
   background: var(--color--selected--surface);
   color: var(--color--selected--ink);
+  border-color: var(--color--selected--border);
+}
+
+.selectedRow:hover {
+  background: var(--color--selected--surface-hover);
 }
 ```
 
@@ -174,7 +181,7 @@ Source: `datocms-react-ui/src/generateStyleFromCtx/index.ts` and `datocms-react-
 
 ### Available inside Canvas
 
-For exact token names and descriptions, load `design-tokens.md`. It is the complete catalog of DatoCMS color/shadow tokens supplied through `ctx.cssDesignTokens`.
+For exact token names and descriptions, load `design-tokens.md`; it catalogs the DatoCMS color/shadow tokens supplied through `ctx.cssDesignTokens`.
 
 Quick selection guide:
 

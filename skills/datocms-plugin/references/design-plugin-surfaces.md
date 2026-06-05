@@ -1,6 +1,6 @@
 # Plugin Surfaces
 
-Use this file after `foundations.md` when the plugin hook determines the UI shell more than the visual polish does.
+Use this file after `design-foundations.md` when the plugin hook determines the UI shell more than the visual polish does.
 
 ## Contents
 
