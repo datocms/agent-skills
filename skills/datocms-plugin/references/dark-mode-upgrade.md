@@ -83,7 +83,7 @@ Choose the token by what the rule means, not by color similarity.
 
 Keep context pairs together. If a panel uses `--color--danger-soft--surface`, its text should usually use `--color--danger-soft--ink`, not primary or neutral ink.
 
-For exact semantic token names and descriptions, load `design-tokens.md`; it documents the color/shadow token catalog supplied through `ctx.cssDesignTokens`.
+For exact semantic token names and descriptions, load `design-tokens.md`; it covers `ctx.cssDesignTokens` color/shadow tokens plus Canvas typography, spacing, easing/motion, and runtime theme variables available inside `<Canvas>`. Treat those Canvas tokens and variables as the default for normal plugin UI; customize beyond them only when the user asks for a specific look or an effect they cannot express.
 
 ## Replace hardcoded colors
 

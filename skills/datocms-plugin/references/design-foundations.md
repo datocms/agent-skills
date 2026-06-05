@@ -181,7 +181,7 @@ Source: `datocms-react-ui/src/generateStyleFromCtx/index.ts` and `datocms-react-
 
 ### Available inside Canvas
 
-For exact token names and descriptions, load `design-tokens.md`; it catalogs the DatoCMS color/shadow tokens supplied through `ctx.cssDesignTokens`.
+For exact token names and descriptions, load `design-tokens.md`; it catalogs `ctx.cssDesignTokens` color/shadow tokens plus Canvas typography, spacing, easing/motion, and runtime theme variables available inside `<Canvas>`. These Canvas tokens and variables are the default best practice for normal plugin UI; customize beyond them only for an explicit custom look or an effect they cannot express.
 
 Quick selection guide:
 

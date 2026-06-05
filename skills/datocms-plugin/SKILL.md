@@ -88,7 +88,7 @@ For other native UI work, start with:
 
 - `references/design-foundations.md`
 - `references/design-datocms-react-ui-bridge.md`
-- Full token catalog -> `references/design-tokens.md` when choosing exact semantic tokens or auditing token coverage.
+- Canvas token catalog -> `references/design-tokens.md` when choosing or auditing design-system variables: color, shadow, typography, spacing, motion, and runtime theme values. Treat Canvas variables as the default UI vocabulary; customize beyond them only for an explicit custom look or effect they cannot express.
 
 Then load only the touched visual area:
 

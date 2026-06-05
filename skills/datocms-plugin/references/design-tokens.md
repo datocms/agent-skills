@@ -1,6 +1,6 @@
 # Design Tokens
 
-Full catalog of DatoCMS Canvas color and shadow tokens available through `ctx.cssDesignTokens`. Use these tokens semantically in plugin UI, preferring direct Canvas tokens over local aliases, hardcoded colors, or derived color transformations.
+Reference for DatoCMS Canvas design variables: `ctx.cssDesignTokens` color/shadow tokens plus Canvas typography, spacing, motion, and runtime theme variables available inside `<Canvas>`. Use Canvas tokens and variables directly and semantically for normal plugin UI. Customize beyond them only when the user explicitly asks for a custom look, or when a vendor widget, data visualization, media treatment, or other non-standard effect cannot be expressed by Canvas semantics.
 
 ## Contents
 
@@ -17,14 +17,14 @@ Full catalog of DatoCMS Canvas color and shadow tokens available through `ctx.cs
 
 ## Usage rules
 
-- Use semantic Canvas tokens directly for normal plugin UI: `var(--color--ink)`, `var(--color--surface)`, `var(--color--border)`, and the matching context families below.
-- Do not define local aliases that only rename Canvas tokens, such as `--plugin-border: var(--color--border)` or `--text-light: var(--color--ink-subtle)`.
+- Use Canvas tokens and variables directly for normal plugin UI: semantic color/shadow tokens, typography variables, spacing variables, and easing variables.
+- Do not define local aliases that only rename Canvas tokens or variables, such as `--plugin-border: var(--color--border)`, `--text-light: var(--color--ink-subtle)`, or `--gap: var(--spacing-m)`.
 - Do not use `color-mix(...)` to simulate text hierarchy, selected states, disabled states, borders, focus rings, status panels, or standard shadows.
 - Keep context families together: when a surface comes from one family, use that same family's ink, border, and outline when available.
-- Use custom variables or `color-mix(...)` only for real customization outside Canvas semantics: media overlays, data visualization, vendor widgets, artwork, or user-requested product colors.
+- Use custom variables, hardcoded values, or `color-mix(...)` only for real customization outside Canvas semantics: user-requested product styling, media overlays, data visualization, vendor widgets, artwork, or effects the Canvas vocabulary cannot express.
 - If a third-party library hoists styles or portals outside `<Canvas>`, pass concrete values from `ctx.cssDesignTokens`; otherwise prefer CSS `var(--color--...)` inside `<Canvas>`.
 
-The catalog below covers the color/shadow vocabulary supplied through `ctx.cssDesignTokens`.
+The main catalog covers the color/shadow vocabulary supplied through `ctx.cssDesignTokens`; the final section lists other Canvas variables available in plugin CSS.
 
 ## Neutral text, surface, and border
 
@@ -201,7 +201,7 @@ Use directly in `box-shadow`; avoid rebuilding standard elevation with `color-mi
 
 ## Other Canvas variables
 
-These variables are available inside `<Canvas>` but are not part of `ctx.cssDesignTokens`. Use them directly in plugin CSS for typography, spacing, and motion.
+These variables are available inside `<Canvas>` but are not part of `ctx.cssDesignTokens`. They are still the default Canvas design vocabulary for typography, spacing, and motion; use them directly before inventing local values.
 
 | Variable | Use |
 | - | - |
