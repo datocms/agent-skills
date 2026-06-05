@@ -152,9 +152,7 @@ cp -R "$repo_root/skills/datocms-cda/." "$skills_dir/datocms-cda"
 - `skills/datocms-content-modeling`
 - `skills/datocms-frontend-integrations`
 - `skills/datocms-feedback`
-- `skills/datocms-plugin-builder`
-- `skills/datocms-plugin-design-system`
-- `skills/datocms-plugin-scaffold`
+- `skills/datocms-plugin`
 - `skills/datocms-setup`
 
 `datocms-setup` already contains its internal recipes, shared references, and recipe-local scripts/assets, so there is no second setup bundle to install.

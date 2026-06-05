@@ -88,7 +88,7 @@ Primary sources:
 
 ### Borders
 
-- Default border is `1px solid var(--border-color)`
+- Default border is `1px solid var(--color--border)`
 - DatoCMS usually relies on border hierarchy before shadow hierarchy
 - Divider lines are preferred over decorative surface layers
 
@@ -135,30 +135,32 @@ Primary sources:
 
 ### Core text and surface colors
 
-- `--base-body-color` for primary text
-- `--light-body-color` for secondary text and helper copy
-- `--placeholder-body-color` for placeholders only
-- `--light-bg-color` and `--lighter-bg-color` for quiet surfaces
-- `--border-color` and `--darker-border-color` for structure
+Prefer the semantic `--color--...` tokens exposed by `<Canvas>`.
 
-### Semantic colors
+- `--color--ink` for primary text
+- `--color--ink-subtle` for secondary text and helper copy
+- `--color--ink-placeholder` for placeholders only
+- `--color--surface` for page background and neutral panels
+- `--color--surface-muted` for quiet surfaces
+- `--color--surface-raised` for dropdowns, modals, and popovers
+- `--color--border` and `--color--border-hover` for structure
 
-- `--alert-color` for destructive or invalid states
-- `--warning-color` and `--warning-bg-color` for caution
-- `--notice-color`, `--add-color`, `--remove-color` for success/change states
+### State colors
+
+Use context pairs together:
+
+- `--color--danger-soft--surface`, `--color--danger-soft--ink`, `--color--danger-soft--border` for destructive or invalid blocks
+- `--color--warning-soft--surface`, `--color--warning-soft--ink`, `--color--warning-soft--border` for caution
+- `--color--success-soft--surface`, `--color--success-soft--ink`, `--color--success-soft--border` for success
+- `--color--primary--surface`, `--color--primary--ink`, `--color--primary--border` for the main action
+- `--color--primary-soft--surface`, `--color--primary-soft--ink`, `--color--primary-soft--border` for quiet branded accents
+- `--color--focus--outline` and `--color--focus--border` for focus rings
+
+Do not mix ink from one context with surface from another. Context pairs are contrast-balanced together, especially in dark mode.
 
 ### Project theme colors
 
-Canvas exposes:
-
-- `--accent-color`
-- `--primary-color`
-- `--light-color`
-- `--dark-color`
-
-And `ctx.theme` gives the same values as runtime data.
-
-Use theme colors as accents, not as a reason to repaint the whole plugin. The CMS still reads primarily as neutral surfaces + structured borders.
+The SDK still exposes legacy theme variables and `ctx.theme`, but new plugin CSS should use semantic color tokens first. Use `ctx.colorScheme` only for non-CSS branching such as third-party widget themes, image assets, or syntax-highlighting presets.
 
 ### OKLCH and derived colors
 
@@ -166,19 +168,11 @@ DatoCMS uses OKLCH internally for color manipulation. Plugins should use `color-
 
 ```css
 .focusRing {
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent-color) 10%, white);
+  box-shadow: 0 0 0 3px var(--color--focus--outline);
 }
 
 .subtleBg {
-  background: color-mix(in oklch, var(--primary-color) 8%, transparent);
-}
-```
-
-For simple transparency, use the `-rgb-components` suffix variants instead:
-
-```css
-.overlay {
-  background: rgb(var(--accent-color-rgb-components) / 0.15);
+  background: color-mix(in oklch, var(--color--primary--surface) 8%, transparent);
 }
 ```
 
@@ -186,13 +180,13 @@ For simple transparency, use the `-rgb-components` suffix variants instead:
 
 Source: `datocms-react-ui/src/generateStyleFromCtx/index.ts` and `datocms-react-ui/src/Canvas/index.tsx`.
 
-Not every CMS CSS variable is available inside a `<Canvas>` plugin iframe. The lists below are authoritative.
+`<Canvas>` applies `ctx.cssDesignTokens` verbatim and also keeps legacy theme variables for older plugins. Use the semantic tokens by default.
 
 ### Available inside Canvas
 
-**Colors:** `--base-body-color`, `--light-body-color`, `--placeholder-body-color`, `--light-bg-color`, `--lighter-bg-color`, `--disabled-bg-color`, `--border-color`, `--darker-border-color`, `--alert-color`, `--warning-color`, `--notice-color`, `--warning-bg-color`, `--add-color`, `--remove-color`
+**Neutral:** `--color--surface`, `--color--surface-hover`, `--color--surface-muted`, `--color--surface-raised`, `--color--surface-raised-hover`, `--color--surface-raised-active`, `--color--ink`, `--color--ink-subtle`, `--color--ink-muted`, `--color--ink-placeholder`, `--color--border`, `--color--border-hover`
 
-**Theme:** `--primary-color`, `--accent-color`, `--light-color`, `--dark-color`, `--semi-transparent-accent-color`
+**Contexts:** `--color--primary--*`, `--color--primary-soft--*`, `--color--danger-soft--*`, `--color--warning-soft--*`, `--color--success-soft--*`, `--color--selected--*`, `--color--disabled--*`, `--color--focus--*`, `--color--progress--*`, `--color--tooltip--*`, `--color--code--*`
 
 **Typography:** `--base-font-family`, `--monospaced-font-family`, `--font-weight-bold`, all `--font-size-*` tokens
 
@@ -200,7 +194,7 @@ Not every CMS CSS variable is available inside a `<Canvas>` plugin iframe. The l
 
 **Easing:** `--material-ease`, `--inertial-ease`
 
-**RGB variants:** each color above also has a `-rgb-components` suffix variant
+**Runtime theme:** `ctx.colorScheme` is `'light'` or `'dark'`; the SDK also sets `data-color-scheme` and CSS `color-scheme` on the document element.
 
 ### NOT available (CMS-only)
 
@@ -215,14 +209,14 @@ Using a CMS-only variable in plugin CSS will silently resolve to its initial val
 
 ## Theme bridging pattern
 
-Use Canvas variables first. Only mirror `ctx.theme` into custom vars when you need a local token name.
+Use Canvas variables first. Only mirror runtime values into custom vars when a third-party component requires a local token name.
 
 ```tsx
 import type { CSSProperties } from 'react';
 
 const style = {
-  '--plugin-accent': ctx.theme.accentColor,
-  '--plugin-primary': ctx.theme.primaryColor,
+  '--plugin-brand-surface': 'var(--color--primary--surface)',
+  '--plugin-brand-ink': 'var(--color--primary--ink)',
 } as CSSProperties;
 
 return (
@@ -236,11 +230,11 @@ return (
 
 ```css
 .wrapper {
-  color: var(--base-body-color);
+  color: var(--color--ink);
 }
 
 .linkLike {
-  color: var(--plugin-accent, var(--accent-color));
+  color: var(--color--ink-link);
 }
 ```
 
@@ -260,7 +254,7 @@ If a plugin does not feel native, check these before changing components:
 
 - Use CSS Modules or plugin-local CSS files, not imported CMS class names
 - Use `var(--font-size-m)` and `var(--spacing-l)` as the default body rhythm
-- Use `var(--light-body-color)` for helper copy
-- Use `var(--border-color)` for most structural boundaries
-- Use `var(--accent-color)` for focused, selected, or linked affordances
-- Reserve `var(--alert-color)` for real destructive or invalid states
+- Use `var(--color--ink-subtle)` for helper copy
+- Use `var(--color--border)` for most structural boundaries
+- Use `var(--color--focus--outline)` for focus rings
+- Use paired state context tokens for destructive, warning, success, selected, or primary UI

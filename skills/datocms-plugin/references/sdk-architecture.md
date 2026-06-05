@@ -549,31 +549,29 @@ if (item) {
 
 ## CSS Custom Properties
 
-Inside `<Canvas>`, DatoCMS injects CSS custom properties that match the project's theme. Use these instead of hardcoded colors to keep your plugin visually consistent:
+Inside `<Canvas>`, DatoCMS injects theme and design-token CSS custom properties. Use semantic `--color--...` tokens instead of hardcoded colors or legacy theme variables:
 
-**Text:** `--base-body-color`, `--light-body-color`, `--placeholder-body-color`
+**Neutral:** `--color--surface`, `--color--surface-hover`, `--color--surface-muted`, `--color--surface-raised`, `--color--surface-raised-hover`, `--color--surface-raised-active`, `--color--ink`, `--color--ink-subtle`, `--color--ink-muted`, `--color--ink-placeholder`, `--color--border`, `--color--border-hover`
 
-**UI surfaces:** `--light-bg-color`, `--lighter-bg-color`, `--disabled-bg-color`
+**State/context pairs:** `--color--primary--surface`, `--color--primary--ink`, `--color--primary--border`, `--color--primary-soft--surface`, `--color--primary-soft--ink`, `--color--danger-soft--surface`, `--color--danger-soft--ink`, `--color--warning-soft--surface`, `--color--warning-soft--ink`, `--color--success-soft--surface`, `--color--success-soft--ink`, `--color--selected--surface`, `--color--selected--ink`, `--color--disabled--surface`, `--color--disabled--ink`
 
-**Borders:** `--border-color`, `--darker-border-color`
-
-**Semantic colors:** `--alert-color`, `--warning-color`, `--warning-bg-color`, `--notice-color`, `--add-color`, `--remove-color`
-
-**Project theme (set by DatoCMS admins):** `--accent-color`, `--primary-color`, `--light-color`, `--dark-color`
+**Single-purpose:** `--color--focus--outline`, `--color--focus--border`, `--color--progress--fill`, `--color--progress--track`, `--color--tooltip--surface`, `--color--tooltip--ink`, `--color--code--surface`, `--color--code--ink`
 
 **Typography:** `--base-font-family`, `--monospaced-font-family`, `--font-size-xxs`, `--font-size-xs`, `--font-size-s`, `--font-size-m`, `--font-size-l`, `--font-size-xl`, `--font-size-xxl`, `--font-size-xxxl`, `--font-weight-bold`
 
-**Spacing:** `--spacing-s`, `--spacing-m`, `--spacing-l`, `--spacing-xl`, `--spacing-xxl`, `--spacing-xxxl` (and negative variants `--negative-spacing-*`)
+**Spacing:** `--spacing-s`, `--spacing-m`, `--spacing-l`, `--spacing-xl`, `--spacing-xxl`, `--spacing-xxxl` and negative variants `--negative-spacing-*`
 
 **Animation:** `--material-ease`, `--inertial-ease`
+
+`ctx.colorScheme` resolves to `'light'` or `'dark'`. The SDK also sets `data-color-scheme` and CSS `color-scheme` on the document element.
 
 ```tsx
 // Example: use theme-consistent styles
 <div style={{
   fontSize: 'var(--font-size-s)',
-  color: 'var(--light-body-color)',
+  color: 'var(--color--ink-subtle)',
   padding: 'var(--spacing-m)',
-  borderBottom: '1px solid var(--border-color)',
+  borderBottom: '1px solid var(--color--border)',
 }}>
   Plugin content here
 </div>

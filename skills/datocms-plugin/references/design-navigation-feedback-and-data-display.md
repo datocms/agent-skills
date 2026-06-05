@@ -31,7 +31,7 @@ CMS dropdowns are:
 - white surface
 - 4px radius
 - subtle shadow
-- simple hover fill using `var(--light-bg-color)`
+- simple hover fill using `var(--color--surface-raised-hover)` for elevated menus or `var(--color--surface-hover)` for inline rows
 
 Use grouped titles sparingly. A flat list is often better.
 

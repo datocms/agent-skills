@@ -29,7 +29,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 
 ```css
 .wrapper {
-  color: var(--base-body-color);
+  color: var(--color--ink);
   font-family: var(--base-font-family);
   font-size: var(--font-size-m);
   line-height: 1.5;
@@ -61,7 +61,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--border-color);
+  background: var(--color--border);
 }
 ```
 
@@ -89,7 +89,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 }
 
 .pageExplainer {
-  color: var(--light-body-color);
+  color: var(--color--ink-subtle);
   margin-bottom: var(--spacing-s);
 }
 
@@ -120,8 +120,8 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
   padding: 10px;
   font: inherit;
   color: inherit;
-  background: white;
-  border: 1px solid var(--border-color);
+  background: var(--color--surface);
+  border: 1px solid var(--color--border);
   border-radius: 4px;
   box-sizing: border-box;
   transition: border-color 0.2s var(--material-ease);
@@ -130,21 +130,21 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 .input:focus,
 .textarea:focus,
 .select:focus {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent-color) 10%, white);
+  border-color: var(--color--focus--border);
+  box-shadow: 0 0 0 3px var(--color--focus--outline);
   outline: none;
 }
 
 .hint {
   margin-top: var(--spacing-s);
-  color: var(--light-body-color);
+  color: var(--color--ink-subtle);
   font-size: var(--font-size-s);
   line-height: 1.2;
 }
 
 .error {
   margin-top: var(--spacing-s);
-  color: var(--alert-color);
+  color: var(--color--danger-soft--ink);
   font-size: var(--font-size-s);
   line-height: 1.2;
 }
@@ -158,7 +158,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
   display: flex;
   align-items: center;
   gap: var(--spacing-m);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--color--border);
   padding-inline: var(--spacing-m);
   box-sizing: border-box;
 }
@@ -174,7 +174,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 }
 
 .toolbarMeta {
-  color: var(--light-body-color);
+  color: var(--color--ink-subtle);
   font-size: var(--font-size-s);
 }
 ```
@@ -183,7 +183,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 
 ```css
 .sidebarPanel {
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--color--border);
 }
 
 .sidebarPanelHeader {
@@ -192,7 +192,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
   align-items: center;
   justify-content: space-between;
   padding: 13px 20px;
-  background: var(--light-bg-color);
+  background: var(--color--surface-muted);
   border: 0;
   text-align: left;
   font: inherit;
@@ -201,7 +201,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 
 .sidebarPanelBody {
   padding: 20px;
-  background: white;
+  background: var(--color--surface);
 }
 ```
 
@@ -218,11 +218,11 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
   padding: 10px 20px;
   text-align: left;
   vertical-align: middle;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--color--border);
 }
 
 .table th {
-  color: var(--light-body-color);
+  color: var(--color--ink-subtle);
   font-weight: normal;
   font-size: 0.9em;
 }
@@ -238,7 +238,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 
 .blankSlateTitle {
   margin-bottom: var(--spacing-m);
-  color: var(--light-body-color);
+  color: var(--color--ink-subtle);
   font-size: calc(35 * 0.0625rem);
   font-weight: var(--font-weight-bold);
   letter-spacing: -0.03em;
@@ -247,7 +247,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 .blankSlateDescription {
   max-width: 500px;
   margin: 0 auto var(--spacing-l);
-  color: var(--base-body-color);
+  color: var(--color--ink);
 }
 ```
 
@@ -257,14 +257,14 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 .input:disabled,
 .textarea:disabled,
 .select:disabled {
-  background: var(--disabled-bg-color);
+  background: var(--color--disabled--surface);
   cursor: not-allowed;
   opacity: 0.6;
 }
 
 .buttonDisabled {
-  background: var(--light-bg-color);
-  color: rgb(0 0 0 / 0.2);
+  background: var(--color--disabled--surface);
+  color: var(--color--disabled--ink);
   cursor: not-allowed;
 }
 ```
@@ -290,7 +290,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 
 .splitSecondary {
   width: min(420px, 40%);
-  border-left: 1px solid var(--border-color);
+  border-left: 1px solid var(--color--border);
 }
 
 .splitBody {

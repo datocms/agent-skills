@@ -116,4 +116,4 @@ Updates all user-installed plugins to their latest versions.
 - `plugins:remove`, `plugins:uninstall`, and `plugins:unlink` are all aliases — use any
 - Always run `plugins:available` first to discover official DatoCMS CLI plugins before installing
 - `plugins:reset` is destructive — always confirm before proposing
-- These commands manage CLI-level extensions. DatoCMS project plugin development belongs in **datocms-plugin-builder**
+- These commands manage CLI-level extensions. DatoCMS project plugin development belongs in **datocms-plugin**

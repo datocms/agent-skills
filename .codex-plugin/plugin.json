@@ -1,7 +1,7 @@
 {
   "name": "datocms",
   "version": "1.2.5",
-  "description": "DatoCMS skills for content delivery, content management, content modeling, CLI workflows, frontend integrations, plugin development, plugin UI design, plugin scaffolding, and project setup",
+  "description": "DatoCMS skills for content delivery, content management, content modeling, CLI workflows, frontend integrations, plugin development, and project setup",
   "author": {
     "name": "DatoCMS",
     "url": "https://www.datocms.com"
@@ -23,7 +23,7 @@
   "interface": {
     "displayName": "DatoCMS",
     "shortDescription": "Content delivery, management, modeling, CLI, frontend integrations, plugin dev, and project setup for DatoCMS",
-    "longDescription": "Focused DatoCMS skills: query content (CDA/GraphQL), manage records and schema (CMA), make content-modeling decisions (models vs blocks, taxonomies, reuse, limits, admin UI), run CLI workflows and migrations, integrate with frontend frameworks (Next.js, Nuxt, Astro, SvelteKit), build and design DatoCMS plugins, scaffold new plugin projects, and orchestrate one-time project setup including draft mode, visual editing, previews, and imports.",
+    "longDescription": "Focused DatoCMS skills: query content (CDA/GraphQL), manage records and schema (CMA), make content-modeling decisions (models vs blocks, taxonomies, reuse, limits, admin UI), run CLI workflows and migrations, integrate with frontend frameworks (Next.js, Nuxt, Astro, SvelteKit), build, maintain, and restyle DatoCMS plugins, and orchestrate one-time project setup including draft mode, visual editing, previews, and imports.",
     "developerName": "DatoCMS",
     "category": "cms",
     "capabilities": [
@@ -33,8 +33,6 @@
       "cli-workflows",
       "frontend-integrations",
       "plugin-development",
-      "plugin-design",
-      "plugin-scaffolding",
       "project-setup"
     ],
     "websiteURL": "https://www.datocms.com"

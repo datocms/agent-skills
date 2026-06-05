@@ -6,9 +6,7 @@ The root [README](../README.md#public-skills) is the short version. This page ke
 
 | Skill | Repo path | Scope |
 | - | - | - |
-| `datocms-plugin-builder` | `skills/datocms-plugin-builder` | Patch and maintain existing DatoCMS plugins |
-| `datocms-plugin-design-system` | `skills/datocms-plugin-design-system` | Design or restyle DatoCMS plugin UI so it feels native to DatoCMS |
-| `datocms-plugin-scaffold` | `skills/datocms-plugin-scaffold` | Scaffold new DatoCMS plugin projects |
+| `datocms-plugin` | `skills/datocms-plugin` | Create, patch, extend, or restyle DatoCMS plugin projects |
 | `datocms-cma` | `skills/datocms-cma` | Content management scripts, records, schema, environments, and webhooks |
 | `datocms-cli` | `skills/datocms-cli` | CLI workflows, migrations, environments, and imports |
 | `datocms-cda` | `skills/datocms-cda` | Content delivery queries, GraphQL reads, media, SEO, and typed queries |
@@ -27,9 +25,9 @@ $datocms-cma write a script that publishes all records in a model
 $datocms-content-modeling should testimonials be a model or a block?
 $datocms-cli scaffold a migration workflow for this project
 $datocms-frontend-integrations show how to wire DatoCMS draft mode into this Next.js app
-$datocms-plugin-builder patch the config screen in this plugin
-$datocms-plugin-design-system make this plugin config screen feel native to DatoCMS
-$datocms-plugin-scaffold scaffold a new sidebar panel plugin for this project
+$datocms-plugin patch the config screen in this plugin
+$datocms-plugin make this plugin config screen feel native to DatoCMS
+$datocms-plugin scaffold a new sidebar panel plugin for this project
 $datocms-setup install content link in this project
 $datocms-feedback draft an email to support@datocms.com about this stuck MCP workflow
 ```

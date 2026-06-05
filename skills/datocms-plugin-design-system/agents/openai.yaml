@@ -1,8 +1,0 @@
-# synced_from_name: datocms-plugin-design-system
-# synced_from_description_sha256: 3ec27e73165e212cac6406b329b892c0b2d1b45c54e9e65ae42d7ecd46990534
-interface:
-  display_name: "DatoCMS Plugin Design System"
-  short_description: "Design native-feeling DatoCMS plugin UIs"
-  default_prompt: "Use $datocms-plugin-design-system to design or restyle a DatoCMS plugin screen so it feels native to the DatoCMS UI."
-policy:
-  allow_implicit_invocation: true

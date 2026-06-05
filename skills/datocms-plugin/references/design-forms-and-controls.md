@@ -49,7 +49,7 @@ Labels should be short and concrete. Use helper text only when the field needs c
 - sales copy
 - vague reassurance
 
-Secondary text should usually use `var(--light-body-color)` and `var(--font-size-s)`.
+Secondary text should usually use `var(--color--ink-subtle)` and `var(--font-size-s)`.
 
 ## Validation
 
@@ -137,7 +137,7 @@ Raw fallback path:
 ### Visual treatment
 
 - Inputs: opacity `0.5`–`0.6`, `cursor: not-allowed`, `var(--disabled-bg-color)` background
-- Buttons: `var(--light-bg-color)` background, `rgb(0 0 0 / 0.2)` text, `cursor: not-allowed`
+- Buttons: `var(--color--disabled--surface)` background, `var(--color--disabled--ink)` text, `cursor: not-allowed`
 
 ```css
 .input:disabled,
@@ -149,8 +149,8 @@ Raw fallback path:
 }
 
 .buttonDisabled {
-  background: var(--light-bg-color);
-  color: rgb(0 0 0 / 0.2);
+  background: var(--color--disabled--surface);
+  color: var(--color--disabled--ink);
   cursor: not-allowed;
 }
 ```

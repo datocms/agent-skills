@@ -156,4 +156,4 @@ This skill covers **reading via GraphQL CDA**. Route to companion skill for:
 | - | - |
 | Mutating content, schema/uploads/webhooks, scripts (including REST queries) | **datocms-cma** |
 | Draft mode endpoints, Web Previews, Content Link, subscriptions, cache tags | **datocms-frontend-integrations** |
-| Building plugin | **datocms-plugin-builder** |
+| Building plugin | **datocms-plugin** |

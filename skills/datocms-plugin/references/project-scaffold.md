@@ -76,17 +76,17 @@ dist/
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "datocms-plugin-sdk": "latest",
-    "datocms-react-ui": "latest",
-    "react": "^19",
-    "react-dom": "^19"
+    "datocms-plugin-sdk": "^2.2.2",
+    "datocms-react-ui": "^2.2.4",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "^6",
-    "typescript": "^5",
-    "vite": "^8"
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.2.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
   },
   "overrides": {
     "datocms-react-ui": {
@@ -98,7 +98,7 @@ dist/
 }
 ```
 
-**The `overrides` block is mandatory.** It resolves peer dependency conflicts between `datocms-react-ui`'s internal dependencies and your project's React version. Without it, npm may install duplicate React instances, causing runtime errors (hooks failing, context not shared). Always keep this block.
+The `overrides` block is the current safe default for React 19 scaffolds. It keeps `datocms-react-ui` internals on the same React instance as the plugin, avoiding hook/context runtime failures.
 
 ### Optional Dependencies
 

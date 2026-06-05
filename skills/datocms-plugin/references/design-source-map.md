@@ -30,9 +30,9 @@ Do not import private classes or copy CMS bundles into plugins. Read these files
 | - | - | - |
 | Core tokens | `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/_css-variables.css` | spacing scale, font sizes, body colors, border colors, semantic colors, easing |
 | Base element defaults | `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/_base.css` | text input padding, focus ring, border treatment, body typography, scrollbar behavior |
-| Theme CSS vars | `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/store/subscribers/listenToChangeThemeCssVars.ts` | which theme colors are promoted to CSS custom properties |
-| Plugin theme object | `node_modules/datocms-plugin-sdk/dist/types/ctx/base.d.ts` | `ctx.theme.primaryColor`, `accentColor`, `lightColor`, `darkColor`, `semiTransparentAccentColor` |
-| Canvas-provided vars | `/Users/marcelofinamorvieira/datoCMS/skills/skills/datocms-plugin-builder/references/sdk-architecture.md` | safe plugin-facing variable names injected inside `<Canvas>` |
+| SDK runtime tokens | `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk/packages/react-ui/src/generateStyleFromCtx/index.ts` | how `ctx.cssDesignTokens` and legacy theme vars reach `<Canvas>` |
+| Canvas runtime | `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk/packages/react-ui/src/Canvas/index.tsx` | `ctx.colorScheme`, document color-scheme behavior, context provider, and resizer behavior |
+| Canvas-provided vars | `skills/datocms-plugin/references/sdk-architecture.md` | safe plugin-facing variable names inside `<Canvas>` |
 | Motion and easing defaults | `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/_css-variables.css`, `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_button.css` | transition durations, easing curves, hover/active opacity |
 
 ## Layout shells
