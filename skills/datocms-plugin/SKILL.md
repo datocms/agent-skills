@@ -14,7 +14,7 @@ description: >-
 
 # DatoCMS Plugin
 
-Work repo-first. Inspect the current plugin shape before changing it. Use the smallest implementation that fits the requested surface and keeps the plugin native to DatoCMS. Prefer fresh source over remembered guidance.
+Work repo-first. Inspect the current plugin shape before changing it. Use the smallest implementation that fits the requested surface and keeps the plugin native to DatoCMS. Prefer current repo evidence over remembered guidance.
 
 ## Step 1: Classify the request
 
@@ -33,14 +33,7 @@ Choose mode:
 - **Design pass:** request mentions native UI, design system, styling, layout, density, spacing, theme, dark mode, semantic tokens, legacy CSS variables, hardcoded colors, polish, dashboard fit, forms, tables, panels, or controls.
 - **Mixed:** normal; combine hook/scaffold work with design guidance in one pass.
 
-Use sources in this order:
-
-1. The target plugin's own files: package versions, package manager, scripts, hooks, naming, and UI style.
-2. Current SDK/UI source when API or component behavior matters: `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk`, especially `packages/sdk` and `packages/react-ui`.
-3. Local maintained examples when the target lacks precedent: `/Users/marcelofinamorvieira/datoCMS/dev/plugins`.
-4. Public docs only after local code cannot answer.
-
-Treat the SDK/UI and example-plugin repos as read-only calibration unless the user explicitly targets them.
+Inspect the target plugin's own files first: package versions, package manager, scripts, hooks, naming, and UI style. When exact SDK or UI behavior matters, use the target project's installed package types or a user-provided reference repo. Do not depend on hard-coded local paths.
 
 ## Step 2: Ask only for missing essentials
 
@@ -103,7 +96,6 @@ Then load only the touched visual area:
 - Dropdowns, tabs, tables, lists, notices -> `references/design-navigation-feedback-and-data-display.md`
 - Surface-specific shell guidance -> `references/design-plugin-surfaces.md`
 - Raw CSS fallback patterns -> `references/design-raw-css-fallbacks.md`
-- Local CMS source map -> `references/design-source-map.md` only when public docs and plugin code are insufficient
 
 ## Step 4: Implement narrowly
 
@@ -120,7 +112,7 @@ Then load only the touched visual area:
 
 - Create the smallest working Vite/React plugin version.
 - Add only needed entrypoints and dependencies.
-- Prefer current `datocms-plugin-sdk`, `datocms-react-ui`, React, Vite, and TypeScript baselines from `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk` and nearby maintained examples unless user requests otherwise.
+- Prefer current `datocms-plugin-sdk`, `datocms-react-ui`, React, Vite, and TypeScript baselines from package metadata, installed packages, or user-provided examples unless user requests otherwise.
 - For marketplace plugins: use `datocms-plugin-` package naming, `datocms-plugin` keyword, homepage, and minimal `datoCmsPlugin.permissions`.
 - For private plugins: keep package metadata minimal and note that permissions are granted from the installed plugin settings.
 

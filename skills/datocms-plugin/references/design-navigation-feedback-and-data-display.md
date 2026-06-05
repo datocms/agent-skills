@@ -1,15 +1,5 @@
 # Navigation, Feedback, and Data Display
 
-Primary sources:
-
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Dropdown.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Tabs.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_table.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_blank-slate.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Notice.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Info.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Badge.css`
-
 ## Contents
 
 - Dropdowns

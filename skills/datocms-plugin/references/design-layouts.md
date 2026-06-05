@@ -1,16 +1,5 @@
 # Layouts
 
-Primary sources:
-
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/Page/Page.tsx`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/Page/PageHeader.tsx`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/Page/PageContent.tsx`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/Page/PageSection.tsx`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Page.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/FullHeightScrollingLayout/index.tsx`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_FullHeightScrollingLayout.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Toolbar.css`
-
 ## Contents
 
 - Centered page shells
@@ -61,8 +50,6 @@ Keep the explainer concise. It should clarify the screen, not become a marketing
 
 ## Sections
 
-Primary source: `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Page.css`
-
 The CMS often groups page content into sections separated by generous vertical space and a line-led title treatment.
 
 Use sections for:
@@ -98,8 +85,6 @@ Structure:
 Do not stack multiple floating panels inside this shell. Let the shell do the structural work.
 
 ## Toolbars
-
-Primary source: `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Toolbar.css`
 
 Toolbar defaults in the CMS:
 

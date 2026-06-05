@@ -4,7 +4,6 @@ Use this when a task needs base `ctx` properties, partial entity repositories, f
 
 ## Contents
 
-- Source files
 - Base context
 - Entity repositories
 - Form values
@@ -14,16 +13,6 @@ Use this when a task needs base `ctx` properties, partial entity repositories, f
 - Async errors
 - Common type imports
 - CSS and theme context
-
-## Source files
-
-- `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk/packages/sdk/src/ctx/base.ts`
-- `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk/packages/sdk/src/ctx/commonExtras/field.ts`
-- `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk/packages/sdk/src/ctx/commonExtras/itemForm.ts`
-- `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk/packages/react-ui/src/generateStyleFromCtx/index.ts`
-- `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk/packages/react-ui/src/Canvas/index.tsx`
-
-Inspect those files when an exact property, method, or token behavior matters.
 
 ## Base context
 

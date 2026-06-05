@@ -16,11 +16,7 @@ Use this file first for every restyle. It contains the decisions that make a plu
 
 ## Typography
 
-Primary sources:
-
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/_css-variables.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/_base.css`
-- <https://www.datocms.com/docs/plugin-sdk/react-datocms-ui>
+Reference: <https://www.datocms.com/docs/plugin-sdk/react-datocms-ui>
 
 ### Font families
 
@@ -51,8 +47,6 @@ Page titles in the CMS often go larger than the token scale with custom CSS. Plu
 
 ## Spacing scale
 
-Primary source: `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/_css-variables.css`
-
 `--space-unit` is `12px` in the CMS but is **not injected by Canvas** into plugin iframes. Plugins receive the computed tokens (`--spacing-s` through `--spacing-xxxl`) but not `--space-unit` itself. If you need it in raw CSS, define it locally:
 
 ```css
@@ -79,13 +73,6 @@ Most plugin-safe spacing is built from the token scale below.
 
 ## Borders, radii, and shadows
 
-Primary sources:
-
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_button.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Dropdown.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_Modal.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_SidebarPanel.css`
-
 ### Borders
 
 - Default border is `1px solid var(--color--border)`
@@ -106,11 +93,6 @@ Primary sources:
 
 ## Transitions and motion
 
-Primary sources:
-
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/_css-variables.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_button.css`
-
 ### Easing curves
 
 - Default easing: `var(--material-ease)` = `cubic-bezier(0.55, 0, 0.1, 1)` — used across 50+ CMS files
@@ -126,12 +108,6 @@ Primary sources:
 Only animate hover, focus, and state-toggle properties. Do not animate layout shifts or reflows.
 
 ## Color system
-
-Primary sources:
-
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/_css-variables.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/store/subscribers/listenToChangeThemeCssVars.ts`
-- `node_modules/datocms-plugin-sdk/dist/types/ctx/base.d.ts`
 
 ### Core text and surface colors
 

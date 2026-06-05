@@ -26,7 +26,7 @@ Do not redesign the plugin unless the user also asked for a restyle. Preserve la
 
 ## Dependency baseline
 
-Use the target plugin's package manager and existing dependency style. For fresh upgrades, prefer the current local SDK/UI versions from `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk/packages/sdk/package.json` and `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk/packages/react-ui/package.json`.
+Use the target plugin's package manager and existing dependency style. For fresh upgrades, prefer the latest compatible `datocms-plugin-sdk` and `datocms-react-ui` versions for the target project.
 
 If the plugin uses npm and the task asks for the current release, run from the plugin folder:
 

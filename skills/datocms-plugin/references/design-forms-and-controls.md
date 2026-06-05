@@ -1,14 +1,5 @@
 # Forms and Controls
 
-Primary sources:
-
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/form/Field.tsx`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/form/Label.tsx`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/src/components/ui/form/SubmitButton.tsx`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_form.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_button.css`
-- `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_input-group.css`
-
 ## Contents
 
 - Field rhythm
@@ -52,8 +43,6 @@ Labels should be short and concrete. Use helper text only when the field needs c
 Secondary text should usually use `var(--color--ink-subtle)` and `var(--font-size-s)`.
 
 ## Validation
-
-Primary source: `/Users/marcelofinamorvieira/datoCMS/dev/cms/styles/blocks/_form.css`
 
 CMS validation is close to the field:
 

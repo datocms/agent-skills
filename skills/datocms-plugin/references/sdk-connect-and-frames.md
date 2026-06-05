@@ -4,7 +4,6 @@ Use this when a task needs `connect()` wiring, render helpers, hook pairing, `<C
 
 ## Contents
 
-- Source files
 - `connect()`
 - Hook categories
 - Declaration/render pairing
@@ -12,15 +11,6 @@ Use this when a task needs `connect()` wiring, render helpers, hook pairing, `<C
 - `<Canvas>`
 - Frame sizing
 - Hook wiring guardrails
-
-## Source files
-
-- `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk/packages/sdk/src/connect.ts`
-- `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk/packages/sdk/src/hooks/`
-- `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk/packages/sdk/src/ctx/pluginFrame.ts`
-- `/Users/marcelofinamorvieira/datoCMS/dev/plugins-sdk/packages/react-ui/src/Canvas/index.tsx`
-
-Inspect those files when exact hook signatures matter.
 
 ## `connect()`
 
