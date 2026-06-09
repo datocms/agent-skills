@@ -78,19 +78,19 @@ dist/
   "dependencies": {
     "datocms-plugin-sdk": "^2.2.2",
     "datocms-react-ui": "^2.2.4",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   },
   "devDependencies": {
-    "@types/react": "^19.2.14",
+    "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.2.0",
-    "typescript": "^5.9.3",
-    "vite": "^7.3.1"
+    "@vitejs/plugin-react": "^6.0.2",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16"
   },
   "overrides": {
     "datocms-react-ui": {
-      "react-intersection-observer": "^9.16.0",
+      "react-intersection-observer": "^10.0.3",
       "react": "$react",
       "react-dom": "$react-dom"
     }
@@ -107,13 +107,11 @@ Add as needed:
 ```json
 {
   "dependencies": {
-    "react-final-form": "^6.5.9",     // Config screen forms
-    "final-form": "^4.20.10",         // Required by react-final-form
-    "@datocms/cma-client-browser": "^3",  // DatoCMS CMA API client (browser build for plugins)
-    "lodash-es": "^4.17.21",          // Utility functions (specifically get() for field paths)
-    "classnames": "^2.5.1",            // CSS class composition
-    "datocms-structured-text-slate-utils": "^1",  // Slate ↔ DAST conversion for Structured Text
-    "use-deep-compare-effect": "^1"    // Deep comparison useEffect for ctx properties
+    "@datocms/cma-client-browser": "^5.4.22",
+    "lodash-es": "^4.18.1",
+    "classnames": "^2.5.1",
+    "datocms-structured-text-slate-utils": "^6.0.0",
+    "use-deep-compare-effect": "^1.8.1"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12"
@@ -271,7 +269,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 const container = document.getElementById('root');
-const root = createRoot(container!);
+if (!container) throw new Error('Root element not found');
+const root = createRoot(container);
 
 export function render(component: ReactNode) {
   root.render(<StrictMode>{component}</StrictMode>);

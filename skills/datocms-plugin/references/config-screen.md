@@ -70,8 +70,8 @@ The recommended pattern uses `react-final-form` for form state management with v
 ```json
 {
   "dependencies": {
-    "react-final-form": "^6.5.9",
-    "final-form": "^4.20.10"
+    "react-final-form": "^7.0.1",
+    "final-form": "^5.0.1"
   }
 }
 ```
