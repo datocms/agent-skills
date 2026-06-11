@@ -33,14 +33,14 @@ Plugin development workflow. Patch existing plugins in place; scaffold only when
    - target model/field/surface when several are plausible
    - whether a new permission or dependency is allowed
    - whether direct browser CMA calls are required instead of SDK helpers
-4. Load the smallest reference set. Start from project code; add only the reference that answers the touched surface.
-5. Patch narrowly:
-   - reuse current file layout, naming, package manager, scripts, and UI structure
-   - update declaration, render, execute, permissions, and package metadata together when the flow needs them
-   - add files only when they reduce total complexity or are reused by touched surfaces
-   - install or change dependencies only when the code uses them
-6. Verify with the lightest command that covers the change: existing build script first, then typecheck/lint/tests when the plugin already defines them and the touched code is covered.
-7. Report what changed, what command ran, and the one manual DatoCMS check that still matters: config save, field render, modal resolve, asset select, permission branch, page navigation, or resize behavior.
+4. Load references after file inspection. Use the reference for the touched surface; do not load the full bundle.
+5. Patch in place:
+   - keep the existing file layout, package manager, scripts, naming, and UI structure
+   - update paired hooks together: declaration + render, trigger + modal, dropdown declaration + execute handler
+   - update permissions and package metadata in the same patch when the code path needs them
+   - add dependencies only when the implementation imports them
+6. Verify with the plugin's existing command. Prefer the build script; add typecheck, lint, or tests only when the project already defines them and they cover the change.
+7. Report the patch, command result, and remaining DatoCMS check: config save, field render, modal resolve, asset select, permission branch, page navigation, or resize behavior.
 
 ## Reference map
 
