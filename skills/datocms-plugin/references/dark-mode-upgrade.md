@@ -1,6 +1,6 @@
 # Dark Mode Upgrade
 
-Use this when an existing plugin must move from legacy theme variables, hardcoded colors, or light-only CSS to Canvas semantic color tokens.
+Use this when an existing plugin must move from legacy theme variables, hardcoded colors, or light-only CSS to semantic Canvas tokens.
 
 ## Contents
 
@@ -18,8 +18,8 @@ Use this when an existing plugin must move from legacy theme variables, hardcode
 
 Keep the change mechanical and complete:
 
-1. Upgrade SDK/UI dependencies when the target plugin does not already expose semantic tokens.
-2. Replace legacy Canvas variables and hardcoded colors with semantic tokens.
+1. Upgrade SDK/UI dependencies when the target plugin does not already expose semantic Canvas tokens.
+2. Replace legacy Canvas variables and hardcoded colors with semantic Canvas tokens.
 3. Verify every rendered plugin surface still reads correctly in light and dark mode.
 
 Do not redesign the plugin unless the user also asked for a restyle. Preserve layout and behavior.

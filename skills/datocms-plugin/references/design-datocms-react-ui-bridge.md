@@ -38,7 +38,7 @@ Fall back to raw code when:
 | Header/action bar | `Toolbar`, `ToolbarStack`, `ToolbarTitle`, `ToolbarButton` | flex toolbar with border and spacing |
 | Dropdown trigger/menu | `Dropdown` | local menu only if the package version lacks the needed shape |
 | Loading state | `Spinner` | local spinner only as last resort |
-| Split view | `SplitView` (with `SplitView.Pane`, `SplitView.Sash`) | flex/grid layout with a divider |
+| Split view | `VerticalSplit` | flex/grid layout with a divider |
 | Tooltip | `Tooltip` (with `TooltipTrigger`, `TooltipContent`) | local tooltip only as last resort |
 | Keyboard shortcut hint | `HotKey` | local `<kbd>` element |
 | Field error message | `FieldError` | local error message |

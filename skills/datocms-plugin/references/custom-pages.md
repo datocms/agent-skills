@@ -145,9 +145,9 @@ connect({
   contentAreaSidebarItems() {
     return [
       {
-        label: 'Dashboard',
+        label: 'Model overview',
         icon: 'tachometer-alt',
-        pointsTo: { pageId: 'dashboard' },
+        pointsTo: { pageId: 'model-overview' },
         placement: ['before', 'menuItems'],
       },
     ];
@@ -202,24 +202,24 @@ import { Spinner } from 'datocms-react-ui';
 import { lazy, Suspense } from 'react';
 import 'datocms-react-ui/styles.css';
 
-const LazyDashboard = lazy(() => import('./entrypoints/Dashboard'));
+const LazyModelOverview = lazy(() => import('./entrypoints/ModelOverview'));
 
 connect({
   mainNavigationTabs() {
     return [
       {
-        label: 'Dashboard',
+        label: 'Model overview',
         icon: 'tachometer-alt',
-        pointsTo: { pageId: 'dashboard' },
+        pointsTo: { pageId: 'model-overview' },
       },
     ];
   },
   renderPage(pageId, ctx) {
     switch (pageId) {
-      case 'dashboard':
+      case 'model-overview':
         render(
           <Suspense fallback={<Spinner size={60} placement="centered" />}>
-            <LazyDashboard ctx={ctx} />
+            <LazyModelOverview ctx={ctx} />
           </Suspense>,
         );
         break;
@@ -229,7 +229,7 @@ connect({
 ```
 
 ```tsx
-// src/entrypoints/Dashboard.tsx
+// src/entrypoints/ModelOverview.tsx
 import type { RenderPageCtx } from 'datocms-plugin-sdk';
 import { Canvas } from 'datocms-react-ui';
 
@@ -237,13 +237,13 @@ type Props = {
   ctx: RenderPageCtx;
 };
 
-export default function Dashboard({ ctx }: Props) {
+export default function ModelOverview({ ctx }: Props) {
   const modelCount = Object.keys(ctx.itemTypes).length;
 
   return (
     <Canvas ctx={ctx} noAutoResizer>
       <div style={{ padding: '2rem' }}>
-        <h1>Project Dashboard</h1>
+        <h1>Model overview</h1>
         <p>This project has {modelCount} models.</p>
         <p>Environment: {ctx.environment}</p>
         <p>Current path: {ctx.location.pathname}</p>

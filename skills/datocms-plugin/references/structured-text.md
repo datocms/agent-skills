@@ -51,8 +51,9 @@ connect({
         icon: 'eye-slash',
         keyboardShortcut: 'mod+shift+s',
         appliedStyle: {
-          backgroundColor: '#333',
-          color: '#333',
+          backgroundColor: 'var(--color--ink)',
+          color: 'transparent',
+          borderRadius: '2px',
         },
       },
     ];

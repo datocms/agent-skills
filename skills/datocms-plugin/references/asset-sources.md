@@ -155,6 +155,8 @@ export default function UnsplashSource({ ctx }: Props) {
   };
 
   const handleSelect = (photo: UnsplashPhoto) => {
+    const locale = ctx.site.attributes.locales[0] ?? ctx.ui.locale;
+
     ctx.select({
       resource: {
         url: photo.urls.full,
@@ -164,7 +166,7 @@ export default function UnsplashSource({ ctx }: Props) {
       copyright: 'Unsplash License',
       notes: photo.alt_description || undefined,
       default_field_metadata: {
-        en: {
+        [locale]: {
           alt: photo.alt_description,
           title: null,
           custom_data: {},

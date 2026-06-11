@@ -126,18 +126,23 @@ export default function ColorPickerModal({ ctx }: Props) {
       <FieldGroup>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
           {COLORS.map((color) => (
-            <div
+            <button
               key={color}
+              type="button"
+              aria-label={`Select ${color}`}
+              aria-pressed={selected === color}
               onClick={() => setSelected(color)}
               style={{
                 width: '100%',
                 height: '60px',
+                padding: 0,
+                appearance: 'none',
                 backgroundColor: color,
                 borderRadius: '4px',
                 cursor: 'pointer',
                 border:
                   selected === color
-                    ? '3px solid var(--color--focus--border)'
+                    ? '3px solid var(--color--selected--border)'
                     : '3px solid transparent',
               }}
             />

@@ -133,9 +133,9 @@ For **marketplace plugins**, declare permissions in `package.json` so DatoCMS pr
 }
 ```
 
-For **private plugins**, this array is ignored — permissions are granted through the DatoCMS UI in the plugin's permissions tab after installation.
+For **private plugins**, package-level permission prompts are ignored — grant permissions through the DatoCMS UI in the plugin's permissions tab after installation.
 
-Either way, this makes `ctx.currentUserAccessToken` available in all hooks.
+Once the installed plugin has the permission, `ctx.currentUserAccessToken` can be available in hooks. Still guard it at runtime.
 
 ## `tsconfig.json`
 

@@ -45,7 +45,7 @@ Use on ordinary plugin pages, panels, rows, inputs, captions, and links.
 | `--color--ink-subtle` | Secondary text, captions, helper labels |
 | `--color--ink-success` | Success text or icon on a neutral surface |
 | `--color--ink-warning` | Warning text or icon on a neutral surface |
-| `--color--surface` | Page background everything else sits on |
+| `--color--surface` | Page background that everything else sits on |
 | `--color--surface-hover` | Hovered row inside lists and tables |
 | `--color--surface-muted` | Background of muted section panels and quiet cards |
 | `--color--surface-raised` | Elevated layer for modals, dropdowns and popovers |
@@ -85,8 +85,8 @@ Use context families together: surface with its matching ink, border, and outlin
 
 | Token | Use |
 | - | - |
-| `--color--danger--ink` | Destructive action button: vivid red surface with white label |
-| `--color--danger--surface` | Destructive action button: vivid red surface with white label |
+| `--color--danger--ink` | Text and icon color on a destructive action surface |
+| `--color--danger--surface` | Background of a destructive action button |
 | `--color--danger-soft--border` | Border around an invalid input or alert toast |
 | `--color--danger-soft--ink` | Error message text and the icon inside an error panel |
 | `--color--danger-soft--outline` | Soft halo around an invalid field on focus |

@@ -145,7 +145,7 @@ Selected/current/active choices are not primary actions. If a row, image card, c
 
 ### Project theme colors
 
-The SDK still exposes legacy theme variables and `ctx.theme`, but new plugin CSS should use semantic color tokens first. Use `ctx.colorScheme` only for non-CSS branching such as third-party widget themes, image assets, or syntax-highlighting presets.
+The SDK still exposes legacy theme variables and `ctx.theme`, but new plugin CSS should use semantic Canvas tokens first. Use `ctx.colorScheme` only for non-CSS branching such as third-party widget themes, image assets, or syntax-highlighting presets.
 
 ### OKLCH and derived colors
 
@@ -171,13 +171,13 @@ DatoCMS uses OKLCH internally for color manipulation, but plugins should not rec
 }
 ```
 
-Use `color-mix(...)` only for intentional effects outside the default design system, such as media overlays, data visualization, vendor widgets, artwork, or a user-requested custom tint that cannot be expressed by semantic tokens.
+Use `color-mix(...)` only for intentional effects outside the default design system, such as media overlays, data visualization, vendor widgets, artwork, or a user-requested custom tint that cannot be expressed by semantic Canvas tokens.
 
 ## What Canvas actually injects
 
 Source: `datocms-react-ui/src/generateStyleFromCtx/index.ts` and `datocms-react-ui/src/Canvas/index.tsx`.
 
-`<Canvas>` applies `ctx.cssDesignTokens` verbatim and also keeps legacy theme variables for older plugins. Use the semantic tokens by default.
+`<Canvas>` applies `ctx.cssDesignTokens` verbatim and also keeps legacy theme variables for older plugins. Use semantic Canvas tokens by default.
 
 ### Available inside Canvas
 

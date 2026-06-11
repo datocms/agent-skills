@@ -113,7 +113,7 @@ export function ConfigScreen({ ctx }: { ctx: RenderConfigScreenCtx }) {
 
 Canvas provides:
 
-- semantic color tokens and legacy theme variables inside the wrapper
+- semantic Canvas tokens and legacy theme variables inside the wrapper
 - automatic height resizing for self-resizing frames
 - `useCtx<T>()` for nested components that should avoid prop drilling
 - document-level `data-color-scheme` and CSS `color-scheme` through the SDK runtime

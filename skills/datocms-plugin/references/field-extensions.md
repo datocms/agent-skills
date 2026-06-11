@@ -1,6 +1,6 @@
 # Field Extensions Reference
 
-Field extensions replace/augment default field editor. Two types: **editors** (replace default) and **addons** (appear below).
+Field extensions replace or augment the default field editor. Two types exist: **editors** replace the default editor, and **addons** appear below it.
 
 ## Contents
 
@@ -125,7 +125,7 @@ connect({
       field.attributes.api_key === 'title'
     ) {
       return {
-        editor: { id: 'fancy-title-editor' },
+        editor: { id: 'title-editor' },
       };
     }
   },
@@ -354,7 +354,7 @@ export default function WordCount({ ctx }: Props) {
   return (
     <Canvas ctx={ctx}>
       {wordCount > 0 && (
-        <div style={{ fontSize: '12px', color: 'var(--color--ink-subtle)' }}>
+        <div style={{ fontSize: 'var(--font-size-s)', color: 'var(--color--ink-subtle)' }}>
           {wordCount} {wordCount === 1 ? 'word' : 'words'}
         </div>
       )}

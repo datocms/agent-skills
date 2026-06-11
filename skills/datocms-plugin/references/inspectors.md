@@ -1,6 +1,6 @@
 # Inspectors Reference
 
-Inspectors are full-screen side panel interfaces that combine a custom plugin view with built-in DatoCMS functionality (record lists, record editors, or custom panels). They appear as top-level navigation tabs and provide a powerful way to build content browsing and editing experiences.
+Inspectors are full-screen side panel interfaces that combine a custom plugin view with built-in DatoCMS functionality: record lists, record editors, or custom panels. They appear as top-level navigation tabs and fit content browsing or editing workflows that need a split interface.
 
 ## Contents
 
@@ -227,13 +227,23 @@ export default function ContentBrowser({ ctx }: Props) {
       <div style={{ padding: '16px', height: '100%', overflow: 'auto' }}>
         <h2 style={{ marginBottom: '16px' }}>Models</h2>
         {models.map((model) => (
-          <div
+          <button
             key={model!.id}
+            type="button"
             style={{
+              width: '100%',
               padding: '8px 12px',
               marginBottom: '4px',
               borderRadius: '4px',
               cursor: 'pointer',
+              textAlign: 'left',
+              appearance: 'none',
+              font: 'inherit',
+              color: 'var(--color--ink)',
+              border:
+                selectedModelId === model!.id
+                  ? '1px solid var(--color--selected--border)'
+                  : '1px solid transparent',
               backgroundColor:
                 selectedModelId === model!.id
                   ? 'var(--color--selected--surface)'
@@ -246,7 +256,7 @@ export default function ContentBrowser({ ctx }: Props) {
             onClick={() => handleShowRecords(model!.id)}
           >
             {model!.attributes.name}
-          </div>
+          </button>
         ))}
 
         {ctx.highlightedItemId && (

@@ -46,8 +46,8 @@ Secondary text should usually use `var(--color--ink-subtle)` and `var(--font-siz
 
 CMS validation is close to the field:
 
-- invalid label turns alert-colored
-- control border changes to alert color
+- invalid label uses the danger/invalid text treatment
+- control border changes to the danger/invalid border token
 - error text sits directly below the field
 
 Plugins should do the same. Do not surface every validation issue as a toast.

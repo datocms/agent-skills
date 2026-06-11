@@ -35,15 +35,15 @@ connect({
       return undefined;
     }
 
-    const name = item.attributes.name as string;
-    const price = item.attributes.price as number;
-    const imageField = item.attributes.image as { upload_id: string } | null;
+    const name = item.attributes.name as string | undefined;
+    const price = item.attributes.price as number | undefined;
+
+    if (!name) {
+      return undefined;
+    }
 
     return {
-      title: `${name} — $${price}`,
-      imageUrl: imageField
-        ? `https://www.datocms-assets.com/${imageField.upload_id}`
-        : undefined,
+      title: typeof price === 'number' ? `${name} — $${price}` : name,
     };
   },
 });

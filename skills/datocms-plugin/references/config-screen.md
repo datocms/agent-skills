@@ -63,7 +63,7 @@ await ctx.notice('Settings saved!');
 
 ## Pattern with `react-final-form`
 
-The recommended pattern uses `react-final-form` for form state management with validation.
+For complex configuration screens, use `react-final-form` when you need validation, dirty tracking, or many fields.
 
 ### Dependencies
 

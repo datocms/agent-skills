@@ -21,7 +21,7 @@ Use this file after `design-foundations.md` when the plugin hook determines the 
 - Import `datocms-react-ui/styles.css` once in the plugin entry file
 - Use `noAutoResizer` only for imposed-size surfaces
 - Use `ctx.updateHeight()` only when async or expanding content defeats the default auto-resizer
-- Use Canvas semantic tokens for colors; use `ctx.colorScheme` only for non-CSS theme branching
+- Use semantic Canvas tokens for colors; use `ctx.colorScheme` only for non-CSS theme branching
 
 Useful docs:
 

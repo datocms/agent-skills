@@ -244,15 +244,15 @@ connect({
   uploadsDropdownActions() {
     return [
       {
-        id: 'copy-url',
-        label: 'Copy URL to clipboard',
-        icon: 'clipboard',
+        id: 'show-id',
+        label: 'Show asset ID',
+        icon: 'info-circle',
       },
     ];
   },
   async executeUploadsDropdownAction(actionId, uploads, ctx) {
-    if (actionId === 'copy-url' && uploads.length === 1) {
-      ctx.notice(`Asset ID: ${uploads[0].id}`);
+    if (actionId === 'show-id' && uploads.length === 1) {
+      await ctx.notice(`Asset ID: ${uploads[0].id}`);
     }
   },
 });

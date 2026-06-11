@@ -2,12 +2,12 @@
 name: datocms-plugin
 description: >-
   Build, scaffold, maintain, or restyle DatoCMS plugins built with
-  datocms-plugin-sdk, datocms-react-ui, and connect(). Use when users ask to
-  create a new plugin project, patch an existing plugin, add or adjust plugin
-  hooks, field extensions, config screens, sidebars, pages, modals, asset
-  sources, dropdown actions, lifecycle hooks, browser CMA flows, plugin
-  permissions, package metadata, dark mode upgrades, semantic Canvas-token
-  migrations, or make plugin UI feel native to the DatoCMS dashboard. Route
+  datocms-plugin-sdk and datocms-react-ui. Use when users ask to create a new
+  DatoCMS plugin project, patch an existing plugin, add or adjust plugin hooks,
+  field extensions, config screens, sidebars, pages, modals, asset sources,
+  dropdown actions, lifecycle hooks, browser CMA flows, plugin permissions,
+  package metadata, dark mode upgrades, semantic Canvas token migrations, or
+  make plugin UI feel native to the DatoCMS dashboard. Route
   standalone CMA scripts to datocms-cma and frontend website integrations to
   datocms-frontend-integrations.
 ---
@@ -30,7 +30,7 @@ Choose mode:
 
 - **Existing plugin:** package already exists and user asks to patch, add, maintain, fix, release-prep, or restyle. Default here.
 - **New plugin:** user asks to create/scaffold/bootstrap a new plugin folder or no plugin project exists.
-- **Design pass:** request mentions native UI, design system, styling, layout, density, spacing, theme, dark mode, semantic tokens, legacy CSS variables, hardcoded colors, polish, dashboard fit, forms, tables, panels, or controls.
+- **Design pass:** request mentions native UI, design system, styling, layout, density, spacing, theme, dark mode, semantic Canvas tokens, legacy CSS variables, hardcoded colors, polish, dashboard fit, forms, tables, panels, or controls.
 - **Mixed:** normal; combine hook/scaffold work with design guidance in one pass.
 
 Inspect the target plugin's own files first: package versions, package manager, scripts, hooks, naming, and UI style. When exact SDK or UI behavior matters, use the target project's installed package types or a user-provided reference repo. Do not depend on hard-coded local paths.
@@ -121,7 +121,7 @@ Then load only the touched visual area:
 
 - Prefer `datocms-react-ui` public components when they match the required shape.
 - Fall back to local React/CSS only when public components do not express the layout cleanly.
-- Use `<Canvas>` semantic color tokens (`--color--surface`, `--color--ink`, `--color--border`, `--color--primary--surface`, `--color--focus--outline`, etc.) and `ctx.colorScheme` for non-CSS theme branching.
+- Use semantic Canvas tokens (`--color--surface`, `--color--ink`, `--color--border`, `--color--primary--surface`, `--color--focus--outline`, etc.) and `ctx.colorScheme` for non-CSS theme branching.
 - Avoid hardcoded palettes, private CMS classes, large rounded shells, hero blocks, KPI grids, decorative cards, heavy gradients, and dashboard filler.
 - Match DatoCMS structure first: density, spacing, typography, border hierarchy, then color.
 

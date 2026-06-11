@@ -238,16 +238,15 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 
 .blankSlateTitle {
   margin-bottom: var(--spacing-m);
-  color: var(--color--ink-subtle);
-  font-size: calc(35 * 0.0625rem);
+  color: var(--color--ink);
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
-  letter-spacing: -0.03em;
 }
 
 .blankSlateDescription {
   max-width: 500px;
   margin: 0 auto var(--spacing-l);
-  color: var(--color--ink);
+  color: var(--color--ink-subtle);
 }
 ```
 

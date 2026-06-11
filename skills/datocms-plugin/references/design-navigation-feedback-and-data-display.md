@@ -18,7 +18,7 @@ Official doc: <https://www.datocms.com/docs/plugin-sdk/dropdown>
 CMS dropdowns are:
 
 - compact
-- white surface
+- raised surface using `var(--color--surface-raised)`
 - 4px radius
 - subtle shadow
 - simple hover fill using `var(--color--surface-raised-hover)` for elevated menus or `var(--color--surface-hover)` for inline rows
@@ -33,9 +33,9 @@ Avoid tabs when a vertical section flow would be clearer.
 
 CMS tab styling is restrained:
 
-- light background strip
-- active tab reads as a raised white surface
-- invalid tabs can use alert color, but only for true validation/state issues
+- quiet background strip using `var(--color--surface-muted)`
+- active tab reads as a raised selected or neutral surface
+- invalid tabs can use danger/invalid tokens, but only for true validation/state issues
 
 ## Tables
 
@@ -46,7 +46,7 @@ Tables in the CMS are left-aligned, border-led, and compact.
 - cell padding around `10px 20px`
 - subdued header text color
 - bottom borders for row separation
-- white cells and limited surface decoration
+- neutral cells and limited surface decoration
 
 Use tables for structured comparison or operational lists. Use simple stacked rows for lighter metadata views.
 

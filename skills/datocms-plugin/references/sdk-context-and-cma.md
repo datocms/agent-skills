@@ -187,7 +187,7 @@ Do not create editor field extensions for modular content, single block, or Stru
 
 ## CSS and theme context
 
-Inside `<Canvas>`, prefer semantic tokens from `ctx.cssDesignTokens`, for example:
+Inside `<Canvas>`, prefer semantic Canvas tokens from `ctx.cssDesignTokens`, for example:
 
 - neutral: `--color--surface`, `--color--surface-muted`, `--color--ink`, `--color--ink-subtle`, `--color--border`
 - paired contexts: `--color--primary--surface` + `--color--primary--ink`, `--color--danger-soft--surface` + `--color--danger-soft--ink`
