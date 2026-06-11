@@ -98,7 +98,7 @@ dist/
 }
 ```
 
-The `overrides` block is the current safe default for React 19 scaffolds. It keeps `datocms-react-ui` internals on the same React instance as the plugin, avoiding hook/context runtime failures.
+Use the `overrides` block for React 19 scaffolds when `datocms-react-ui` internals must share the plugin's React instance.
 
 ### Optional Dependencies
 

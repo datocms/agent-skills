@@ -194,13 +194,25 @@ export default function UnsplashSource({ ctx }: Props) {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
         {results.map((photo) => (
-          <img
+          <button
             key={photo.id}
-            src={photo.urls.regular}
-            alt={photo.alt_description || ''}
-            style={{ width: '100%', cursor: 'pointer', borderRadius: '4px' }}
+            type="button"
             onClick={() => handleSelect(photo)}
-          />
+            style={{
+              padding: 0,
+              border: '1px solid var(--color--border)',
+              borderRadius: '4px',
+              background: 'transparent',
+              cursor: 'pointer',
+              overflow: 'hidden',
+            }}
+          >
+            <img
+              src={photo.urls.regular}
+              alt={photo.alt_description || ''}
+              style={{ display: 'block', width: '100%' }}
+            />
+          </button>
         ))}
       </div>
     </Canvas>

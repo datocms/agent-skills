@@ -239,9 +239,12 @@ export default function ConfigScreen({ ctx }: Props) {
 
   const handleSave = async () => {
     setSaving(true);
-    await ctx.updatePluginParameters({ apiKey });
-    ctx.notice('Settings saved!');
-    setSaving(false);
+    try {
+      await ctx.updatePluginParameters({ apiKey });
+      await ctx.notice('Settings saved!');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (

@@ -62,7 +62,7 @@ Keep the asset source as the primary surface.
 
 Use a modal for focused choices like metadata, crop mode, or source-specific options. Do not turn the asset source into a multi-screen mini app.
 
-Prefer `ctx.select()` over raw CMA upload creation when the job is simply "pick a file and create an upload".
+Prefer `ctx.select()` over raw CMA upload creation when the flow only selects a file and creates an upload.
 
 See `asset-sources.md` and `modals.md`.
 
@@ -164,11 +164,11 @@ When a change needs a new permission:
 3. Keep the UI honest: disable or hide the action when the permission is unavailable.
 4. Verify the action still degrades cleanly for roles without that permission.
 
-Do not add broad permissions "just in case".
+Do not add permissions for unused future flows.
 
 ## Restraint in plugin UI
 
-Prefer normal plugin UI.
+Start with existing `datocms-react-ui` components and the target plugin's current layout.
 
 - Use `datocms-react-ui` for forms, buttons, layout primitives, loading states, and notices.
 - Add local components only for thin composition.

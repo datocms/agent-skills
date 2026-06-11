@@ -1,6 +1,6 @@
 # Foundations
 
-Use this file first for every restyle. It contains the decisions that make a plugin read as “DatoCMS” before any component choice.
+Use this file first for restyling work. It covers typography, spacing, borders, motion, and Canvas variables before component choice.
 
 ## Contents
 
@@ -11,7 +11,7 @@ Use this file first for every restyle. It contains the decisions that make a plu
 - Color system
 - What Canvas actually injects
 - Theme bridging pattern
-- Native-feel heuristics
+- UI checks
 - Default implementation choices
 
 ## Typography
@@ -181,7 +181,7 @@ Source: `datocms-react-ui/src/generateStyleFromCtx/index.ts` and `datocms-react-
 
 ### Available inside Canvas
 
-For exact token names and descriptions, load `design-tokens.md`; it catalogs `ctx.cssDesignTokens` color/shadow tokens plus Canvas typography, spacing, easing/motion, and runtime theme variables available inside `<Canvas>`. These Canvas tokens and variables are the default best practice for normal plugin UI; customize beyond them only for an explicit custom look or an effect they cannot express.
+For exact token names and descriptions, load `design-tokens.md`; it catalogs `ctx.cssDesignTokens` color/shadow tokens plus Canvas typography, spacing, easing/motion, and runtime theme variables available inside `<Canvas>`. These Canvas tokens and variables are the default variables for plugin UI; customize beyond them only for an explicit custom look or an effect they cannot express.
 
 Quick selection guide:
 
@@ -244,9 +244,9 @@ return (
 
 If a third-party library hoists portals or generated styles outside the `<Canvas>` scope, pass concrete values from `ctx.cssDesignTokens`. Use `ctx.colorScheme` only for non-CSS choices such as library mode flags, external widget presets, alternate assets, or syntax-highlighting themes.
 
-## Native-feel heuristics
+## UI checks
 
-If a plugin does not feel native, check these before changing components:
+Before changing components, check:
 
 1. Is the spacing too loose?
 2. Is the title size too big for the surface?

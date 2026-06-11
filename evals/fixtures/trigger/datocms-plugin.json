@@ -28,7 +28,7 @@
     "should_trigger": true
   },
   {
-    "query": "Make this existing DatoCMS plugin config screen feel native to the dashboard: tighten spacing, group settings into sections, and use datocms-react-ui where it helps.",
+    "query": "Update this existing DatoCMS plugin config screen to match DatoCMS spacing, section grouping, and datocms-react-ui controls.",
     "should_trigger": true
   },
   {
@@ -36,7 +36,7 @@
     "should_trigger": true
   },
   {
-    "query": "Scaffold a new DatoCMS plugin with a config screen that already feels native to the DatoCMS UI.",
+    "query": "Scaffold a new DatoCMS plugin with a config screen that uses datocms-react-ui controls and DatoCMS spacing.",
     "should_trigger": true
   },
   {
@@ -57,7 +57,7 @@
     "query_mode": "explicit"
   },
   {
-    "query": "Use datocms-plugin to restyle this existing DatoCMS plugin modal so the form and actions follow the dashboard design system.",
+    "query": "Use datocms-plugin to restyle this existing DatoCMS plugin modal so the form and actions match DatoCMS controls.",
     "should_trigger": true,
     "query_mode": "explicit"
   },

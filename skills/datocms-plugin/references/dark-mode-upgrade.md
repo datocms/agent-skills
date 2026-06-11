@@ -83,7 +83,7 @@ Choose the token by what the rule means, not by color similarity.
 
 Keep context pairs together. If a panel uses `--color--danger-soft--surface`, its text should usually use `--color--danger-soft--ink`, not primary or neutral ink.
 
-For exact semantic token names and descriptions, load `design-tokens.md`; it covers `ctx.cssDesignTokens` color/shadow tokens plus Canvas typography, spacing, easing/motion, and runtime theme variables available inside `<Canvas>`. Treat those Canvas tokens and variables as the default for normal plugin UI; customize beyond them only when the user asks for a specific look or an effect they cannot express.
+For exact semantic token names and descriptions, load `design-tokens.md`; it covers `ctx.cssDesignTokens` color/shadow tokens plus Canvas typography, spacing, easing/motion, and runtime theme variables available inside `<Canvas>`. Use those Canvas tokens and variables by default for plugin UI; customize beyond them only when the user asks for a specific look or an effect they cannot express.
 
 ## Replace hardcoded colors
 
@@ -99,7 +99,7 @@ Common substitutions:
 - focus halo -> `--color--focus--outline`
 - primary action -> `--color--primary--surface` + `--color--primary--ink`
 
-Use semantic Canvas tokens directly for normal plugin UI. Do not introduce custom properties that only rename Canvas tokens, and do not use `color-mix(...)` to simulate text hierarchy, selected states, disabled states, neutral borders, focus rings, or standard status colors.
+Use semantic Canvas tokens directly for plugin UI. Do not introduce custom properties that only rename Canvas tokens, and do not use `color-mix(...)` to simulate text hierarchy, selected states, disabled states, neutral borders, focus rings, or standard status colors.
 
 Prefer full semantic families:
 

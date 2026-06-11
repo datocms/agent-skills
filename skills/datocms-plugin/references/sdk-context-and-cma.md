@@ -107,7 +107,7 @@ const client = buildClient({
 });
 ```
 
-Do not add `currentUserAccessToken` “just in case”. Keep the package permission, runtime guard, and visible disabled/error state aligned.
+Do not add `currentUserAccessToken` for unused future flows. Keep the package permission, runtime guard, and visible disabled/error state aligned.
 
 ## Endpoint overrides
 

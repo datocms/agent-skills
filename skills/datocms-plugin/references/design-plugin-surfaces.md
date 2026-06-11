@@ -1,6 +1,6 @@
 # Plugin Surfaces
 
-Use this file after `design-foundations.md` when the plugin hook determines the UI shell more than the visual polish does.
+Use this file after `design-foundations.md` when the plugin hook determines the UI shell.
 
 ## Contents
 
@@ -83,7 +83,7 @@ Best fit:
 - larger editors or preview tools
 - list/detail interactions that still belong beside the main screen
 
-Full sidebars should still feel like side work, not a separate dashboard. If the sidebar needs a real split layout, prefer `VerticalSplit` before building a custom divider shell.
+Full sidebars are side work, not separate dashboards. If the sidebar needs a real split layout, prefer `VerticalSplit` before building a custom divider shell.
 
 ### Sizing
 
@@ -148,7 +148,7 @@ Best fit:
 - focused pickers
 - source-specific metadata steps
 
-Asset sources should feel like efficient work tools. Prefer compact search, filters, results, and one clear selection path.
+Asset sources should prioritize compact search, filters, results, and one clear selection path.
 
 ### Sizing
 

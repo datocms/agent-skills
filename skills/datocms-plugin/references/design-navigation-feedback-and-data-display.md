@@ -9,7 +9,7 @@
 - Blank slates
 - Notices and info blocks
 - Badges and tags
-- Native-feel checks for data display
+- Data-display checks
 
 ## Dropdowns
 
@@ -103,10 +103,10 @@ Use them for:
 
 Do not turn every metadata point into a badge.
 
-## Native-feel checks for data display
+## Data-display checks
 
 - Is the layout readable without color?
 - Would a simple divider solve the problem better than another card?
 - Are there too many status chips?
 - Is secondary metadata lighter and smaller than primary labels?
-- Does an empty state still feel like part of the same plugin, not a splash page?
+- Does an empty state stay inside the plugin flow instead of becoming a splash page?

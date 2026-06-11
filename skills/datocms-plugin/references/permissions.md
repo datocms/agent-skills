@@ -23,4 +23,4 @@ For private plugins, remember the plugin permissions tab in DatoCMS still needs 
 
 - `package.json` permissions match the code paths that use them
 - permission-gated UI branches degrade cleanly for users without the capability
-- no broad permission was added “just in case”
+- no unused broad permission was added

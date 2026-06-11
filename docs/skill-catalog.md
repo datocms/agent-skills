@@ -26,7 +26,7 @@ $datocms-content-modeling should testimonials be a model or a block?
 $datocms-cli scaffold a migration workflow for this project
 $datocms-frontend-integrations show how to wire DatoCMS draft mode into this Next.js app
 $datocms-plugin patch the config screen in this plugin
-$datocms-plugin make this plugin config screen feel native to DatoCMS
+$datocms-plugin make this plugin config screen match DatoCMS spacing, forms, and actions
 $datocms-plugin scaffold a new sidebar panel plugin for this project
 $datocms-setup install content link in this project
 $datocms-feedback draft an email to support@datocms.com about this stuck MCP workflow

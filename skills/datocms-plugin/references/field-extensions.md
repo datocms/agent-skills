@@ -146,7 +146,7 @@ manualFieldExtensions() {
       name: 'Notes Editor',
       type: 'editor',
       fieldTypes: ['json'],
-      asSidebarPanel: { startOpen: true },  // or just `true` for default (starts closed)
+      asSidebarPanel: { startOpen: true },  // `true` also enables the sidebar panel with default collapsed state
     },
   ];
 },

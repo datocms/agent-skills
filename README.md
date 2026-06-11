@@ -42,7 +42,7 @@ The skills are designed to work together — they cross-link and reinforce each 
 
 **Extending the DatoCMS dashboard**
 
-- **Plugin development** — create, patch, extend, or restyle DatoCMS plugins with SDK hooks, Vite/React, browser CMA flows, permissions, and native dashboard UI patterns.
+- **Plugin development** — create, patch, extend, or restyle DatoCMS plugins with SDK hooks, Vite/React, browser CMA flows, permissions, and DatoCMS UI patterns.
 
 For the full list of skill names, internal setup recipes, and routing rules see [`docs/skill-catalog.md`](docs/skill-catalog.md).
 

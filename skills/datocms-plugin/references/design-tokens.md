@@ -1,6 +1,8 @@
 # Design Tokens
 
-Reference for DatoCMS Canvas design variables: `ctx.cssDesignTokens` color/shadow tokens plus Canvas typography, spacing, motion, and runtime theme variables available inside `<Canvas>`. Use Canvas tokens and variables directly and semantically for normal plugin UI. Customize beyond them only when the user explicitly asks for a custom look, or when a vendor widget, data visualization, media treatment, or other non-standard effect cannot be expressed by Canvas semantics.
+Reference for DatoCMS Canvas variables available inside `<Canvas>`: `ctx.cssDesignTokens` colors and shadows, plus Canvas typography, spacing, motion, and runtime theme values.
+
+Use Canvas variables directly for plugin UI. Add custom variables or concrete values only for user-requested styling, vendor widgets, media treatments, data visualization, or effects the Canvas vocabulary cannot express.
 
 ## Contents
 
@@ -17,7 +19,7 @@ Reference for DatoCMS Canvas design variables: `ctx.cssDesignTokens` color/shado
 
 ## Usage rules
 
-- Use Canvas tokens and variables directly for normal plugin UI: semantic color/shadow tokens, typography variables, spacing variables, and easing variables.
+- Use Canvas tokens and variables directly for plugin UI: semantic color/shadow tokens, typography variables, spacing variables, and easing variables.
 - Do not define local aliases that only rename Canvas tokens or variables, such as `--plugin-border: var(--color--border)`, `--text-light: var(--color--ink-subtle)`, or `--gap: var(--spacing-m)`.
 - Do not use `color-mix(...)` to simulate text hierarchy, selected states, disabled states, borders, focus rings, status panels, or standard shadows.
 - Keep context families together: when a surface comes from one family, use that same family's ink, border, and outline when available.
@@ -207,7 +209,7 @@ These variables are available inside `<Canvas>` but are not part of `ctx.cssDesi
 | - | - |
 | `--base-font-family` | Default DatoCMS UI font family. |
 | `--monospaced-font-family` | DatoCMS monospace font family for code, JSON, logs, and technical values. |
-| `--font-weight-bold` | DatoCMS bold weight, currently `500`, for native-feeling emphasis. |
+| `--font-weight-bold` | DatoCMS bold weight, currently `500`, for emphasis that matches DatoCMS text weight. |
 | `--font-size-xxs` | Tiny badges and compact metadata. |
 | `--font-size-xs` | Field meta, small labels, and compact helper text. |
 | `--font-size-s` | Hints and secondary metadata. |
