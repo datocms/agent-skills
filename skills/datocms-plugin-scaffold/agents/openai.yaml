@@ -1,8 +1,0 @@
-# synced_from_name: datocms-plugin-scaffold
-# synced_from_description_sha256: 94eae112ec8343b67724d40bf2332b649fb6cd8e63a44dffc3c111a9dee77891
-interface:
-  display_name: "DatoCMS Plugin Scaffold"
-  short_description: "Scaffold new DatoCMS plugin projects"
-  default_prompt: "Use $datocms-plugin-scaffold to create a new DatoCMS plugin project with the right starter files and initial hooks."
-policy:
-  allow_implicit_invocation: true

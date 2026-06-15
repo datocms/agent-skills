@@ -344,7 +344,7 @@
       "should_trigger": false,
       "query_mode": "overlap",
       "boundary_with": [
-        "datocms-plugin-design-system"
+        "datocms-plugin"
       ],
       "trigger_rate": 0.0,
       "triggers": 0,
@@ -418,7 +418,7 @@
       "should_trigger": false,
       "query_mode": "overlap",
       "boundary_with": [
-        "datocms-plugin-builder"
+        "datocms-plugin"
       ],
       "trigger_rate": 0.0,
       "triggers": 0,
@@ -430,8 +430,7 @@
       "should_trigger": false,
       "query_mode": "overlap",
       "boundary_with": [
-        "datocms-plugin-scaffold",
-        "datocms-plugin-builder"
+        "datocms-plugin"
       ],
       "trigger_rate": 0.0,
       "triggers": 0,

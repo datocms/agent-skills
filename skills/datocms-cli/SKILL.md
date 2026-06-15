@@ -237,7 +237,7 @@ Run `npx datocms cma:call --help` for full list of built-in examples, or `npx da
 - Use `npx datocms plugins:available` to discover official CLI plugins before installing
 - Use `npx datocms plugins:add <PLUGIN>` to install CLI plugin by npm package name or GitHub URL
 - Use `npx datocms plugins:link <PATH>` only for local plugin development
-- These commands manage CLI extensions, not DatoCMS project plugins — route project plugin work to **datocms-plugin-builder**
+- These commands manage CLI extensions, not DatoCMS project plugins — route project plugin work to **datocms-plugin**
 
 ### Environment Safety
 
@@ -271,4 +271,4 @@ This skill covers **CLI commands, flags, configuration, workflows, and migration
 | Consuming generated schema types inside application code or reusable scripts | **datocms-cma** |
 | Querying content with GraphQL for frontend display | **datocms-cda** |
 | Setting up framework integration, draft mode, or real-time updates | **datocms-frontend-integrations** |
-| Building a DatoCMS plugin | **datocms-plugin-builder** |
+| Building a DatoCMS plugin | **datocms-plugin** |

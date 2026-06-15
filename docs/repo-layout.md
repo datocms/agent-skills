@@ -20,9 +20,7 @@ skills/
   datocms-content-modeling/
   datocms-frontend-integrations/
   datocms-feedback/
-  datocms-plugin-builder/
-  datocms-plugin-design-system/
-  datocms-plugin-scaffold/
+  datocms-plugin/
   datocms-setup/
     agents/
     references/
@@ -41,7 +39,7 @@ evals/
 - `.agents/plugins/marketplace.json` is the repo-scoped Codex marketplace file. It exposes this repo as a local Codex plugin source for `/plugins` while developing or validating the plugin locally.
 - `.codex-plugin/plugin.json` is the Codex plugin manifest. It points `skills` at `./skills/` so Codex discovers the shipped skills automatically. It also includes the plugin install-surface metadata used by Codex.
 - `skills/` contains the shipped skill folders. Their names match each skill's canonical `name:` value.
-- `skills/datocms-plugin-design-system/` is the public design companion for native-feeling DatoCMS plugin UI work. It stays reference-heavy and pairs with plugin builder/scaffold work instead of replacing them.
+- `skills/datocms-plugin/` is the public plugin entrypoint. It covers new plugin scaffolds, existing plugin maintenance, SDK hook work, and plugin UI work that should match DatoCMS patterns.
 - `skills/datocms-setup/` is the only shipped setup entrypoint. Its `SKILL.md` stays small and routes into local recipes through references and a manifest.
 - `skills/datocms-setup/recipes/frontend-foundation/` contains project primitives such as data access, draft mode, previews, cache tags, and type generation.
 - `skills/datocms-setup/recipes/frontend-features/` contains rendering and discovery add-ons layered on top of that foundation.

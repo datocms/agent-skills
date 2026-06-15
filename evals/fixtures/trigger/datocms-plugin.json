@@ -1,0 +1,93 @@
+[
+  {
+    "query": "Create a new private DatoCMS plugin folder with a config screen and a record sidebar panel.",
+    "should_trigger": true
+  },
+  {
+    "query": "Scaffold a marketplace-ready DatoCMS plugin with Vite, React, package metadata, and a config screen.",
+    "should_trigger": true
+  },
+  {
+    "query": "Start a fresh DatoCMS plugin project that adds an asset source for importing images from an external library.",
+    "should_trigger": true
+  },
+  {
+    "query": "Patch this existing DatoCMS plugin config screen to rename the token field and remove the debug toggle.",
+    "should_trigger": true
+  },
+  {
+    "query": "In this DatoCMS plugin project, add an itemFormDropdownActions entry that clears the current slug field.",
+    "should_trigger": true
+  },
+  {
+    "query": "Update our DatoCMS plugin sidebar panel to show reading time only when the body field has content.",
+    "should_trigger": true
+  },
+  {
+    "query": "Wire a renderModal hook into this existing DatoCMS plugin without reorganizing the project.",
+    "should_trigger": true
+  },
+  {
+    "query": "Update this existing DatoCMS plugin config screen to match DatoCMS spacing, section grouping, and datocms-react-ui controls.",
+    "should_trigger": true
+  },
+  {
+    "query": "Restyle this DatoCMS plugin sidebar panel with local CSS so it matches DatoCMS density, borders, and typography.",
+    "should_trigger": true
+  },
+  {
+    "query": "Scaffold a new DatoCMS plugin with a config screen that uses datocms-react-ui controls and DatoCMS spacing.",
+    "should_trigger": true
+  },
+  {
+    "query": "Upgrade this existing DatoCMS plugin from legacy CSS variables to semantic Canvas tokens so it works in dark mode.",
+    "should_trigger": true
+  },
+  {
+    "query": "Migrate hardcoded colors and ctx.theme color usage in this DatoCMS plugin to dark-mode-compatible Canvas tokens.",
+    "should_trigger": true
+  },
+  {
+    "query": "Patch this existing DatoCMS plugin settings page and make the updated UI feel native while keeping the behavior the same.",
+    "should_trigger": true
+  },
+  {
+    "query": "Use datocms-plugin to create a new DatoCMS plugin project with Vite, React, and a connect() entrypoint.",
+    "should_trigger": true,
+    "query_mode": "explicit"
+  },
+  {
+    "query": "Use datocms-plugin to restyle this existing DatoCMS plugin modal so the form and actions match DatoCMS controls.",
+    "should_trigger": true,
+    "query_mode": "explicit"
+  },
+  {
+    "query": "Use datocms-plugin to patch this existing DatoCMS plugin field extension validation.",
+    "should_trigger": true,
+    "query_mode": "explicit"
+  },
+  {
+    "query": "Write a DatoCMS CMA script to bulk publish all draft records in one model.",
+    "should_trigger": false
+  },
+  {
+    "query": "Set up DatoCMS draft mode and Web Previews in this Next.js app.",
+    "should_trigger": false
+  },
+  {
+    "query": "Should testimonials be a reusable model or a block in this DatoCMS schema?",
+    "should_trigger": false
+  },
+  {
+    "query": "Show how to render DatoCMS Structured Text in a React front end.",
+    "should_trigger": false
+  },
+  {
+    "query": "Create a CLI extension that wraps the DatoCMS migration command.",
+    "should_trigger": false
+  },
+  {
+    "query": "Draft an email to support about a stuck project setup workflow.",
+    "should_trigger": false
+  }
+]

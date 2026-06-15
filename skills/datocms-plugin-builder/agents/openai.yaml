@@ -1,8 +1,0 @@
-# synced_from_name: datocms-plugin-builder
-# synced_from_description_sha256: e66b1bfed1573a6ff5107c94fa1f32a1dba6cb55ed14613fa12a1bff36c9dd39
-interface:
-  display_name: "DatoCMS Plugin Builder"
-  short_description: "Patch existing DatoCMS plugin projects"
-  default_prompt: "Use $datocms-plugin-builder to patch an existing DatoCMS plugin, config screen, hook, or render entrypoint."
-policy:
-  allow_implicit_invocation: true

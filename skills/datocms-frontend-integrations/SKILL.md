@@ -284,4 +284,4 @@ Use companion skills when task leaves this bundle's sweet spot:
 | Writing or optimizing GraphQL queries for the CDA | `datocms-cda` |
 | gql.tada fragment-writing discipline (masking, composition, page query) | `datocms-cda` (`../datocms-cda/references/fragment-patterns.md`) |
 | Programmatic content management, schema changes, migration scripts, access control, or webhook creation via REST | `datocms-cma` |
-| Building a DatoCMS plugin | `datocms-plugin-builder` |
+| Building a DatoCMS plugin | `datocms-plugin` |

@@ -311,4 +311,4 @@ This skill covers **content management via REST CMA** (mutations, schema, upload
 | CLI-workflow topics: migrations (creating, running, autogenerate), `schema:generate`, environment operations (`fork`/`promote`/`destroy`/`rename`), imports (WordPress, Contentful), CLI plugin management, blueprint/multi-project sync, CI/CD deployment workflows | **datocms-cli** |
 | Querying content with GraphQL for frontend display | **datocms-cda** |
 | Setting up draft mode, Web Previews, Content Link, real-time subscriptions, or framework integration | **datocms-frontend-integrations** |
-| Building a DatoCMS plugin | **datocms-plugin-builder** |
+| Building a DatoCMS plugin | **datocms-plugin** |
