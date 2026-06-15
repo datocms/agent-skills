@@ -199,17 +199,6 @@ Quick selection guide:
 
 **Runtime theme:** `ctx.colorScheme` is `'light'` or `'dark'`; the SDK also sets `data-color-scheme` and CSS `color-scheme` on the document element.
 
-### NOT available (CMS-only)
-
-These variables exist in the CMS but Canvas does **not** inject them into plugin iframes:
-
-- `--space-unit`, `--px-to-rem`, `--cursive-font-family`, `--muted-color`
-- `--backdrop-color`, `--backdrop-linear-gradient`
-- `--slate-margin`, `--slate-list-margin`, `--slate-panel-box-shadow`
-- `--base-distance-for-subtle-decoration-elements`
-
-Using a CMS-only variable in plugin CSS will silently resolve to its initial value (usually `0` or empty), producing broken layouts with no error.
-
 ## Theme bridging pattern
 
 Use Canvas variables first. Do not bridge ordinary plugin UI through local aliases when the CSS can use `var(--color--...)` or `var(--shadow--...)` directly.
