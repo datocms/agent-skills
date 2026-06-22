@@ -341,7 +341,7 @@ Structured Text fields need special handling:
 Removes stega encoding from any data type:
 
 ```ts
-import { stripStega } from 'react-datocms/use-content-link';
+import { stripStega } from 'react-datocms/stega';
 
 stripStega("Hello world")           // clean string
 stripStega({ name: "John", age: 30 }) // clean object
@@ -353,7 +353,7 @@ stripStega(["First", "Second"])      // clean array
 Extracts editing metadata from stega-encoded content:
 
 ```ts
-import { decodeStega } from 'react-datocms/use-content-link';
+import { decodeStega } from 'react-datocms/stega';
 
 const decoded = decodeStega(text);
 if (decoded) {
@@ -367,7 +367,7 @@ if (decoded) {
 Replaces each invisible stega segment with a visible `[STEGA:/editor/...]` marker. Preserves the input shape — strings stay strings, objects/arrays keep their structure. Use this whenever a stega-related bug is suspected, since `console.log` alone shows nothing (the encoding is zero-width Unicode):
 
 ```ts
-import { revealStega } from 'react-datocms/use-content-link';
+import { revealStega } from 'react-datocms/stega';
 
 console.log(revealStega(page.title));        // "Hello[STEGA:/editor/...]"
 console.log(revealStega(graphqlResponse));   // same object shape, markers visible inside strings
