@@ -42,14 +42,23 @@ Step 2 must succeed before step 3, and step 3 references path (`id` from step 1,
 
 ## Metadata: defaults vs per-use overrides
 
-`upload.default_field_metadata` is **per-locale** object (`{ [locale]: { alt, title, custom_data, focal_point } }`) stored on upload itself. It's fallback that fills in when record's File/Gallery field references upload **without** overrides:
+`upload.default_field_metadata` = fallback metadata, applied when a record's File/Gallery field references the upload **without** overrides:
 
 ```ts
 hero_image: { upload_id: upload.id }                           // uses upload's defaults
 hero_image: { upload_id: upload.id, alt: "Custom for here" }  // override per usage
 ```
 
-Override is **shallow per-field**, not merged: if you provide any of `alt | title | custom_data | focal_point` on field-side metadata, provide all four (others fall to `null`/`{}` rather than upload's defaults). When you don't need overrides, omit entirely — passing `{ upload_id }` is cleaner shape.
+**Two shapes exist — gated on the per-project `non_localized_focal_points` env flag** (Configuration → Available updates; one-way, can't be turned back off; defaults on for projects created after the 2026-06-11 rollout, existing projects opt in, forks inherit the source env's value). Picking the wrong one is the upload gotcha that bites:
+
+- **Unmigrated (legacy default):** locale-first — `{ [locale]: { alt, title, custom_data, focal_point, poster_time } }`. Every key is per-locale (incl. `focal_point`/`poster_time`).
+- **Migrated (and all new projects):** field-first — `{ alt: { [locale]: … }, title: { [locale]: … }, custom_data: { [locale]: … }, focal_point: { x, y } | null, poster_time: number | null }`. `focal_point`/`poster_time` are **non-localized** (one value shared across locales).
+
+Sending the wrong shape fails on write: on a migrated project the legacy locale-first payload is rejected (`INVALID_FIELD`, `details.code: INVALID_FORMAT`) with message `"<locale>" is not a permitted key` (top-level key must be a field name). The CMA still returns + accepts the legacy shape on unmigrated projects by default; after migration only field-first is accepted.
+
+**Detect which shape a project uses** — no documented flag: read back any upload and inspect `default_field_metadata`'s top-level keys (locale codes → legacy; `alt`/`title`/… → migrated). `@datocms/cma-client` needs **5.5.0+** for the new shape; older clients' generated types (and `cma:docs`, which reflects the installed version) only model the legacy locale-first shape — on a migrated project don't trust the type, confirm by read-back.
+
+**Record-side override is a separate, locale-first shape** (`{ [locale]: { upload_id, alt, title, custom_data, focal_point } }`, see `references/localization.md`) — shallow per-field, not merged: provide any of `alt | title | custom_data | focal_point` → provide all four (others → `null`/`{}`, not upload defaults). No overrides → omit; `{ upload_id }` is cleaner.
 
 `smart_tags` (auto-populated by Dato's image analysis) appear on read-back asynchronously after upload — not present immediately on response from `create()`. Don't filter on `smart_tags` until you've waited for indexing.
 

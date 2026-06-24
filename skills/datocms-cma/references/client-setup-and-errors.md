@@ -125,6 +125,10 @@ try {
 | `errors` | `ErrorEntity[]` | Parsed DatoCMS error entities |
 | `findError()` | method | Finds errors by code and optional detail filters |
 
+### Error codes
+
+Each error entity carries a top-level `code` (e.g. `INVALID_FIELD`, `INSUFFICIENT_PERMISSIONS`, `MISSING_LOCALES`, `STALE_ITEM_VERSION`) plus an `attributes.details` object that often nests a more specific `details.code` (e.g. `INVALID_FORMAT`, `INVALID_LOCALES`, `VALIDATION_UNIQUENESS`) and the offending `field`. Filter with `error.findError(code)`. These are part of the HTTP response contract, so prefer branching on them over message strings. Full catalogue with meanings and fixes: <https://www.datocms.com/docs/content-management-api/errors.md>.
+
 ### `TimeoutError`
 
 Thrown when a request exceeds `requestTimeout` and retries do not recover.

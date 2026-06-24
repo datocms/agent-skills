@@ -10,6 +10,7 @@ Covers working with localized field values and the normalized field value utilit
 - Getting Available Locales
 - Creating Records with Localized Fields
 - Updating Localized Fields
+- Localized fields must share one locale set per payload
 - Localized File Fields
 - Checking if a Field is Localized
 - Normalized Field Value Utilities
@@ -63,7 +64,7 @@ const record = await client.items.create({
 
 ## Updating Localized Fields
 
-When updating a localized field, you provide the full object with all locales — there is no "partial locale update":
+When updating a localized field, you provide the full object with every locale you want to keep — there is no "partial locale update", and omitting a locale deletes it:
 
 ```ts
 // First, read the current record
@@ -77,6 +78,33 @@ await client.items.update("record-id", {
   },
 });
 ```
+
+## Localized fields must share one locale set per payload
+
+Mental model: a record has **one locale set**, shared by all its localized fields, and the CMA keeps it consistent. So the write rules split by whether you're _keeping_ that set or _changing_ it. This mirrors the official rules — [`item/create` § Localization](https://www.datocms.com/docs/content-management-api/resources/item/create#localization) and [`item/update` § Updating localized fields](https://www.datocms.com/docs/content-management-api/resources/item/update#updating-localized-fields).
+
+**Per field, every operation:** the value must be a per-locale object with **≥1 locale**, and every key must be one of the **site's locales** — `{}`, a bare value, or an unknown locale is rejected.
+
+**Which locales each field you send must carry:**
+
+| Operation | What to send | Locale set on each sent field |
+| - | - | - |
+| **Edit values** — record's locales unchanged | only the fields you're changing | **exactly the record's current locales** |
+| **Add / remove a locale** — changing the set | **every** localized field, in one request | the **new** set, identical across all (`null` for empties) |
+| **Create** a record | the fields you want filled (the rest auto-fill `null`) | one set, identical across the fields you send (≥1 field) |
+
+> **`all_locales_required: true` model** overrides the table: every sent field must carry **all** site locales — keys mandatory, values may be `null`.
+
+Two consequences to internalize:
+
+- `title: { it }` alone on an `{ en, it }` record is **rejected** — it would drop `en` from one field only. To actually drop `en`, use the add/remove row (send every field).
+- Adding `fr` means sending **every** localized field with an `fr` key (value or `null`) in the same request — the one time you can't send just the field you changed (DatoCMS calls this the "Locale Sync Rule").
+
+**Replace, not merge** ([update Rule 1](https://www.datocms.com/docs/content-management-api/resources/item/update#updating-localized-fields)). A sent field's per-locale object fully replaces the stored one, so omitting a locale deletes it — spread to preserve, as in _Updating Localized Fields_ above. Whole fields you don't send stay untouched.
+
+**Locale-scoped tokens — update only** ([update Rule 3](https://www.datocms.com/docs/content-management-api/resources/item/update#updating-localized-fields)). A token that can write only some locales sends just those; the CMA preserves the record's existing values for the locales it can't access (so the set stays consistent), and rejects any write to an out-of-scope locale with `INSUFFICIENT_PERMISSIONS`. No such preservation on create.
+
+**Errors.** Violations return `INVALID_FIELD` — read `details.field` + `details.code` (e.g. `INVALID_LOCALES`) for which field and why; a create with no locale at all returns `MISSING_LOCALES`. Match with `error.findError("INVALID_FIELD")`, then read `.attributes.details`. Catalogue: <https://www.datocms.com/docs/content-management-api/errors.md>.
 
 ## Localized File Fields
 
@@ -101,6 +129,8 @@ await client.items.create({
   },
 });
 ```
+
+Under the `non_localized_focal_points` migration (see `references/uploads.md` § Metadata), `focal_point` becomes non-localized — one value shared across all locales — so don't expect per-locale focal points on migrated/new projects.
 
 ## Checking if a Field is Localized
 
