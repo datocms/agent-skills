@@ -354,6 +354,8 @@ question: { ...(currentItem.question as NonNullable<FieldValueInRequest<typeof c
 
 For block-bearing localized fields same per-locale shape applies — each locale key holds whatever value field expects (array of blocks/IDs for `rich_text`, full object or `null` for `single_block`, DAST tree for `structured_text`).
 
+**Locale Sync Rule:** adding a locale changes the record's locale set, so you must send **every** localized field in that one update — each gaining the new locale (value or `null`). It's the one case you can't send just the field you changed: adding `es` to `question` alone is rejected; include `es` on `answer` too (exactly what the loop above does). See `references/localization.md` § Localized fields must share one locale set per payload.
+
 Casting `node.item as BlockInNestedResponse<Schema.X>` after runtime id check allowed — but only manual-discriminator fallback needs it; `isBlockWithItemOfType` / `isInlineBlockWithItemOfType` narrow w/o cast.
 
 ## Optimistic locking via `meta.current_version`

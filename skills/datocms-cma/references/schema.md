@@ -4,6 +4,20 @@ Models define structure. Fields define attributes. Fieldsets group fields visual
 
 > Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs {itemTypes|fields|fieldsets} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
+## Contents
+
+- Build order: model → fields → meta-relationships
+- Block models: a constrained subset
+- Singletons auto-create their record
+- Validators — the common ones
+- Reference-cascade strategies (the non-obvious part of link/structured-text validators)
+- Structured-text: three overlapping validators, three roles
+- Slug auto-fill
+- Localized defaults take a locale-keyed object
+- Schema mutations are async jobs
+- Impact analysis before deleting
+- Editor appearance — defaults vs explicit
+
 ## Build order: model → fields → meta-relationships
 
 Many model attributes are **field references**: `title_field`, `image_preview_field`, `excerpt_field`, `presentation_title_field`, `presentation_image_field`, `ordering_field`. Can't set on `itemTypes.create` — fields don't exist yet. Order that always works:
@@ -27,6 +41,19 @@ Block records never created via `client.items.create` directly; appear inside pa
 ## Singletons auto-create their record
 
 Setting `singleton: true` on model causes DatoCMS to **lazily auto-create** singleton record. After create, `model.meta.has_singleton_item` is `false` and `model.singleton_item` is `null` until something (UI visit, API call) materializes it. Once exists, `singleton_item` points at record id. To pre-populate from script, just `items.create({ item_type: { id, type: "item_type" } })` — API enforces "exactly one" for you.
+
+## Validators — the common ones
+
+`field.validators` is a per-`field_type` map (allowed keys differ by type and track the client version). The sections below explain only the non-obvious validators; for the **authoritative list + exact shapes** use `npx datocms cma:docs fields {create|update}` or the [field doc § Validators](https://www.datocms.com/docs/content-management-api/resources/field#validators). The everyday ones:
+
+- **`required`** — value present (almost every type); **`unique`** — unique across the collection (string, slug, link).
+- **`length`** — character count (string, text, slug, structured_text). For a count of _linked records or Modular-Content blocks_ use **`size`** instead (links, rich_text), not `length`.
+- **`format`** — regex or `predefined_pattern: "email" | "url"` (string, text); **`enum`** — fixed value set (string; pair with the `string_select` appearance).
+- **`number_range`** (integer, float — the name is `number_range`, not `numeric_range`), **`date_range`**, **`date_time_range`** — value bounds.
+- **Assets** (file, gallery): **`extension`**, **`file_size`**, **`image_dimensions`**, **`image_aspect_ratio`**, **`required_alt_title`**. **SEO**: **`required_seo_fields`**, **`title_length`**, **`description_length`**.
+- **Block allowlists**: **`rich_text_blocks`** (Modular Content), **`single_block_blocks`** (Single Block) — `{ item_types: [blockModelId] }`; **`sanitized_html`** strips/rejects unsafe HTML (text).
+
+Covered in depth below: slug auto-fill (`slug_title_field` + `slug_format`), single/multiple-link allowlists + cascade strategies (`item_item_type` / `items_item_type`), the three `structured_text_*` allowlists, and localized `default_value`.
 
 ## Reference-cascade strategies (the non-obvious part of link/structured-text validators)
 
@@ -84,4 +111,10 @@ Both are read-only queries. Run as pre-check; destroy itself does not surface im
 
 ## Editor appearance — defaults vs explicit
 
-Each `field_type` has default editor (e.g. `string` → `"single_line"`, `text` → `"markdown"`, `link` → `"link_select"`). `appearance` object only needs to be set when overriding (selecting non-default editor like `"string_select"` for string with fixed enum, or `"wysiwyg"`/`"textarea"` for text), or when wiring plugin-provided editor / addons. Omitting `appearance` is right move for common case.
+Each `field_type` has a default editor (`string` → `single_line`, `text` → `markdown`, `link` → `link_select`, single block → `framed_single_block`, modular content → `rich_text`). Omitting `appearance` uses that default — right for the common case. Set it only to override (e.g. `string_select` for a string with a fixed `enum`, `wysiwyg`/`textarea` for text) or to wire a plugin editor/addons.
+
+`appearance` is a **3-key object** — `editor` (built-in name or plugin UUID), `parameters` (editor-specific, `{}` if none), `addons` (array of manual field addons, `[]` if none) — supply all three when you set it. Some `parameters` are **required** for their editor: `single_line` needs `heading` (boolean), `markdown`/`wysiwyg` need `toolbar`; missing/invalid parameters are rejected on create/update. Plugin editor: `editor` = plugin UUID with a sibling `field_extension` = the manual-editor id; each addon entry is `{ id: pluginUuid, field_extension: addonId, parameters }`.
+
+`parameters.toolbar` is **editor-specific**: `markdown` allows `heading, bold, italic, strikethrough, code, unordered_list, ordered_list, quote, link, image, fullscreen`; `wysiwyg` adds editor-only tokens absent from markdown (`format, table, show_source, undo, redo, align_left/center/right/justify, outdent, indent`). Pasting a wysiwyg-only token onto a `markdown` toolbar is rejected — the safe path for a default editor is to omit `appearance` and let DatoCMS apply the default toolbar.
+
+Full editor list + each editor's `parameters` shape + addon wiring: [field doc § Specifying the appearance](https://www.datocms.com/docs/content-management-api/resources/field#specifying-the-appearance), or `npx datocms cma:docs fields create --expand-types '*'`.
