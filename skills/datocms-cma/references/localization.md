@@ -130,8 +130,6 @@ await client.items.create({
 });
 ```
 
-Under the `non_localized_focal_points` migration (see `references/uploads.md` § Metadata), `focal_point` becomes non-localized — one value shared across all locales — so don't expect per-locale focal points on migrated/new projects.
-
 ## Checking if a Field is Localized
 
 ```ts
