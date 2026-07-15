@@ -167,9 +167,10 @@ async function migrateUploads(
       const upload = await client.uploads.createFromUrl({
         url,
         skipCreationIfAlreadyExists: true,
-        default_field_metadata: {
-          en: { alt, title: null, custom_data: {}, focal_point: null },
-        },
+        // Field-first shape — migrated & all projects created after 2026-06-11.
+        // Legacy (unmigrated) projects use { [locale]: { alt, title, ... } } instead.
+        // Sending the wrong shape fails on write — see references/uploads.md § Metadata.
+        default_field_metadata: { alt: { en: alt } },
       });
       uploadMap.set(url, upload.id);
       done++;
