@@ -330,6 +330,14 @@ Flag on `rich_text`, `single_block`, `structured_text`. When `true`, GraphQL CDA
 
 **Skip when** frontend reads block content top-down from parent. Deep filtering adds GraphQL surface, expensive on high-volume models.
 
+### `content_link_enabled`
+
+Boolean, default `true`. Only settable on `string`, `text`, `structured_text` (the field types the CDA stega-encodes for Content Link / visual editing) — CMA returns 422 if set `false` on any other type. When `false`, CDA skips Content Link (stega) encoding for that field's value even under `X-Visual-Editing: v1`.
+
+**Set `false` when** the field's value is consumed verbatim — keys, codes, class names, slugs-in-text, IDs, `<input>` values, or anything piped to external systems — where invisible stega chars break exact-match/validation. Opts the field out at the source instead of wrapping every downstream read in `stripStega()` (see frontend-integrations `content-link-concepts.md`).
+
+**Leave `true`** for prose-style fields rendered directly — default preserves click-to-edit overlays.
+
 ## Common mistakes
 
 - **`enum` without `string_select`/`string_radio_group`.** Validator catches at save; UI shows free-text. Pair them.
