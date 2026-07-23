@@ -183,6 +183,8 @@ When repo renders non-text Dato-backed values and current query/data flow can sa
 
 Do NOT fabricate new query surfaces to demonstrate pattern.
 
+When a `string`/`text`/`structured_text` field is consumed verbatim (key/code/slug-in-text/ID/external-system value) and should never carry stega, prefer disabling encoding at the source — CMA field property `content_link_enabled: false` — over wrapping every downstream read in `stripStega()`. Field-schema change, not a code patch: surface as a recommendation, do not apply automatically. See `../../../../datocms-frontend-integrations/references/content-link-concepts.md` → Source-side opt-out.
+
 ## Step 7: Add CSP header
 
 If not configured, add CSP header:

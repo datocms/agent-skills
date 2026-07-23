@@ -408,6 +408,8 @@ CDA only embeds stega into specific field types — not all text. Source type te
 - Multi-paragraph text (raw + markdown-rendered) — skipped if Format validator set
 - Structured text — only **last text span** of document annotated (one marker per field)
 
+These three (`string`, `text`, `structured_text`) are also the only types where encoding can be disabled at the source — see "Source-side opt-out" below.
+
 **Record fields that never carry stega:** Slug, JSON, Boolean, Integer, Float, Date, DateTime, Color, Lat/Lon, SEO, Video, File, Gallery, Link, Links, Modular content, Single block.
 
 So in `{ blogPost { title, body, intro, slug } }`, stega added to `title`, `body`, `intro` — not `slug`.
@@ -418,6 +420,10 @@ So in `{ blogPost { title, body, intro, slug } }`, stega added to `title`, `body
 - `title`, `url`, `filename`, `customData`, `tags`, etc. — never carry stega
 
 For known-clean source (slug, SEO, dates, upload `url`, etc.), `stripStega` is no-op at best, noisy at worst. For values of unclear origin (variable several calls deep, props of unknown provenance, generic helpers), default to `stripStega()` — cheap idempotent op, cost of missed wrap is silent breakage.
+
+#### Source-side opt-out: `content_link_enabled`
+
+`stripStega()` is per-read — every consumer must remember to wrap. For a field that should **never** carry stega (value consumed verbatim as key/code/slug-in-text/ID/`<input>`, or piped to external systems), disable encoding once at the field level instead: set the CMA field property `content_link_enabled: false` (default `true`; only `string`/`text`/`structured_text` — see content-modeling `field-configuration.md`). CDA then skips stega for that field even under `X-Visual-Editing: v1`, so no downstream `stripStega()` needed — at the cost of that field losing its click-to-edit overlay. Prefer for fields that are structurally never prose; keep `stripStega()` for prose fields that occasionally cross into non-render code.
 
 #### Debugging suspected leaks
 
