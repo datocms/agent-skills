@@ -18,7 +18,7 @@ The agent is not asked to self-report — attempts are counted externally from t
 npm install
 ```
 
-Then create `.env.local` at the repo root with:
+Then create `.env.local` at the repo root (copy `.env.example` and fill it in — `cp .env.example .env.local`) with:
 
 - `TEST_DATOCMS_ACCOUNT_EMAIL` — one or more comma-separated emails of the test account pool (multiple accounts spread session rate limits across them).
 - `TEST_DATOCMS_ACCOUNT_PASSWORD` — shared password for that pool.
