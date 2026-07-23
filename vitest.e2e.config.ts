@@ -1,7 +1,8 @@
 import { config as loadEnv } from "dotenv";
 import { defineConfig } from "vitest/config";
 
-loadEnv({ path: ".env.local" });
+// Load `.env` / `.env.local` from the repo root.
+loadEnv({ path: [".env.local", ".env"] });
 
 export default defineConfig({
 	test: {

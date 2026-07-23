@@ -16,10 +16,12 @@ import { extname, resolve } from "node:path";
 import { config as loadEnv } from "dotenv";
 import { encode } from "gpt-tokenizer";
 
-// Load `.env.local` from the repo root regardless of the working directory the
-// script is invoked from. Shell-provided env vars take precedence (dotenv never
-// overrides an already-set variable).
-loadEnv({ path: resolve(import.meta.dirname, "..", ".env.local") });
+// Load `.env` / `.env.local` from the repo root, regardless of the cwd the
+// script is invoked from.
+const REPO_ROOT = resolve(import.meta.dirname, "..");
+loadEnv({
+  path: [resolve(REPO_ROOT, ".env.local"), resolve(REPO_ROOT, ".env")],
+});
 
 function countTokens(text: string): number {
   return encode(text).length;
