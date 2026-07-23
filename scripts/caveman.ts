@@ -25,7 +25,7 @@ function countTokens(text: string): number {
   return encode(text).length;
 }
 
-const Z_AI_BASE_URL = "https://api.z.ai/api/anthropic";
+const MODEL = "sonnet";
 
 const MAX_FILE_SIZE = 500_000;
 const MAX_RETRIES = 2;
@@ -121,24 +121,17 @@ function stripLlmWrapper(text: string): string {
   return m && m[2] !== undefined ? m[2] : text;
 }
 
-function readZaiToken(): string | null {
-  return process.env.Z_AI_API_TOKEN?.trim() || null;
-}
-
 function callClaude(prompt: string): string {
-  const token = readZaiToken();
-  const env = token
-    ? {
-        ...process.env,
-        ANTHROPIC_AUTH_TOKEN: token,
-        ANTHROPIC_BASE_URL: Z_AI_BASE_URL,
-      }
-    : process.env;
-  const result = spawnSync("claude", ["--print"], {
+  // Auth is inherited from the environment. By default this uses your Claude
+  // Code subscription login. If ANTHROPIC_API_KEY is set (e.g. in .env.local),
+  // the CLI switches to pay-as-you-go API billing and overrides the
+  // subscription — leave it unset to keep using the subscription. No base URL
+  // override — this talks to the Anthropic API.
+  const result = spawnSync("claude", ["--print", "--model", MODEL], {
     input: prompt,
     encoding: "utf8",
     maxBuffer: 50 * 1024 * 1024,
-    env,
+    env: process.env,
   });
   if (result.status !== 0) {
     throw new Error(`claude CLI failed:\n${result.stderr}`);
