@@ -13,14 +13,21 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { extname, resolve } from "node:path";
+import { config as loadEnv } from "dotenv";
 import { encode } from "gpt-tokenizer";
+
+// Load `.env` / `.env.local` from the repo root, regardless of the cwd the
+// script is invoked from.
+const REPO_ROOT = resolve(import.meta.dirname, "..");
+loadEnv({
+  path: [resolve(REPO_ROOT, ".env.local"), resolve(REPO_ROOT, ".env")],
+});
 
 function countTokens(text: string): number {
   return encode(text).length;
 }
 
-const ENV_FILE = resolve(import.meta.dirname, "..", ".env.local");
-const Z_AI_BASE_URL = "https://api.z.ai/api/anthropic";
+const MODEL = "sonnet";
 
 const MAX_FILE_SIZE = 500_000;
 const MAX_RETRIES = 2;
@@ -116,38 +123,17 @@ function stripLlmWrapper(text: string): string {
   return m && m[2] !== undefined ? m[2] : text;
 }
 
-function readZaiToken(): string | null {
-  if (!existsSync(ENV_FILE)) return null;
-  const text = readFileSync(ENV_FILE, "utf8");
-  for (const line of text.split(/\r?\n/)) {
-    const m = line.match(/^\s*(?:export\s+)?Z_AI_API_TOKEN\s*=\s*(.*)$/);
-    if (!m) continue;
-    let value = (m[1] ?? "").trim();
-    if (
-      (value.startsWith('"') && value.endsWith('"')) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
-      value = value.slice(1, -1);
-    }
-    if (value) return value;
-  }
-  return null;
-}
-
 function callClaude(prompt: string): string {
-  const token = readZaiToken();
-  const env = token
-    ? {
-        ...process.env,
-        ANTHROPIC_AUTH_TOKEN: token,
-        ANTHROPIC_BASE_URL: Z_AI_BASE_URL,
-      }
-    : process.env;
-  const result = spawnSync("claude", ["--print"], {
+  // Auth is inherited from the environment. By default this uses your Claude
+  // Code subscription login. If ANTHROPIC_API_KEY is set (e.g. in .env.local),
+  // the CLI switches to pay-as-you-go API billing and overrides the
+  // subscription — leave it unset to keep using the subscription. No base URL
+  // override — this talks to the Anthropic API.
+  const result = spawnSync("claude", ["--print", "--model", MODEL], {
     input: prompt,
     encoding: "utf8",
     maxBuffer: 50 * 1024 * 1024,
-    env,
+    env: process.env,
   });
   if (result.status !== 0) {
     throw new Error(`claude CLI failed:\n${result.stderr}`);
