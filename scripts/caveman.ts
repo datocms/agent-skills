@@ -13,13 +13,18 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { extname, resolve } from "node:path";
+import { config as loadEnv } from "dotenv";
 import { encode } from "gpt-tokenizer";
+
+// Load `.env.local` from the repo root regardless of the working directory the
+// script is invoked from. Shell-provided env vars take precedence (dotenv never
+// overrides an already-set variable).
+loadEnv({ path: resolve(import.meta.dirname, "..", ".env.local") });
 
 function countTokens(text: string): number {
   return encode(text).length;
 }
 
-const ENV_FILE = resolve(import.meta.dirname, "..", ".env.local");
 const Z_AI_BASE_URL = "https://api.z.ai/api/anthropic";
 
 const MAX_FILE_SIZE = 500_000;
@@ -117,21 +122,7 @@ function stripLlmWrapper(text: string): string {
 }
 
 function readZaiToken(): string | null {
-  if (!existsSync(ENV_FILE)) return null;
-  const text = readFileSync(ENV_FILE, "utf8");
-  for (const line of text.split(/\r?\n/)) {
-    const m = line.match(/^\s*(?:export\s+)?Z_AI_API_TOKEN\s*=\s*(.*)$/);
-    if (!m) continue;
-    let value = (m[1] ?? "").trim();
-    if (
-      (value.startsWith('"') && value.endsWith('"')) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
-      value = value.slice(1, -1);
-    }
-    if (value) return value;
-  }
-  return null;
+  return process.env.Z_AI_API_TOKEN?.trim() || null;
 }
 
 function callClaude(prompt: string): string {
