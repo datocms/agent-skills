@@ -472,11 +472,13 @@ See framework-specific reference files for complete routing examples.
 
 ### CSP Requirement
 
-For Visual tab to load frontend in iframe, site must allow being embedded by DatoCMS plugin origin. Add CSP header:
+If the site sends a `frame-ancestors` directive, it must allow both the exact DatoCMS project origin and the plugin CDN. Browsers check every ancestor in the nested iframe chain, so allowing only the plugin CDN is insufficient. Replace `your-project` with the project's actual subdomain, or use its custom DatoCMS admin origin:
 
 ```
-Content-Security-Policy: frame-ancestors 'self' https://plugins-cdn.datocms.com
+Content-Security-Policy: frame-ancestors 'self' https://your-project.admin.datocms.com https://plugins-cdn.datocms.com
 ```
+
+If `frame-ancestors` is absent, do not add it solely for Web Previews.
 
 Framework-specific CSP setup in each framework reference file.
 
@@ -500,7 +502,7 @@ If site not running inside Web Previews plugin iframe (opened directly in browse
 - **Structured text clicks open wrong editor**: embedded blocks and inline records need `data-datocms-content-link-boundary` to prevent clicks bubbling to parent group. See Structured Text Fields section
 - **Controller recreation fails after disposal**: only works when `stripStega` is `false` (default). If used `stripStega: true`, stega encoding permanently removed. Reload page or re-fetch content to restore
 - **Multiple stega strings on same element (collision warning)**: when two stega strings resolve to same clickable target, last URL wins. Fix by wrapping each piece in own element, or use `data-datocms-content-link-group`/`data-datocms-content-link-boundary` to separate
-- **Web Previews Visual tab not connecting**: plugin connection only works when site loaded inside Web Previews plugin iframe. Outside plugin, edit URLs open in new tab as graceful fallback. Ensure CSP header allows `frame-ancestors 'self' https://plugins-cdn.datocms.com`
+- **Web Previews Visual tab not connecting**: plugin connection only works when site loaded inside Web Previews plugin iframe. Outside plugin, edit URLs open in new tab as graceful fallback. If the site sends `frame-ancestors`, ensure it allows both the exact DatoCMS project origin and `https://plugins-cdn.datocms.com`; no CSP change is required when the directive is absent.
 - **Visual tab loads but no stega data**: check Web Previews plugin's "Draft mode URL" setting configured. Without it, Visual tab loads site without draft mode, CDA returns text without stega encoding
 - **Non-text field not clickable**: non-text fields (numbers, booleans, dates, JSON) cannot contain stega encoding. Use `data-datocms-content-link-url` with record's `_editingUrl` field from GraphQL API
 

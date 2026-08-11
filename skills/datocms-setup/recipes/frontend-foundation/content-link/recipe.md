@@ -14,7 +14,7 @@ Follow steps in order. Do not skip.
 - Step 4: Modify executeQuery
 - Step 5: Generate or Patch Content Link shell
 - Step 6: Patch Structured Text/non-text edit targets when they exist
-- Step 7: Add CSP header
+- Step 7: Check CSP header
 - Step 8: Install dependencies
 - Step 9: Environment variables
 - Step 10: Final handoff
@@ -185,15 +185,15 @@ Do NOT fabricate new query surfaces to demonstrate pattern.
 
 When a `string`/`text`/`structured_text` field is consumed verbatim (key/code/slug-in-text/ID/external-system value) and should never carry stega, prefer disabling encoding at the source — CMA field property `content_link_enabled: false` — over wrapping every downstream read in `stripStega()`. Field-schema change, not a code patch: surface as a recommendation, do not apply automatically. See `../../../../datocms-frontend-integrations/references/content-link-concepts.md` → Source-side opt-out.
 
-## Step 7: Add CSP header
+## Step 7: Check CSP header
 
-If not configured, add CSP header:
+If the site sends `frame-ancestors`, make sure it allows both the exact DatoCMS project origin and the plugin CDN. Browsers check every ancestor in the nested iframe chain. Replace `your-project` with the project's actual subdomain, or use its custom DatoCMS admin origin:
 
 ```text
-frame-ancestors 'self' https://plugins-cdn.datocms.com
+frame-ancestors 'self' https://your-project.admin.datocms.com https://plugins-cdn.datocms.com
 ```
 
-Required for DatoCMS Web Previews / side-by-side visual editing.
+If `frame-ancestors` is absent, do not add it solely for DatoCMS Web Previews / side-by-side visual editing.
 
 ## Step 8: Install dependencies
 
@@ -250,7 +250,7 @@ Before presenting final code, verify:
 1. `executeQuery` has `contentLink: 'v1'` and `baseEditingUrl` when `includeDrafts` is true
 2. Content Link component created/patched with correct framework-specific router integration
 3. `<ContentLink />` added to root layout only when draft mode active
-4. CSP `frame-ancestors 'self' https://plugins-cdn.datocms.com` configured when needed
+4. Existing `frame-ancestors` allows both the exact DatoCMS project origin and `https://plugins-cdn.datocms.com`; no directive was added solely for Web Previews when absent
 5. Structured Text renderers patched with group/boundary handling when they exist in repo
 6. non-text edit URLs use `_editingUrl` only when repo has safe place to consume them
 7. Dato overlays and Vercel overlays never left active simultaneously

@@ -685,7 +685,9 @@ query {
 
 ### CSP Header for Web Previews Visual Tab
 
-Allow site to load in Web Previews Visual tab iframe, add Content-Security-Policy header. In Astro, use middleware:
+If the site already sends a `frame-ancestors` directive, make sure it allows both the exact DatoCMS project origin and the plugin CDN. Browsers check every ancestor in the nested iframe chain. If the directive is absent, do not add it solely for Web Previews.
+
+For example, update the existing Content-Security-Policy header in Astro middleware, replacing `your-project` with the project's actual subdomain (or use its custom DatoCMS admin origin):
 
 **File:** `src/middleware.ts`
 
@@ -697,7 +699,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   response.headers.set(
     'Content-Security-Policy',
-    "frame-ancestors 'self' https://plugins-cdn.datocms.com",
+    "frame-ancestors 'self' https://your-project.admin.datocms.com https://plugins-cdn.datocms.com",
   );
 
   return response;

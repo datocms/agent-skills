@@ -205,10 +205,16 @@ See `content-link-concepts.md` for full Content Link documentation including `cr
 
 ## CSP Requirements
 
-For iframe preview and Visual editing tab to work, frontend must allow being embedded by DatoCMS plugin iframe. Add Content-Security-Policy header:
+First inspect the frontend's response headers and CSP configuration.
+
+- If the frontend does not send a `frame-ancestors` directive, no CSP change is required for Web Previews. Do not add the directive solely for this integration.
+- If the frontend sends `frame-ancestors`, it must allow every origin in the nested iframe chain: the exact origin from which editors access the DatoCMS project and `https://plugins-cdn.datocms.com`. The project origin is normally `https://<PROJECT-SUBDOMAIN>.admin.datocms.com`; use its custom DatoCMS admin origin instead when applicable.
+- If the exact DatoCMS project origin cannot be determined from the repository or current context, ask the user to provide it before changing `frame-ancestors`. Do not guess it or use a wildcard.
+
+Browsers validate every ancestor, so allowing only the plugin CDN is insufficient. Replace `your-project` with the project's actual subdomain:
 
 ```
-frame-ancestors 'self' https://plugins-cdn.datocms.com
+frame-ancestors 'self' https://your-project.admin.datocms.com https://plugins-cdn.datocms.com
 ```
 
 ## Plugin Installation

@@ -627,7 +627,9 @@ query {
 
 ### CSP Header for Web Previews Visual Tab
 
-To allow your site to be loaded in the Web Previews Visual tab iframe, add a Content-Security-Policy header in `src/hooks.server.ts`:
+If the site already sends a `frame-ancestors` directive, make sure it allows both the exact DatoCMS project origin and the plugin CDN. Browsers check every ancestor in the nested iframe chain. If the directive is absent, do not add it solely for Web Previews.
+
+For example, update the existing Content-Security-Policy header in `src/hooks.server.ts`, replacing `your-project` with the project's actual subdomain (or use its custom DatoCMS admin origin):
 
 ```ts
 import type { Handle } from '@sveltejs/kit';
@@ -637,7 +639,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   response.headers.set(
     'Content-Security-Policy',
-    "frame-ancestors 'self' https://plugins-cdn.datocms.com",
+    "frame-ancestors 'self' https://your-project.admin.datocms.com https://plugins-cdn.datocms.com",
   );
 
   return response;

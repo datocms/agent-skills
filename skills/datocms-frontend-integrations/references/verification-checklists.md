@@ -24,7 +24,7 @@ Use only the sections that match the work you actually performed.
 - Preview-links endpoint validates the shared secret token.
 - CORS headers and `OPTIONS` handling are present.
 - Unexpected errors are serialized consistently.
-- CSP allows `https://plugins-cdn.datocms.com` in `frame-ancestors`.
+- If `frame-ancestors` is present, it allows both the exact DatoCMS project origin and `https://plugins-cdn.datocms.com`; if absent, no CSP directive was added solely for Web Previews.
 - Record-to-route mappings are complete, or the missing mappings are called out clearly.
 
 ### Content Link

@@ -112,7 +112,7 @@ Create or patch preview-links integration using smallest safe changes.
 
 3. **recordInfo helper** — Add only if selected framework pattern actually needs CMA lookup for route generation.
 
-4. **CSP header configuration** — Add `frame-ancestors 'self' https://plugins-cdn.datocms.com` when not already configured.
+4. **CSP header configuration** — If `frame-ancestors` is present, make sure it allows both the exact DatoCMS project origin and `https://plugins-cdn.datocms.com`. If absent, do not add it solely for Web Previews.
 
 ### Route-mapping rules
 
@@ -198,7 +198,7 @@ Before presenting final result, verify:
 3. status branching returns draft and published links correctly
 4. draft links flow through draft-mode enable route
 5. existing route helpers reused whenever safe
-6. CSP `frame-ancestors 'self' https://plugins-cdn.datocms.com` configured when needed
+6. Existing `frame-ancestors` allows both the exact DatoCMS project origin and `https://plugins-cdn.datocms.com`; no directive was added solely for Web Previews when absent
 7. final handoff includes plugin configuration block and explicit `Unresolved placeholders` section
 8. `production-ready` only reported when no TODO route mappings remain
 9. auto-install path: resolved `frontends[]` echoed to user and confirmed before calling `client.plugins.create` / `client.plugins.update`; existing plugin instance reused via `update` instead of duplicate `create`

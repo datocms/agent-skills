@@ -712,7 +712,9 @@ query {
 
 ### CSP Header for Web Previews Visual Tab
 
-Nuxt handles CORS via `routeRules`. For CSP (Visual tab iframe), add route rule to `nuxt.config.ts`:
+Nuxt handles CORS via `routeRules`. If the site already sends a `frame-ancestors` directive, make sure it allows both the exact DatoCMS project origin and the plugin CDN. Browsers check every ancestor in the nested iframe chain. If the directive is absent, do not add it solely for Web Previews.
+
+For example, update the existing CSP route rule in `nuxt.config.ts`, replacing `your-project` with the project's actual subdomain (or use its custom DatoCMS admin origin):
 
 ```ts
 export default defineNuxtConfig({
@@ -721,7 +723,7 @@ export default defineNuxtConfig({
     '/api/**': { cors: true },
     '/**': {
       headers: {
-        'Content-Security-Policy': "frame-ancestors 'self' https://plugins-cdn.datocms.com",
+        'Content-Security-Policy': "frame-ancestors 'self' https://your-project.admin.datocms.com https://plugins-cdn.datocms.com",
       },
     },
   },
