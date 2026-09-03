@@ -42,7 +42,21 @@ Step 2 must succeed before step 3, and step 3 references path (`id` from step 1,
 
 ## Metadata: defaults vs per-use overrides
 
-`upload.default_field_metadata` is **per-locale** object (`{ [locale]: { alt, title, custom_data, focal_point } }`) stored on upload itself. It's fallback that fills in when record's File/Gallery field references upload **without** overrides:
+`upload.default_field_metadata` is **field-keyed** object stored on upload itself: `alt` / `title` / `custom_data` keyed by locale, `focal_point` (images) and `poster_time` (videos) single value per asset — they're not localizable.
+
+```ts
+{
+  alt: { en: "Hero shot", it: "Copertina" },
+  title: { en: null, it: null },
+  custom_data: { en: {}, it: {} },
+  focal_point: { x: 0.5, y: 0.3 },  // one per asset, not per locale
+  poster_time: null,                // one per asset, not per locale
+}
+```
+
+Writes are a patch: send any subset of the five keys, missing ones keep stored value. (Record-side override below behaves the opposite way — read both.)
+
+It's fallback that fills in when record's File/Gallery field references upload **without** overrides:
 
 ```ts
 hero_image: { upload_id: upload.id }                           // uses upload's defaults
@@ -50,6 +64,21 @@ hero_image: { upload_id: upload.id, alt: "Custom for here" }  // override per us
 ```
 
 Override is **shallow per-field**, not merged: if you provide any of `alt | title | custom_data | focal_point` on field-side metadata, provide all four (others fall to `null`/`{}` rather than upload's defaults). When you don't need overrides, omit entirely — passing `{ upload_id }` is cleaner shape.
+
+### Two wire shapes — simple methods normalize, raw don't
+
+API serves `default_field_metadata` in one of two shapes, decided per environment by the [non-localized focal points](https://www.datocms.com/product-updates/non-localized-focal-points) opt-in:
+
+| Opt-in | Wire shape |
+| - | - |
+| Active | field-keyed — `{ alt: { en } }` |
+| Inactive (legacy) | locale-keyed — `{ en: { alt } }` |
+
+Per-environment setting, not a version — projects created before the opt-in keep legacy shape until owner activates it. Each environment rejects the other shape with `422 INVALID_FORMAT`.
+
+From `@datocms/cma-client` **6.0.0** simple methods (`create`, `update`, `find`, `list`, `listPagedIterator`, plus the `From*` helpers built on them) convert both directions, so you always read and write field-keyed regardless of environment. Reads need no lookup — shapes are told apart structurally. Writes ask environment once per client, memoized 20 min and shared by concurrent callers, so bulk write costs one extra request total, not one per upload. Client that never writes metadata never asks.
+
+Raw methods (`rawCreate`, `rawFind`, `rawList`, ...) hand you wire payload untouched — that's the point of raw layer. Type those with exported `UploadLocaleKeyedDefaultFieldMetadata` / `UploadLocaleKeyedDefaultFieldMetadataInRequest`.
 
 `smart_tags` (auto-populated by Dato's image analysis) appear on read-back asynchronously after upload — not present immediately on response from `create()`. Don't filter on `smart_tags` until you've waited for indexing.
 
