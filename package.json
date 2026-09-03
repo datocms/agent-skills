@@ -16,8 +16,8 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@datocms/cma-client-node": "^5.4.17",
-    "@datocms/dashboard-client": "^5.4.9",
+    "@datocms/cma-client-node": "^6.1.0",
+    "@datocms/dashboard-client": "^6.1.0",
     "@types/node": "^22.19.17",
     "concurrent-promise-queue": "^1.0.10",
     "datocms": "^4.0.26",
