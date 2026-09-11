@@ -1,22 +1,14 @@
 ---
 paths:
-  - "skills/datocms-setup/recipes/**"
-  - "skills/datocms-setup/patterns/**"
-  - "skills/datocms-setup/references/**"
+  - "skills/datocms/recipes/**"
+  - "skills/datocms/references/setup/**"
+  - "skills/datocms/references/setup.md"
 ---
 
-# Setup Recipe Rules
+# Setup recipes
 
-All setup recipes must follow the mandatory rules:
+Follow `skills/datocms/references/setup/mandatory-rules.md` for selected setup work. Use the shared repository conventions before recipe-specific detection.
 
-@skills/datocms-setup/patterns/MANDATORY_RULES.md
+The setup guide and `references/setup/router.md` select the smallest recipe bundle. The registry is `references/setup/recipe-manifest.json`, whose paths resolve from `skills/datocms/`. Preserve prerequisite ordering and apply only missing prerequisites.
 
-## Routing
-
-Setup routing is defined in `skills/datocms-setup/references/router.md` with the recipe registry in `skills/datocms-setup/references/recipe-manifest.json`. Recipes have prerequisite chains — changes to one recipe may affect others.
-
-## Repo Conventions
-
-Before writing recipe-specific detection logic, start from the shared conventions:
-
-@skills/datocms-setup/references/repo-conventions.md
+Automatic setup applies to requested implementation outcomes. Do not run setup for explanations or isolated fixes, and do not add real-time updates unless requested or confirmed.

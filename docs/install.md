@@ -1,158 +1,53 @@
-# Install Guide
+# Install the DatoCMS skill
 
-Use the root [README](../README.md#install) for the fast local install commands. This page keeps the deeper variants that are useful once you want something other than the default "install the full set into my local skills folder".
+Every supported installation installs the self-contained `datocms` directory. Its detailed guidance is loaded only when relevant. Start with the [README](../README.md#install) for the shortest commands.
 
-## When To Use This Page
-
-- You only want one skill instead of the full set.
-- You want a detached copy instead of symlinks.
-- You want the canonical path map for each shipped skill.
-- You want details on the Claude Code plugin install.
-- You want to understand how updates work.
-
-## Claude Code Plugin Install
-
-This repo ships both `.claude-plugin/marketplace.json` (marketplace registry) and `.claude-plugin/plugin.json` (plugin manifest), so it can be installed as a Claude Code plugin. This is the recommended approach for Claude Code users.
+## Universal installer
 
 ```bash
-# Add the marketplace (once)
-/plugin marketplace add datocms/llm-skills
+npx skills add datocms/agent-skills --skill datocms
+```
 
-# Install the plugin
+The installer prompts for agents and scope. Add `--global` for a global installation or select the project scope. Use `npx skills update` for subsequent updates.
+
+## Plugin installations
+
+The plugin remains `datocms` in the `datocms-skills` marketplace. Install it with:
+
+```text
+/plugin marketplace add datocms/agent-skills
 /plugin install datocms@datocms-skills
 ```
 
-Skills are namespaced as `/datocms:<skill-name>` (e.g. `/datocms:datocms-cda`).
+For Claude Code, the namespaced skill is `/datocms:datocms`. Choose `--scope user`, `--scope project`, or `--scope local` when installing if you need a specific scope. Manage updates through the plugin manager or `claude plugin update datocms@datocms-skills`.
 
-### Installation Scopes
+For Codex, add the marketplace using `codex plugin marketplace add datocms/agent-skills`, then install DatoCMS through `/plugins`. The repository also keeps its local development marketplace and symlinked plugin package for testing from a checkout.
 
-Plugins can be installed at three scopes, each with different visibility and persistence:
+The plugin manifests both discover `./skills/`. Update the existing plugin rather than installing the old individual skills alongside it.
 
-| Scope | Flag | Where it lives | Who sees it | Version-controlled? |
-| - | - | - | - | - |
-| **User** (default) | `--scope user` | `~/.claude/plugins/` | You, in every project | No |
-| **Project** | `--scope project` | `.claude/plugins/` in the project root | Everyone who clones the repo | Yes |
-| **Local** | `--scope local` | `.claude/plugins/` in the project root (gitignored) | Only you, only in this project | No |
+## Detached installation
 
-```bash
-# User scope (default) — available in all your projects on this machine
-/plugin install datocms@datocms-skills --scope user
+Copy the entire `skills/datocms/` directory into your agent's supported skills location, preserving all descendants. Copying only `SKILL.md` leaves out required references and recipes. A detached copy is a snapshot; replace it from the same source when updating.
 
-# Project scope — shared with the team via version control
-# Good for teams that all use DatoCMS in the same repo
-/plugin install datocms@datocms-skills --scope project
+[datocms.zip](../zips/datocms.zip) contains one top-level `datocms/` directory with the same files. Extract it into the supported skills location or upload it through a client's skill archive interface. Shell-based workflows still require a host that can run commands and access the project.
 
-# Local scope — project-specific, gitignored
-# Good for personal experimentation without affecting teammates
-/plugin install datocms@datocms-skills --scope local
-```
+## Upgrading from version 1
 
-**Which scope should I use?**
+1. If you installed the plugin, update it through your plugin manager and reload the session. Keep the existing plugin and marketplace names.
+2. If you installed standalone skills, remove the old DatoCMS entries from the same scope and agents where they were installed. For `npx skills` installations, use:
 
-- **Individual developer**: Use `user` (default). The DatoCMS skills are available in every project without any per-project setup.
-- **Team standardization**: Use `project`. Every teammate who clones the repo gets the DatoCMS skills automatically.
-- **Trying it out**: Use `local`. You can experiment without committing anything.
+   ```bash
+   npx skills remove datocms-cda datocms-cli datocms-cma datocms-content-modeling datocms-frontend-integrations datocms-plugin datocms-setup datocms-feedback
+   ```
 
-### Updates
+   Add `--global` if the old installation was global. Review the selected entries before confirming removal. Preserve any personal edits separately.
+3. Install the unified skill with `npx skills add datocms/agent-skills --skill datocms` in the intended scope.
+4. Verify that the client exposes one DatoCMS skill. Update project instructions or saved prompts that explicitly name old skills to use `datocms`.
 
-Plugins are **cached locally** after installation. When the plugin is updated upstream (new commit + version bump in `plugin.json`), users need to update their local copy.
+The old names are retired; they are not compatibility aliases. Setup no longer requires a special invocation. Asking to set something up is sufficient, and the workflow remains scoped to the requested outcome.
 
-**Auto-update:** For third-party marketplaces (like this one), auto-update is disabled by default. To enable it:
+Upgrade the DatoCMS CLI before using reference retrieval after the repository migration. Updated versions accept both the canonical `datocms agents:reference datocms cma/editing-records` form and legacy command spellings. Old binaries that hard-code removed GitHub paths cannot be repaired by a plugin update.
 
-1. Run `/plugin` to open the plugin manager
-2. Go to the **Marketplaces** tab
-3. Select the `datocms-skills` marketplace
-4. Choose **Enable auto-update**
+## Local development
 
-Once enabled, Claude Code refreshes marketplace data at startup and prompts you to run `/reload-plugins` when updates are available.
-
-**Manual update:**
-
-```bash
-# Update the plugin to the latest version
-claude plugin update datocms@datocms-skills
-
-# Reload plugins in the current session
-/reload-plugins
-```
-
-**Important:** If the plugin version number in `plugin.json` has not changed, Claude Code considers the cached copy up to date and will not fetch changes. Plugin authors must bump the version in `.claude-plugin/plugin.json` for updates to propagate.
-
-### Local Development
-
-To test local changes during development without installing:
-
-```bash
-claude --plugin-dir /path/to/this/repo
-```
-
-After making changes, reload without restarting:
-
-```bash
-/reload-plugins
-```
-
-## Codex Plugin Install
-
-This repo ships `.codex-plugin/plugin.json` and a repo-scoped marketplace entry at `.agents/plugins/marketplace.json`, so it can be installed as a local Codex plugin directly from the repo. This is the recommended approach for Codex users working on or validating this repository.
-
-Inside a Codex session from this repo, open the plugin picker:
-
-```
-/plugins
-```
-
-Choose the **DatoCMS Local Plugins** marketplace and install `datocms`. The shipped skills are bundled into the plugin automatically. If the repo marketplace is not visible yet, restart Codex and open `/plugins` again.
-
-### Updates
-
-The repo marketplace points to the local repo for development. After changing plugin files, restart Codex and reinstall or refresh the local plugin if the cached copy has not updated yet.
-
-For published distribution, keep the plugin version in `.codex-plugin/plugin.json` bumped whenever you want downstream installs to pick up changes.
-
-### Fallback: `$skill-installer`
-
-If the Plugin Directory is not available or you prefer manual control, use the `$skill-installer` approach described in the [README](../README.md#codex-fallback--skill-installer). The `$skill-installer` copies skill files into `~/.codex/skills/` as frozen snapshots with no auto-update.
-
-## Single-Skill Install
-
-If you only need one skill, link just that folder by its canonical name.
-
-Example:
-
-```bash
-repo_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-skills_dir="${CODEX_HOME:-$HOME/.codex}/skills"
-
-mkdir -p "$skills_dir"
-ln -sfn "$repo_root/skills/datocms-cda" "$skills_dir/datocms-cda"
-```
-
-The folder names inside `skills/` match each skill's `name:` field, so the repo path and the canonical skill name stay aligned.
-
-## Detached Snapshot Install
-
-If you want a copy that still works after the repo is moved or deleted, copy the skill folders instead of symlinking them.
-
-Example:
-
-```bash
-repo_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-skills_dir="${CODEX_HOME:-$HOME/.codex}/skills"
-
-mkdir -p "$skills_dir/datocms-cda"
-cp -R "$repo_root/skills/datocms-cda/." "$skills_dir/datocms-cda"
-```
-
-## Canonical Skill Paths
-
-- `skills/datocms-cda`
-- `skills/datocms-cli`
-- `skills/datocms-cma`
-- `skills/datocms-content-modeling`
-- `skills/datocms-frontend-integrations`
-- `skills/datocms-feedback`
-- `skills/datocms-plugin`
-- `skills/datocms-setup`
-
-`datocms-setup` already contains its internal recipes, shared references, and recipe-local scripts/assets, so there is no second setup bundle to install.
+Use `claude --plugin-dir /path/to/agent-skills` to load a checkout, or the repository's local plugin marketplace in Codex. Reload the plugin after edits. Internal validation and evaluation helper skills are development tools and are not part of the distributed package.

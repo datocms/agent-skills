@@ -1,13 +1,13 @@
 {
   "name": "datocms",
-  "version": "1.6.0",
-  "description": "DatoCMS skills for content delivery, content management, content modeling, CLI workflows, frontend integrations, plugin development, and project setup",
+  "version": "2.0.0",
+  "description": "One self-contained DatoCMS skill for content delivery, management, modeling, CLI workflows, frontend integrations, plugins, setup, and feedback",
   "author": {
     "name": "DatoCMS",
     "url": "https://www.datocms.com"
   },
   "homepage": "https://www.datocms.com",
-  "repository": "https://github.com/datocms/llm-skills",
+  "repository": "https://github.com/datocms/agent-skills",
   "keywords": [
     "datocms",
     "cms",
@@ -22,8 +22,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "DatoCMS",
-    "shortDescription": "Content delivery, management, modeling, CLI, frontend integrations, plugin dev, and project setup for DatoCMS",
-    "longDescription": "Focused DatoCMS skills: query content (CDA/GraphQL), manage records and schema (CMA), make content-modeling decisions (models vs blocks, taxonomies, reuse, limits, admin UI), run CLI workflows and migrations, integrate with frontend frameworks (Next.js, Nuxt, Astro, SvelteKit), build, maintain, and restyle DatoCMS plugins, and orchestrate one-time project setup including draft mode, visual editing, previews, and imports.",
+    "shortDescription": "DatoCMS queries, content, modeling, CLI, frontend, plugins, and setup",
+    "longDescription": "One self-contained DatoCMS skill for content delivery, management, modeling, CLI workflows, frontend integrations, plugins, setup, and feedback. Topic references are loaded only when relevant to the requested task.",
     "developerName": "DatoCMS",
     "category": "cms",
     "capabilities": [

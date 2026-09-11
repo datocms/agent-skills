@@ -1,50 +1,27 @@
-# Repo Layout
-
-The root [README](../README.md#repo-layout) shows the short shape of the repo. This page explains why the folders are split this way.
-
-## Canonical Tree
+# Repository layout
 
 ```text
-.agents/
-  plugins/
-    marketplace.json
-.claude-plugin/
-  plugin.json
-  marketplace.json
-.codex-plugin/
-  plugin.json
-skills/
-  datocms-cda/
-  datocms-cli/
-  datocms-cma/
-  datocms-content-modeling/
-  datocms-frontend-integrations/
-  datocms-feedback/
-  datocms-plugin/
-  datocms-setup/
-    agents/
-    references/
-    recipes/
-docs/
-evals/
-  results/
-  reports/
-  scripts/
+.claude-plugin/             Plugin and marketplace manifests
+.codex-plugin/              Plugin manifest
+.agents/plugins/           Local development marketplace
+plugins/datocms/            Symlinks to the canonical plugin and skill tree
+skills/datocms/
+  SKILL.md                 The only public skill entrypoint
+  agents/openai.yaml       Synchronized discovery metadata
+  references/
+    cda.md, cli.md, cma.md, modeling.md
+    frontend.md, plugin.md, setup.md, feedback.md
+    <topic>/               Detailed topic references
+    setup/recipe-manifest.json
+  recipes/<group>/<id>/    Setup instructions, scripts, and assets
+docs/                      Installation and contributor documentation
+evals/                     Existing fixtures and maintenance tooling
+scripts/                   Development and packaging helpers
+zips/datocms.zip           Complete installable archive
 ```
 
-## Why It Is Split This Way
+The public entrypoint describes when each topic applies. It does not load every guide. A topic guide links to the detailed files needed for that task; shared rules have one authoritative copy.
 
-- `.claude-plugin/plugin.json` is the Claude Code plugin manifest. It points `skills` at `./skills/`, so Claude Code discovers the shipped skills automatically. This coexists with the Codex `agents/openai.yaml` files inside each skill folder for multi-platform support.
-- `.claude-plugin/marketplace.json` is the Claude Code marketplace registry. It lists the `datocms` plugin with `source: "."` (repo root), making the repo installable via `/plugin marketplace add datocms/llm-skills`.
-- `.agents/plugins/marketplace.json` is the repo-scoped Codex marketplace file. It exposes this repo as a local Codex plugin source for `/plugins` while developing or validating the plugin locally.
-- `.codex-plugin/plugin.json` is the Codex plugin manifest. It points `skills` at `./skills/` so Codex discovers the shipped skills automatically. It also includes the plugin install-surface metadata used by Codex.
-- `skills/` contains the shipped skill folders. Their names match each skill's canonical `name:` value.
-- `skills/datocms-plugin/` is the public plugin entrypoint. It covers new plugin scaffolds, existing plugin maintenance, SDK hook work, and plugin UI work that should match DatoCMS patterns.
-- `skills/datocms-setup/` is the only shipped setup entrypoint. Its `SKILL.md` stays small and routes into local recipes through references and a manifest.
-- `skills/datocms-setup/recipes/frontend-foundation/` contains project primitives such as data access, draft mode, previews, cache tags, and type generation.
-- `skills/datocms-setup/recipes/frontend-features/` contains rendering and discovery add-ons layered on top of that foundation.
-- `skills/datocms-setup/recipes/migrations/` contains repeatable schema and environment workflows.
-- `skills/datocms-setup/recipes/onboarding/` contains one-shot content import flows.
-- `skills/datocms-setup/recipes/platform/` contains project-level integrations such as webhooks, build triggers, and CMA type generation.
-- `docs/` is for longer reference material that would make the root README too heavy.
-- `evals/` keeps fixtures, checked-in results, reports, and tooling together so the trigger-quality loop is easy to inspect.
+All files needed at runtime live inside `skills/datocms/`. Internal guides are ordinary Markdown files, not additional `SKILL.md` entrypoints. Markdown links are relative to the containing file. Setup manifest paths are relative to the skill root, as declared by `path_base`.
+
+The plugin identifiers and marketplace identifiers are unchanged. Both plugin manifests still discover `./skills/`; the local development package uses symlinks rather than duplicate content. Development helpers outside `skills/` remain marked `metadata.internal: true` so they are excluded from normal installer discovery.

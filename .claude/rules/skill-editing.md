@@ -1,31 +1,16 @@
 ---
 paths:
-  - "skills/*/SKILL.md"
-  - "skills/*/agents/openai.yaml"
+  - "skills/datocms/SKILL.md"
+  - "skills/datocms/agents/openai.yaml"
+  - "skills/datocms/references/**"
 ---
 
-# Skill Editing Rules
+# Skill editing
 
-## Frontmatter ↔ YAML Sync
+Keep one public `datocms` entrypoint with automatic invocation enabled. Setup is selected for requested setup outcomes; explanations and focused fixes stay scoped.
 
-Each skill's `agents/openai.yaml` tracks its source via `synced_from_name` and `synced_from_description_sha256`. After changing a SKILL.md `name` or `description` field, update the corresponding `openai.yaml` to match and run validation:
+Keep the metadata name, description hash, default prompt, and invocation policy synchronized. The public trigger fixture is `evals/fixtures/trigger/datocms.json`. Update its labels when routing changes, but run behavioral evaluations only when explicitly requested.
 
-```bash
-python3 evals/scripts/validate_skill_repo.py
-```
+Use the entrypoint for task selection and essential standing rules. Put topic-specific mechanics in the selected guide. Preserve one authoritative copy of shared decisions and keep all runtime references inside the package.
 
-## Eval Fixture Requirement
-
-Every shipped skill must have a matching eval fixture at `evals/fixtures/trigger/<skill-name>.json`. If you add a new skill, create its fixture.
-
-## Trigger Boundary Refinement
-
-When refining trigger boundaries: edit frontmatter `description` first (small deltas). Do not touch the SKILL.md body until evals confirm the description change works.
-
-## SKILL.md Body Constraints
-
-The validator bans these patterns in skill bodies: `AskUserQuestion`, `Read tool`, `Claude Code alias`, `slash alias`. Do not introduce them.
-
-## datocms-setup Special Rules
-
-`datocms-setup` has `disable-model-invocation: true` and `allow_implicit_invocation: false` — it must always be invoked explicitly.
+The validator rejects host-specific body instructions such as `AskUserQuestion`, `Read tool`, `Claude Code alias`, and `slash alias` in the public entrypoint.
