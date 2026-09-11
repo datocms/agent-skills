@@ -1,6 +1,6 @@
 # Version 2 rollout
 
-The unification is independent of PR #8. Its source baseline is `86c533b74c2913e590797eb0b2622d2cdfe5cf68`; the unmerged changes from #8 are not included.
+The unified package includes the guidance on `master` at `353c06a82124e5e56e0526e43790ad1da9119124`. Consumer preparation changes keep their legacy reference and archive URLs pinned to the retained pre-migration revision `86c533b74c2913e590797eb0b2622d2cdfe5cf68`.
 
 ## Before merging the unified package
 
