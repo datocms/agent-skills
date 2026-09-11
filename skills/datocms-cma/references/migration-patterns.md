@@ -167,9 +167,9 @@ async function migrateUploads(
       const upload = await client.uploads.createFromUrl({
         url,
         skipCreationIfAlreadyExists: true,
-        default_field_metadata: {
-          en: { alt, title: null, custom_data: {}, focal_point: null },
-        },
+        // CMA client 6.0.0+ simple methods accept this shape in every environment.
+        // Legacy wire metadata is converted automatically; see references/uploads.md.
+        default_field_metadata: { alt: { en: alt } },
       });
       uploadMap.set(url, upload.id);
       done++;

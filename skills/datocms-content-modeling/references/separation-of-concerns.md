@@ -119,12 +119,14 @@ In GraphQL, meta fields are `_createdAt`, `_updatedAt`, `_publishedAt`, `_firstP
 
 ## Don't recreate file/gallery metadata either
 
-Same trap, applied to uploads. Every asset has `alt`, `title`, `custom_data` (arbitrary JSON), and (for images) `focal_point` — all per-locale. Key insight: these exist at **two levels**, either enough to avoid sibling fields:
+Same trap, applied to uploads. Every asset has `alt`, `title`, `custom_data` (arbitrary JSON), and (for images) `focal_point`. Upload defaults localize `alt` / `title` / `custom_data`, while every asset has one focal point shared across locales. Key insight: metadata exists at **two levels**, either enough to avoid sibling fields:
 
 | Level | Where | Use for |
 | - | - | - |
 | **Upload-level default** | Set on upload in Media Area (`default_field_metadata`) | Asset's "true" alt/title traveling with it everywhere. CDA serves as fallback when no per-record override. |
 | **Per-record override** | Set on `file` / `gallery` field of specific record (asset selector exposes same fields) | When _this record_ needs different alt or title than upload's default — hero image alt referencing article's headline, product photo title mentioning variant. |
+
+For exact upload-default and record-side payload shapes, see `../../datocms-cma/references/uploads.md`.
 
 **No third "in-record-but-not-on-the-upload" case** justifies sibling field. Whether editor wants global or per-record value, answer: fill metadata on upload or on field — never `image_alt`, `image_title`, `image_label`, `image_caption` as separate fields.
 
