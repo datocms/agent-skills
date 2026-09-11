@@ -65,7 +65,7 @@ def iter_skill_files(repo_root: Path) -> list[Path]:
 
 
 def decode_double_quoted_yaml(value: str) -> str:
-    return bytes(value, "utf-8").decode("unicode_escape")
+    return json.loads('"' + value + '"')
 
 
 def extract_frontmatter(skill_path: Path) -> tuple[str, str]:
@@ -229,11 +229,11 @@ For each user query below, decide if this TARGET skill should trigger.
 
 Rules:
 - Return true only when the query directly falls within this target skill scope.
-- Return false when the query is better handled by a different DatoCMS skill domain.
+- Return false when the query falls outside DatoCMS work. Its topic guides are internal parts of this one skill.
 - If uncertain, prefer false.
 - Treat `mode=explicit` as an explicit named-skill invocation test.
 - Treat `mode=implicit` as a natural-language routing test.
-- Treat `mode=overlap` as a boundary case where the query may plausibly fit multiple skills.
+- Treat `mode=overlap` as a task spanning multiple internal DatoCMS topics.
 
 Output:
 Return exactly one JSON object with this shape:
@@ -269,7 +269,7 @@ For each user query below, decide if this TARGET skill should trigger.
 
 Rules:
 - Use only the metadata above to decide the skill boundary.
-- Return true only when the query clearly fits this target better than other DatoCMS skills.
+- Return true when the query fits the DatoCMS scope, including tasks spanning its internal topic guides.
 - If `mode=implicit` and allow implicit invocation is false, return false.
 - If `mode=explicit`, treat the case as an explicit named-skill invocation; this can return true even when allow implicit invocation is false.
 - If `mode=overlap`, treat the case as a natural-language boundary test unless the query itself explicitly invokes the skill.
@@ -316,10 +316,10 @@ For each user query below, decide if this TARGET skill should trigger.
 Rules:
 - Use the frontmatter description for the full scope boundary.
 - Use the agent metadata as the routing surface and policy signal.
-- Return true only when the query clearly fits this target better than other DatoCMS skills.
+- Return true when the query fits the DatoCMS scope, including tasks spanning its internal topic guides.
 - If `mode=implicit` and allow implicit invocation is false, return false.
 - If `mode=explicit`, treat the case as an explicit named-skill invocation; this can return true even when allow implicit invocation is false.
-- If `mode=overlap`, treat the case as a boundary test where another listed skill may also be reasonable.
+- If `mode=overlap`, treat the case as a task spanning multiple internal DatoCMS topics.
 - If uncertain, prefer false.
 
 Output:

@@ -8,8 +8,11 @@ import hashlib
 import json
 import re
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
+
+from package_contract import contained_path, validate_layout, validate_references
 
 BANNED_SKILL_BODY_PATTERNS = (
     "AskUserQuestion",
@@ -40,7 +43,8 @@ ALLOW_IMPLICIT_RE = re.compile(
 SKILL_GLOB_PATTERNS = (
     "skills/*/SKILL.md",
 )
-RECIPE_GLOB_PATTERN = "skills/datocms-setup/recipes/*/*/recipe.md"
+SKILL_ROOT_PATH = Path("skills/datocms")
+RECIPE_GLOB_PATTERN = "skills/datocms/recipes/*/*/recipe.md"
 CODEX_DESCRIPTION_MAX_CHARS = 1024
 TRIGGER_FIXTURES_DIR = "evals/fixtures/trigger"
 TRIGGER_RESULTS_DIR = "evals/results/trigger"
@@ -61,10 +65,7 @@ ALLOWED_SETUP_ROUTER_STAGE_B = {
     "migrations",
 }
 
-SCAFFOLD_CAPABLE_SKILLS = {
-    "datocms-frontend-integrations",
-    "datocms-setup",
-}
+SCAFFOLD_CAPABLE_SKILLS = {"datocms"}
 
 STALE_SCAFFOLD_MARKETING_PATTERNS = (
     "or uses TODO placeholders",
@@ -96,7 +97,7 @@ class SkillMetadata:
 
 
 def _decode_double_quoted_yaml(value: str) -> str:
-    return bytes(value, "utf-8").decode("unicode_escape")
+    return json.loads('"' + value + '"')
 
 
 def _extract_frontmatter(path: Path) -> SkillFrontmatter:
@@ -351,11 +352,16 @@ def _validate_scaffold_contract(skill_file: Path, frontmatter: SkillFrontmatter,
     if frontmatter.name not in SCAFFOLD_CAPABLE_SKILLS:
         return
 
-    text = skill_file.read_text(encoding="utf-8")
-    if "scaffolded" not in text or "production-ready" not in text:
-        errors.append(
-            f"{skill_file}: scaffold-capable skill must declare both `scaffolded` and `production-ready` states"
-        )
+    # Completion states apply to implementation/setup work, not every use of
+    # the public entrypoint (for example, a GraphQL explanation or schema advice).
+    for relative in ("references/setup.md", "references/setup/output-status.md"):
+        path = skill_file.parent / relative
+        if not path.is_file():
+            errors.append(f"{path}: missing setup completion-state guidance")
+            continue
+        text = path.read_text(encoding="utf-8")
+        if "scaffolded" not in text or "production-ready" not in text:
+            errors.append(f"{path}: declare both scaffolded and production-ready states")
 
 
 def _validate_scaffold_marketing(repo_root: Path, errors: list[str]) -> None:
@@ -387,6 +393,7 @@ def _validate_eval_fixture_payload(
 
     true_count = 0
     false_count = 0
+    seen_queries: set[str] = set()
 
     for index, row in enumerate(payload):
         if not isinstance(row, dict):
@@ -400,6 +407,10 @@ def _validate_eval_fixture_payload(
 
         if not isinstance(query, str) or not query.strip():
             errors.append(f"{path}: eval row {index} must include a non-empty string `query`")
+        elif query.strip().casefold() in seen_queries:
+            errors.append(f"{path}: duplicate query at row {index}")
+        else:
+            seen_queries.add(query.strip().casefold())
 
         if not isinstance(should_trigger, bool):
             errors.append(f"{path}: eval row {index} must include boolean `should_trigger`")
@@ -438,10 +449,8 @@ def _validate_eval_fixture_payload(
                     f"{path}: eval row {index} references unknown boundary skill `{normalized_name}`"
                 )
 
-        if query_mode == "overlap" and not normalized_boundary_with:
-            errors.append(
-                f"{path}: eval row {index} uses `query_mode: overlap` but has no `boundary_with` skills"
-            )
+        if query_mode == "overlap" and not normalized_boundary_with and skill_name != "datocms":
+            errors.append(f"{path}: eval row {index} has no overlap boundary")
         if query_mode != "overlap" and normalized_boundary_with:
             errors.append(
                 f"{path}: eval row {index} may use `boundary_with` only with `query_mode: overlap`"
@@ -533,9 +542,10 @@ def _validate_eval_result_names(
 
 def _load_setup_recipe_ids(repo_root: Path, errors: list[str]) -> set[str]:
     manifest_path = (
-        repo_root / "skills" / "datocms-setup" / "references" / "recipe-manifest.json"
+        repo_root / SKILL_ROOT_PATH / "references" / "setup" / "recipe-manifest.json"
     )
     if not manifest_path.exists():
+        errors.append(f"{manifest_path}: missing setup recipe manifest")
         return set()
 
     try:
@@ -641,7 +651,7 @@ def _validate_setup_router_eval(repo_root: Path, errors: list[str]) -> None:
         return
 
     manifest_path = (
-        repo_root / "skills" / "datocms-setup" / "references" / "recipe-manifest.json"
+        repo_root / SKILL_ROOT_PATH / "references" / "setup" / "recipe-manifest.json"
     )
     try:
         recipe_payload = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -879,10 +889,10 @@ def _validate_result_fixture_sync(
                 errors.append(f"{path}: result row {index} boundary_with does not match fixture")
 
 
-def _validate_astro_imports(repo_root: Path, errors: list[str]) -> None:
-    astro_refs = sorted(
-        (repo_root / "skills" / "datocms-frontend-integrations" / "references").glob("astro*.md")
-    )
+def _validate_astro_imports(skill_root: Path, errors: list[str]) -> None:
+    astro_refs = sorted((skill_root / "references" / "frontend").glob("astro*.md"))
+    if not astro_refs:
+        errors.append(f"{skill_root}: missing Astro integration references")
     for astro_ref in astro_refs:
         text = astro_ref.read_text(encoding="utf-8")
         if "from '@datocms/astro'" in text:
@@ -891,12 +901,8 @@ def _validate_astro_imports(repo_root: Path, errors: list[str]) -> None:
             )
 
 
-def _validate_setup_manifest(repo_root: Path, errors: list[str]) -> None:
-    skill_root = repo_root / "skills" / "datocms-setup"
-    if not skill_root.exists():
-        return
-
-    manifest_path = skill_root / "references" / "recipe-manifest.json"
+def _validate_setup_manifest(skill_root: Path, errors: list[str]) -> None:
+    manifest_path = skill_root / "references" / "setup" / "recipe-manifest.json"
     if not manifest_path.exists():
         errors.append(f"{manifest_path}: missing setup recipe manifest")
         return
@@ -910,6 +916,9 @@ def _validate_setup_manifest(repo_root: Path, errors: list[str]) -> None:
     if not isinstance(payload, dict):
         errors.append(f"{manifest_path}: manifest root must be an object")
         return
+
+    if payload.get("skill") != "datocms" or payload.get("path_base") != "skill-root":
+        errors.append(f"{manifest_path}: declare skill `datocms` and path_base `skill-root`")
 
     recipes = payload.get("recipes")
     if not isinstance(recipes, list) or not recipes:
@@ -943,9 +952,7 @@ def _validate_setup_manifest(repo_root: Path, errors: list[str]) -> None:
             errors.append(f"{manifest_path}: recipe `{recipe_id}` must include non-empty string `path`")
         else:
             manifest_recipe_paths.add(recipe_path)
-            resolved_recipe = skill_root / recipe_path
-            if not resolved_recipe.exists():
-                errors.append(f"{manifest_path}: recipe `{recipe_id}` points to missing path `{recipe_path}`")
+            contained_path(skill_root, recipe_path, manifest_path, errors)
 
         if not isinstance(prerequisites, list) or any(not isinstance(item, str) for item in prerequisites):
             errors.append(f"{manifest_path}: recipe `{recipe_id}` must include string array `prerequisites`")
@@ -958,20 +965,14 @@ def _validate_setup_manifest(repo_root: Path, errors: list[str]) -> None:
             )
         else:
             for rel_path in shared_references:
-                if not (skill_root / rel_path).exists():
-                    errors.append(
-                        f"{manifest_path}: recipe `{recipe_id}` references missing shared reference `{rel_path}`"
-                    )
+                contained_path(skill_root, rel_path, manifest_path, errors)
 
         for field_name, entries in (("assets", assets), ("scripts", scripts)):
             if not isinstance(entries, list) or any(not isinstance(item, str) for item in entries):
                 errors.append(f"{manifest_path}: recipe `{recipe_id}` must include string array `{field_name}`")
                 continue
             for rel_path in entries:
-                if not (skill_root / rel_path).exists():
-                    errors.append(
-                        f"{manifest_path}: recipe `{recipe_id}` references missing {field_name[:-1]} `{rel_path}`"
-                    )
+                contained_path(skill_root, rel_path, manifest_path, errors)
 
     for recipe in recipes:
         if not isinstance(recipe, dict):
@@ -981,14 +982,38 @@ def _validate_setup_manifest(repo_root: Path, errors: list[str]) -> None:
         if not isinstance(recipe_id, str) or not isinstance(prerequisites, list):
             continue
         for prerequisite in prerequisites:
-            if prerequisite not in recipe_ids:
+            if isinstance(prerequisite, str) and prerequisite not in recipe_ids:
                 errors.append(
                     f"{manifest_path}: recipe `{recipe_id}` references unknown prerequisite `{prerequisite}`"
                 )
 
+    recipe_map = {recipe["id"]: recipe for recipe in recipes if isinstance(recipe, dict) and isinstance(recipe.get("id"), str)}
+    visited: set[str] = set()
+    active: set[str] = set()
+
+    def visit(recipe_id: str) -> None:
+        if recipe_id in active:
+            errors.append(f"{manifest_path}: cyclic prerequisite at `{recipe_id}`")
+            return
+        if recipe_id in visited or recipe_id not in recipe_map:
+            return
+        active.add(recipe_id)
+        prerequisites = recipe_map[recipe_id].get("prerequisites", [])
+        if isinstance(prerequisites, list):
+            for prerequisite in prerequisites:
+                if isinstance(prerequisite, str):
+                    visit(prerequisite)
+        active.remove(recipe_id)
+        visited.add(recipe_id)
+
+    for recipe_id in recipe_map:
+        visit(recipe_id)
+
     actual_recipe_paths = {
-        path.relative_to(skill_root).as_posix() for path in _iter_recipe_files(repo_root)
+        path.relative_to(skill_root).as_posix() for path in skill_root.glob("recipes/*/*/recipe.md")
     }
+    if not actual_recipe_paths:
+        errors.append(f"{skill_root}: no setup recipes found")
     missing_recipe_paths = sorted(actual_recipe_paths - manifest_recipe_paths)
     for recipe_path in missing_recipe_paths:
         errors.append(f"{manifest_path}: missing manifest entry for `{recipe_path}`")
@@ -1014,6 +1039,9 @@ def _validate_codex_plugin_manifest(repo_root: Path, errors: list[str]) -> None:
         errors.append(f"{codex_manifest}: missing Codex plugin manifest")
         return
 
+    if not claude_manifest.is_file():
+        errors.append(f"{claude_manifest}: missing Claude plugin manifest")
+
     try:
         codex_payload = json.loads(codex_manifest.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
@@ -1028,6 +1056,9 @@ def _validate_codex_plugin_manifest(repo_root: Path, errors: list[str]) -> None:
         value = codex_payload.get(field)
         if not isinstance(value, str) or not value.strip():
             errors.append(f"{codex_manifest}: missing or empty required field `{field}`")
+
+    if codex_payload.get("name") != "datocms" or codex_payload.get("skills") != "./skills/":
+        errors.append(f"{codex_manifest}: expected datocms plugin with skills at ./skills/")
 
     if claude_manifest.exists():
         try:
@@ -1076,6 +1107,11 @@ def _validate_clean_git(repo_root: Path, errors: list[str]) -> None:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Validate DatoCMS skill repo invariants")
     parser.add_argument(
+        "--skill-root",
+        type=Path,
+        help="Validate only a standalone datocms directory, without repository files or eval fixtures.",
+    )
+    parser.add_argument(
         "--repo-root",
         default=".",
         help="Repository root containing the skill folders (default: .)",
@@ -1096,39 +1132,71 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def validate_skill_package(skill_root: Path) -> list[str]:
+    """Validate all shipped references and metadata, including an isolated copy."""
+    errors: list[str] = []
+    markdown_files = validate_layout(skill_root, errors)
+    skill_file = skill_root / "SKILL.md"
+    if skill_file.is_file() and not skill_file.is_symlink():
+        try:
+            frontmatter = _extract_frontmatter(skill_file)
+            if frontmatter.name != "datocms":
+                errors.append(f"{skill_file}: the only public skill must be named datocms")
+            _validate_metadata(skill_file, frontmatter, errors)
+            _validate_description_length(skill_file, frontmatter, errors)
+            _validate_scaffold_contract(skill_file, frontmatter, errors)
+        except (OSError, ValueError) as exc:
+            errors.append(str(exc))
+    for path in markdown_files:
+        validate_references(path, skill_root, errors)
+        _validate_banned_skill_body_patterns(path, errors)
+    _validate_astro_imports(skill_root, errors)
+    _validate_setup_manifest(skill_root, errors)
+    return errors
+
+
+def _validate_archive(repo_root: Path, errors: list[str]) -> None:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    from package_skill import ARCHIVE_PATH, check_archive, read_worktree
+
+    try:
+        errors.extend(check_archive(repo_root / ARCHIVE_PATH, read_worktree(repo_root / SKILL_ROOT_PATH), repo_root))
+    except (ValueError, OSError) as exc:
+        errors.append(str(exc))
+    for legacy in (repo_root / "zips").glob("datocms-*.zip"):
+        errors.append(f"{legacy}: legacy archive must be removed")
+
+
 def main() -> int:
     args = parse_args()
     repo_root = Path(args.repo_root).resolve()
 
-    skill_files = _iter_skill_files(repo_root)
-    if not skill_files:
-        raise ValueError(f"{repo_root}: no SKILL.md files found in expected repo layout")
+    if args.skill_root:
+        errors = validate_skill_package(args.skill_root.resolve())
+        for error in errors:
+            print(f"[fail] {error}")
+        if not errors:
+            print("[ok] standalone datocms package is complete and self-contained")
+        return 1 if errors else 0
 
-    frontmatter_by_path = {path: _extract_frontmatter(path) for path in skill_files}
-    canonical_skill_names = {frontmatter.name for frontmatter in frontmatter_by_path.values()}
+    skill_files = _iter_skill_files(repo_root)
+    canonical_skill_names = {"datocms"}
     recipe_files = _iter_recipe_files(repo_root)
 
-    errors: list[str] = []
-
-    for skill_file, frontmatter in frontmatter_by_path.items():
-        _validate_reference_paths(skill_file, errors)
-        _validate_banned_skill_body_patterns(skill_file, errors)
-        _validate_routed_skill_names(skill_file, canonical_skill_names, errors)
-        _validate_metadata(skill_file, frontmatter, errors)
-        _validate_description_length(skill_file, frontmatter, errors)
-        _validate_scaffold_contract(skill_file, frontmatter, errors)
-
-    for recipe_file in recipe_files:
-        _validate_reference_paths(recipe_file, errors)
-        _validate_banned_skill_body_patterns(recipe_file, errors)
+    errors = validate_skill_package(repo_root / SKILL_ROOT_PATH)
+    if skill_files != [repo_root / SKILL_ROOT_PATH / "SKILL.md"]:
+        errors.append("skills/ must expose exactly one public skill: skills/datocms/SKILL.md")
+    extra_skill_dirs = [path for path in (repo_root / "skills").iterdir() if path.name != "datocms"] if (repo_root / "skills").is_dir() else []
+    for path in extra_skill_dirs:
+        errors.append(f"{path}: unexpected sibling of the standalone datocms package")
 
     _validate_scaffold_marketing(repo_root, errors)
     _validate_eval_fixture_coverage(repo_root, canonical_skill_names, errors)
     _validate_eval_result_names(repo_root, canonical_skill_names, errors)
-    _validate_astro_imports(repo_root, errors)
-    _validate_setup_manifest(repo_root, errors)
     _validate_codex_plugin_manifest(repo_root, errors)
-    _validate_setup_router_eval(repo_root, errors)
+    if (repo_root / SKILL_ROOT_PATH / "references/setup/recipe-manifest.json").is_file():
+        _validate_setup_router_eval(repo_root, errors)
+    _validate_archive(repo_root, errors)
 
     if args.require_fresh_results_sync:
         _validate_result_fixture_sync(repo_root, errors)
@@ -1144,10 +1212,10 @@ def main() -> int:
 
     print(f"[ok] validated {len(skill_files)} skills")
     print(f"[ok] validated {len(recipe_files)} internal setup recipes")
-    print("[ok] reference paths resolve")
+    print("[ok] all shipped Markdown and manifest references stay within the standalone package")
     print("[ok] metadata files are present and synced")
     print(f"[ok] skill descriptions fit within Codex {CODEX_DESCRIPTION_MAX_CHARS}-char limit")
-    print("[ok] routed skill names match frontmatter names")
+    print("[ok] exactly one public skill and one complete, reproducible archive")
     print("[ok] scaffold-capable skills declare scaffolded vs production-ready states")
     print("[ok] canonical eval fixtures cover every skill and contain positive/negative cases")
     print(
@@ -1155,7 +1223,10 @@ def main() -> int:
     )
     print("[ok] datocms-setup router eval fixture is present and covers recipes and Stage B branches")
     if args.require_fresh_results_sync:
-        print("[ok] checked-in root eval result rows match canonical fixtures")
+        if any((repo_root / TRIGGER_RESULTS_DIR).glob("*/*/*/results.json")):
+            print("[ok] checked-in trigger result rows match canonical fixtures")
+        else:
+            print("[ok] no canonical trigger results recorded; nothing to synchronize")
     print("[ok] banned host-specific labels are absent from skill bodies")
     print("[ok] Astro references use subpath imports")
     print("[ok] datocms-setup manifest paths, prerequisites, references, scripts, and assets are valid")

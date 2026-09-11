@@ -1,6 +1,6 @@
 [
   {
-    "query": "Use datocms-setup to install @datocms/cli and link this repo to our DatoCMS project via OAuth so the agent can run cma:call and cma:script without any token in .env.",
+    "query": "Use datocms to install @datocms/cli and link this repo to our DatoCMS project via OAuth so the agent can run cma:call and cma:script without any token in .env.",
     "should_route": true,
     "expected_recipes": [
       "cli-bootstrap"
@@ -10,7 +10,7 @@
     "notes": "Bootstrap-only request: CLI install + datocms login + datocms link without any downstream migrations or types scaffolding."
   },
   {
-    "query": "Use datocms-setup to add declarative DatoCMS build trigger config plus sync and smoke scripts.",
+    "query": "Use datocms to add declarative DatoCMS build trigger config plus sync and smoke scripts.",
     "should_route": true,
     "expected_recipes": [
       "build-triggers"
@@ -20,7 +20,7 @@
     "notes": "Platform automation with a single concrete target."
   },
   {
-    "query": "Use datocms-setup to wire granular DatoCMS cache invalidation for this Next.js app with revalidateTag() and persistent tag storage.",
+    "query": "Use datocms to wire granular DatoCMS cache invalidation for this Next.js app with revalidateTag() and persistent tag storage.",
     "should_route": true,
     "expected_recipes": [
       "cda-client",
@@ -31,7 +31,7 @@
     "notes": "Cache tags require the CDA client foundation first."
   },
   {
-    "query": "Use datocms-setup to install @datocms/cda-client, add the published CDA token placeholder, and scaffold the shared query utility for this Astro project.",
+    "query": "Use datocms to install @datocms/cda-client, add the published CDA token placeholder, and scaffold the shared query utility for this Astro project.",
     "should_route": true,
     "expected_recipes": [
       "cda-client"
@@ -41,7 +41,7 @@
     "notes": "Published-read baseline only."
   },
   {
-    "query": "Use datocms-setup to add staging and production profiles to datocms.config.json and wire the per-profile token placeholders.",
+    "query": "Use datocms to add staging and production profiles to datocms.config.json and wire the per-profile token placeholders.",
     "should_route": true,
     "expected_recipes": [
       "cli-bootstrap",
@@ -52,7 +52,7 @@
     "notes": "Named CLI profiles layered on top of the OAuth-linked default profile."
   },
   {
-    "query": "Use datocms-setup to add generate-cma-types and wire the cma-types.ts output path for this project.",
+    "query": "Use datocms to add generate-cma-types and wire the cma-types.ts output path for this project.",
     "should_route": true,
     "expected_recipes": [
       "cli-bootstrap",
@@ -63,7 +63,7 @@
     "notes": "Platform type generation."
   },
   {
-    "query": "Use datocms-setup to add website click-to-edit only for this Next.js draft site.",
+    "query": "Use datocms to add website click-to-edit only for this Next.js draft site.",
     "should_route": true,
     "expected_recipes": [
       "draft-mode",
@@ -74,7 +74,7 @@
     "notes": "Website-only click-to-edit excludes Web Previews."
   },
   {
-    "query": "Use datocms-setup to install the DatoCMS Contentful import plugin, add env placeholders, and scaffold a local helper.",
+    "query": "Use datocms to install the DatoCMS Contentful import plugin, add env placeholders, and scaffold a local helper.",
     "should_route": true,
     "expected_recipes": [
       "cli-bootstrap",
@@ -85,7 +85,7 @@
     "notes": "One-shot onboarding import helper."
   },
   {
-    "query": "Use datocms-setup to add enable and disable endpoints, dual-token executeQuery wiring, and the required env placeholders for this Next.js app.",
+    "query": "Use datocms to add enable and disable endpoints, dual-token executeQuery wiring, and the required env placeholders for this Next.js app.",
     "should_route": true,
     "expected_recipes": [
       "draft-mode"
@@ -95,7 +95,7 @@
     "notes": "Draft mode foundation only."
   },
   {
-    "query": "Use datocms-setup to configure gql.tada for typed DatoCMS GraphQL queries in this Next.js project.",
+    "query": "Use datocms to configure gql.tada for typed DatoCMS GraphQL queries in this Next.js project.",
     "should_route": true,
     "expected_recipes": [
       "graphql-types"
@@ -105,7 +105,7 @@
     "notes": "Greenfield typed query setup."
   },
   {
-    "query": "Use datocms-setup to add a helper around migrations:new --autogenerate for this repo.",
+    "query": "Use datocms to add a helper around migrations:new --autogenerate for this repo.",
     "should_route": true,
     "expected_recipes": [
       "cli-bootstrap",
@@ -117,7 +117,7 @@
     "notes": "Autogeneration sits on the baseline migrations workflow."
   },
   {
-    "query": "Use datocms-setup to add a local release helper for DatoCMS migrations with maintenance mode and promotion.",
+    "query": "Use datocms to add a local release helper for DatoCMS migrations with maintenance mode and promotion.",
     "should_route": true,
     "expected_recipes": [
       "cli-bootstrap",
@@ -129,7 +129,7 @@
     "notes": "Release helper depends on migrations baseline."
   },
   {
-    "query": "Use datocms-setup to scaffold @datocms/cli in this project, create datocms.config.json, add a migrations folder, and wire the baseline scripts.",
+    "query": "Use datocms to scaffold @datocms/cli in this project, create datocms.config.json, add a migrations folder, and wire the baseline scripts.",
     "should_route": true,
     "expected_recipes": [
       "cli-bootstrap",
@@ -140,7 +140,7 @@
     "notes": "Baseline migrations setup on top of the OAuth-linked default profile."
   },
   {
-    "query": "Use datocms-setup to add live DatoCMS preview updates over SSE to this Next.js draft site.",
+    "query": "Use datocms to add live DatoCMS preview updates over SSE to this Next.js draft site.",
     "should_route": true,
     "expected_recipes": [
       "draft-mode",
@@ -151,7 +151,7 @@
     "notes": "Realtime is a draft-mode enhancement."
   },
   {
-    "query": "Use datocms-setup to add a shared Dato image wrapper and patch one real image field in this Next.js project.",
+    "query": "Use datocms to add a shared Dato image wrapper and patch one real image field in this Next.js project.",
     "should_route": true,
     "expected_recipes": [
       "responsive-images"
@@ -161,7 +161,7 @@
     "notes": "Frontend feature for responsive media rendering."
   },
   {
-    "query": "Use datocms-setup to add framework-native robots.txt and sitemap routes for this Next.js site with shared public URL mapping.",
+    "query": "Use datocms to add framework-native robots.txt and sitemap routes for this Next.js site with shared public URL mapping.",
     "should_route": true,
     "expected_recipes": [
       "robots-sitemaps"
@@ -171,7 +171,7 @@
     "notes": "Crawler-safe route generation."
   },
   {
-    "query": "Use datocms-setup to add a helper that destroys and reforks a DatoCMS sandbox, then reruns migrations in place while I iterate locally.",
+    "query": "Use datocms to add a helper that destroys and reforks a DatoCMS sandbox, then reruns migrations in place while I iterate locally.",
     "should_route": true,
     "expected_recipes": [
       "cli-bootstrap",
@@ -183,7 +183,7 @@
     "notes": "Sandbox reset loop builds on the migrations baseline."
   },
   {
-    "query": "Use datocms-setup to wire _seoMetaTags, favicon meta tags, and canonical URL helpers into this Next.js project.",
+    "query": "Use datocms to wire _seoMetaTags, favicon meta tags, and canonical URL helpers into this Next.js project.",
     "should_route": true,
     "expected_recipes": [
       "seo"
@@ -193,7 +193,7 @@
     "notes": "SEO/meta helper wiring."
   },
   {
-    "query": "Use datocms-setup to provision DatoCMS Site Search, scaffold the least-privilege token env vars, and mount a search route in this Next.js repo.",
+    "query": "Use datocms to provision DatoCMS Site Search, scaffold the least-privilege token env vars, and mount a search route in this Next.js repo.",
     "should_route": true,
     "expected_recipes": [
       "site-search"
@@ -203,7 +203,7 @@
     "notes": "Direct site-search provisioning request."
   },
   {
-    "query": "Use datocms-setup to add a shared renderer and patch one real Structured Text field in this Next.js repo.",
+    "query": "Use datocms to add a shared renderer and patch one real Structured Text field in this Next.js repo.",
     "should_route": true,
     "expected_recipes": [
       "structured-text"
@@ -213,7 +213,7 @@
     "notes": "Structured Text rendering bundle."
   },
   {
-    "query": "Use datocms-setup to add a shared Mux video wrapper and patch one real Dato video field in this Next.js repo.",
+    "query": "Use datocms to add a shared Mux video wrapper and patch one real Dato video field in this Next.js repo.",
     "should_route": true,
     "expected_recipes": [
       "video-player"
@@ -223,7 +223,7 @@
     "notes": "Video player feature setup."
   },
   {
-    "query": "Use datocms-setup to add a preview-links endpoint, CORS handling, and record-to-URL routing for this Next.js repo.",
+    "query": "Use datocms to add a preview-links endpoint, CORS handling, and record-to-URL routing for this Next.js repo.",
     "should_route": true,
     "expected_recipes": [
       "draft-mode",
@@ -234,7 +234,7 @@
     "notes": "Preview-links and Web Previews handoff."
   },
   {
-    "query": "Use datocms-setup to add a declarative webhook config, a sync helper, and a local authenticated DatoCMS webhook receiver.",
+    "query": "Use datocms to add a declarative webhook config, a sync helper, and a local authenticated DatoCMS webhook receiver.",
     "should_route": true,
     "expected_recipes": [
       "webhooks"
@@ -244,7 +244,7 @@
     "notes": "Webhook sync and local receiver wiring."
   },
   {
-    "query": "Use datocms-setup to install the DatoCMS WordPress import plugin, add env placeholders, and scaffold a local helper.",
+    "query": "Use datocms to install the DatoCMS WordPress import plugin, add env placeholders, and scaffold a local helper.",
     "should_route": true,
     "expected_recipes": [
       "cli-bootstrap",
@@ -255,7 +255,7 @@
     "notes": "WordPress onboarding import helper."
   },
   {
-    "query": "Use datocms-setup to add blueprint sync for duplicated projects that need to keep entity IDs aligned.",
+    "query": "Use datocms to add blueprint sync for duplicated projects that need to keep entity IDs aligned.",
     "should_route": true,
     "expected_recipes": [
       "cli-bootstrap",
@@ -267,7 +267,7 @@
     "notes": "Blueprint sync depends on shared migrations history."
   },
   {
-    "query": "Use datocms-setup to set up full visual editing for this Next.js site with DatoCMS draft mode, Web Previews, and click-to-edit overlays.",
+    "query": "Use datocms to set up full visual editing for this Next.js site with DatoCMS draft mode, Web Previews, and click-to-edit overlays.",
     "should_route": true,
     "expected_recipes": [
       "draft-mode",
@@ -279,7 +279,7 @@
     "notes": "Explicit full visual-editing bundle without realtime."
   },
   {
-    "query": "Use datocms-setup to set up DatoCMS preview and editor workflows for this Next.js repo.",
+    "query": "Use datocms to set up DatoCMS preview and editor workflows for this Next.js repo.",
     "should_route": true,
     "expected_recipes": [
       "draft-mode",
@@ -291,7 +291,7 @@
     "notes": "Broad editorial workflow request that still lands in the visual-editing bundle."
   },
   {
-    "query": "Use datocms-setup to wire DatoCMS visual mode into a Vercel project that already has Edit Mode enabled.",
+    "query": "Use datocms to wire DatoCMS visual mode into a Vercel project that already has Edit Mode enabled.",
     "should_route": true,
     "expected_recipes": [
       "draft-mode",
@@ -303,7 +303,7 @@
     "notes": "Vercel overlays require a conflict-resolution question before changing behavior."
   },
   {
-    "query": "Use datocms-setup to configure Site Search for a site with /blog and /docs sections.",
+    "query": "Use datocms to configure Site Search for a site with /blog and /docs sections.",
     "should_route": true,
     "expected_recipes": [
       "site-search"
@@ -313,7 +313,7 @@
     "notes": "Multiple top-level public sections can require an index-topology question."
   },
   {
-    "query": "Use datocms-setup to configure typed GraphQL queries in a repo that already uses GraphQL Code Generator and .graphql documents.",
+    "query": "Use datocms to configure typed GraphQL queries in a repo that already uses GraphQL Code Generator and .graphql documents.",
     "should_route": true,
     "expected_recipes": [
       "graphql-types"
@@ -323,7 +323,7 @@
     "notes": "Existing type-generation approach must be preserved or confirmed."
   },
   {
-    "query": "Use datocms-setup to set up DatoCMS migrations for this repo, but I have not decided yet whether I need named profiles, autogeneration, a release helper, or a sandbox reset loop.",
+    "query": "Use datocms to set up DatoCMS migrations for this repo, but I have not decided yet whether I need named profiles, autogeneration, a release helper, or a sandbox reset loop.",
     "should_route": true,
     "expected_recipes": [
       "cli-bootstrap",

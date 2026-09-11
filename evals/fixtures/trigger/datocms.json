@@ -1,0 +1,561 @@
+[
+  {
+    "query": "I need to pull all blog posts from my DatoCMS project and display them on my Next.js site. They have a title, slug, cover image, and a rich text body. Can you write the GraphQL query and the page component?",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "topics": [
+      "cda",
+      "frontend"
+    ]
+  },
+  {
+    "query": "how do i filter datocms records by a date field in graphql? i want to show only events that haven't happened yet, sorted by date ascending",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "cda"
+    ]
+  },
+  {
+    "query": "I'm building a portfolio site with DatoCMS. Each project has modular content blocks — a text block, an image gallery block, and a video embed block. How do I query these with the CDA and render them with the right components?",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "cda"
+    ]
+  },
+  {
+    "query": "my datocms images are loading slow. i heard there's some responsive image stuff with srcset and blur-up placeholders? im using react-datocms. can you help me set up the image component with the right graphql fragment?",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "topics": [
+      "cda",
+      "frontend"
+    ]
+  },
+  {
+    "query": "Use datocms to write the GraphQL query for published blog posts with responsiveImage data and structured text fields for my Next.js app.",
+    "should_trigger": true,
+    "query_mode": "explicit",
+    "topics": [
+      "cda"
+    ]
+  },
+  {
+    "query": "Use datocms to show how to query _seoMetaTags, favicon meta tags, and locale fallbacks from the DatoCMS CDA.",
+    "should_trigger": true,
+    "query_mode": "explicit",
+    "topics": [
+      "cda"
+    ]
+  },
+  {
+    "query": "I need to create a DatoCMS migration script that adds a new 'Event' model with title, date, location, and description fields. How do I scaffold the migration and run it on my sandbox environment?",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "cli"
+    ]
+  },
+  {
+    "query": "can you help me set up the datocms CLI in my project? i need to configure profiles for my production and staging environments so i can run migrations against both",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "cli"
+    ]
+  },
+  {
+    "query": "I want to import our WordPress blog content into DatoCMS. We have about 400 posts with featured images and categories. Can you walk me through using the datocms CLI import command?",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "cli"
+    ]
+  },
+  {
+    "query": "How do I run my DatoCMS migrations in CI/CD? I want to fork the primary environment, apply pending migrations, and promote it if they pass. Using GitHub Actions.",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "cli"
+    ]
+  },
+  {
+    "query": "Use datocms to scaffold a migration that adds an Event model and explain how to run it on my sandbox profile.",
+    "should_trigger": true,
+    "query_mode": "explicit",
+    "topics": [
+      "cli"
+    ]
+  },
+  {
+    "query": "Use datocms to configure datocms.config.json with staging and production profiles plus CI migration commands.",
+    "should_trigger": true,
+    "query_mode": "explicit",
+    "topics": [
+      "cli"
+    ]
+  },
+  {
+    "query": "I need to fork a DatoCMS environment, add a field to blog_post, and promote the sandbox. I could use either the CLI or the CMA client, but show me the CLI workflow.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "topics": [
+      "cli",
+      "cma"
+    ]
+  },
+  {
+    "query": "I need to set up DatoCMS migrations for this repo with named staging and production profiles plus a shared migrations directory. Show me the CLI pieces to wire first.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "topics": [
+      "cli",
+      "setup"
+    ]
+  },
+  {
+    "query": "I need to create a new blog post in DatoCMS programmatically using the CMA client. The model has title (string), slug (slug), body (structured text), and published_date (date) fields. Can you write the script?",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "cma"
+    ]
+  },
+  {
+    "query": "we're migrating 500 products from a CSV file into DatoCMS. each product has a name, price, description, and an image URL that needs to be uploaded as a DatoCMS asset. can you build the import script?",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "cma"
+    ]
+  },
+  {
+    "query": "I need to create a new model called 'Team Member' in DatoCMS using the CMA client. It should have fields: name (string), role (string), bio (structured text), photo (file), and a link to a 'Department' model.",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "cma"
+    ]
+  },
+  {
+    "query": "can you help me paginate through all the records in my 'article' model? there are about 2000 of them and i need to export them to a JSON file. using @datocms/cma-client-node",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "cma"
+    ]
+  },
+  {
+    "query": "Use datocms to create a blog post record with a structured text body and publish it in DatoCMS.",
+    "should_trigger": true,
+    "query_mode": "explicit",
+    "topics": [
+      "cma"
+    ]
+  },
+  {
+    "query": "Use datocms to upload remote images, set alt and title metadata, and link the uploads to product records.",
+    "should_trigger": true,
+    "query_mode": "explicit",
+    "topics": [
+      "cma"
+    ]
+  },
+  {
+    "query": "How do I fork a DatoCMS environment, make some schema changes (add a new field to the blog_post model), and then promote it to primary? Using the CMA client programmatically.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "topics": [
+      "cli",
+      "cma"
+    ]
+  },
+  {
+    "query": "do the DatoCMS token setup thing for me before publishing — I don't want to paste an API token into .env, use my OAuth login",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "topics": [
+      "cli",
+      "cma"
+    ]
+  },
+  {
+    "query": "I'm starting a new DatoCMS project for a SaaS marketing site. How should I structure the content models — pages, blog posts, authors, categories? I want to make sure I don't paint myself into a corner.",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "modeling"
+    ]
+  },
+  {
+    "query": "Should 'testimonials' be a model or a block in DatoCMS? Same testimonials show up on multiple landing pages and editors want to update one and have it reflect everywhere.",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "modeling"
+    ]
+  },
+  {
+    "query": "I have a hero section with an image, headline, and CTA. In DatoCMS, should this be a block I add to a Modular Content field, or should it be its own model linked from the page?",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "modeling"
+    ]
+  },
+  {
+    "query": "What's the difference between Modular Content, Structured Text, and Single Block fields in DatoCMS, and when should I use which? I'm trying to pick one for my article body.",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "modeling"
+    ]
+  },
+  {
+    "query": "Designing a content model for a multilingual e-commerce site. We have products, categories, and brand pages. Some content is shared across regions, some is region-specific. How should I structure this in DatoCMS?",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "topics": [
+      "cli",
+      "modeling"
+    ]
+  },
+  {
+    "query": "Draft an email to support@datocms.com about the DatoCMS MCP getting stuck.",
+    "should_trigger": true,
+    "query_mode": "explicit",
+    "topics": [
+      "feedback"
+    ]
+  },
+  {
+    "query": "Use datocms to summarize the failed skills/MCP experience for support.",
+    "should_trigger": true,
+    "query_mode": "explicit",
+    "topics": [
+      "feedback"
+    ]
+  },
+  {
+    "query": "Help me report feedback to DatoCMS: the MCP kept looping and I gave up.",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "feedback"
+    ]
+  },
+  {
+    "query": "The DatoCMS skills kept misunderstanding my setup and I want to send support a summary.",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "feedback"
+    ]
+  },
+  {
+    "query": "I am frustrated with how the DatoCMS setup skill keeps asking for the same thing; draft feedback I can email.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "topics": [
+      "feedback",
+      "setup"
+    ]
+  },
+  {
+    "query": "The skills never converged after repeated wrong routing between setup and frontend integrations. Please write a concise report for DatoCMS support.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "topics": [
+      "feedback",
+      "frontend",
+      "setup"
+    ]
+  },
+  {
+    "query": "I need to set up draft mode for my Next.js App Router site with DatoCMS. I want enable/disable route handlers, a dual-token executeQuery wrapper, and the cookie-based draft detection. Can you generate all the files?",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "topics": [
+      "frontend",
+      "setup"
+    ]
+  },
+  {
+    "query": "how do i use the react-datocms Image component to show responsive images with blur-up placeholders? i have the graphql fragment but im not sure how to wire it up in my Next.js page component",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "frontend"
+    ]
+  },
+  {
+    "query": "I'm building a Nuxt 3 site with DatoCMS and I need to set up the Web Previews plugin integration. Editors should be able to click 'Open preview' in the CMS and see the draft page. I need the preview-links API endpoint.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "topics": [
+      "frontend",
+      "setup"
+    ]
+  },
+  {
+    "query": "Can you help me set up Content Link for my SvelteKit site? I want editors in draft mode to be able to click on content elements and jump directly to the corresponding record in DatoCMS for editing.",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "frontend"
+    ]
+  },
+  {
+    "query": "Use datocms to patch draft mode and preview-links wiring in my Next.js App Router app.",
+    "should_trigger": true,
+    "query_mode": "explicit",
+    "topics": [
+      "frontend"
+    ]
+  },
+  {
+    "query": "Use datocms to show how to render DatoCMS responsive images and SEO metadata in my Nuxt 3 app.",
+    "should_trigger": true,
+    "query_mode": "explicit",
+    "topics": [
+      "frontend"
+    ]
+  },
+  {
+    "query": "Create a new private DatoCMS plugin folder with a config screen and a record sidebar panel.",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "plugin"
+    ]
+  },
+  {
+    "query": "Scaffold a marketplace-ready DatoCMS plugin with Vite, React, package metadata, and a config screen.",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "plugin"
+    ]
+  },
+  {
+    "query": "Start a fresh DatoCMS plugin project that adds an asset source for importing images from an external library.",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "plugin"
+    ]
+  },
+  {
+    "query": "Patch this existing DatoCMS plugin config screen to rename the token field and remove the debug toggle.",
+    "should_trigger": true,
+    "query_mode": "implicit",
+    "topics": [
+      "plugin"
+    ]
+  },
+  {
+    "query": "Use datocms to create a new DatoCMS plugin project with Vite, React, and a connect() entrypoint.",
+    "should_trigger": true,
+    "query_mode": "explicit",
+    "topics": [
+      "plugin"
+    ]
+  },
+  {
+    "query": "Use datocms to restyle this existing DatoCMS plugin modal so the form and actions match DatoCMS controls.",
+    "should_trigger": true,
+    "query_mode": "explicit",
+    "topics": [
+      "plugin"
+    ]
+  },
+  {
+    "query": "Use datocms to configure one blueprint profile and two destination profiles that share the same migrations directory.",
+    "should_trigger": true,
+    "query_mode": "explicit",
+    "topics": [
+      "setup"
+    ]
+  },
+  {
+    "query": "Use datocms to add declarative DatoCMS build trigger config plus sync and smoke scripts.",
+    "should_trigger": true,
+    "query_mode": "explicit",
+    "topics": [
+      "setup"
+    ]
+  },
+  {
+    "query": "Use datocms to wire granular DatoCMS cache invalidation for this Next.js app with revalidateTag() and persistent tag storage.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "topics": [
+      "frontend",
+      "setup"
+    ]
+  },
+  {
+    "query": "Use datocms to install @datocms/cda-client, add the published CDA token placeholder, and scaffold the shared query utility for this Astro project.",
+    "should_trigger": true,
+    "query_mode": "explicit",
+    "topics": [
+      "setup"
+    ]
+  },
+  {
+    "query": "Use datocms to scaffold @datocms/cli in this project, create datocms.config.json, add a migrations folder, and wire the baseline scripts.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "topics": [
+      "cli",
+      "setup"
+    ]
+  },
+  {
+    "query": "I need to create a new blog post programmatically in DatoCMS with a title, slug, body, and a cover image upload. This is for a migration script that imports 200 posts from our old WordPress database.",
+    "should_trigger": true,
+    "query_mode": "overlap"
+  },
+  {
+    "query": "How do I set up the DatoCMS Web Previews plugin so editors can click 'open preview' in the CMS and see the draft version of the page on my Next.js site?",
+    "should_trigger": true,
+    "query_mode": "overlap"
+  },
+  {
+    "query": "I need to fetch all blog posts from DatoCMS using GraphQL and display them in my Next.js app. Can you write the query with filtering and pagination?",
+    "should_trigger": true,
+    "query_mode": "overlap"
+  },
+  {
+    "query": "How do I create 500 records programmatically in DatoCMS using the CMA client? I have a JSON file with product data that I want to import via a Node.js script.",
+    "should_trigger": true,
+    "query_mode": "overlap"
+  },
+  {
+    "query": "I need to query all blog posts from DatoCMS and display them on my React site. They have a title, cover image, and body. Can you write the GraphQL query for the Content Delivery API?",
+    "should_trigger": true,
+    "query_mode": "overlap"
+  },
+  {
+    "query": "Can you help me render the responsive image component from react-datocms? I want blur-up placeholders and srcset for my DatoCMS images.",
+    "should_trigger": true,
+    "query_mode": "overlap"
+  },
+  {
+    "query": "In DatoCMS, how do I configure a `link` field with item_item_type and item_types validators? I need the typescript signature.",
+    "should_trigger": true,
+    "query_mode": "overlap"
+  },
+  {
+    "query": "Write a DatoCMS migration script to create an Author model with name, bio, and photo fields.",
+    "should_trigger": true,
+    "query_mode": "overlap"
+  },
+  {
+    "query": "npx datocms migrations:run failed because I am not logged in. Run login and then continue the migration workflow.",
+    "should_trigger": true,
+    "query_mode": "overlap"
+  },
+  {
+    "query": "The script hit a missing DATOCMS_API_TOKEN value; add the env var and rerun it.",
+    "should_trigger": true,
+    "query_mode": "overlap"
+  },
+  {
+    "query": "I need to create 300 product records in DatoCMS programmatically from a CSV file. Each product has a name, price, description, and image URL. Can you write the import script using the CMA client?",
+    "should_trigger": true,
+    "query_mode": "overlap"
+  },
+  {
+    "query": "How do I query all blog posts from DatoCMS using the Content Delivery API GraphQL endpoint? I need filtering by category and cursor-based pagination.",
+    "should_trigger": true,
+    "query_mode": "overlap"
+  },
+  {
+    "query": "Write a DatoCMS CMA script to bulk publish all draft records in one model.",
+    "should_trigger": true,
+    "query_mode": "overlap"
+  },
+  {
+    "query": "Set up DatoCMS draft mode and Web Previews in this Next.js app.",
+    "should_trigger": true,
+    "query_mode": "overlap"
+  },
+  {
+    "query": "I'm setting up a Supabase project with a PostgreSQL database. Can you help me write GraphQL queries using Hasura to fetch user profiles with their recent posts?",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "How do I set up a Rails migration to add a new column to my PostgreSQL users table? I need to add email_verified boolean with a default of false.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "I'm building a Prisma schema for my PostgreSQL database. I need models for User, Post, and Comment with proper relations. Can you help?",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "I'm building a React app with Tailwind CSS and need to create a responsive navigation component with a mobile hamburger menu. No CMS involved, just pure frontend.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Can you help me set up a Strapi headless CMS with Next.js? I need to fetch content from Strapi's REST API and display it in my pages.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "I am setting up a Supabase project with a PostgreSQL database. Can you help me write GraphQL queries using Hasura to fetch user profiles with their recent posts?",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Can you wire @vercel/toolbar into this Next.js repo for Edit Mode overlays?",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Create a PostgreSQL migration that adds an index to our invoices table. This project does not use a CMS.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Fetch products from Shopify and render them in my Remix storefront.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Add Sanity Studio preview mode to this Next.js app.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Explain the React useEffect dependency array using a small counter example.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Draft an email to my bank about a duplicate card transaction.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Summarize this travel itinerary and translate it into Italian.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "The GitHub MCP returned an error while listing issues. Retry the list call.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Build a WordPress theme with PHP templates and a custom post type.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  }
+]
