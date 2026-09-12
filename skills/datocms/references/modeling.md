@@ -34,7 +34,7 @@ Once modeling decision made:
 
 ## References
 
-**Mandatory** — never propose models, blocks, or fields from memory. Before any structured question or schema suggestion, load every reference whose decision is in scope.
+**Mandatory** — never propose models, blocks, or fields from memory. Before any structured question or schema suggestion, load the relevant sections of every reference whose decision is in scope. Use each reference's Contents, where present, to locate those sections.
 
 Match decision → file:
 
@@ -43,6 +43,6 @@ Match decision → file:
 - `modeling/block-fields-and-structured-text.md` — `single_block` vs `rich_text` (Modular Content) vs `structured_text`; inline-vs-block-vs-itemLink-vs-inlineItem matrix; DAST cheatsheet; **native nodes (`blockquote`, `code`, `list`, `heading`, `thematicBreak`, `link`) — never recreate as blocks**; image/gallery/video block shape (no `caption` sibling); container-shape effects on limits.
 - `modeling/content-reuse.md` — link fields, project-level Blocks Library, built-in `seo`, frameless single-block, tree taxonomies, fieldset grouping, block-library hygiene.
 - `modeling/taxonomy-classification.md` — flat tags, tree models, faceted classification via multiple links, cascade strategies.
-- `modeling/ui-organization.md` — Content tab `menu_item` (editors), Schema tab `schema_menu_item` (devs), saved views via `item_type_filter`, emoji conventions, IA heuristics.
+- `modeling/ui-organization.md` — Content/Schema menus, saved views, navigation and icon conventions. For form hints or field grouping alone, use `modeling/separation-of-concerns.md` § Hints and `modeling/content-reuse.md` § Pattern 6 — Fieldsets for grouping.
 - `modeling/model-configuration.md` — singleton, draft mode, `all_locales_required`, sortable/tree/ordering, `inverse_relationships_enabled`, `presentation_title_field`, `presentation_image_field`, `collection_appearance`, CDA SEO fallbacks; create-then-wire mechanic.
 - `modeling/field-configuration.md` — validators (enum, format, length, unique, `slug_title_field`, `required_alt_title`, `required_seo_fields`, `transformable_image`, dimensions, structured-text size); `appearance` editors (`string_select`+enum, markdown/wysiwyg/textarea, framed vs frameless `single_block`, `link_select` vs `link_embed`, structured_text nodes/marks/heading_levels, SEO previews, slug `url_prefix`, color presets).
