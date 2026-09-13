@@ -21,6 +21,8 @@ Confirm these inputs when they are not already clear:
 
 ## environments:fork
 
+Check [included allowances and paid extras](../../datocms-cma/references/project-settings-and-usage.md#included-allowances-and-paid-extras) before provisioning another sandbox.
+
 Create a new sandbox environment by forking an existing one:
 
 ```bash

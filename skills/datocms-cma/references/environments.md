@@ -10,6 +10,8 @@ Every project has one **primary** environment (production) and zero or more **sa
 
 ## Fork is asynchronous
 
+Before provisioning another sandbox, check [included allowances and paid extras](project-settings-and-usage.md#included-allowances-and-paid-extras); being below the hard environment limit does not establish that the addition is included in the plan.
+
 `client.environments.fork(sourceId, { id })` kicks off a background job. By default the simplified client polls until the job finishes and returns the new `Environment` — convenient but blocking, sometimes minutes for large projects.
 
 - `immediate_return: true` returns immediately with `meta.status: "creating"` and a `meta.fork_completion_percentage`. Use this when scripting and you want to poll on your own schedule, or when the fork is long enough that holding an HTTP connection open is brittle.
