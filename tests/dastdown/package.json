@@ -1,0 +1,11 @@
+{
+  "name": "validate-dastdown",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test.mjs"
+  },
+  "devDependencies": {
+    "datocms-structured-text-dastdown": "6.0.0"
+  }
+}
