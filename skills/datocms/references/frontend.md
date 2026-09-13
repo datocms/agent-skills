@@ -12,7 +12,7 @@ For an existing gql.tada starter, inspect colocated fragments, URL builders, and
 
 ## Load by concern and framework
 
-Load the shared concept when listed, then the matching framework reference. Do not read all framework variants.
+Select guidance for the requested change: the shared concept below, the matching component reference, and any framework-specific sections needed for wiring. For focused work, inspect Contents or headings and read those sections rather than the whole framework guide. A section link identifies what to read; opening its entire file is not a section-level read.
 
 | Concern | Shared reference |
 | - | - |
@@ -27,7 +27,9 @@ Load the shared concept when listed, then the matching framework reference. Do n
 | Raw/custom search or crawler handling | [Search API](frontend/site-search-api.md) |
 | Robots and sitemap generation | [Robots and sitemaps](frontend/robots-and-sitemaps.md) |
 
-For framework endpoints, environment conventions, and cache integration, select [Next.js](frontend/nextjs.md), [Nuxt](frontend/nuxt.md), [SvelteKit](frontend/sveltekit.md), [Astro](frontend/astro.md), or [Remix](frontend/remix.md).
+Use [Next.js](frontend/nextjs.md), [Nuxt](frontend/nuxt.md), [SvelteKit](frontend/sveltekit.md), [Astro](frontend/astro.md), or [Remix](frontend/remix.md) for the relevant endpoint, environment, server/client, or cache integration sections. Detecting a framework alone does not require its full guide.
+
+For focused Next.js live preview, read the real-time concept and React component guidance, plus [Real-Time Updates (Optional)](frontend/nextjs.md#real-time-updates-optional) for server/client wiring. Preserve working query wrappers, authentication, draft mode, and Content Link. Consult Core or other sections for missing prerequisites; complete setup may require several sections.
 
 | Component | React | Vue | Svelte | Astro |
 | - | - | - | - | - |
