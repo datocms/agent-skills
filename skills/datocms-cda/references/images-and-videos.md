@@ -192,7 +192,13 @@ The `url` field also accepts imgix parameters directly:
 url(imgixParams: { w: 200, h: 200, fit: crop })
 ```
 
-**Default optimization bypass:** DatoCMS projects apply automatic image optimization (typically `auto=format`) to all image URLs by default. To bypass these defaults on a specific URL, append `?skip-default-optimizations=true` to the raw image URL (not applicable when using `imgixParams` in GraphQL, which always override defaults for specified params).
+**Project optimization defaults:** Explicit image parameters override matching project defaults; unspecified defaults still apply. To bypass all project defaults for one image URL, use `skip-default-optimizations=true` in its query string, or the GraphQL equivalent:
+
+```graphql
+url(imgixParams: { w: 200, skipDefaultOptimizations: true })
+```
+
+Here `w: 200` still applies, but project defaults do not. Keep the defaults unless the task needs a per-image bypass; disabling optimization can increase bandwidth. This does not require changing project settings.
 
 ## Video (Mux Integration)
 
