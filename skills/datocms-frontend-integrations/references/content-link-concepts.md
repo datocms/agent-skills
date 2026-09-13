@@ -70,16 +70,7 @@ const controller = createController({
 - **`root?: ParentNode`** — limit scanning to this container (default: `document`)
 - **`stripStega?: boolean`** — strip invisible stega characters from text after stamping (default: `false`)
 - **`onNavigateTo?: (path: string) => void`** — callback when Web Previews plugin requests navigation
-
-### Suppressing diagnostics
-
-`silenceWarnings` defaults to `false`. After checking an intentional, understood diagnostic, opt in on the controller you create:
-
-```ts
-const controller = createController({ silenceWarnings: true });
-```
-
-This suppresses package warnings, including collisions and the initial "no editable elements" warning. It does not change DOM stamping or edit targets. Normally fix collisions by separating the source elements/groups first; suppressing the warning does not fix the collision. Preserve the controller's existing routing, root, and other options when adding this flag.
+- **`silenceWarnings?: boolean`** — suppress package diagnostics, including collision and initial "no editable elements" warnings (default: `false`). Use only for understood warnings; suppression does not resolve collisions or change DOM stamping or edit targets.
 
 ### Controller Methods
 
