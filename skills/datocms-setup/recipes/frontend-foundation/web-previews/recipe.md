@@ -141,7 +141,7 @@ Resolve these values — they feed both the auto-install script (Step 6) and the
 
 Only include the `visualEditing` settings above when the Visual tab or sidebar click-to-edit is requested, or preserve them if already configured. Ordinary sidebar links/iframes do not need these settings; retain the draft-mode endpoints used by their preview links. For sidebar click-to-edit, also load the Content Link recipe if that integration is missing, and follow `../../../../datocms-frontend-integrations/references/web-previews-concepts.md` → Sidebar click-to-edit.
 
-Top-level `parameters.startOpen: true` opens the sidebar preview; it does not enable the user's separate Edit mode toggle. Preserve existing plugin settings and other frontends when updating the selected frontend.
+Top-level `parameters.startOpen: true` opens the sidebar preview; it does not enable the user's separate Edit mode toggle. Apply the preservation guidance in the linked Sidebar click-to-edit section when updating the selected frontend.
 
 Always echo resolved values back to user in final response (audit + confirmation gate) even when code otherwise production-ready.
 

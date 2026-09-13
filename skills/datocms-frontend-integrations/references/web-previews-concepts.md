@@ -38,9 +38,9 @@ Web Previews plugin configures one or more "frontends". Each needs:
 
 ### Sidebar click-to-edit
 
-Sidebar Edit mode is an opt-in user preference, off by default and saved in the browser per project. Configure the frontend's `visualEditing.enableDraftModeUrl` and Content Link integration when click-to-edit is requested; do not change the user's toggle or infer that opening the sidebar enables editing.
+Sidebar Edit mode is opt-in and off by default. Configure the frontend's `visualEditing.enableDraftModeUrl` and Content Link integration when click-to-edit is requested; opening the sidebar does not enable the user's Edit toggle.
 
-When both Published and Draft previews exist, select Draft to enter Edit mode; keep an explicitly selected Published preview published. When only Published exists, enabling Edit mode loads that page through the configured draft-mode route. Clicking an editable element navigates the CMS to the record editor, rather than opening the Visual tab's inspector panel; clicks targeting another environment are ignored.
+When both Published and Draft previews exist, select Draft to enter Edit mode; keep an explicitly selected Published preview published. When only Published exists, enabling Edit mode loads that page through the configured draft-mode route.
 
 The sidebar integration recognizes the destination in a `redirect` query parameter. For endpoints using `url` (as in the Nuxt examples), accept `redirect` when supplied and otherwise retain `url` as a compatibility fallback in both draft-mode endpoints; validate the selected value before redirecting. Emit `redirect` in the preview links used for sidebar click-to-edit so the plugin can identify draft previews and their destinations.
 
