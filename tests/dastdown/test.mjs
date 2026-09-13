@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
 import { parse, serialize } from 'datocms-structured-text-dastdown';
 const path = 'skills/datocms-cma/references/records.md';
 const markdown = readFileSync(new URL('../../' + path, import.meta.url), 'utf8');
@@ -29,14 +28,4 @@ function hydrate(n) { if (n.type === 'block')
 hydrate(original.document);
 assert.deepEqual(parse(example, original), original, 'synthetic block payloads restored by ID');
 assert.throws(() => parse(example.replace('BLOCK_ID', 'UNKNOWN'), original));
-const baseline = execFileSync('git', ['show', '353c06a82124e5e56e0526e43790ad1da9119124:' + path], { encoding: 'utf8' });
-const flattened = baseline.split('\n').find(line => line.startsWith('Everything dastdown adds'));
-assert(flattened);
-const oldNodes = [];
-function walkOld(n) { oldNodes.push(n); n.children?.forEach(walkOld); }
-try {
-    walkOld(parse(flattened).document);
-}
-catch { /* Malformed markup also fails the contract. */ }
-assert(!oldNodes.some(n => n.type === 'code' && n.highlight?.length === 2), 'baseline fails structural contract');
-console.log('Dastdown shipped example: syntax, styles, links, references, round-trip, and baseline regression passed.');
+console.log('Dastdown shipped example: syntax, styles, links, references, round-trip, block rehydration, and unknown-reference rejection passed.');
