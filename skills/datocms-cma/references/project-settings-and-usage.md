@@ -13,7 +13,7 @@ Covers project-level configuration and introspection: site, maintenance mode, pu
 
 ## Custom theme compatibility
 
-Before changing the project's CMS color theme, check `site.meta.allow_custom_theme`. Custom palettes remain available to eligible legacy projects; projects originally created on or after August 25, 2026 cannot set them. Eligibility follows the original project creation date, not the current environment's age.
+Before changing the project's CMS color theme, use `site.meta.allow_custom_theme` to determine whether a custom palette is supported.
 
 When custom palettes are unavailable, an explicit `theme.type: "custom"` is rejected; omitting `theme.type` also selects the legacy custom format and is rejected. Use the supported monochromatic theme shape from `cma:docs site update` when that is the requested change. Preserve an existing eligible custom theme rather than automatically converting it, and leave the theme untouched during unrelated settings updates.
 
