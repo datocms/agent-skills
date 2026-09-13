@@ -44,7 +44,11 @@ Default to a model-scoped `filter.type`. Omit it deliberately for a cross-model 
 
 `filter.fields._creator` accepts `eq`, `neq`, `in`, and `notIn`. References contain both `type` and `id`; copy the record's `creator` value rather than assuming every creator is a user. Types are `user`, `account`, `organization`, `sso_user`, or `access_token`. `in` / `notIn` accept arrays and may mix creator types. This filter is not available in CDA GraphQL.
 
-The published `@datocms/cma-client` 6.1.3 declarations omit `_creator`. This narrow extension keeps the query typed with that version while sending the supported API filter (`ApiTypes` comes from the client package, or is ambient in `cma:script`):
+For equality, send `{ filter: { fields: { _creator: { eq: creatorReference } } } }`. Use `Schema.AnyModel` for a cross-model result and narrow by model before reading model-specific fields. For a scoped query, retain the matching model generic and `filter.type`.
+
+### Compatibility with missing SDK declarations
+
+Use the installed SDK's filter types when they include `_creator`. If its declarations reject that field, apply a narrow extension such as the following example for `@datocms/cma-client` 6.1.3, whose declarations omit it. `ApiTypes` comes from the client package, or is ambient in `cma:script`:
 
 ```ts
 const source = await client.items.find<Schema.BlogPost>(recordId);
@@ -63,8 +67,6 @@ for await (const record of client.items.listPagedIterator<Schema.AnyModel>(
   console.log(record.id, record.creator);
 }
 ```
-
-With generated schemas, use `Schema.AnyModel` for the cross-model result and narrow by model before reading model-specific fields. For a scoped query, retain the matching model generic and `filter.type`.
 
 ## Full-text search lag
 
