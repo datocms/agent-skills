@@ -6,6 +6,11 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = p => fs.readFileSync(path.join(root, p), 'utf8');
 const blocks = s => [...s.matchAll(/```(?:ts|tsx)\n([\s\S]*?)\n```/g)].map(m => m[1]);
+function selectBlock(candidates, predicate, label) {
+    const matches = candidates.filter(predicate);
+    assert.equal(matches.length, 1, `${label}: expected exactly one shipped example, found ${matches.length}`);
+    return matches[0];
+}
 const plain = value => JSON.parse(JSON.stringify(value));
 function run(code, imports = {}, globals = {}) {
     const exports = {};
@@ -13,9 +18,13 @@ function run(code, imports = {}, globals = {}) {
     vm.runInNewContext(js, { exports, require: name => { assert(name in imports, `Unexpected import ${name}`); return imports[name]; }, Response, Request, Headers, URL, setTimeout, process: { env: { CACHE_INVALIDATION_WEBHOOK_SECRET: 'secret', DATOCMS_DRAFT_CONTENT_CDA_TOKEN: 'draft', DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN: 'published' } }, ...globals });
     return exports;
 }
-const common = blocks(read('skills/datocms-cda/references/draft-caching-environments.md')).find(s => s.includes('export function createPageCacheTags'));
+const common = selectBlock(blocks(read('skills/datocms-frontend-integrations/references/cache-tag-adapters.md')), s => s.includes('export function createPageCacheTags') && s.includes('export async function purgeInBatches'), 'cache-tag helpers');
 const { createPageCacheTags, purgeInBatches } = run(common);
-const fixtures = Object.fromEntries(['nextjs', 'nuxt', 'sveltekit', 'astro'].map(name => [name, blocks(read(`skills/datocms-frontend-integrations/references/${name}.md`).split('\n## Cache Tags (Optional)')[1])]));
+const fixtures = Object.fromEntries(['nextjs', 'nuxt', 'sveltekit', 'astro'].map(name => {
+    const sections = read(`skills/datocms-frontend-integrations/references/${name}.md`).split('\n## Cache Tags (Optional)');
+    assert.equal(sections.length, 2, `${name}: expected exactly one cache-tags section`);
+    return [name, blocks(sections[1])];
+}));
 const response = (status, headers = {}) => new Response(null, { status, headers });
 const request = (tags, auth = 'secret') => new Request('https://fixture.invalid/api/invalidate', { method: 'POST', headers: { authorization: `Bearer ${auth}`, 'content-type': 'application/json' }, body: JSON.stringify({ entity: { attributes: { tags } } }) });
 (async () => {
@@ -63,8 +72,10 @@ const request = (tags, auth = 'secret') => new Request('https://fixture.invalid/
     await assert.rejects(purgeInBatches(['a', 'b', 'c'], 1, async (batch) => { sent.push(...batch); return response(batch[0] === 'b' ? 400 : 200); }, async () => { }));
     assert.deepEqual(sent, ['a', 'b']);
     for (const framework of ['nuxt', 'sveltekit', 'astro']) {
-        let failures = false, batches = [];
-        const code = fixtures[framework].find(s => s.includes('purgeInBatches') && s.includes('authorization'));
+        let failures = false, batches = [], nativeInvalidations = [];
+        const code = selectBlock(fixtures[framework], s => s.includes('authorization') && (s.includes('purgeInBatches') || (framework === 'astro' && s.includes('cache.invalidate'))), `${framework} invalidation handler`);
+        const native = code.includes('cache.invalidate');
+        assert.notEqual(native, code.includes('purgeInBatches'), `${framework}: ambiguous invalidation implementation`);
         const imports = {};
         for (const match of code.matchAll(/from '([^']+)'/g)) {
             const name = match[1];
@@ -83,7 +94,17 @@ const request = (tags, auth = 'secret') => new Request('https://fixture.invalid/
         const mod = run(code, imports, globals), handler = mod.POST ?? mod.default;
         async function invoke(tags, auth = 'secret') {
             try {
-                const result = await handler({ request: request(tags, auth) });
+                const result = await handler({
+                    request: request(tags, auth),
+                    ...(native ? { cache: {
+                        enabled: true,
+                        set: value => assert.equal(value, false),
+                        invalidate: async ({ tags }) => {
+                            nativeInvalidations.push([...tags]);
+                            if (failures) throw Error('Provider failure');
+                        },
+                    } } : {}),
+                });
                 return result instanceof Response ? result.status : 200;
             }
             catch (error) {
@@ -92,17 +113,23 @@ const request = (tags, auth = 'secret') => new Request('https://fixture.invalid/
         }
         assert.equal(await invoke(['a'], 'wrong'), 401, framework);
         assert.equal(batches.length, 0);
+        assert.equal(nativeInvalidations.length, 0);
         assert.equal(await invoke([null]), 400, framework);
+        assert.equal(batches.length, 0);
+        assert.equal(nativeInvalidations.length, 0);
         assert.equal(await invoke([]), 200);
         assert.equal(batches.length, 0);
-        assert.equal(await invoke(['a', 'b', 'c']), 200);
-        assert.deepEqual(batches, [['a', 'b'], ['c']]);
+        assert.deepEqual(nativeInvalidations, native ? [[]] : []);
+        nativeInvalidations = [];
+        assert.equal(await invoke(['a', 'b', 'c', 'a']), 200);
+        assert.deepEqual(batches, native ? [] : [['a', 'b'], ['c']]);
+        assert.deepEqual(nativeInvalidations, native ? [['a', 'b', 'c']] : []);
         failures = true;
         assert.equal(await invoke(['a']), 502, framework);
     }
     // Execute the shipped Next.js query wrapper; draft reads cannot alter published mappings.
     let draft = false, options = [], mapped = [];
-    const wrapper = fixtures.nextjs.find(s => s.includes('async function executeQueryFn'));
+    const wrapper = selectBlock(fixtures.nextjs, s => s.includes('async function executeQueryFn'), 'Next.js query wrapper');
     const queryApi = run(wrapper, { '@datocms/cda-client': { rawExecuteQuery: async (q, o) => { options.push(o); return [{ ok: true }, response(200, { 'x-cache-tags': 'a b' })]; } }, 'next/headers': { draftMode: async () => ({ isEnabled: draft }) }, react: { cache: fn => fn }, './cache-tags-db': { cacheTagsDb: { storeTags: async (id, tags) => mapped.push([id, plain(tags)]) } } });
     await queryApi.executeQuery('query', { queryId: 'published' });
     assert.equal(options[0].requestInitOptions.cache, 'force-cache');
@@ -113,7 +140,7 @@ const request = (tags, auth = 'secret') => new Request('https://fixture.invalid/
     assert.equal(options[1].requestInitOptions.cache, 'no-store');
     assert.equal(options[1].returnCacheTags, false);
     assert.equal(mapped.length, 1);
-    const nextCode = fixtures.nextjs.find(s => s.includes('export async function POST'));
+    const nextCode = selectBlock(fixtures.nextjs, s => s.includes('export async function POST'), 'Next.js invalidation handler');
     let invalidated = [], dbFail = false;
     const next = run(nextCode, { '@/lib/datocms/cache-tags-db': { cacheTagsDb: { findQueryIdsForTags: async () => { if (dbFail)
                     throw Error('DB unavailable'); return ['page', 'layout']; } } }, '@/lib/datocms/executeQuery': { cacheTag: 'datocms' }, 'next/cache': { revalidateTag: tag => invalidated.push(tag) }, 'next/server': { NextResponse: { json: Response.json.bind(Response) } } });
