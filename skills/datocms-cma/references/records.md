@@ -29,7 +29,9 @@ Two consequences:
 - Without `nested: true`, you only have block ids — must re-fetch parent with nested to read contents.
 - With `nested: true`, iterator max page size drops from 500 to 30 (see `references/filtering-and-pagination.md`). Plan for round-trip cost on large scans.
 
-`version: "current" | "published" | "published-or-current"` controls draft vs published view (default `current`). Use `published` for public consumers; use `published-or-current` for previews (published if exists, else current draft).
+For ordinary `find`, `list`, and paged reads, `version: "current"` (the default) returns the latest edits, including drafts; `version: "published"` reads the published versions. Use `current` when inspecting preview content. A record with unpublished edits can have different current and published values.
+
+Reference-discovery endpoints have a separate `version` contract: `published-or-current` searches links in either version. It does not mean "prefer published content, otherwise return the draft" and is not an ordinary record-read preview option. Check `cma:docs items references` for that endpoint's options.
 
 ## Selective publish / unpublish
 
