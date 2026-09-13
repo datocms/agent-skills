@@ -38,7 +38,33 @@ The `filter` object accepts `ids`, `type`, `query`, `fields`, `only_valid`, but 
 - `filter.ids` cannot be combined with `filter.type` or `filter.fields` (model-specific). It can be combined with meta-field filters like `_published_at`, `_status`.
 - For block models, only `filter.type` works — `query`, `filter.fields`, and `filter.ids` are rejected.
 
-When listing records, **always set `filter.type`**. Without it you get every record across every model, including blocks — almost never what you want.
+Default to a model-scoped `filter.type`. Omit it deliberately for a cross-model query, such as an audit of records created by a specific collaborator or API token; use supported meta-field filters rather than model-specific fields.
+
+## Filter by creator (CMA only)
+
+`filter.fields._creator` accepts `eq`, `neq`, `in`, and `notIn`. References contain both `type` and `id`; copy the record's `creator` value rather than assuming every creator is a user. Types are `user`, `account`, `organization`, `sso_user`, or `access_token`. `in` / `notIn` accept arrays and may mix creator types. This filter is not available in CDA GraphQL.
+
+The published `@datocms/cma-client` 6.1.3 declarations omit `_creator`. This narrow extension keeps the query typed with that version while sending the supported API filter (`ApiTypes` comes from the client package, or is ambient in `cma:script`):
+
+```ts
+const source = await client.items.find<Schema.BlogPost>(recordId);
+if (!source.creator) throw new Error("Record has no creator reference");
+
+type Fields = NonNullable<NonNullable<ApiTypes.ItemInstancesHrefSchema<Schema.AnyModel>["filter"]>["fields"]>;
+const fields: Fields & { _creator: { eq: NonNullable<typeof source.creator> } } = {
+  _creator: { eq: source.creator },
+};
+
+// Intentional cross-model audit. Add filter.type for a single-model query.
+for await (const record of client.items.listPagedIterator<Schema.AnyModel>(
+  { filter: { fields }, version: "current" },
+  { concurrency: 5 },
+)) {
+  console.log(record.id, record.creator);
+}
+```
+
+With generated schemas, use `Schema.AnyModel` for the cross-model result and narrow by model before reading model-specific fields. For a scoped query, retain the matching model generic and `filter.type`.
 
 ## Full-text search lag
 
