@@ -49,6 +49,10 @@ For tree-model records, `{ recursive: true }` as the third argument auto-cascade
 - `publish` with `recursive: true` auto-publishes unpublished parents (avoids `UNPUBLISHED_PARENT`).
 - `unpublish` with `recursive: true` auto-unpublishes published children (avoids dangling published descendants).
 
+Linked-record publication is a different mechanism: the linking field's `on_publish_with_unpublished_references_strategy` decides whether an unpublished reference blocks publication (`fail`) or is published with it (`publish_references`). See `schema.md` → "Reference-cascade strategies" for the field settings.
+
+A single cascading publication runs in a transaction: a blocked or invalid dependency can abort the requested publication and its cascade. Inspect the API error's available dependency details (including the cascade path when provided) to identify the blocker. Do not assume partial success, blindly retry unchanged content, change validators, or publish additional records outside the user's authorization. This transaction boundary does not imply that an entire bulk job is atomic; inspect its result separately.
+
 ## `validateNew` / `validateExisting` — preflight without commit
 
 Same input shapes as `create` / `update` respectively, but no commit. Throw the same `ApiError` shape on validation failure.
