@@ -42,23 +42,24 @@ if (token !== SECRET_API_TOKEN) {
 
 ## Open Redirect Prevention
 
-Validate redirect URLs are relative to prevent open redirect vulnerabilities:
+Validate the decoded redirect parameter before passing that same value to the framework redirect. Accept relative paths, queries, and fragments; reject absolute URLs, protocol-relative URLs, backslashes, control characters, and surrounding whitespace. Parsing against a base alone is insufficient: `//example.org` parses successfully but changes the destination origin.
 
 ```ts
 function isRelativeUrl(path: string): boolean {
-  try {
-    // Try to create a URL object — if it succeeds without a base, it's absolute
-    new URL(path);
+  if (
+    path !== path.trim() ||
+    /[\u0000-\u001F\u007F\\]/.test(path) ||
+    path.startsWith('//') ||
+    /^[a-z][a-z0-9+.-]*:/i.test(path)
+  ) {
     return false;
+  }
+
+  try {
+    const base = new URL('https://preview.invalid/');
+    return new URL(path, base).origin === base.origin;
   } catch {
-    try {
-      // Verify it can be parsed as a relative URL by providing a base
-      new URL(path, 'http://example.com');
-      return true;
-    } catch {
-      // If both attempts fail, it's not a valid URL at all
-      return false;
-    }
+    return false;
   }
 }
 ```

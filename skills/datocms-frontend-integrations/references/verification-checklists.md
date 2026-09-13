@@ -14,7 +14,7 @@ Use only the sections that match the work you actually performed.
 
 - Enable flow validates the shared secret token.
 - Disable flow clears draft state without requiring authentication.
-- Redirect targets are validated with `isRelativeUrl()`.
+- The decoded redirect target passes `isRelativeUrl()` before that same value is redirected: relative destinations work; absolute, protocol-relative, backslash, and control-character variants are rejected.
 - Cookies use iframe-safe attributes where required.
 - The shared query wrapper supports `includeDrafts`, token switching, and `excludeInvalid: true`.
 - Secrets come from environment variables only.

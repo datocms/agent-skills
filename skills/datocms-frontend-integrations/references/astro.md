@@ -240,17 +240,21 @@ export function successfulResponse(data?: unknown, status = 200) {
   );
 }
 
-export function isRelativeUrl(path: string) {
-  try {
-    new URL(path);
+export function isRelativeUrl(path: string): boolean {
+  if (
+    path !== path.trim() ||
+    /[\u0000-\u001F\u007F\\]/.test(path) ||
+    path.startsWith('//') ||
+    /^[a-z][a-z0-9+.-]*:/i.test(path)
+  ) {
     return false;
+  }
+
+  try {
+    const base = new URL('https://preview.invalid/');
+    return new URL(path, base).origin === base.origin;
   } catch {
-    try {
-      new URL(path, 'http://example.com');
-      return true;
-    } catch {
-      return false;
-    }
+    return false;
   }
 }
 ```

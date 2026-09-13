@@ -90,7 +90,7 @@ Create all files following the patterns in the loaded references. Generate:
 - All secrets come from environment variables — never hardcode them
 - Validate the `SECRET_API_TOKEN` query parameter on the enable endpoint
 - No authentication required on the disable endpoint
-- Use `isRelativeUrl()` to validate redirect URLs and prevent open redirect vulnerabilities
+- Use the framework reference's `isRelativeUrl()` helper on the decoded redirect parameter before redirecting that same value. Preserve relative destinations; reject absolute URLs, protocol-relative URLs, backslashes, and control characters. Do not substitute a successful `new URL(path, base)` parse for validation
 
 #### Cookie Attributes
 
