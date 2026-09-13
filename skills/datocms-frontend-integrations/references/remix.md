@@ -10,47 +10,19 @@ Preserve Remix loaders/actions and imports from `@remix-run/*`. In React Router 
 
 ## Server loaders and preview sessions
 
-Keep CDA requests and environment secrets in server-only modules. Reuse the project's query wrapper and session storage. An authenticated preview session selects the draft token and `includeDrafts: true`; ordinary requests select published content. A query parameter or unsigned cookie must not grant draft access.
+Adapt the existing server `loader` and query wrapper:
 
-The following server-module pattern assumes an existing signed session whose `datocmsPreview` flag is set only by an authenticated preview action. Adapt the query and fields to the project's schema. `getSession` must validate the session cookie; do not replace it with a raw cookie check.
+1. Read the project's validated preview session. An authenticated preview selects the draft token and `includeDrafts: true`; ordinary requests select published content. A query parameter or unsigned cookie must not grant draft access.
+2. Keep queries and environment secrets in server-only modules, preserving Content Link options and the published caching policy.
+3. Return only the data needed by the route. Keep preview responses private and non-cacheable; do not serialize server tokens in ordinary loader data.
 
-**File:** `app/lib/article.server.ts`
-
-```ts
-import { executeQuery } from '@datocms/cda-client';
-import { getSession } from './session.server';
-
-type Article = { title: string; _seoMetaTags: Array<{ tag: string; attributes: Record<string, string> | null; content: string | null }> };
-const query = `query Article($slug: String!) {
-  article(filter: { slug: { eq: $slug } }) { title _seoMetaTags { tag attributes content } }
-}`;
-
-export async function loadArticle(request: Request, slug: string | undefined) {
-  if (!slug) throw new Response('Not found', { status: 404 });
-  const session = await getSession(request.headers.get('Cookie'));
-  const preview = session.get('datocmsPreview') === true;
-  const token = preview
-    ? process.env.DATOCMS_DRAFT_CONTENT_CDA_TOKEN
-    : process.env.DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN;
-  if (!token) throw new Error('Missing server-side CDA token');
-  const { article } = await executeQuery<{ article: Article | null }>(query, {
-    token, variables: { slug }, includeDrafts: preview, excludeInvalid: true,
-    requestInitOptions: { cache: 'no-store' },
-  });
-  if (!article) throw new Response('Not found', { status: 404 });
-  return { article, preview };
-}
-```
-
-Call this from the existing server `loader`, using its route params. Return private, non-cacheable responses for previews and preserve the application's published caching policy. Do not serialize either server token in ordinary loader data. Preserve Content Link options in the existing wrapper when visual editing is already enabled.
-
-For enable/disable actions, keep the existing authentication, signed session, cookie security, and CSRF protections. Validate the requested destination as a same-site relative path, commit/destroy the preview session with `Set-Cookie`, and return a non-cacheable redirect. Keep iframe cookie behavior consistent with the existing working preview integration. Do not copy an unauthenticated `?preview=true` demonstration endpoint.
+For enable/disable actions, use the [draft-mode guidance](draft-mode-concepts.md) with the existing authenticated session, cookie/CSRF protections, relative redirects, and iframe behavior.
 
 ## SEO and optional real-time rendering
 
 Query `_seoMetaTags` in the server loader. Use `toRemixMeta` from `react-datocms` with the route's `meta` export; it produces the descriptor shape used by Remix and React Router framework mode. Follow the installed `meta` argument shape (`loaderData` in React Router 8; `data` in Remix and React Router 7). Keep the root `<Meta />` and existing favicon/link handling. See [React SEO](react-seo.md) for the helper and [SEO concepts](seo-concepts.md) for query composition.
 
-Real-time subscriptions remain optional. If requested, preserve the server's initial fetch, and enable the React subscription only for authenticated preview rendering. Pass the same query, variables, initial data, and draft options across that boundary. Only that authorized preview response may expose the least-privilege draft CDA token required by the browser subscription; keep published responses token-free and subscription-free. Use [React real-time guidance](react-realtime.md) and preserve existing Content Link behavior.
+If real-time preview is requested, follow [React real-time guidance](react-realtime.md). Preserve the initial server data and matching query/options. Expose the least-privilege draft CDA token only to the authenticated preview response that needs the browser subscription; keep ordinary published responses token-free and subscription-free.
 
 ## Verification
 
