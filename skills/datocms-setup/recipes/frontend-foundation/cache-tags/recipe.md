@@ -4,10 +4,11 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 You are an expert at setting up DatoCMS cache tag invalidation. This recipe generates the files needed for granular cache invalidation — only pages affected by a content change are purged, instead of revalidating all DatoCMS content on every change.
 
-Two approaches:
+Choose the applicable path:
 
 - **Next.js:** `rawExecuteQuery` with `queryId` → store tags in DB → `revalidateTag()` on webhook
-- **Nuxt / SvelteKit / Astro:** `rawExecuteQuery` → CDN response headers → webhook calls CDN purge API
+- **Astro 7+ with a compatible provider:** `rawExecuteQuery` → native request cache tags → `cache.invalidate()` on webhook
+- **Nuxt / SvelteKit / older Astro:** `rawExecuteQuery` → CDN response headers → webhook calls CDN purge API
 
 See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
 
@@ -43,7 +44,7 @@ Follow `../../../references/repo-conventions.md`, then inspect:
    - Any framework: webhook handler for cache invalidation
 
    If configured, inspect and update in place. Only ask for replacement if incompatible or user requests rewrite.
-4. **Astro SSR requirement** — check `astro.config.mjs` for `output: 'server'` or `'hybrid'`. Cache tags require SSR. Warn if `'static'` or not set.
+4. **Astro rendering and provider support** — inspect the installed Astro/adapter versions and on-demand routes (`output: 'server'` or `prerender = false` with an adapter). Use the native Astro 7 path when supported; preserve older working integrations. Prerendered pages need their existing rebuild strategy.
 5. **Installed deps** — check `package.json` for `@datocms/cda-client`
 
 **Stop conditions:**
@@ -83,6 +84,10 @@ This determines both the response-header name and the webhook handler's purge pa
 ## Step 4: Generate Code
 
 Generate framework-specific cache tag invalidation files following the patterns in the loaded references.
+
+### Astro 7 native cache path
+
+If the installed Astro 7+ app and adapter support native route caching, follow the existing Astro reference’s **Cache Tags (Optional)** section: configure the selected provider, pass request context to every contributing query, and finalize headers after nested components finish. Reuse the common native invalidation endpoint with its secret and failure handling. Verify a production build, provider invalidation, and draft lookup bypass; dev mode is not evidence of working caching. This path replaces the generic manual header/purge steps for that app. Preserve a working older integration and existing hosting, framework, freshness, and preview choices.
 
 ### Next.js (App Router)
 
@@ -154,7 +159,9 @@ Generate framework-specific cache tag invalidation files following the patterns 
    - Read tags from `body?.entity?.attributes?.tags`
    - Call CDN purge API (commented examples)
 
-### Astro
+### Older Astro integrations
+
+For Astro 7 native caching, use the native path above instead of these manual header/purge steps.
 
 1. **Create `executeQueryWithCacheTags`** at `src/lib/datocms/executeQuery.ts`:
    - Accept query and optional `{ variables, includeDrafts }`
