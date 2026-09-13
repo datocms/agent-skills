@@ -804,45 +804,49 @@ export async function performQueryWithCacheTags<Result, Variables>(
     token: draftModeEnabled
       ? privateEnv.PRIVATE_DATOCMS_DRAFT_CONTENT_CDA_TOKEN
       : privateEnv.PRIVATE_DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN,
-    returnCacheTags: true,
+    returnCacheTags: !draftModeEnabled,
+    requestInitOptions: draftModeEnabled ? { cache: 'no-store' } : undefined,
   });
 
   const cacheTags = response.headers.get('x-cache-tags') ?? '';
 
-  return { data, cacheTags };
+  return { data, cacheTags, includeDrafts: draftModeEnabled };
 }
 ```
 
 ### Setting CDN Headers
 
-In `+page.server.ts` or `+layout.server.ts`, use `setHeaders()` to set the CDN-specific header:
+Use `createPageCacheTags` from the CDA reference's "Response tag collection and purge adapters" section. Collect every query contributing to the response and set headers once:
 
 ```ts
+import { createPageCacheTags } from '$lib/datocms/cache-tags';
 import { performQueryWithCacheTags } from '$lib/datocms/queries';
-import { myQuery } from './query';
 
 export async function load(event) {
-  const { data, cacheTags } = await performQueryWithCacheTags(event, myQuery);
-
-  // Set the CDN-specific header — choose the one matching your CDN:
-  // Netlify / Cloudflare: 'Cache-Tag'
-  // Fastly:               'Surrogate-Key'
-  // Bunny:                'CDN-Tag'
-  event.setHeaders({
-    'Cache-Tag': cacheTags,
-  });
-
-  return { data };
+  const collector = createPageCacheTags();
+  const results = await Promise.all([
+    performQueryWithCacheTags(event, pageQuery),
+    performQueryWithCacheTags(event, navigationQuery),
+  ]);
+  for (const result of results) collector.add(result.cacheTags, result.includeDrafts);
+  event.setHeaders(collector.headers('cloudflare'));
+  return { page: results[0].data, navigation: results[1].data };
 }
 ```
 
+Select the actual CDN. If layouts and pages fetch independently, keep one collector in request locals and finalize in the response hook after `resolve(event)`; do not call `setHeaders` repeatedly for the same header. Bypass shared caching for draft requests before lookup.
+
 ### Webhook Handler
+
+Implement the provider adapter contract from the CDA reference. Until it is configured, the adapter must throw and the integration remains `scaffolded`; a successful response means every batch completed.
 
 **File:** `src/routes/api/invalidate-cache/+server.ts`
 
 Receives the DatoCMS cache tag invalidation webhook and calls your CDN's purge API:
 
 ```ts
+import { purgeInBatches } from '$lib/datocms/cache-tags';
+import { purgeBatch, purgeBatchSize } from '$lib/datocms/purge-adapter';
 import { env as privateEnv } from '$env/dynamic/private';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
@@ -850,29 +854,25 @@ import type { RequestHandler } from './$types';
 export const POST: RequestHandler = async ({ request }) => {
   const authHeader = request.headers.get('authorization');
 
-  if (authHeader !== `Bearer ${privateEnv.PRIVATE_CACHE_INVALIDATION_WEBHOOK_SECRET}`) {
+  if (!privateEnv.PRIVATE_CACHE_INVALIDATION_WEBHOOK_SECRET || authHeader !== `Bearer ${privateEnv.PRIVATE_CACHE_INVALIDATION_WEBHOOK_SECRET}`) {
     return json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const body = await request.json();
-  const tags: string[] = body?.entity?.attributes?.tags ?? [];
+  const tags: string[] = body?.entity?.attributes?.tags;
+  if (!Array.isArray(tags) || tags.some((tag) => typeof tag !== 'string' || !tag)) {
+    return json({ error: 'Invalid tags' }, { status: 400 });
+  }
 
   if (tags.length === 0) {
     return json({ purged: false });
   }
 
-  // Call your CDN's purge API. Example for Fastly:
-  //
-  // await fetch(`https://api.fastly.com/service/${privateEnv.PRIVATE_FASTLY_SERVICE_ID}/purge`, {
-  //   method: 'POST',
-  //   headers: {
-  //     'Fastly-Key': privateEnv.PRIVATE_FASTLY_KEY,
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({ surrogate_keys: tags }),
-  // });
-  //
-  // For Netlify, Cloudflare, or Bunny, use their respective purge APIs.
+  try {
+    await purgeInBatches(tags, purgeBatchSize, purgeBatch);
+  } catch {
+    return json({ error: 'Cache invalidation failed' }, { status: 502 });
+  }
 
   return json({ purged: true, tags });
 };

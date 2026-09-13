@@ -837,12 +837,13 @@ export async function executeQueryWithCacheTags<Result, Variables>(
     token: options?.includeDrafts
       ? DATOCMS_DRAFT_CONTENT_CDA_TOKEN
       : DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN,
-    returnCacheTags: true,
+    returnCacheTags: !options?.includeDrafts,
+    requestInitOptions: options?.includeDrafts ? { cache: 'no-store' } : undefined,
   });
 
   const cacheTags = response.headers.get('x-cache-tags') ?? '';
 
-  return { data, cacheTags };
+  return { data, cacheTags, includeDrafts: Boolean(options?.includeDrafts) };
 }
 
 type ExecuteQueryWithCacheTagsOptions<Variables> = {
@@ -853,63 +854,66 @@ type ExecuteQueryWithCacheTagsOptions<Variables> = {
 
 ### Setting CDN Headers
 
-In `.astro` pages (SSR mode), use `Astro.response.headers.set()` to set CDN-specific header:
+Use `createPageCacheTags` from the CDA reference's "Response tag collection and purge adapters" section. Collect all response dependencies before setting headers:
 
 ```astro
 ---
+import { createPageCacheTags } from '~/lib/datocms/cache-tags';
 import { executeQueryWithCacheTags } from '~/lib/datocms/executeQuery';
 import { isDraftModeEnabled } from '~/lib/draftMode';
 
-const { data, cacheTags } = await executeQueryWithCacheTags(myQuery, {
-  includeDrafts: isDraftModeEnabled(Astro.cookies),
-});
-
-// Set the CDN-specific header — choose the one matching your CDN:
-// Netlify / Cloudflare: 'Cache-Tag'
-// Fastly:               'Surrogate-Key'
-// Bunny:                'CDN-Tag'
-Astro.response.headers.set('Cache-Tag', cacheTags);
+const collector = createPageCacheTags();
+const includeDrafts = isDraftModeEnabled(Astro.cookies);
+const results = await Promise.all([
+  executeQueryWithCacheTags(pageQuery, { includeDrafts }),
+  executeQueryWithCacheTags(navigationQuery, { includeDrafts }),
+]);
+for (const result of results) collector.add(result.cacheTags, result.includeDrafts);
+for (const [name, value] of Object.entries(collector.headers('cloudflare'))) {
+  Astro.response.headers.set(name, value);
+}
 ---
-
-<!-- Render data -->
+<!-- Render results -->
 ```
 
+Choose the actual CDN. If child components fetch additional data, share a request-local collector and finish those queries before committing headers; streaming can otherwise omit their tags. Keep draft requests out of shared caches before lookup. Preserve the existing rendering/adapter configuration.
+
 ### Webhook Handler
+
+Implement the provider adapter contract from the CDA reference. Until it is configured, the adapter must throw and the integration remains `scaffolded`; a successful response means every batch completed.
 
 **File:** `src/pages/api/invalidate-cache.ts`
 
 Receives DatoCMS cache tag invalidation webhook and calls CDN's purge API:
 
 ```ts
+import { purgeInBatches } from '~/lib/datocms/cache-tags';
+import { purgeBatch, purgeBatchSize } from '~/lib/datocms/purge-adapter';
 import type { APIRoute } from 'astro';
 import { CACHE_INVALIDATION_WEBHOOK_SECRET } from 'astro:env/server';
 
 export const POST: APIRoute = async ({ request }) => {
   const authHeader = request.headers.get('authorization');
 
-  if (authHeader !== `Bearer ${CACHE_INVALIDATION_WEBHOOK_SECRET}`) {
+  if (!CACHE_INVALIDATION_WEBHOOK_SECRET || authHeader !== `Bearer ${CACHE_INVALIDATION_WEBHOOK_SECRET}`) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
   }
 
   const body = await request.json();
-  const tags: string[] = body?.entity?.attributes?.tags ?? [];
+  const tags: string[] = body?.entity?.attributes?.tags;
+  if (!Array.isArray(tags) || tags.some((tag) => typeof tag !== 'string' || !tag)) {
+    return Response.json({ error: 'Invalid tags' }, { status: 400 });
+  }
 
   if (tags.length === 0) {
     return new Response(JSON.stringify({ purged: false }));
   }
 
-  // Call your CDN's purge API. Example for Fastly:
-  //
-  // await fetch(`https://api.fastly.com/service/${FASTLY_SERVICE_ID}/purge`, {
-  //   method: 'POST',
-  //   headers: {
-  //     'Fastly-Key': FASTLY_KEY,
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({ surrogate_keys: tags }),
-  // });
-  //
-  // For Netlify, Cloudflare, or Bunny, use their respective purge APIs.
+  try {
+    await purgeInBatches(tags, purgeBatchSize, purgeBatch);
+  } catch {
+    return Response.json({ error: 'Cache invalidation failed' }, { status: 502 });
+  }
 
   return new Response(JSON.stringify({ purged: true, tags }));
 };

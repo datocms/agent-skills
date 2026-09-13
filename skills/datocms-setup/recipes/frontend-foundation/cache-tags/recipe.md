@@ -13,9 +13,10 @@ See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
 
 | CDN | Response header |
 | - | - |
-| Netlify / Cloudflare | `Cache-Tag` |
-| Fastly | `Surrogate-Key` |
-| Bunny | `CDN-Tag` |
+| Netlify | `Netlify-Cache-Tag` (comma-separated) |
+| Cloudflare | `Cache-Tag` (comma-separated) |
+| Fastly | `Surrogate-Key` (space-separated) |
+| Bunny | `CDN-Tag` (verify adapter serialization) |
 
 ## Contents
 
@@ -119,7 +120,7 @@ Generate framework-specific cache tag invalidation files following the patterns 
 
    Optional composable at `composables/useQueryWithCacheTags.ts`.
 
-2. **Create usage pattern** — Show using `fetchWithCacheTags` in server route/page, setting CDN header via `setResponseHeader(event, 'Cache-Tag', cacheTags)` (or `Surrogate-Key` / `CDN-Tag`). For pages, use `useRequestEvent()`.
+2. **Create usage pattern** — Show using `fetchWithCacheTags` in server route/page, collecting all contributing queries and setting provider-formatted headers once at the response boundary. For pages, use `useRequestEvent()`.
 
 3. **Create webhook handler** at `server/api/invalidate-cache.ts`:
    - Validate `Authorization: Bearer <cacheInvalidationWebhookSecret>` from `useRuntimeConfig()`
@@ -146,13 +147,13 @@ Generate framework-specific cache tag invalidation files following the patterns 
    - Return `{ data, cacheTags }`
    - Use `$env/dynamic/private` for tokens
 
-2. **Create usage pattern** — Show using in `+page.server.ts` load function, calling `event.setHeaders({ 'Cache-Tag': cacheTags })` (or `Surrogate-Key` / `CDN-Tag`)
+2. **Create usage pattern** — Show using in `+page.server.ts` load function, collecting all contributing queries and calling `event.setHeaders()` once with provider-formatted headers
 
 3. **Create webhook handler** at `src/routes/api/invalidate-cache/+server.ts`:
    - Export `POST` as `RequestHandler`
    - Validate `Authorization: Bearer <PRIVATE_CACHE_INVALIDATION_WEBHOOK_SECRET>` from `$env/dynamic/private`
    - Read tags from `body?.entity?.attributes?.tags`
-   - Call CDN purge API (commented examples)
+   - Call the configured purge adapter; an unconfigured adapter must throw and remain `scaffolded`
 
 ### Astro
 
@@ -163,13 +164,13 @@ Generate framework-specific cache tag invalidation files following the patterns 
    - Return `{ data, cacheTags }`
    - Import tokens from `astro:env/server`
 
-2. **Create usage pattern** — Show using in `.astro` page (SSR mode), setting `Astro.response.headers.set('Cache-Tag', cacheTags)` (or `Surrogate-Key` / `CDN-Tag`)
+2. **Create usage pattern** — Show using in `.astro` page (SSR mode), collecting all contributing queries before committing provider-formatted response headers
 
 3. **Create webhook handler** at `src/pages/api/invalidate-cache.ts`:
    - Export `POST` as `APIRoute`
    - Validate `Authorization: Bearer <CACHE_INVALIDATION_WEBHOOK_SECRET>` from `astro:env/server`
    - Read tags from `body?.entity?.attributes?.tags`
-   - Call CDN purge API (commented examples)
+   - Call the configured purge adapter; an unconfigured adapter must throw and remain `scaffolded`
 
 4. **Add env schema** in `astro.config.mjs` (or `.ts`) under `env.schema`:
    ```js
@@ -181,6 +182,15 @@ Generate framework-specific cache tag invalidation files following the patterns 
    // FASTLY_SERVICE_ID: envField.string({ context: 'server', access: 'secret' }),
    // FASTLY_KEY: envField.string({ context: 'server', access: 'secret' }),
    ```
+
+### Cache correctness
+
+Load the CDA reference's "Response tag collection and purge adapters" section and the selected framework's cache section. Reuse those helpers in the application; do not create a separate implementation for each query.
+
+- Collect all page/layout/component dependencies per response; serialize for the actual provider. Never truncate returned tags to fit a provider limit.
+- Bypass shared caches for draft requests before lookup, send `private, no-store`, and do not store draft tags in published mappings.
+- Choose the adapter's batch size from the provider's current limit. Await every batch, bound transient retries, and propagate failures. Commented-out purges cannot count as success.
+- Preserve automatic deploy invalidation. Add deployment invalidation only for caches that otherwise survive application deploys.
 
 ### Mandatory rules for all generated code
 
@@ -267,10 +277,10 @@ CACHE_INVALIDATION_WEBHOOK_SECRET=
    - **Payload:** `{ entity: { attributes: { tags: ["tag1", "tag2", ...] } } }`
 
 2. **Usage example:**
-   - **Next.js:** Use `executeQuery` with `queryId` (e.g., `queryId: 'blog-post-${slug}'`). Add `export const dynamic = 'force-static'` on pages. `queryId` should be stable and unique per query+variables.
-   - **Nuxt:** Use `fetchWithCacheTags` in server routes, set header via `setResponseHeader(event, 'Cache-Tag', cacheTags)`
-   - **SvelteKit:** Use in load functions, call `event.setHeaders({ 'Cache-Tag': cacheTags })`
-   - **Astro:** Use in `.astro` pages, set `Astro.response.headers.set('Cache-Tag', cacheTags)`. SSR mode required.
+   - **Next.js:** Use `executeQuery` with `queryId` (e.g., `queryId: 'blog-post-${slug}'`). Preserve routes that read draft cookies; do not force them static. `queryId` should be stable and unique per query+variables.
+   - **Nuxt:** Use `fetchWithCacheTags` in server routes, finalize the request-local tag collector into provider-formatted headers
+   - **SvelteKit:** Use in load functions, set the collected, provider-formatted headers once
+   - **Astro:** Use in `.astro` pages, finalize all page/component query tags before response headers are committed. SSR mode required.
 
 3. **If `scaffolded`:** list exact missing database/CDN/purge-adapter work for production-ready.
 
@@ -283,7 +293,7 @@ Follow `../../../patterns/OUTPUT_STATUS.md` for final handoff, including explici
 ### Base scaffold checks
 
 1. `executeQuery` uses `rawExecuteQuery` with `returnCacheTags: true`, reads `x-cache-tags` header
-2. Next.js: `queryId` passed to `rawExecuteQuery`, tags stored via `cacheTagsDb.storeTags()`
+2. Next.js: `queryId` handled by the application wrapper, tags stored via `cacheTagsDb.storeTags()`
 3. Next.js: Webhook calls `revalidateTag(tag, { expire: 0 })` for global `'datocms'` and affected `queryId`s
 4. Next.js: Pages export `dynamic = 'force-static'`
 5. Nuxt/SvelteKit/Astro: Tags forwarded as CDN headers with correct name
