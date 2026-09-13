@@ -71,6 +71,16 @@ const controller = createController({
 - **`stripStega?: boolean`** — strip invisible stega characters from text after stamping (default: `false`)
 - **`onNavigateTo?: (path: string) => void`** — callback when Web Previews plugin requests navigation
 
+### Suppressing diagnostics
+
+`silenceWarnings` defaults to `false`. After checking an intentional, understood diagnostic, opt in on the controller you create:
+
+```ts
+const controller = createController({ silenceWarnings: true });
+```
+
+This suppresses package warnings, including collisions and the initial "no editable elements" warning. It does not change DOM stamping or edit targets. Normally fix collisions by separating the source elements/groups first; suppressing the warning does not fix the collision. Preserve the controller's existing routing, root, and other options when adding this flag.
+
 ### Controller Methods
 
 - **`enableClickToEdit(flashAll?)`** — turn overlays on. Pass `{ scrollToNearestTarget: true }` to flash all editables and scroll to nearest
