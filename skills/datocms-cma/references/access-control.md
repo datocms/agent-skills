@@ -16,6 +16,12 @@ The standard "custom role" recipe is `roles.duplicate` → rename → `update`, 
 
 Built-in factory tokens (the seeded read-only API token, etc.) carry a non-null `hardcoded_type` and reject `accessTokens.update` with `NON_EDITABLE_ACCESS_TOKEN`. They can still be deleted and rotated — useful to know when a "normalize all tokens" script trips on them.
 
+### Read-only content access is not access to every setting
+
+The built-in read-only token can read content without granting schema, administrative metadata, or sensitive project-setting access. Custom API tokens also have an effective permissions scope; do not assume that any credential allowing record reads can inspect the whole project. Sensitive settings may be returned as `null` when access is absent: a redacted `require_2fa`, for example, does not mean 2FA is disabled.
+
+Treat a permission denial as a failed read, not an empty result, and keep redacted values distinct from actual settings. Check the authentication method and permissions already selected; do not replace OAuth, rotate tokens, or escalate access automatically. Browser-plugin editor credentials have their own context and permissions — follow the plugin guidance for those flows rather than copying standalone-token assumptions.
+
 ## SSO
 
 **`ssoUsers` attributes are managed by the IdP, not the CMA** — there is no `update` action on the resource. First name, last name, email, active status, and group membership all sync from SAML/SCIM; role assignment is the only human-controllable lever, typically driven through group mapping rather than directly per user.
