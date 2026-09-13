@@ -1,0 +1,20 @@
+{
+  "name": "validate-react-router",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test.mjs"
+  },
+  "devDependencies": {
+    "@datocms/cda-client": "0.3.2",
+    "@remix-run/node": "2.17.5",
+    "@remix-run/react": "2.17.5",
+    "@types/node": "24.10.1",
+    "@types/react": "19.2.2",
+    "react": "19.2.0",
+    "react-datocms": "8.1.2",
+    "react-dom": "19.2.0",
+    "react-router": "8.3.1",
+    "typescript": "5.9.3"
+  }
+}
