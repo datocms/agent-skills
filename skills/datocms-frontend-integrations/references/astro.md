@@ -860,7 +860,7 @@ Call `executeQueryWithCacheTags(Astro, query, variables)` from pages **and neste
 
 ### Finalize headers after nested queries
 
-Astro can stream a response before nested components finish. For the affected HTML routes, integrate this buffering step into existing middleware so all query tags are collected before cache headers are finalized. Scope it to the relevant routes; buffering delays the first byte and is unsuitable for streaming endpoints or large downloads.
+Astro can stream a response before nested components finish. Integrate this step into existing middleware for GET HTML responses on routes using the cache-tagged query wrapper. Replace the illustrative `/articles` route predicate with those application routes, including routes with nested-component queries. Buffering delays the first byte and is unsuitable for streaming endpoints or large downloads; other responses pass through without buffering.
 
 **File:** `src/middleware.ts`
 
@@ -868,17 +868,24 @@ Astro can stream a response before nested components finish. For the affected HT
 import { defineMiddleware } from 'astro:middleware';
 import { isDraftModeEnabled } from './lib/draftMode';
 
+// Adapt this predicate to the application's cache-tagged content routes.
+function usesDatoCacheTags(pathname: string): boolean {
+  return pathname === '/articles' || pathname.startsWith('/articles/');
+}
+
 export const onRequest = defineMiddleware(async (context, next) => {
+  const shouldBuffer = context.request.method === 'GET' && usesDatoCacheTags(context.url.pathname);
   const draft = isDraftModeEnabled(context.cookies);
   if (draft) context.cache.set(false);
   const response = await next();
   const isHtml = response.headers.get('content-type')?.includes('text/html');
   if (!isHtml) return response;
-  const body = await response.arrayBuffer();
+  const body = shouldBuffer ? await response.arrayBuffer() : undefined;
   if (draft || response.status !== 200) {
     context.cache.set(false);
     response.headers.set('Cache-Control', 'private, no-store');
   }
+  if (!shouldBuffer) return response;
   return new Response(body, {
     status: response.status, statusText: response.statusText, headers: response.headers,
   });
