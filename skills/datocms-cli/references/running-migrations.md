@@ -50,7 +50,7 @@ Runs migration scripts that have not been executed yet.
 
 ## Default Behavior (Fork-and-Run)
 
-Before executing a workflow that creates another sandbox, check [included allowances and paid extras](../../datocms-cma/references/project-settings-and-usage.md#included-allowances-and-paid-extras) for each target project. Keep the selected migration strategy rather than switching to `--in-place` solely to avoid an allowance issue.
+Include every sandbox planned by the workflow in one [allowance check per target project](../../datocms-cma/references/project-settings-and-usage.md#included-allowances-and-paid-extras); reuse current verified information and cost authorization. Keep the selected migration strategy rather than switching to `--in-place` solely to avoid an allowance issue.
 
 By default, `migrations:run` forks the source environment into a new sandbox, then runs pending migrations on the fork:
 

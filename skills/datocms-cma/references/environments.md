@@ -10,7 +10,7 @@ Every project has one **primary** environment (production) and zero or more **sa
 
 ## Fork is asynchronous
 
-Before provisioning another sandbox, check [included allowances and paid extras](project-settings-and-usage.md#included-allowances-and-paid-extras); being below the hard environment limit does not establish that the addition is included in the plan.
+Include planned sandboxes in the per-project batch check for [included allowances and paid extras](project-settings-and-usage.md#included-allowances-and-paid-extras), reusing current verified information and cost authorization. Being below the hard environment limit does not establish that the addition is included in the plan.
 
 `client.environments.fork(sourceId, { id })` kicks off a background job. By default the simplified client polls until the job finishes and returns the new `Environment` — convenient but blocking, sometimes minutes for large projects.
 

@@ -38,7 +38,7 @@ Cheaper and clearer than catching the `LIMIT_REACHED` error after the fact. Usef
 
 ### Included allowances and paid extras
 
-A successful operation below a hard limit can still exceed the plan's included allowance. Before creating additional sandbox environments, collaborators, locales, or models, consult the applicable allowance and current usage as well as the hard limit.
+A successful operation below a hard limit can still exceed the plan's included allowance. Before a batch that adds sandbox environments, collaborators, locales, or models, check the applicable allowance, current usage, and hard limit once per target project for the full planned batch. Reuse current verified information and existing cost authorization; recheck when the planned additions or relevant project state changes.
 
 Where available, `client.publicInfo.find()` exposes `extras.overage_thresholds` with `environments`, `collaborators`, `locales`, and `models` thresholds for paid extras. These describe included allowances, not hard caps or prices. The environment threshold concerns sandboxes, excluding the primary environment. Missing thresholds, unavailable `extras`, or a failed read do not establish that an operation is free; use authorized plan information when needed, and state any remaining uncertainty without escalating credentials.
 
