@@ -54,6 +54,8 @@ These don't auto-document — pick deliberately. `"fail"` everywhere is safe def
 
 Setting `structured_text_blocks` does not implicitly authorize inline blocks or links — wire each to models that should be permitted. For "no embedded blocks" structured text, set `structured_text_blocks: { item_types: [] }` (and same for inline / links). See `references/editing-records.md` § Structured Text for how resulting DAST is constructed.
 
+Preserve `structured_text_blocks.item_types` order through migrations and schema copies: the API retains that configured block-type order. Changing this allowlist's order is separate from reordering block nodes inside record content. See `../../datocms-content-modeling/references/field-configuration.md` for the modeling decision.
+
 ## Slug auto-fill
 
 `slug_title_field` validator binds slug field to string field for editor auto-generation:

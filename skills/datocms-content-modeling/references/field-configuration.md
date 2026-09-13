@@ -156,6 +156,8 @@ validators: {
 }
 ```
 
+The order of `structured_text_blocks.item_types` is intentional editor configuration. Preserve the chosen allowed block-type order when generating or updating schema; do not alphabetize it as cosmetic cleanup. This does not reorder block instances already inside a record's Structured Text.
+
 `size` on `rich_text`, `length` on `structured_text` keep records under 300 KB / 500-block limits — see `models-vs-blocks.md`.
 
 ### Sanitize HTML for `text` fields
