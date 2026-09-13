@@ -142,13 +142,12 @@ For the full implementation pattern (replacement `executeQuery`, DB abstraction,
 
 ### CDN Caching Behavior
 
-- All CDA queries are cached by DatoCMS's CDN
-- Cache is selectively invalidated when content changes
-- Queries exceeding **8 KB gzip-compressed** bypass the CDN and hit the origin directly
-- Response headers indicate caching status:
-  - `X-Cacheable-On-Cdn` — whether the query is cached on CDN
+- Eligible CDA queries can be cached and selectively invalidated when content changes.
+- `X-Cacheable-On-Cdn` reports eligibility; `CF-Cache-Status: HIT` reports an actual hit.
+- `X-Cacheable-On-Cdn-Query-Length-Limit` reports the internally encoded GET URL's `length/limit`, including query and variables. It is not a gzip-body size. Requests over that limit bypass the CDN.
+- Uncached work is subject to both per-token rate limits and a project-wide concurrency cap. Bound concurrent queries across workers; retries alone do not coordinate them.
 
-**Tip:** Keep queries under the 8 KB gzip limit for best performance. Oversized queries bypass CDN and face stricter rate limits.
+See `client-and-config.md` → "Technical Limits" for diagnostics and the distinction from monthly usage allowances.
 
 ## Content Link / Visual Editing
 
