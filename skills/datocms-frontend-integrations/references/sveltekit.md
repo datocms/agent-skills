@@ -816,7 +816,7 @@ export async function performQueryWithCacheTags<Result, Variables>(
 
 ### Setting CDN Headers
 
-Use `createPageCacheTags` from the CDA reference's "Response tag collection and purge adapters" section. Collect every query contributing to the response and set headers once:
+Use `createPageCacheTags` from the [manual CDN adapter reference](cache-tag-adapters.md). Collect every query contributing to the response before setting headers once:
 
 ```ts
 import { createPageCacheTags } from '$lib/datocms/cache-tags';
@@ -838,7 +838,7 @@ Select the actual CDN. If layouts and pages fetch independently, keep one collec
 
 ### Webhook Handler
 
-Implement the provider adapter contract from the CDA reference. Until it is configured, the adapter must throw and the integration remains `scaffolded`; a successful response means every batch completed.
+Implement the [purge adapter contract](cache-tag-adapters.md#purge-adapter-contract), including its failure handling and completion requirements.
 
 **File:** `src/routes/api/invalidate-cache/+server.ts`
 
