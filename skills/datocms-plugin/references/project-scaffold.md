@@ -368,11 +368,19 @@ import styles from './MyComponent.module.css';
 
 ## Local Development
 
+For a **new plugin**:
+
 1. Install dependencies: `npm install`
 2. Start dev server: `npm run dev` (starts on `http://localhost:5173/`)
 3. In DatoCMS, open the **Plugins** area and use the **private plugin** flow to add a plugin from a URL
 4. Set the entry point URL to `http://localhost:5173/`
 5. The plugin will live-reload as you make changes
+
+For an **installed plugin**, duplicate it first when the working installation should remain available. The duplicate is an independent private plugin pointing at the original entry point; its description, permissions, and global configuration are copied. Field editor/addon assignments are not copied: assign only the fields needed for testing to the duplicate, preserving their existing settings.
+
+Start the local dev server and edit the duplicate's entry point URL to `http://localhost:5173/`. DatoCMS offers to disable the original after duplication; choose this only when intended. Disabling stops the plugin from running but retains its configuration. Re-enable it from the Plugins area when needed; reassign any test fields to the original when returning to it.
+
+**Changing the selected installation affects that installation.** Pointing an installed Marketplace plugin directly at a local server converts it to a private plugin and detaches its package/version association. Use the duplicate for isolated development rather than changing the working original's URL.
 
 **Note**: Safari does not properly handle localhost iframes. Use Chrome or Firefox for plugin development.
 
@@ -402,6 +410,10 @@ When the plugin is ready:
 4. Run `npm publish`
 
 DatoCMS can install plugins directly from npm using the `datocms-plugin` keyword.
+
+Publishing a release does not update existing installations. A newer Marketplace release becomes an available update that must be installed explicitly. Use **Switch to a different version** on a Marketplace installation to test a specific published version, including a prerelease.
+
+To connect a modern private plugin to an already-published Marketplace package, use **Switch to a Marketplace package**. This changes the selected installation; it does not publish local code. Its global configuration is retained, while name, description, URL, version, and permissions come from the package. Plugin names must remain unique: if the original is still installed, return to that installation after testing instead of converting the duplicate to the same package.
 
 **Requirements**:
 
