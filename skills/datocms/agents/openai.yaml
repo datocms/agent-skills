@@ -1,0 +1,8 @@
+# synced_from_name: datocms
+# synced_from_description_sha256: c4a2ebf6eaa8299df2f9438d95c176da8c010e3423f5f0bd3e2490a0043a6588
+interface:
+  display_name: "DatoCMS"
+  short_description: "Model, query, manage, and build with DatoCMS"
+  default_prompt: "Use $datocms to complete the DatoCMS work in this project."
+policy:
+  allow_implicit_invocation: true

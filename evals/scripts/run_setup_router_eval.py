@@ -10,8 +10,8 @@ from pathlib import Path
 from typing import Any
 
 DEFAULT_FIXTURE = "evals/fixtures/router/datocms-setup.json"
-DEFAULT_ROUTER_PATH = "skills/datocms-setup/references/router.md"
-DEFAULT_MANIFEST_PATH = "skills/datocms-setup/references/recipe-manifest.json"
+DEFAULT_ROUTER_PATH = "skills/datocms/references/setup/router.md"
+DEFAULT_MANIFEST_PATH = "skills/datocms/references/setup/recipe-manifest.json"
 ALLOWED_STAGE_B = (
     "none",
     "visual-editing",
@@ -65,6 +65,7 @@ ORDERED_RECIPE_IDS = (
     "build-triggers",
     "cache-tags",
     "cda-client",
+    "cli-bootstrap",
     "cli-profiles",
     "cma-types",
     "content-link",
@@ -89,6 +90,7 @@ ORDERED_RECIPE_IDS = (
     "blueprint-sync",
 )
 EXTRA_ALIASES: dict[str, tuple[str, ...]] = {
+    "cli-bootstrap": ("@datocms/cli", "link this repo to our datocms project via oauth"),
     "build-triggers": ("build trigger", "build triggers"),
     "cache-tags": ("cache invalidation", "cache tags", "revalidatetag", "purge"),
     "cda-client": ("@datocms/cda-client", "published cda token", "shared query utility", "cda client"),
@@ -249,7 +251,7 @@ def _should_route(query: str, matched_recipe_ids: list[str]) -> bool:
     normalized = _normalize(query)
     if _is_negative_patch_only(normalized):
         return False
-    if "datocms-setup" in normalized:
+    if "use datocms to" in normalized:
         return True
     return bool(matched_recipe_ids)
 

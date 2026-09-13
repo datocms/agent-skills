@@ -1,33 +1,13 @@
-# Codex Readiness Checklist
+# Local plugin readiness
 
-Use this checklist when you want to confirm the repo is ready for Codex-local plugin use and ongoing maintenance.
+The plugin manifest must discover only `skills/datocms/`, with one synchronized `agents/openai.yaml`. The local marketplace must resolve through the tracked plugin symlinks to that same directory.
 
-## Structural checklist
+Check that:
 
-- `.codex-plugin/plugin.json` exists and points `skills` at `./skills/`.
-- `.agents/plugins/marketplace.json` exists and exposes the repo as a local Codex plugin marketplace entry.
-- Every public skill ships as `skills/<skill-name>/SKILL.md`.
-- Every public skill has synced `agents/openai.yaml` metadata.
-- Every public skill has a canonical eval fixture at `evals/fixtures/trigger/<skill-name>.json`.
-- Every included public skill has a checked-in result file at `evals/results/trigger/<skill-name>/<track>/<source>/results.json`.
+- Automatic discovery is enabled and explicit invocation uses `$datocms`.
+- The installed directory has all references, recipes, scripts, and assets.
+- The public skill has a matching trigger fixture; historical measurements are not represented as results for this layout.
+- The repository validator and isolated-package tests pass.
+- The generated archive matches the source and the working tree is clean before release.
 
-## Validation commands
-
-Run these from the repo root:
-
-```bash
-python3 evals/scripts/validate_skill_repo.py
-python3 evals/scripts/validate_skill_repo.py --require-fresh-results-sync
-python3 evals/scripts/validate_skill_repo.py --require-clean-git
-```
-
-## What “golden” means here
-
-Treat the repo as golden when:
-
-1. the base validator passes,
-2. the fresh-results sync gate passes,
-3. the repo-scoped Codex marketplace resolves locally, and
-4. the working tree is clean when you are ready to publish or hand off.
-
-The clean-git gate is operational rather than structural: it will fail during active local edits even when the repo layout itself is correct.
+See [maintenance](maintenance.md) for commands. Structural readiness does not prove triggering quality or reduced context usage; those measurements are separate local work.

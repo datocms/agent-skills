@@ -51,7 +51,7 @@ Put `<name>.e2e.test.ts` under `e2e/cases/` and call `runE2ETest` with:
 
 - `name` — short slug used in the project name and log line.
 - `fixtures` (optional) — `async (cmaClient) => { ... }` to preload the project before Claude runs.
-- `task(project)` — natural-language instructions. Include `project.siteId` (the API token is auto-embedded by the harness preamble). The preamble also reminds the agent to load `datocms-cma` and `datocms-cli`. Do not ask Claude to report attempts or success — the harness does that.
+- `task(project)` — natural-language instructions. Include `project.siteId` (the API token is auto-embedded by the harness preamble). The preamble also reminds the agent to load `datocms` and read its CMA and CLI topic guides. Do not ask Claude to report attempts or success — the harness does that.
 - `maxAttempts` — hard cap on `cma:script` invocations. When exceeded, the subprocess is killed and the test fails.
 - `assert(project)` — throws on unmet invariants. Run CMA queries via `project.cmaClient`.
 - `model`, `timeoutMs` — optional overrides.

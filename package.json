@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Dev-only npm package powering the e2e harness for the DatoCMS agent skills repo. Not shipped — the plugin itself is declared in .claude-plugin/plugin.json.",
+  "description": "Dev-only npm package powering the e2e harness for the DatoCMS agent skills repo. Not shipped \u2014 the plugin itself is declared in .claude-plugin/plugin.json.",
   "scripts": {
     "test:e2e": "vitest run --config vitest.e2e.config.ts",
     "typecheck": "tsc --noEmit",
@@ -13,7 +13,11 @@
     "bump:patch": "tsx scripts/bump-version.ts patch",
     "bump:minor": "tsx scripts/bump-version.ts minor",
     "bump:major": "tsx scripts/bump-version.ts major",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:unit": "python3 -m unittest discover -s evals/tests -v",
+    "validate": "python3 evals/scripts/validate_skill_repo.py --repo-root .",
+    "package:build": "python3 scripts/package_skill.py",
+    "package:check": "python3 scripts/package_skill.py --check"
   },
   "devDependencies": {
     "@datocms/cma-client-node": "^6.1.0",
