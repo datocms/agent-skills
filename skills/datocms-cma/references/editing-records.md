@@ -126,17 +126,20 @@ Forgetting `nested: true` is #1 cause of broken update payloads — mapping over
 Inside any block-bearing value — request OR response — block can appear in two forms:
 
 - **ID string** (`"dhVR2HqgRVCTGFi_0bWqLqA"`) — lightweight reference, means "this block, unchanged".
-- **Full object** (`{ id, type: "item", attributes, relationships: { item_type } }`) — what `buildBlockRecord<Schema.B>({...})` produces. Means "create if `id` missing, update if `id` present".
+- **Full object** (`{ id, type: "item", attributes, relationships: { item_type } }`) — what `buildBlockRecord<Schema.B>({...})` produces. No `id` creates a block with a server-assigned ID. An `id` can identify an existing block to update, or an unused custom ID for a new block; new blocks also require `item_type`.
 
 Mutation rules in parent record's `update` call:
 
 | Operation | Payload form |
 | - | - |
-| **Create** a new block | `buildBlockRecord<Schema.B>({ item_type: Schema.B.REF, ...attrs })` — no `id` on the outer object |
+| **Create** a new block (default) | `buildBlockRecord<Schema.B>({ item_type: Schema.B.REF, ...attrs })` — server assigns the ID |
+| **Create** with a custom ID | `buildBlockRecord<Schema.B>({ id: importedBlockId, item_type: Schema.B.REF, ...attrs })` — valid unused ID, with the block type supplied |
 | **Update** an existing block | `buildBlockRecord<Schema.B>({ id, ...changedAttrs })` — only the diff; `item_type` is implicit |
 | **Keep** unchanged | Its ID string |
 | **Delete** | Omit it — remove from the array; set `null` for `single_block` |
 | **Reorder** (modular content) | Place IDs / objects in desired order |
+
+Custom IDs are useful when an import needs stable block identities. Supply a DatoCMS public ID in URL-safe base64 UUIDv4 format; it must be unused in the environment. On parent creation, an ID on a nested block creates that block. On parent update, an existing ID must belong to that same parent record, field, and locale; an ID owned elsewhere is rejected. An unused ID still creates a new block and requires `item_type`. A bare ID string only keeps an existing owned block; it cannot create one. These rules apply to nested blocks, not every CMA resource.
 
 ### DAST grammar (structured text)
 
