@@ -79,7 +79,12 @@ What `cma:docs` does **not** spell out:
 - `parameters` is project-specific global configuration; modern plugins define its shape in their code. `parameter_definitions` describes legacy plugins only.
 - `client.plugins.fields(pluginId)` finds fields using that installation. Duplicating a plugin in the CMS does not copy those editor/addon assignments; reassign the intended test fields explicitly.
 - Update `enabled` to disable or re-enable an installation without deleting its configuration. Disabled plugins do not run.
-- For modern plugins, updating a Marketplace installation's `url` makes it private and clears its package/version association. Updating a private installation's `package_name` connects it to that Marketplace package, preserving `parameters` but replacing package metadata and permissions; send it separately from other attributes except optional `enabled`. Update `package_version` on a Marketplace installation to select a published version. These operations change the selected installation, not a copy; see [local development](../../datocms-plugin/references/project-scaffold.md#local-development) when the original should remain available.
+
+For modern plugins, these updates affect the selected installation; use a [development copy](../../datocms-plugin/references/project-scaffold.md#development-copy) when the original must remain available:
+
+- **Marketplace to private:** update `url`; this clears the package/version association.
+- **Private to Marketplace:** update `package_name`; this preserves `parameters` and replaces package metadata and permissions. Send it separately from other attributes except optional `enabled`.
+- **Published version:** update `package_version` on a Marketplace installation to select that version.
 
 **SDK compatibility:** Check that the installed SDK supports and serializes `enabled` and `package_name` on update. Older versions can omit these newer attributes; a TypeScript cast does not add serialization support. Use a supporting SDK version or, when an upgrade is unavailable, the documented JSON:API request through `client.request()` or the CMS actions described above.
 
