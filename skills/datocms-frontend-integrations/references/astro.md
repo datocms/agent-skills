@@ -932,6 +932,8 @@ The selected provider owns serialization and API calls. If it does not handle th
 
 For older Astro versions, retain the existing request wrapper, CDN response headers, and authenticated purge adapter. Collect the union from all contributing queries before setting headers, serialize according to the selected CDN, and exclude drafts. Do not add a second independent cache/purge mechanism beside a working one.
 
+For this manual CDN path, use the [collector and purge adapter reference](cache-tag-adapters.md): share `createPageCacheTags` across the request, finalize headers after every contributing query, and use `purgeInBatches` with the selected provider's concrete adapter. Keep draft requests uncached and propagate purge failures. Skip these manual helpers when using the native provider above.
+
 Run a production build and the adapter's production preview/runtime: development mode does not exercise caching. Verify tags from both a page query and a delayed nested-component query, authenticated invalidation and provider failures, then warm a published URL and request the **same URL** with the preview cookie to verify lookup bypass and uncached draft output. Check the deployed host's rules separately; a local fixture cannot prove CDN configuration.
 
 See [DatoCMS's Astro cache guide](https://www.datocms.com/docs/astro/using-cache-tags) and [Astro route caching](https://docs.astro.build/en/guides/caching/) for the current provider APIs.
