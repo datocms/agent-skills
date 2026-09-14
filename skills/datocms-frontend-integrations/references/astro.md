@@ -826,6 +826,8 @@ Configure the hosting cache to bypass requests carrying the project's preview co
 
 Adapt the existing query wrapper to accept the request context. `cache.set({ tags })` accumulates tags from page, layout, and nested-component queries within that request. Keep tags opaque and do not store them in module-global state. The example uses a string query for brevity; retain existing typed documents, environment selection, and Content Link options when extending a working wrapper.
 
+The examples below assume preview mode exists. For a published-only project, omit the draft helper, draft token, and draft-specific branches in the query wrapper and middleware; use the published token with `includeDrafts: false`. Preserve authenticated preview handling when already configured; do not add preview mode just to enable caching.
+
 **File:** `src/lib/datocms/executeQueryWithCacheTags.ts`
 
 ```ts
