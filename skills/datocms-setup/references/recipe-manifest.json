@@ -163,6 +163,7 @@
       ],
       "shared_references": [
         "../datocms-cda/references/draft-caching-environments.md",
+        "../datocms-frontend-integrations/references/cache-tag-adapters.md",
         "../datocms-frontend-integrations/references/astro.md",
         "../datocms-frontend-integrations/references/nextjs.md",
         "../datocms-frontend-integrations/references/nuxt.md",
