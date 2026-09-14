@@ -1,6 +1,6 @@
 {
   "skill_name": "datocms-cma",
-  "description": "Manage DatoCMS records, uploads, and project automation through the Content Management API (CMA). Use for content reads/edits, publish/unpublish, bulk imports/exports, CSV scripts, localization, Structured Text and block edits, assets, roles/tokens, webhooks, scheduling, environment operations, and typed Node.js/TypeScript CMA scripts. Includes short follow-ups such as \"publish them\" or \"fix those slugs\", authentication needed for content operations, and model/field changes needing a migration-versus-direct decision or embedded in CMA automation. Works with the CLI or an available DatoCMS MCP; neither MCP installation nor local execution is assumed. Route versioned migrations and standalone CLI configuration to `datocms-cli`, GraphQL reads to `datocms-cda`, and frontend or plugin code to their dedicated skills.",
+  "description": "Manage DatoCMS records, uploads, and project automation through the Content Management API (CMA). Use for content reads/edits, publish/unpublish, bulk imports/exports, CSV scripts, localization, Structured Text and block edits, assets, roles/tokens, webhooks, scheduling, environment operations, and typed Node.js/TypeScript CMA scripts. Includes short follow-ups such as \"publish them\" or \"fix those slugs\", token/OAuth setup before content operations, and model/field changes needing a migration-versus-direct decision or embedded in CMA automation. Works with the CLI or an available DatoCMS MCP; neither MCP installation nor local execution is assumed. Route schema-inspection-only requests, versioned migrations, and standalone CLI configuration to `datocms-cli`, GraphQL reads to `datocms-cda`, and frontend or plugin code to their dedicated skills.",
   "evaluation_source": "frontmatter",
   "results": [
     {
@@ -388,11 +388,47 @@
       "triggers": 0,
       "runs": 1,
       "pass": true
+    },
+    {
+      "query": "Convert this local Markdown file into DatoCMS Structured Text JSON. Only return the document; do not connect to a project, write records, or scaffold anything.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-structured-text"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Rewrite the second paragraph in this supplied DAST JSON while preserving embedded block references. Return the edited JSON only; no API calls or record writes.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-structured-text"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Convert this Markdown article to Structured Text, then write a typed CMA script to create the Article record with its title and body without publishing it.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-structured-text"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
     }
   ],
   "summary": {
-    "total": 37,
-    "passed": 37,
+    "total": 40,
+    "passed": 40,
     "failed": 0
   }
 }

@@ -295,5 +295,18 @@
     "query": "Use datocms-setup to add one more itemFormDropdownActions entry to our existing DatoCMS plugin and leave the current UI alone.",
     "should_trigger": false,
     "query_mode": "explicit"
+  },
+  {
+    "query": "Use datocms-setup to add a shared Structured Text renderer to this Next.js project and convert a supplied Markdown article fixture for its first example.",
+    "should_trigger": true,
+    "query_mode": "explicit"
+  },
+  {
+    "query": "Convert this local Markdown file into DatoCMS Structured Text JSON. Only return the document; do not connect to a project, write records, or scaffold anything.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
   }
 ]

@@ -1,0 +1,18 @@
+{
+  "name": "datocms-structured-text-converter",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "dependencies": {
+    "datocms-html-to-structured-text": "6.0.0",
+    "datocms-structured-text-utils": "6.0.0",
+    "mdast-util-to-hast": "13.2.0",
+    "parse5": "8.0.1",
+    "remark-gfm": "4.0.1",
+    "remark-parse": "11.0.0",
+    "unified": "11.0.5"
+  }
+}

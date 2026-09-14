@@ -53,6 +53,8 @@ Read only:
 - `../../../../datocms-cda/references/client-and-config.md`
 - `../../../../datocms-cda/references/structured-text.md`
 
+DAST structure/validation beyond renderer wiring → [document model](../../../../datocms-structured-text/references/document-model.md); content transforms → [editing](../../../../datocms-structured-text/references/editing.md); Markdown/HTML import or format export → [conversion](../../../../datocms-structured-text/references/conversion.md). These belong to `datocms-structured-text`, not renderer setup. Missing required reference → install that skill from `datocms/agent-skills` or update the full bundle; ordinary renderer setup remains covered by the references below.
+
 Then load matching framework reference:
 
 | Framework | Reference |

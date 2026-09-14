@@ -8,7 +8,8 @@ import remarkGfm from 'remark-gfm';
 import ts from 'typescript';
 import { measureContext } from '../scripts/check-skill-context.mjs';
 
-const base = '94e4bd8128e52963829f65bce8f202fcd68ac8d6';
+const contextBase = '27c410f7952bf14d12c0284a81cfb5d5d266fb6c';
+const retentionBase = '94e4bd8128e52963829f65bce8f202fcd68ac8d6';
 // Exact compatibility projection from remote-mcp; it consumes the whole files.
 // https://github.com/datocms/remote-mcp/blob/beeca70bdf702461ae8e226bfd9714d8e58f33ac/src/tools/getApiMethods/index.ts#L69-L74
 const project = (text) => text.split('\n').filter((line) => !line.includes('cma:')).join('\n');
@@ -91,14 +92,14 @@ const preservedWorkflows = {
 };
 
 test('optional MCP keeps the agreed discovery and entrypoint context budgets', () => {
-  const report = measureContext(process.cwd(), base);
+  const report = measureContext(process.cwd(), contextBase);
   assert.equal(report.passed, true, JSON.stringify(report, null, 2));
 });
 
 for (const [name, workflows] of Object.entries(preservedWorkflows)) {
   const path = `skills/datocms-cma/references/${name}.md`;
   const source = readFileSync(path, 'utf8');
-  const previous = markdown.parse(execFileSync('git', ['show', `${base}:${path}`], { encoding: 'utf8' }));
+  const previous = markdown.parse(execFileSync('git', ['show', `${retentionBase}:${path}`], { encoding: 'utf8' }));
 
   test(`${name}: exact MCP filter preserves the full Markdown structure and shared content`, () => {
     const raw = parseMarkdown(source, `${name} raw`);
@@ -131,7 +132,7 @@ for (const [name, workflows] of Object.entries(preservedWorkflows)) {
 
 test('record version semantics and runtime guidance survive the server projection', () => {
   const records = project(readFileSync('skills/datocms-cma/references/records.md', 'utf8'));
-  const previous = execFileSync('git', ['show', `${base}:skills/datocms-cma/references/records.md`], { encoding: 'utf8' });
+  const previous = execFileSync('git', ['show', `${retentionBase}:skills/datocms-cma/references/records.md`], { encoding: 'utf8' });
   // The endpoint-lookup sentence changes; the preceding distinction must remain.
   const versionSemantics = previous.split('\n').find((line) => line.startsWith('Reference-discovery endpoints')).split(' Check ')[0];
   assert.ok(records.includes(versionSemantics));

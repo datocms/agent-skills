@@ -30,18 +30,18 @@ Three fresh long-follow-up repetitions pass after the guard and response-shape c
 
 Controls come from `terra-final-06`. Candidate results retain 36 unaffected sessions from `terra-candidate-07`, nine corrected legacy/localized sessions from `terra-correction-09`, and three fresh long-follow-up repetitions from `terra-host-final-longfollowup`. Earlier runs exposed an unauthorized switch from legacy to current MCP, missing setup links, false object-identity checks, and missing paragraph-child guards. All earlier completed results are retained, including passing repetitions replaced by correction runs. This is a post-correction comparison, not a perfect first-attempt success rate. The 420 retained controlled results include diagnostic and interrupted batches and the separate local-authoring checks; unfinished attempts without a completed result are not included in that count.
 
-The existing-project code fixture passes 3/3 candidate and 3/3 base repetitions, reusing the configured client and generated types. The current discovery description passes 37/37 positive and nearby negative cases, with precision, recall and F1 of 1.00. This is explicit classifier evaluation, not native automatic-invocation verification.
+The existing-project code fixture passes 3/3 candidate and 3/3 base repetitions, reusing the configured client and generated types. The coexistence discovery evaluation passes its 37/37 cases, and the three Structured Text boundary cases added on `master` also pass, for 40/40 committed rows with precision, recall and F1 of 1.00. This is explicit classifier evaluation, not native automatic-invocation verification.
 
 ## Context
 
-Counts use the repository's `gpt-tokenizer` and PR base `94e4bd8128e52963829f65bce8f202fcd68ac8d6`.
+Counts use the repository's `gpt-tokenizer` and current PR base `27c410f7952bf14d12c0284a81cfb5d5d266fb6c` after conflict resolution.
 
 | Measurement | Base | Current |
 | - | - | - |
-| CMA entrypoint | 5,988 | 2,237; 62.64% reduction |
+| CMA entrypoint | 6,289 | 2,409; 61.70% reduction |
 | Optional MCP reference | — | 468; below 600-token ceiling |
-| Aggregate discovery metadata | 1,539 | 1,491 |
-| Other touched entrypoints | 6,275 | 6,225 |
+| Aggregate discovery metadata | 1,684 | 1,636 |
+| Other touched entrypoints | 6,553 | 6,503 |
 
 Actual loaded guidance for skills-only CLI runs is 6,132–13,169 candidate tokens versus 18,554–22,328 base tokens. With both tools available and no preference, it is 8,316–9,984 versus 18,554–25,727. Every candidate CLI run remains below the minimum corresponding baseline read count and avoids the MCP reference. MCP content cases do not load unrelated CLI setup, migration, or client-construction guidance.
 

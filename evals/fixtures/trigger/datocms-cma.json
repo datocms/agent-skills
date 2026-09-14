@@ -107,7 +107,7 @@
     "should_trigger": true
   },
   {
-    "query": "the DatoCMS records I showed you earlier — can you publish them yourself?",
+    "query": "the DatoCMS records I showed you earlier \u2014 can you publish them yourself?",
     "should_trigger": true
   },
   {
@@ -115,7 +115,7 @@
     "should_trigger": true
   },
   {
-    "query": "do the DatoCMS token setup thing for me before publishing — I don't want to paste an API token into .env, use my OAuth login",
+    "query": "do the DatoCMS token setup thing for me before publishing \u2014 I don't want to paste an API token into .env, use my OAuth login",
     "should_trigger": true,
     "query_mode": "overlap",
     "boundary_with": [
@@ -147,7 +147,7 @@
     ]
   },
   {
-    "query": "I just want to add a new optional text field to the author model on DatoCMS, quickly, without setting up a migrations workflow — what's the right way?",
+    "query": "I just want to add a new optional text field to the author model on DatoCMS, quickly, without setting up a migrations workflow \u2014 what's the right way?",
     "should_trigger": true,
     "query_mode": "overlap",
     "boundary_with": [
@@ -155,7 +155,7 @@
     ]
   },
   {
-    "query": "just tell me which fields the DatoCMS blog_post model has and whether slug is required — I don't need code, I just want to know the schema",
+    "query": "just tell me which fields the DatoCMS blog_post model has and whether slug is required \u2014 I don't need code, I just want to know the schema",
     "should_trigger": false,
     "query_mode": "overlap",
     "boundary_with": [
@@ -181,5 +181,29 @@
       "datocms-frontend-integrations"
     ],
     "query_mode": "overlap"
+  },
+  {
+    "query": "Convert this local Markdown file into DatoCMS Structured Text JSON. Only return the document; do not connect to a project, write records, or scaffold anything.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
+  },
+  {
+    "query": "Rewrite the second paragraph in this supplied DAST JSON while preserving embedded block references. Return the edited JSON only; no API calls or record writes.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
+  },
+  {
+    "query": "Convert this Markdown article to Structured Text, then write a typed CMA script to create the Article record with its title and body without publishing it.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
   }
 ]

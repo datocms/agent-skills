@@ -80,6 +80,8 @@ Modular Content, Structured Text, and Single Block fields are complex enough to 
 
 ## Reading structured text as dastdown markdown
 
+Pure DAST inspection and conversion belongs to `datocms-structured-text` when that skill is available. This section keeps the CMA read and Dastdown behavior needed by runtimes that retrieve this reference directly.
+
 The `datocms-structured-text-dastdown` package serializes a DAST tree to a markdown-like string (and parses it back). For read-only use — displaying content, feeding to an LLM, extracting plain text, diffing — `serialize` alone is enough; `parse` is for the editing round-trip (see `editing-records.md` § Pass 1).
 
 > If the selected runtime already supplies `parse` / `serialize`, omit their imports; otherwise import them as shown.

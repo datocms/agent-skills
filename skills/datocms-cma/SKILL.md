@@ -18,6 +18,8 @@ description: >-
 
 Use this workflow for CMA operations and scripts. For advice or code explanations, skip execution and setup. Short follow-ups such as “publish them” retain the earlier DatoCMS task, selected route, project, environment, and scope.
 
+**Structured Text boundary.** Pure DAST construction, inspection, editing, or conversion belongs to **datocms-structured-text** before project setup. For CMA create, update, import, or backfill involving a Structured Text field, use its document-model guidance and its editing or conversion workflow together with this skill's project access, typed record payloads, locales, version checks, persistence, and verification. Routine record operations do not require the companion skill.
+
 ## 1. Select execution before setup
 
 **CLI is the default whenever usable, even with MCP connected.** Override this only for the user's explicit tool choice or a route already used in this task. An installed or authenticated connection is availability, not an established workflow.
@@ -69,7 +71,8 @@ Method documentation supplies API shapes; these references supply DatoCMS editin
 | Direct schema changes | `references/schema.md` |
 | Filtering, querying, collection pagination | `references/filtering-and-pagination.md` |
 | Localized fields and locale backfills | `references/localization.md`; also `references/editing-records.md` when adding or backfilling a locale. |
-| Modular Content, Single Block, Structured Text, block traversal | `references/editing-records.md` |
+| Modular Content, Single Block, block traversal | `references/editing-records.md` |
+| Structured Text record create/update/backfill | `references/editing-records.md` for CMA adaptation; `../datocms-structured-text/references/document-model.md` plus its editing or conversion reference for the DAST operation. |
 | Environment operations | `references/environments.md` |
 | Roles, tokens, collaborators | `references/access-control.md` |
 | Requested migration scripts | `references/migration-patterns.md` plus **datocms-cli** migration guidance |
@@ -98,4 +101,4 @@ Report what was actually executed and verified, including partial or uncertain o
 
 ## Other tasks
 
-Use **datocms-cli** for CLI configuration, migrations, schema generation, CLI environment workflows, onboarding imports, plugin management, multi-project sync, and CI/CD. Use **datocms-cda** for GraphQL content reads, **datocms-frontend-integrations** for framework code, **datocms-plugin** for plugin development, and **datocms-content-modeling** for modeling decisions without implementation.
+Use **datocms-cli** for CLI configuration, migrations, schema generation, CLI environment workflows, onboarding imports, plugin management, multi-project sync, and CI/CD. Use **datocms-structured-text** for pure DAST construction, inspection, editing, and conversion; combine it with this skill when a CMA operation persists the document. Use **datocms-cda** for GraphQL content reads, **datocms-frontend-integrations** for framework code, **datocms-plugin** for plugin development, and **datocms-content-modeling** for modeling decisions without implementation.

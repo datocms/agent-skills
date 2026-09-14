@@ -2,7 +2,7 @@
 
 Mutate record fields — block-bearing fields (Modular Content `rich_text`, Single Block `single_block`, Structured Text `structured_text` w/ `block` / `inlineBlock` nodes) + localized fields, plus add locale + backfill per-locale values.
 
-This file owns workflow: peek-then-mutate ordering, typed guards, structured-text Pass 1 → Pass 2 → root-append invariant.
+This file owns CMA adaptation: peek-then-mutate ordering, typed guards, block request payloads, locales, version checks, persistence, and the structured-text Pass 1 → Pass 2 → root-append invariant. When `datocms-structured-text` is available, use its document model and editing or conversion reference for the underlying DAST operation; keep this workflow for the record read, mutation, and verification boundary.
 
 > In CLI mode: `cma:docs items self` documents `client.items.find()` / `cma:call items find`; `cma:docs items update` documents `client.items.update()`. Use `--expand-types <Type>` for a specific declaration.
 

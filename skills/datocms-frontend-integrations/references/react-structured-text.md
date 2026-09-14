@@ -232,24 +232,7 @@ import { renderMarkRule, StructuredText } from 'react-datocms/structured-text';
 
 ## DAST Node Reference
 
-Each node type in a Structured Text document has specific properties available in `renderNodeRule` callbacks:
-
-| Node Type | Type Guard | Key Properties |
-| - | - | - |
-| Root | `isRoot` | `children` |
-| Paragraph | `isParagraph` | `children`, `style` (optional custom style) |
-| Heading | `isHeading` | `children`, `level` (1–6), `style` (optional) |
-| List | `isList` | `children`, `style` (`'bulleted'` or `'numbered'`) |
-| List Item | `isListItem` | `children` |
-| Blockquote | `isBlockquote` | `children`, `attribution` (optional string) |
-| Code | `isCode` | `code` (string), `language` (optional), `highlight` (optional line numbers array) |
-| Thematic Break | `isThematicBreak` | _(no children)_ |
-| Block | `isBlock` | `item` (record ID — resolved via `blocks` array) |
-| Inline Block | `isInlineBlock` | `item` (record ID — resolved via `inlineBlocks` array) |
-| Span | `isSpan` | `value` (text), `marks` (optional array of mark strings) |
-| Link | `isLink` | `children`, `url`, `meta` (optional array of `{ id, value }`) |
-| Item Link | `isItemLink` | `children`, `item` (record ID — resolved via `links` array), `meta` (optional) |
-| Inline Item | `isInlineItem` | `item` (record ID — resolved via `links` array) |
+Custom rendering callbacks receive DAST nodes. Node properties, child rules, and marks live in [document model](../../datocms-structured-text/references/document-model.md); tree traversal and content transforms live in [editing](../../datocms-structured-text/references/editing.md). Keep the framework callback/component API in this reference.
 
 ## Conditional Rendering with `isEmptyDocument`
 
@@ -273,37 +256,7 @@ function BlogPost({ data }) {
 
 ## Related Packages
 
-### `datocms-structured-text-to-plain-text`
-
-Extract plain text from a DAST document (strips all formatting). Useful for generating heading anchors, meta descriptions, or search indexes:
-
-```js
-import { render as toPlainText } from 'datocms-structured-text-to-plain-text';
-
-const text = toPlainText(data.blogPost.content);
-// "Hello world! This is my blog post."
-```
-
-### `datocms-structured-text-to-html-string`
-
-Render DAST to an HTML string server-side (non-React contexts, emails, RSS feeds):
-
-```js
-import { render as toHtml } from 'datocms-structured-text-to-html-string';
-
-const html = toHtml(data.blogPost.content, {
-  renderBlock: ({ record }) => {
-    switch (record.__typename) {
-      case 'ImageBlockRecord':
-        return `<img src="${record.image.url}" alt="${record.image.alt}" />`;
-      default:
-        return null;
-    }
-  },
-});
-```
-
-Same customization API as `<StructuredText>` (`renderBlock`, `renderInlineRecord`, `renderLinkToRecord`, `renderInlineBlock`, `customNodeRules`, `customMarkRules`).
+For framework-independent plain-text, HTML-string, or DOM-node export, load [conversion](../../datocms-structured-text/references/conversion.md). For Markdown/HTML import into DAST, use the same reference; for modifying existing content, use [editing](../../datocms-structured-text/references/editing.md). If a required reference is missing, install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle. Ordinary component wiring needs no specialist dependency.
 
 ## Props Reference
 

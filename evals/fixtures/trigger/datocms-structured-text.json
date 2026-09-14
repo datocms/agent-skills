@@ -1,0 +1,195 @@
+[
+  {
+    "query": "Explain the nodes and marks in this DatoCMS DAST JSON document.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Create a Structured Text document with a heading, an emphasized introduction, and a bulleted list.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Convert this Markdown file to DatoCMS Structured Text JSON. Do not connect to any project.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Import this HTML into Structured Text and tell me which embedded images need block mappings.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Convert this Google Docs Markdown export to DAST.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Rewrite the prose in this DAST document while preserving every embedded block and inline record.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Change h1 nodes to h2 throughout this Structured Text document.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Diagnose why this DAST root contains an invalid span.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Extract searchable plain text from a Structured Text document.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Serialize DAST to an HTML string for an RSS feed without a frontend framework.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Edit this serialized Dastdown and restore the original block objects.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Why did my Markdown table disappear when converting it to Structured Text?",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Split a Structured Text paragraph while keeping its links and custom marks.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Create a DatoCMS article from this Markdown in its Structured Text body field.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "The article body is a Structured Text field. Add a paragraph and preserve its image blocks.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Migrate HTML fields into Structured Text, using the existing image block model.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Use datocms-structured-text to validate this document.",
+    "should_trigger": true,
+    "query_mode": "explicit"
+  },
+  {
+    "query": "Use $datocms-structured-text to create a DAST document from prose.",
+    "should_trigger": true,
+    "query_mode": "explicit"
+  },
+  {
+    "query": "Publish all draft articles in DatoCMS without changing their content.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Save this already-validated DAST payload unchanged into the article body.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Fetch posts with their Structured Text value, blocks, and links using GraphQL.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "Render a Structured Text field with the react-datocms component in Next.js.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Add a custom image block renderer to the Vue StructuredText component.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Should I choose Structured Text or Modular Content for my page model?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
+  },
+  {
+    "query": "Add a Structured Text field with allowed block types to my schema migration.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cli"
+    ]
+  },
+  {
+    "query": "Configure draft mode and Content Link for my DatoCMS website.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Build a plugin that edits the native Slate formValues for a Structured Text field.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "Set up a new DatoCMS website with previews and responsive images.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-setup"
+    ]
+  },
+  {
+    "query": "Change the article title and slug; leave its Structured Text field unchanged.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Export a Google Doc to Markdown without converting it to DatoCMS.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Convert this Markdown to HTML for a generic website with no DatoCMS.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Diagnose the TypeScript type error in my unrelated JSON parser.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  }
+]

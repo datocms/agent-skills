@@ -54,7 +54,7 @@ These don't auto-document — pick deliberately. `"fail"` everywhere is safe def
 - **`structured_text_inline_blocks`** — allowlist for **inlineBlock** nodes (inline within paragraphs/headings; mid-flow content like badges, mentions, equations).
 - **`structured_text_links`** — allowlist for **itemLink** / **inlineItem** nodes (record references rendered as link or chip), and where cascade-strategy fields live.
 
-Setting `structured_text_blocks` does not implicitly authorize inline blocks or links — wire each to models that should be permitted. For "no embedded blocks" structured text, set `structured_text_blocks: { item_types: [] }` (and same for inline / links). See `references/editing-records.md` § Structured Text for how resulting DAST is constructed.
+Setting `structured_text_blocks` does not implicitly authorize inline blocks or links — wire each to models that should be permitted. For "no embedded blocks" structured text, set `structured_text_blocks: { item_types: [] }` (and same for inline / links). For DAST construction and node rules, load [document model](../../datocms-structured-text/references/document-model.md); for Markdown/HTML sources, load [conversion](../../datocms-structured-text/references/conversion.md).
 
 ## Slug auto-fill
 

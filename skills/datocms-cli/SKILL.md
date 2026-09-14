@@ -20,6 +20,8 @@ description: >-
 
 Use for CLI commands, migrations, and local project configuration.
 
+Pure Structured Text conversion or local DAST work → **datocms-structured-text** before CLI bootstrap: [document model](../datocms-structured-text/references/document-model.md), [editing](../datocms-structured-text/references/editing.md), or [conversion](../datocms-structured-text/references/conversion.md). CLI execution/authentication stays here when a project operation is needed. Missing required reference → install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle; ordinary CLI tasks do not depend on it.
+
 ## Step 1: Detect Context
 
 Reuse established CLI context. For live reads or content operations, follow **datocms-cma** route selection first. Don't install CLI solely to displace a working current remote MCP connection.
@@ -267,6 +269,7 @@ This skill covers **CLI commands, flags, configuration, workflows, and migration
 
 | Condition | Route to |
 | - | - |
+| DAST inside scripts or migrations | **datocms-structured-text** — [document model](../datocms-structured-text/references/document-model.md), [editing](../datocms-structured-text/references/editing.md), or [conversion](../datocms-structured-text/references/conversion.md); **datocms-cma** for record persistence |
 | CMA API calls inside migration script bodies (records, schema, uploads) | **datocms-cma** |
 | Programmatic environment management via `client.environments.*` in code | **datocms-cma** |
 | Consuming generated schema types inside application code or reusable scripts | **datocms-cma** |

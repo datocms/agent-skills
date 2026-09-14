@@ -208,5 +208,21 @@
   {
     "query": "Our DatoCMS SEO field doesn't tell editors when their meta description is too long for Google. Should I set title_length and description_length validators?",
     "should_trigger": true
+  },
+  {
+    "query": "Given this DAST JSON, repair a list node whose children are spans instead of listItem nodes. Keep the existing DatoCMS schema unchanged.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
+  },
+  {
+    "query": "Design an article body schema with reusable embedded blocks, choose which blocks should be inline, and construct a sample DAST document using the chosen models.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
   }
 ]
