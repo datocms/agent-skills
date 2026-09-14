@@ -11,6 +11,12 @@ Covers project-level configuration and introspection: site, maintenance mode, pu
 - **Reordering the array changes which locale is primary.** A diff that looks like cosmetic shuffling (`["en", "it", "fr"]` → `["it", "en", "fr"]`) is a primary-locale switch with all the implications (default for new records, the locale used by `filter.query` when `locale` isn't passed, etc.).
 - **Adding a locale does not backfill content.** New locale entries are added to the project but every existing record still has empty values for that locale — and unless the new locale is added to all required fields' validators, those records may silently become invalid. Run a backfill or update validators alongside the locale add.
 
+## Custom theme compatibility
+
+Before changing the project's CMS color theme, use `site.meta.allow_custom_theme` to determine whether a custom palette is supported.
+
+When custom palettes are unavailable, an explicit `theme.type: "custom"` is rejected; omitting `theme.type` also selects the legacy custom format and is rejected. Use the supported monochromatic theme shape from `cma:docs site update` when that is the requested change. Preserve an existing eligible custom theme rather than automatically converting it, and leave the theme untouched during unrelated settings updates.
+
 ## Maintenance mode and `force`
 
 `client.maintenanceMode.activate()` puts the **primary** environment into read-only mode. CMS users see write errors; API CMA writes against primary fail. Use it as the "freeze" half of a controlled promote:
@@ -35,6 +41,14 @@ if (recordsLimit.limit !== null && recordsLimit.usage + plannedInserts > records
 Cheaper and clearer than catching the `LIMIT_REACHED` error after the fact. Useful pattern when scripting migrations: list both, filter for what's near capacity, fail fast.
 
 `subscriptionFeatures` `enabled: false` means the API will reject calls that depend on the feature — check before scripting against SSO endpoints, workflow transitions, or locale operations on plans where they're gated.
+
+### Included allowances and paid extras
+
+A successful operation below a hard limit can still exceed the plan's included allowance. Before a batch that adds sandbox environments, collaborators, locales, or models, check the applicable allowance, current usage, and hard limit once per target project for the full planned batch. Reuse current verified information and existing cost authorization; recheck when the planned additions or relevant project state changes.
+
+Where available, `client.publicInfo.find()` exposes `extras.overage_thresholds` with `environments`, `collaborators`, `locales`, and `models` thresholds for paid extras. These describe included allowances, not hard caps or prices. The environment threshold concerns sandboxes, excluding the primary environment. Missing thresholds, unavailable `extras`, or a failed read do not establish that an operation is free; use authorized plan information when needed, and state any remaining uncertainty without escalating credentials.
+
+If the planned additions introduce a cost implication outside the user's existing authorization, explain it before proceeding and obtain authorization for that cost. Existing authorization remains valid. Preserve the chosen migration and rollback workflow; do not automatically delete resources, switch to in-place migrations, or upgrade the plan to handle an allowance issue.
 
 ## White-label is Enterprise-only
 

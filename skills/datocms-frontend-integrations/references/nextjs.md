@@ -763,9 +763,9 @@ Granular per-record cache invalidation using DatoCMS cache tags. Replaces Core's
 
 Note: For CDN-first approach (Netlify, Cloudflare, Fastly, Bunny), see `## Cache Tags (Optional)` in respective framework reference.
 
-### The 64-Tag Problem
+### Fetch tag limits
 
-Next.js limits each `fetch()` to **64 cache tags**. DatoCMS queries can return hundreds. Use query ID indirection.
+Next.js limits each `fetch()` to **128 cache tags**. DatoCMS queries can return hundreds. Use query ID indirection.
 
 ### Solution: Query ID Indirection
 
@@ -817,14 +817,13 @@ async function executeQueryFn<Result, Variables>(
     token: includeDrafts
       ? process.env.DATOCMS_DRAFT_CONTENT_CDA_TOKEN!
       : process.env.DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN!,
-    returnCacheTags: !!queryId,
-    requestInitOptions: {
-      cache: 'force-cache',
-      next: { tags },
-    },
+    returnCacheTags: !!queryId && !includeDrafts,
+    requestInitOptions: includeDrafts
+      ? { cache: 'no-store' }
+      : { cache: 'force-cache', next: { tags } },
   });
 
-  if (queryId) {
+  if (queryId && !includeDrafts) {
     const datocmsTags = (response.headers.get('x-cache-tags') ?? '').split(' ').filter(Boolean);
     await cacheTagsDb.storeTags(queryId, datocmsTags);
   }
@@ -899,13 +898,19 @@ function createTursoDb(): CacheTagsDb {
 
       if (tags.length === 0) return [];
 
-      const placeholders = tags.map(() => '?').join(', ');
+      // Bound database parameters independently of CDN purge limits.
+      const queryIds = new Set<string>();
+      for (let offset = 0; offset < tags.length; offset += 100) {
+        const batch = tags.slice(offset, offset + 100);
+      const placeholders = batch.map(() => '?').join(', ');
       const result = await turso.execute({
         sql: `SELECT DISTINCT query_id FROM query_cache_tags WHERE tag IN (${placeholders})`,
-        args: tags,
+        args: batch,
       });
 
-      return result.rows.map((row) => String(row.query_id));
+      for (const row of result.rows) queryIds.add(String(row.query_id));
+      }
+      return [...queryIds];
     },
   };
 }
@@ -928,12 +933,16 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   const authHeader = request.headers.get('authorization');
 
-  if (authHeader !== `Bearer ${process.env.CACHE_INVALIDATION_WEBHOOK_SECRET}`) {
+  if (!process.env.CACHE_INVALIDATION_WEBHOOK_SECRET || authHeader !== `Bearer ${process.env.CACHE_INVALIDATION_WEBHOOK_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const body = await request.json();
-  const tags: string[] = body?.entity?.attributes?.tags ?? [];
+  const tags: string[] = body?.entity?.attributes?.tags;
+  if (!Array.isArray(tags) || tags.some((tag) => typeof tag !== 'string' || !tag)) {
+    return NextResponse.json({ error: 'Invalid tags' }, { status: 400 });
+  }
+  if (tags.length === 0) return NextResponse.json({ revalidated: false });
 
   // Always revalidate the global "datocms" tag for queries that don't use queryId
   // `{ expire: 0 }` = immediate expiration (required for webhook-driven invalidation)
@@ -955,7 +964,7 @@ export async function POST(request: Request) {
 
 ### Page-Level Config
 
-Pages using cache tags should be statically generated:
+Preserve the existing rendering mode. Do not force static rendering on a route that must inspect draft cookies. A separate published-only route may opt into static rendering:
 
 ```ts
 export const dynamic = 'force-static';
@@ -965,8 +974,6 @@ export const dynamic = 'force-static';
 
 ```tsx
 import { executeQuery } from '@/lib/datocms/executeQuery';
-
-export const dynamic = 'force-static';
 
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -980,7 +987,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 }
 ```
 
-Use stable `queryId` per query+variables. Pattern: `${page-type}-${identifier}`.
+Use stable `queryId` per query, variables, environment, and published access scope. Draft requests use `no-store` and never replace published tag mappings. Pattern: `${page-type}-${identifier}`.
 
 ### Environment Variables
 
@@ -993,3 +1000,5 @@ TURSO_AUTH_TOKEN=                    # Turso auth token
 ### Dependencies
 
 Required: `@libsql/client` (Turso/libSQL). Alternatives: `@vercel/postgres`, `@planetscale/database`, or any SQL client. Schema is simple two-column join table — adapt `cache-tags-db.ts` to your preferred database.
+
+Do not swallow mapping or revalidation errors: a failed operation must produce a non-success webhook response. Preserve host deployment invalidation; if an external cache survives deploys, invalidate it through the deployment workflow.

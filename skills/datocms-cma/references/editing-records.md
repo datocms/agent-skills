@@ -141,7 +141,7 @@ Mutation rules in parent record's `update` call:
 
 Custom IDs let you choose a new block's identity. Supply a DatoCMS public ID in URL-safe base64 UUIDv4 format that is unused in the environment.
 
-When creating a record, an ID on a nested block object creates that block. When updating a record, you can reuse an existing block ID only if the block is already in that record's same field and locale. Blocks from another record, field, or locale are rejected. An unused ID creates a new block and requires `item_type`. A bare ID string only keeps an existing block in place; it cannot create one. These rules apply only to nested blocks.
+When creating a record, an ID on a nested block object creates that block. When updating a record, you can reuse IDs of blocks already in the field and locale you are updating. You cannot reuse a block from a different record, field, or locale. An unused ID creates a new block and requires `item_type`. A bare ID string only keeps an existing block unchanged; it cannot create one. These rules apply only to nested blocks.
 
 ### DAST grammar (structured text)
 

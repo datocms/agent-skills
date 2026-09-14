@@ -12,7 +12,11 @@ Covers `_seoMetaTags`, `faviconMetaTags`, `globalSeo`, and SEO field values.
 
 ## `_seoMetaTags`
 
-Available on every record. Returns an array of computed meta tag objects, merging the record's SEO field values with global SEO fallbacks. If no explicit SEO field exists on the model, the system inspects other fields (single-line strings and images) to generate defaults.
+Available on every record. Returns an array of computed meta tag objects, merging the record's SEO field values with global SEO fallbacks. Image fallback is not limited to models without an explicit SEO field.
+
+For the image tags, candidates are tried in order: the record's SEO image, the model's image-preview field, then the global SEO image. Missing or unusable uploads (for example, a PDF without image dimensions) are skipped so a later candidate can supply the tags. If none is usable, no image tags are emitted.
+
+The model's configured image-preview field is used when present; otherwise DatoCMS selects a fallback upload field, preferring one restricted to images. It selects one field rather than searching every upload field for a usable image. For a gallery, only its first upload is considered. Render the returned `_seoMetaTags` rather than rebuilding this fallback chain in the frontend.
 
 ```graphql
 query {
