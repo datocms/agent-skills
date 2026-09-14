@@ -137,6 +137,52 @@ test('output and report are deterministic and leave no staging files', async () 
   assert.deepEqual((await readdir(paths.directory)).sort(), ['document.json', 'report.json', 'source.md']);
 });
 
+for (const [format, source, line] of [
+  ['markdown', '1. One\n2. \n3. Three\n\nRefer to item 3 above.', 2],
+  ['markdown', '1. One\n\n2.\n\n3. Three', 3],
+  ['markdown', '- One\n-\n- Three', 2],
+  ['html', '<ol>\n<li>One</li>\n<li></li>\n<li>Three</li></ol><p>Refer to item 3 above.</p>', 3],
+  ['html', '<ol><li>One</li>\n<li> \t\n </li><li>Three</li></ol>', 2],
+  ['html', '<ol><li>One</li>\n<li><p><strong> </strong><span><!-- blank --></span></p></li><li>Three</li></ol>', 2],
+  ['html', '<ul><li>Outer<ul>\n<li><p></p></li></ul></li></ul>', 2],
+  ['html', '<ol>\n<li><ul></ul></li><li>Two</li></ol>', 2],
+]) {
+  test(`${format}: empty list item on line ${line} fails without renumbering output: ${source.slice(0, 44)}`, async () => {
+    const paths = await files(source, format);
+    const previous = '{"preserve":"previous document"}\n';
+    await writeFile(paths.output, previous);
+    const result = invoke(paths);
+    assert.equal(result.status, 1, result.stdout);
+    const report = JSON.parse(await readFile(paths.report, 'utf8'));
+    assert.equal(report.ok, false);
+    const diagnostic = report.diagnostics.find((entry) => entry.code === 'EMPTY_LIST_ITEM');
+    assert(diagnostic, JSON.stringify(report));
+    assert.equal(diagnostic.position.line, line);
+    assert(diagnostic.action.includes('preserving list positions'));
+    assert.equal(await readFile(paths.output, 'utf8'), previous);
+  });
+}
+
+test('HTML list items containing only nested lists, line breaks, or nonbreaking spaces survive', async () => {
+  const { document } = await convert('<ol><li><ul><li>Nested</li></ul></li><li><p><strong><br></strong></p></li><li>&nbsp;</li><li>Fourth</li></ol>', 'html');
+  const list = document.document.children[0];
+  assert.equal(list.children.length, 4);
+  assert.deepEqual(list.children[0].children.map((node) => node.type), ['list']);
+  assert.equal(text(list.children[0]), 'Nested');
+  assert.equal(text(list.children[1]), '\n');
+  assert.equal(text(list.children[2]), '\u00a0');
+  assert.equal(text(list.children[3]), 'Fourth');
+});
+
+test('a rejected empty list item does not create an output', async () => {
+  const paths = await files('1. One\n2.\n3. Three');
+  assert.equal(invoke(paths).status, 1);
+  await assert.rejects(readFile(paths.output), { code: 'ENOENT' });
+  const report = JSON.parse(await readFile(paths.report, 'utf8'));
+  assert.equal(report.ok, false);
+  assert.equal(report.diagnostics[0].code, 'EMPTY_LIST_ITEM');
+});
+
 const rejected = [
   ['markdown', 'Before\n\n![Alt](image.png)', 'UNSUPPORTED_MARKDOWN', 3],
   ['markdown', '| A | B |\n| - | - |\n| X | Y |', 'UNSUPPORTED_MARKDOWN', 1],
@@ -265,4 +311,71 @@ test('report path failure prevents output replacement', async () => {
   paths.report = join(paths.directory, 'missing-parent', 'report.json');
   assert.equal(invoke(paths).status, 1);
   assert.equal(await readFile(paths.output, 'utf8'), 'existing');
+});
+
+async function inputHasCaseAlias(paths) {
+  try {
+    await readFile(join(paths.directory, 'SOURCE.MD'));
+    return true;
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+    return false;
+  }
+}
+
+for (const destination of ['output', 'report']) {
+  test(`fresh ${destination} with a long basename remains writable`, async () => {
+    const paths = await files('# Original');
+    const filename = `${'x'.repeat(205)}.json`;
+    paths[destination] = join(paths.directory, filename);
+    const result = invoke(paths);
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(JSON.parse(await readFile(paths.output, 'utf8')).schema, 'dast');
+    assert.equal(JSON.parse(await readFile(paths.report, 'utf8')).ok, true);
+    assert.deepEqual((await readdir(paths.directory)).sort(), ['source.md', destination === 'output' ? 'report.json' : 'document.json', filename].sort());
+  });
+}
+
+for (const aliasedParent of [false, true]) {
+  test(`fresh output/report case variants follow filesystem rules (symlink parent: ${aliasedParent})`, async () => {
+    const paths = await files('# Original');
+    const caseInsensitive = await inputHasCaseAlias(paths);
+    let reportDirectory = paths.directory;
+    if (aliasedParent) {
+      reportDirectory = join(scratch, `fresh-alias-${sequence}`);
+      await symlink(paths.directory, reportDirectory);
+    }
+    paths.report = join(reportDirectory, 'DOCUMENT.JSON');
+    const result = invoke(paths);
+    assert.equal(result.status, caseInsensitive ? 1 : 0, result.stderr);
+    if (caseInsensitive) {
+      assert.equal(JSON.parse(result.stderr).diagnostics[0].code, 'UNSAFE_PATHS');
+      await assert.rejects(readFile(paths.output), { code: 'ENOENT' });
+      await assert.rejects(readFile(paths.report), { code: 'ENOENT' });
+    } else {
+      assert.equal(JSON.parse(await readFile(paths.output, 'utf8')).schema, 'dast');
+      assert.equal(JSON.parse(await readFile(paths.report, 'utf8')).ok, true);
+    }
+    assert.equal(await readFile(paths.input, 'utf8'), '# Original');
+    assert.deepEqual((await readdir(paths.directory)).sort(), caseInsensitive ? ['source.md'] : ['DOCUMENT.JSON', 'document.json', 'source.md']);
+  });
+}
+
+test('missing input/report case variants cannot create the input or replace existing output', async () => {
+  const paths = await files('# Original');
+  const caseInsensitive = await inputHasCaseAlias(paths);
+  await rm(paths.input);
+  await writeFile(paths.output, 'existing');
+  paths.report = join(paths.directory, 'SOURCE.MD');
+  const result = invoke(paths);
+  assert.equal(result.status, 1);
+  if (caseInsensitive) {
+    assert.equal(JSON.parse(result.stderr).diagnostics[0].code, 'UNSAFE_PATHS');
+    await assert.rejects(readFile(paths.report), { code: 'ENOENT' });
+  } else {
+    assert.equal(JSON.parse(await readFile(paths.report, 'utf8')).diagnostics[0].code, 'CONVERSION_FAILED');
+  }
+  await assert.rejects(readFile(paths.input), { code: 'ENOENT' });
+  assert.equal(await readFile(paths.output, 'utf8'), 'existing');
+  assert.deepEqual((await readdir(paths.directory)).sort(), caseInsensitive ? ['document.json'] : ['SOURCE.MD', 'document.json']);
 });

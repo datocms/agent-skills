@@ -45,6 +45,12 @@ function auditMarkdown(tree, diagnostics) {
 
 function auditHtml(document, diagnostics) {
   // Audit parse5 nodes before the converter's whitespace minification or handlers run.
+  function hasListContent(node) {
+    if (node.nodeName === '#text') return /[^\t\n\f\r ]/.test(node.value);
+    if (node.tagName === 'br') return true;
+    return node.childNodes?.some(hasListContent) ?? false;
+  }
+
   function walk(node, context = 'root', ancestors = [], inheritedUnderline = false) {
     const tag = node.tagName;
     if (node.nodeName === '#text') {
@@ -61,6 +67,9 @@ function auditHtml(document, diagnostics) {
     if (!nodeTypes[tag] && !inlineTags.has(tag) && !wrappers.has(tag)) {
       diagnostics.push(issue('UNSUPPORTED_HTML', `HTML <${tag}> requires an explicit mapping.`, node));
       return;
+    }
+    if (tag === 'li' && !hasListContent(node)) {
+      diagnostics.push(issue('EMPTY_LIST_ITEM', 'The converter would remove this empty list item and change list positions.', node, 'Add the intended item content, or explicitly map the empty item while preserving list positions.'));
     }
     // Tight Markdown lists (and ordinary HTML <li>) omit <p>. The converter
     // wraps each consecutive inline run in a paragraph without changing it.
@@ -176,7 +185,31 @@ async function identify(path, writable) {
   } catch (error) {
     if (error.code !== 'ENOENT') throw error;
     // Real parent paths catch aliases through a symlinked directory, including new outputs.
-    return { path: absolute, canonical: resolve(await realpath(dirname(absolute)), basename(absolute)) };
+    const parent = await realpath(dirname(absolute));
+    const parentInfo = await stat(parent);
+    return { path: absolute, canonical: resolve(parent, basename(absolute)), parentInode: `${parentInfo.dev}:${parentInfo.ino}` };
+  }
+}
+
+async function missingPathsAlias(first, second) {
+  if (first.inode || second.inode || first.parentInode !== second.parentInode) return false;
+  // Probe in the destination directory: case rules can vary by directory.
+  // A shared random prefix keeps both destination names untouched.
+  const prefix = `.${randomUUID()}-`;
+  const firstProbe = resolve(dirname(first.canonical), prefix + basename(first.canonical));
+  const secondProbe = resolve(dirname(first.canonical), prefix + basename(second.canonical));
+  await writeFile(firstProbe, '', { flag: 'wx', mode: 0o600 });
+  try {
+    const firstInfo = await lstat(firstProbe);
+    try {
+      const secondInfo = await lstat(secondProbe);
+      return firstInfo.dev === secondInfo.dev && firstInfo.ino === secondInfo.ino;
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error;
+      return false;
+    }
+  } finally {
+    await unlink(firstProbe);
   }
 }
 
@@ -185,7 +218,7 @@ async function safePaths(options) {
   const paths = await Promise.all(['input', 'output', 'report'].map((key) => identify(options[key], key !== 'input')));
   for (let i = 0; i < paths.length; i++) {
     for (let j = i + 1; j < paths.length; j++) {
-      if (paths[i].canonical === paths[j].canonical || (paths[i].inode && paths[i].inode === paths[j].inode)) {
+      if (paths[i].canonical === paths[j].canonical || (paths[i].inode && paths[i].inode === paths[j].inode) || await missingPathsAlias(paths[i], paths[j])) {
         throw new Error('Input, output, and report must be distinct files (including symlink and hard-link aliases).');
       }
     }
