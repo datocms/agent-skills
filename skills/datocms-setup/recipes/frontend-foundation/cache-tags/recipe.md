@@ -4,18 +4,15 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 You are an expert at setting up DatoCMS cache tag invalidation. This recipe generates the files needed for granular cache invalidation — only pages affected by a content change are purged, instead of revalidating all DatoCMS content on every change.
 
-Two approaches:
+Choose the applicable path:
 
 - **Next.js:** `rawExecuteQuery` with `queryId` → store tags in DB → `revalidateTag()` on webhook
-- **Nuxt / SvelteKit / Astro:** `rawExecuteQuery` → CDN response headers → webhook calls CDN purge API
+- **Astro 7+ with a compatible provider:** `rawExecuteQuery` → native request cache tags → `cache.invalidate()` on webhook
+- **Nuxt / SvelteKit / older Astro:** `rawExecuteQuery` → CDN response headers → webhook calls CDN purge API
 
 See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
 
-| CDN | Response header |
-| - | - |
-| Netlify / Cloudflare | `Cache-Tag` |
-| Fastly | `Surrogate-Key` |
-| Bunny | `CDN-Tag` |
+For provider header formats, see the [CDA cache-tag table](../../../../datocms-cda/references/draft-caching-environments.md#architectural-patterns).
 
 ## Contents
 
@@ -43,7 +40,7 @@ Follow `../../../references/repo-conventions.md`, then inspect:
    - Any framework: webhook handler for cache invalidation
 
    If configured, inspect and update in place. Only ask for replacement if incompatible or user requests rewrite.
-4. **Astro SSR requirement** — check `astro.config.mjs` for `output: 'server'` or `'hybrid'`. Cache tags require SSR. Warn if `'static'` or not set.
+4. **Astro rendering and provider support** — inspect the installed Astro/adapter versions and on-demand routes (`output: 'server'` or `prerender = false` with an adapter). Use the native Astro 7 path when supported; preserve older working integrations. Prerendered pages need their existing rebuild strategy.
 5. **Installed deps** — check `package.json` for `@datocms/cda-client`
 
 **Stop conditions:**
@@ -61,7 +58,7 @@ Infer from repo first. Follow `../../../patterns/MANDATORY_RULES.md`. Ask zero q
 
 **Nuxt / SvelteKit / Astro:** No clear CDN target:
 
-> "Which CDN should I target for cache-tag purging: Netlify or Cloudflare, Fastly, Bunny, or a placeholder adapter? Recommended default: preserve the strongest existing hosting signal; otherwise scaffold the generic `Cache-Tag` path and mark the result `scaffolded`. If you skip, I'll follow that default."
+> "Which CDN should I target for cache-tag purging: Netlify or Cloudflare, Fastly, Bunny, or a placeholder adapter? Recommended default: preserve the strongest existing hosting signal; otherwise leave an explicit unconfigured adapter and mark the result `scaffolded`. If you skip, I'll follow that default."
 
 This determines both the response-header name and the webhook handler's purge pattern.
 
@@ -70,6 +67,8 @@ This determines both the response-header name and the webhook handler's purge pa
 **Always load:**
 
 - `../../../../datocms-cda/references/draft-caching-environments.md`
+
+**Manual CDN integrations only:** also load `../../../../datocms-frontend-integrations/references/cache-tag-adapters.md` for response collection and the purge adapter contract. Skip it for Next.js query-ID mappings and native Astro providers.
 
 **Load per framework (`## Cache Tags (Optional)` section):**
 
@@ -84,103 +83,29 @@ This determines both the response-header name and the webhook handler's purge pa
 
 Generate framework-specific cache tag invalidation files following the patterns in the loaded references.
 
+Preview mode is optional. For published-only projects, omit draft helpers and draft-token dependencies and use `includeDrafts: false`; preserve authenticated preview handling when it already exists. Do not add preview mode solely for caching.
+
+### Astro 7 native cache path
+
+If the installed Astro 7+ app and adapter support native route caching, follow the existing Astro reference’s **Cache Tags (Optional)** section: configure the selected provider, pass request context to every contributing query, and adapt the route predicate so only cache-tagged GET HTML responses are buffered until nested components finish. Reuse the common native invalidation endpoint with its secret and failure handling. Verify a production build, provider invalidation, and draft lookup bypass; dev mode is not evidence of working caching. This path replaces the generic manual header/purge steps for that app. Preserve a working older integration and existing hosting, framework, freshness, and preview choices.
+
 ### Next.js (App Router)
 
-1. **Update `executeQuery`** at `src/lib/datocms/executeQuery.ts`:
-   - Use `rawExecuteQuery` instead of `executeQuery`
-   - Accept optional `queryId`
-   - With `queryId`: `returnCacheTags: true`, read `x-cache-tags` header, store via `cacheTagsDb.storeTags()`, tag fetch with `[queryId]`
-   - Without `queryId`: fallback to single `cacheTag = 'datocms'` (backward compatible)
-   - Wrap in React `cache()`
-   - Use `requestInitOptions: { cache: 'force-cache', next: { tags } }`
+Follow the selected Next.js reference's **Cache Tags (Optional)** section. Extend the existing query wrapper, database mapping, and authenticated webhook in place:
 
-2. **Create `cache-tags-db.ts`** in same directory:
-   - `CacheTagsDb` interface: `storeTags(queryId, tags)`, `findQueryIdsForTags(tags)`
-   - `query_cache_tags(query_id TEXT, tag TEXT)` join table
-   - Implementation for chosen DB (Turso with `@libsql/client`, Vercel Postgres with `@vercel/postgres`, or placeholder)
-   - Auto-create table on first use
+- Published queries with a `queryId` request CDA tags and store their mapping; published queries without one retain the global-tag fallback. Preserve the existing published cache policy.
+- Draft queries use `no-store`, do not request purge tags, and never replace published mappings. Preserve routes that inspect draft cookies; do not force them static.
+- Use the chosen database's `storeTags` / `findQueryIdsForTags` implementation. The webhook resolves affected query IDs and revalidates them plus the global tag; mapping or revalidation failures must propagate.
 
-3. **Create webhook handler** at `src/app/api/revalidate/route.ts`:
-   - Validate `Authorization: Bearer <CACHE_INVALIDATION_WEBHOOK_SECRET>`
-   - Read tags from `body?.entity?.attributes?.tags`
-   - Call `revalidateTag('datocms', { expire: 0 })` for global tag (`{ expire: 0 }` = immediate expiration, required for webhook-driven invalidation)
-   - Look up affected `queryId`s via `cacheTagsDb.findQueryIdsForTags(tags)`
-   - Call `revalidateTag(queryId, { expire: 0 })` for each
+### Manual CDN integrations: Nuxt, SvelteKit, and older Astro
 
-### Nuxt
+Use the [shared adapters](../../../../datocms-frontend-integrations/references/cache-tag-adapters.md) with the selected framework's cache section. Extend its server query wrapper and authenticated invalidation endpoint, preserving the framework's token and environment handling.
 
-1. **Create `fetchWithCacheTags`** at `server/middleware/cache-tags.ts` or `server/utils/cache-tags.ts`:
+- Nuxt: use the request event in a server utility and finalize headers at the response boundary.
+- SvelteKit: share the collector through the request when layouts and pages fetch independently, then set response headers once.
+- Older Astro: collect page and nested-component dependencies before committing headers; retain the current SSR adapter and rendering configuration. Use the native path above when supported instead of adding these manual helpers.
 
-   - Accept query and optional variables
-   - Call `rawExecuteQuery` with `returnCacheTags: true`
-   - Read `x-cache-tags` header
-   - Return `{ data, cacheTags }`
-   - Use `useRuntimeConfig().public.datocmsPublishedContentCdaToken`
-
-   Optional composable at `composables/useQueryWithCacheTags.ts`.
-
-2. **Create usage pattern** — Show using `fetchWithCacheTags` in server route/page, setting CDN header via `setResponseHeader(event, 'Cache-Tag', cacheTags)` (or `Surrogate-Key` / `CDN-Tag`). For pages, use `useRequestEvent()`.
-
-3. **Create webhook handler** at `server/api/invalidate-cache.ts`:
-   - Validate `Authorization: Bearer <cacheInvalidationWebhookSecret>` from `useRuntimeConfig()`
-   - Read tags from `body?.entity?.attributes?.tags`
-   - Call CDN purge API (commented examples for Fastly, Netlify, Cloudflare, Bunny)
-
-4. **Add runtime config** to `nuxt.config.ts`:
-   ```ts
-   runtimeConfig: {
-     cacheInvalidationWebhookSecret: '',
-     // CDN-specific (uncomment for your CDN):
-     // fastlyServiceId: '',
-     // fastlyKey: '',
-   }
-   ```
-
-### SvelteKit
-
-1. **Create `performQueryWithCacheTags`** at `src/lib/datocms/queries.ts`:
-   - Accept `RequestEvent`, query, optional variables
-   - Preserve draft-mode token switching if existing wrapper supports it
-   - Call `rawExecuteQuery` with `returnCacheTags: true`
-   - Read `x-cache-tags` header
-   - Return `{ data, cacheTags }`
-   - Use `$env/dynamic/private` for tokens
-
-2. **Create usage pattern** — Show using in `+page.server.ts` load function, calling `event.setHeaders({ 'Cache-Tag': cacheTags })` (or `Surrogate-Key` / `CDN-Tag`)
-
-3. **Create webhook handler** at `src/routes/api/invalidate-cache/+server.ts`:
-   - Export `POST` as `RequestHandler`
-   - Validate `Authorization: Bearer <PRIVATE_CACHE_INVALIDATION_WEBHOOK_SECRET>` from `$env/dynamic/private`
-   - Read tags from `body?.entity?.attributes?.tags`
-   - Call CDN purge API (commented examples)
-
-### Astro
-
-1. **Create `executeQueryWithCacheTags`** at `src/lib/datocms/executeQuery.ts`:
-   - Accept query and optional `{ variables, includeDrafts }`
-   - Call `rawExecuteQuery` with `returnCacheTags: true`
-   - Read `x-cache-tags` header
-   - Return `{ data, cacheTags }`
-   - Import tokens from `astro:env/server`
-
-2. **Create usage pattern** — Show using in `.astro` page (SSR mode), setting `Astro.response.headers.set('Cache-Tag', cacheTags)` (or `Surrogate-Key` / `CDN-Tag`)
-
-3. **Create webhook handler** at `src/pages/api/invalidate-cache.ts`:
-   - Export `POST` as `APIRoute`
-   - Validate `Authorization: Bearer <CACHE_INVALIDATION_WEBHOOK_SECRET>` from `astro:env/server`
-   - Read tags from `body?.entity?.attributes?.tags`
-   - Call CDN purge API (commented examples)
-
-4. **Add env schema** in `astro.config.mjs` (or `.ts`) under `env.schema`:
-   ```js
-   CACHE_INVALIDATION_WEBHOOK_SECRET: envField.string({
-     context: 'server',
-     access: 'secret',
-   }),
-   // CDN-specific (uncomment for your CDN):
-   // FASTLY_SERVICE_ID: envField.string({ context: 'server', access: 'secret' }),
-   // FASTLY_KEY: envField.string({ context: 'server', access: 'secret' }),
-   ```
+Collect all contributing queries per response, apply the actual provider's format, and bypass shared caches for drafts before lookup. Implement a concrete purge adapter with the selected provider's batch limits, bounded retries, and error propagation. Follow the shared reference for response limits and deployment invalidation; keep unconfigured adapters explicitly `scaffolded`.
 
 ### Mandatory rules for all generated code
 
@@ -215,7 +140,7 @@ Recipe-specific names:
 | `@libsql/client` | Next.js with Turso |
 | `@vercel/postgres` | Next.js with Vercel Postgres |
 
-Nuxt/SvelteKit/Astro: no additional deps — `rawExecuteQuery` from `@datocms/cda-client`.
+Nuxt/SvelteKit/older Astro manual integrations need no additional dependencies for `rawExecuteQuery`. For Astro native caching, use the installed adapter's compatible cache provider as described in the Astro reference.
 
 Use project's package manager (see `../../../patterns/MANDATORY_RULES.md`).
 
@@ -266,11 +191,7 @@ CACHE_INVALIDATION_WEBHOOK_SECRET=
    - **Secret token:** Must match `CACHE_INVALIDATION_WEBHOOK_SECRET` env var
    - **Payload:** `{ entity: { attributes: { tags: ["tag1", "tag2", ...] } } }`
 
-2. **Usage example:**
-   - **Next.js:** Use `executeQuery` with `queryId` (e.g., `queryId: 'blog-post-${slug}'`). Add `export const dynamic = 'force-static'` on pages. `queryId` should be stable and unique per query+variables.
-   - **Nuxt:** Use `fetchWithCacheTags` in server routes, set header via `setResponseHeader(event, 'Cache-Tag', cacheTags)`
-   - **SvelteKit:** Use in load functions, call `event.setHeaders({ 'Cache-Tag': cacheTags })`
-   - **Astro:** Use in `.astro` pages, set `Astro.response.headers.set('Cache-Tag', cacheTags)`. SSR mode required.
+2. **Usage example:** Show a published request and, when preview mode is configured, a draft request through the wrapper. For Next.js, demonstrate a stable `queryId` for the query, variables, environment, and published access scope. For manual CDN integrations, show the response-local collector finalized into the selected provider's headers. For native Astro caching, pass `Astro` to page and nested-component queries, adapt the middleware route predicate, and use the provider's authenticated invalidation endpoint.
 
 3. **If `scaffolded`:** list exact missing database/CDN/purge-adapter work for production-ready.
 
@@ -282,19 +203,12 @@ Follow `../../../patterns/OUTPUT_STATUS.md` for final handoff, including explici
 
 ### Base scaffold checks
 
-1. `executeQuery` uses `rawExecuteQuery` with `returnCacheTags: true`, reads `x-cache-tags` header
-2. Next.js: `queryId` passed to `rawExecuteQuery`, tags stored via `cacheTagsDb.storeTags()`
-3. Next.js: Webhook calls `revalidateTag(tag, { expire: 0 })` for global `'datocms'` and affected `queryId`s
-4. Next.js: Pages export `dynamic = 'force-static'`
-5. Nuxt/SvelteKit/Astro: Tags forwarded as CDN headers with correct name
-6. Nuxt/SvelteKit/Astro: Webhook calls CDN purge API with tags
-7. All webhook handlers validate secret via `Authorization: Bearer <secret>`
-8. All webhook handlers read tags from `body?.entity?.attributes?.tags`
-9. Nuxt: `cacheInvalidationWebhookSecret` in `runtimeConfig`
-10. Astro: `CACHE_INVALIDATION_WEBHOOK_SECRET` in `env.schema` using `envField.string()`
-11. Astro: User warned if output mode not `'server'` or `'hybrid'`
-12. TypeScript follows mandatory rules (no `as unknown as`, inferred types, `import type`)
-13. Env vars use correct framework-specific names
+1. Check the selected framework's cache implementation and the shared frontend [Cache Tags checklist](../../../../datocms-frontend-integrations/references/verification-checklists.md#cache-tags).
+2. Published queries request and consume CDA tags where the chosen strategy needs them; draft queries stay uncached and cannot overwrite published mappings.
+3. Next.js: the wrapper owns `queryId`, database lookups feed `revalidateTag()`, and draft-aware routes remain able to inspect cookies.
+4. Manual CDN integrations: response tags include all contributing queries, provider formatting is correct, and the configured adapter completes every purge batch or returns an error.
+5. Webhook handlers validate the secret and payload; environment variables follow the selected framework reference.
+6. Astro: confirm on-demand rendering and adapter support; prerendered pages retain their rebuild strategy. For native caching, verify route-scoped GET HTML buffering, delayed nested-query tags, and `cache.invalidate()` failures in a production runtime. Where preview is configured, verify uncached draft responses and the host's preview-cookie lookup bypass separately.
 
 ### Production-ready checks
 

@@ -369,6 +369,8 @@ import styles from './MyComponent.module.css';
 
 ## Local Development
 
+For ordinary development, reuse the existing local setup. Duplicating an installation, disabling or re-enabling it, and switching versions or packages are separate actions for specific needs, not routine development steps. Switch versions only when the task requires installing, testing, or rolling back a published release.
+
 ### New installation
 
 1. Install dependencies: `npm install`
