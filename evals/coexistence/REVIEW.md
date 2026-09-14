@@ -1,8 +1,10 @@
 # Optional MCP coexistence review
 
-Skills baseline: [`94e4bd8`](https://github.com/datocms/agent-skills/commit/94e4bd8128e52963829f65bce8f202fcd68ac8d6). Corrected candidate skill sources: [`994f1f1`](https://github.com/datocms/agent-skills/commit/994f1f1ba7d7bf521f105e8c877768c7210c01f7). The comparison uses the existing server contract at [`beeca70`](https://github.com/datocms/remote-mcp/blob/beeca70bdf702461ae8e226bfd9714d8e58f33ac/src/tools/getApiMethods/index.ts#L69-L74); it does not change the server.
+Skills baseline: [`94e4bd8`](https://github.com/datocms/agent-skills/commit/94e4bd8128e52963829f65bce8f202fcd68ac8d6). Candidate skill sources after the verification fix: [`419ddc7`](https://github.com/datocms/agent-skills/commit/419ddc79005c5d99274a20b6d6007c4f080c0deb). The comparison uses the existing server contract at [`beeca70`](https://github.com/datocms/remote-mcp/blob/beeca70bdf702461ae8e226bfd9714d8e58f33ac/src/tools/getApiMethods/index.ts#L69-L74); it does not change the server.
 
 The initial rewrite omitted useful instructions for existing projects. The correction restores client/configuration and generated-type reuse, credential scope, import consistency, and several CLI/editing details. The [retention audit](RETENTION.md) maps every original entrypoint section to its current destination and distinguishes preserved guidance from intentional routing changes. Token reduction alone did not establish that useful guidance survived.
+
+The subsequent verification fix addresses a demonstrated script mistake: comparing a serialized partial update payload with a full nested response after a successful write. The SDK distinguishes [block request forms from nested responses](https://github.com/datocms/js-rest-api-clients/blob/720b41ee5b7154346ed168c272d8cf5402bad1b2/packages/cma-client/src/fieldTypes/single_block.ts#L62-L110), and the [block builder can omit the model discriminator on ID-only updates](https://github.com/datocms/js-rest-api-clients/blob/720b41ee5b7154346ed168c272d8cf5402bad1b2/packages/cma-client/src/utilities/buildBlockRecord.ts#L48-L67). The entrypoint now explicitly requires comparing saved field values. A focused shared-reference section explains how to verify intended changes and preserved content in matching response shapes, without replaying a successful mutation after a verification error. This adds 24 entrypoint tokens. The new deterministic regressions reproduce the false mismatch and confirm that corrected verification still rejects actual loss of another locale.
 
 The implementation follows concise discovery metadata, conditional reference loading, and execution-trace review from [OpenAI's skill guidance](https://learn.chatgpt.com/docs/build-skills) and [Agent Skills best practices](https://agentskills.io/skill-creation/best-practices), consulted on 2026-09-14. The numeric gates below are specific to this PR.
 
@@ -12,7 +14,7 @@ Measured with the repository's `gpt-tokenizer`, against the PR base. Entrypoint 
 
 | Measurement | Base tokens | Candidate tokens | Result |
 | - | - | - | - |
-| CMA entrypoint | 5,988 | 2,109 | 64.78% reduction; exceeds 30% requirement |
+| CMA entrypoint | 5,988 | 2,133 | 64.38% reduction; exceeds 30% requirement |
 | Optional MCP reference | — | 356 | Below 600-token ceiling |
 | All discovery metadata | 1,539 | 1,482 | 57 fewer tokens |
 | Other touched entrypoints, combined | 6,275 | 6,169 | 106 fewer tokens |
@@ -27,33 +29,35 @@ The additional `--require-fresh-results-sync` check still fails on historical Cl
 
 The 12 static compatibility checks pass. They validate the original and exact MCP-filtered Markdown, closed fences, syntax of applicable TypeScript examples, and preservation of 14 substantive workflow sections against the base. The preserved record files stay at their existing paths; the server's nonrecursive import remains supported.
 
-All 29 deterministic evaluator/report tests pass, including two tests of the additional local-authoring evaluator. Migration scoring rejects wrong filenames, comment-only stubs, invalid syntax, and incorrect field payloads. All retained migration outputs pass this check. It is static syntax/structure verification, not live migration execution or SDK typechecking. Original observations and scorer hashes are retained separately from post-run scoring.
+All 32 deterministic evaluator/report tests pass, including two local-authoring tests, two saved-content verification regressions, and a check that the evaluator permits a standard own-property comparison without permitting general prototype access. Migration scoring rejects wrong filenames, comment-only stubs, invalid syntax, and incorrect field payloads. All retained migration outputs pass this check. It is static syntax/structure verification, not live migration execution or SDK typechecking. Original observations and scorer hashes are retained separately from post-run scoring.
 
 Normal precommit processing regenerated the CLI, CMA, content-modeling, and setup ZIPs. All 81 archive files match the corresponding skill sources byte for byte, with interface metadata excluded by the existing packaging rule. No evaluation code or test dependencies are included. Existing E2E files, commands, and precommit behavior remain unchanged.
 
 ## Existing-project regression evaluation
 
-Six additional native sessions use the same recorded model, effort, and binary as the routing comparison: three for the PR base and three for the corrected candidate. The task asks for a server-side article-title helper in an existing application, without CMS execution or file/configuration changes. The synthetic project already has a configured client and a generated model module. All six sessions inspect and reuse both modules, avoid setup/type-generation detours, and return a helper that compiles and reads exactly the requested records with correct title and null results. The checks use bounded TypeScript declarations and a synthetic client, not live SDK calls or schema generation.
+Six native sessions at the retention correction (`994f1f1`) use the same recorded model, effort, and binary as the routing comparison: three for the PR base and three for that candidate. The task asks for a server-side article-title helper in an existing application, without CMS execution or file/configuration changes. The synthetic project already has a configured client and a generated model module. All six sessions inspect and reuse both modules, avoid setup/type-generation detours, and return a helper that compiles and reads exactly the requested records with correct title and null results. The checks use bounded TypeScript declarations and a synthetic client, not live SDK calls or schema generation. These observations remain tied to `994f1f1`; client/type-reuse instructions did not change in the later verification fix.
 
 Both arms pass 3/3. This checks the restored workflow in one controlled fixture; it does not prove that the correction is universally lossless or establish a comparative quality advantage. Actual file/reference reads, returned modules, assertions, tool-output tokens, usage, and provenance are in [retention-results.json](retention-results.json).
 
-## Behavioral evaluation after the correction
+## Behavioral evaluation after the verification fix
 
-The comparison uses `gpt-6-astra`, reasoning effort `ultra`, and native binary version `0.154.0-alpha.6.2`. On 2026-09-14, all 48 candidate sessions were rerun at the corrected revision: three repetitions of 16 cases. They are compared with the 48 base and 30 applicable no-skill controls retained from the earlier run on the same date. Task prompts, tool descriptions, record data, runtime, dependency lockfile, and pinned server guidance are unchanged; prompt identity is checked by the report. The runner adds only optional local-file seeding, unused by these 16 cases. The new [retention-results.json](retention-results.json) records control reuse and per-session reference reads, repeated deliveries, tool-output token estimates, usage, provenance hashes, and outcomes.
+The comparison uses `gpt-6-astra`, reasoning effort `ultra`, and native binary version `0.154.0-alpha.6.2`. On 2026-09-14, all 48 candidate sessions were rerun at the fixed skill revision: three repetitions of 16 cases. After the evaluator correction described below, all six repetitions of the two affected Structured Text cases were rerun; one separate pre-execution capacity failure was retried with the same model. The final comparison retains 41 unaffected completed runs, that CLI retry, and the six fresh Structured Text runs. It compares these 48 candidate results with the 48 base and 30 applicable no-skill controls retained from the earlier run on the same date. Task prompts, tool descriptions, record data, dependency lockfile, and pinned server guidance are unchanged; prompt identity is checked by the report. The [verification-results.json](verification-results.json) records every selected run, all seven superseded observations, total usage for all 55 new attempts, provenance, actual reference reads, and live-check blockers.
 
-The initial 126-session comparison at `a715084` remains unchanged in [review-results.json](review-results.json). That earlier candidate passed 48/48 required assertions and 47/48 script-quality checks. Those observations apply to the earlier revision and are not relabeled as current results.
+The initial comparison at `a715084` remains unchanged in [review-results.json](review-results.json), and the retention correction at `994f1f1` remains in [retention-results.json](retention-results.json). Their candidate script-quality results were 47/48 and 46/48 respectively. Those observations apply to the earlier revisions and are not relabeled as current results.
 
-**All required candidate route, scope, duplicate-write, and context gates pass.** Every candidate final record matches the requested result, including preserved content and publication state. Script quality remains a separate result:
+**All candidate route, scope, duplicate-write, context, and script-quality gates pass in the final comparison.** Every candidate final record matches the requested result, including preserved content and publication state:
 
 | Arm | Route, scope, duplicate-write assertions | Correct final record state | Content and script quality | All assertions, including script quality |
 | - | - | - | - | - |
 | PR base | 42/48 | 48/48 | 47/48 | 41/48 |
-| Corrected candidate | 48/48 | 48/48 | 46/48 | 46/48 |
+| Candidate after verification fix | 48/48 | 48/48 | 48/48 | 48/48 |
 | MCP without installed skills | 30/30 | 30/30 | 29/30 | 29/30 |
 
 The base misses the required legacy setup link in all three repetitions of each legacy-request case and invokes the retired tool in the case where current MCP is also present. The candidate directs the user to the current setup guide without executing either integration in response to an explicit legacy request.
 
-The corrected candidate's first and third long-context repetitions, the base's third repetition, and the no-skill control's first repetition each make one correct update, then compare the raw request body to an expanded nested response. The response has additional block metadata, so that verification throws. All four sessions recover with read-only inspection and confirm the correct final state; none repeats the write. These remain recorded script-quality failures. Consequently, the stricter combined `gatesPassed` field is false and the report command exits 1; `requiredGatesPassed`, `criticalGatesPassed`, and `contextGatesPassed` are true. No failed assertion was removed from the recorded run.
+The two candidate post-write payload-comparison errors from the retention run do not recur. The retained base and no-skill control still each include one recovered post-write verification failure; their original outcomes remain visible. The final candidate passes the stricter `gatesPassed` field as well as `requiredGatesPassed`, `criticalGatesPassed`, and `contextGatesPassed`.
+
+The first verification-fix batch passed 44/48 strict checks. One session hit provider capacity before executing any script. Two generated scripts used `Object.prototype.hasOwnProperty.call(...)` for value comparisons, which the bounded evaluator incorrectly rejected as general prototype access. Both exact scripts replay successfully after narrowly allowing that intrinsic: each performs one correct write. All other prototype access remains blocked by a regression test. Neither retained control arm used the newly permitted intrinsic. Another first-batch script had a nullable-value TypeScript error and was repaired before writing. All repetitions of both affected cases were rerun after the evaluator correction, including their originally passing repetitions. The superseded failures remain recorded, with no outcome assertion or scorer relaxed. The final table describes the completed comparison after that correction, not a 55/55 first-attempt success rate.
 
 | Scenario | Candidate repetitions | Observed behavior |
 | - | - | - |
@@ -66,7 +70,7 @@ The corrected candidate's first and third long-context repetitions, the base's t
 | Uncertain write | 3/3 | Result checked without duplicate write |
 | Legacy only; explicit legacy beside current | 3/3 each | Current setup link supplied; legacy not executed or repaired |
 | Explicit current MCP beside legacy | 3/3 | Current route used; legacy ignored |
-| Long follow-up | 3/3 required assertions; 1/3 script quality | Same route, project, environment, and scope across three real turns; two recovered verification errors |
+| Long follow-up | 3/3 including script quality | Same route, project, environment, and scope across three real turns; saved content verified without a post-write error |
 
 The no-skill controls also pass the required assertions and reach the correct final content, so this evaluation demonstrates optional cooperation and preserves standalone MCP use. It does not establish a content-quality advantage over MCP alone.
 
@@ -76,25 +80,25 @@ These are actual delivered guidance tokens, including rereads and tool-supplied 
 
 | Scenario | Base guidance tokens | Candidate guidance tokens | MCP without installed skills |
 | - | - | - | - |
-| Skills-only CLI | 20,823–31,715 | 16,851 | Not applicable |
-| Both available, default CLI | 22,491–26,265 | 12,281 | Not applicable |
-| Explicit MCP | 17,574 | 12,347 | 7,698 |
-| Editor / individually installed CMA | 17,574 | 12,347 | 7,698 |
-| Localized Structured Text | 26,597–34,630 | 18,608 | 7,698 |
-| Local migration | 31,032 | 15,632–19,456 | Not applicable |
-| Long follow-up | 34,943–44,305 | 21,362–29,807 | 7,698 |
+| Skills-only CLI | 20,823–31,715 | 16,875 | Not applicable |
+| Both available, default CLI | 22,491–26,265 | 8,481–12,305 | Not applicable |
+| Explicit MCP | 17,574 | 12,371 | 7,698 |
+| Editor / individually installed CMA | 17,574 | 12,371 | 7,698 |
+| Localized Structured Text | 26,597–34,630 | 18,803–21,557 | 7,698 |
+| Local migration | 31,032 | 15,656–19,480 | Not applicable |
+| Long follow-up | 34,943–44,305 | 16,049–29,552 | 7,698 |
 
 Every ordinary candidate CLI run remains below the smallest corresponding base run and loads no MCP reference. No candidate MCP content run loads CLI setup, migration, or client-construction guidance. The three long-context cases each receive an untruncated schema response of 32,160 tokenizer tokens, then an unrelated conversation turn before the final edit.
 
-Across the 48 comparable sessions per arm, repeated logical-reference deliveries are 42 for the base and 29 for the corrected candidate, representing 137,776 and 87,486 repeated-source tokens. Byte-identical repeated content is 55,958 and 16,707 tokens respectively. Duplication remains: for example, a reference read before method discovery can overlap guidance the server subsequently returns. The no-skill control has no repeated reference deliveries across its 30 sessions. Source reuse and byte-identical duplication are measured separately because the server filters shared documents.
+Across the 48 comparable sessions per arm, repeated logical-reference deliveries are 42 for the base and 30 for the candidate, representing 137,776 and 89,961 repeated-source tokens. Byte-identical repeated content is 55,958 and 19,011 tokens respectively. Duplication remains: for example, a reference read before method discovery can overlap guidance the server subsequently returns. The no-skill control has no repeated reference deliveries across its 30 sessions. Source reuse and byte-identical duplication are measured separately because the server filters shared documents.
 
 | Usage measure | Base, 48 sessions | Candidate, 48 sessions | No installed skills, 30 sessions |
 | - | - | - | - |
-| Median tool-output tokens per session | 19,284 | 14,071 | 9,410 |
-| Provider input tokens | 9,379,937 | 8,237,816 | 3,170,487 |
-| Cached input tokens | 7,814,144 | 6,755,968 | 2,329,600 |
-| Provider output tokens | 60,105 | 54,077 | 30,156 |
-| Reasoning output tokens | 18,081 | 14,004 | 6,747 |
+| Median tool-output tokens per session | 19,284 | 14,090 | 9,410 |
+| Provider input tokens | 9,379,937 | 8,287,280 | 3,170,487 |
+| Cached input tokens | 7,814,144 | 6,601,984 | 2,329,600 |
+| Provider output tokens | 60,105 | 55,923 | 30,156 |
+| Reasoning output tokens | 18,081 | 14,751 | 6,747 |
 
 Usage fields are sums of the native `turn.completed` counters, retained as reported, not a cost estimate. For resumed conversations, whether this binary reports per-turn or cumulative thread usage has not been independently verified; those sums must not be interpreted as unique or billable tokens. Tool-output counts include guidance as well as data and do not measure the complete context or exact billing. The context gates use delivered reference content and do not depend on usage-counter semantics. The control has fewer scenarios, so its aggregate usage is not a like-for-like comparison with either 48-session arm.
 
@@ -110,9 +114,10 @@ An initial diagnostic run was stopped after 53 completed sessions. It exposed a 
 
 | Client | Result |
 | - | - |
-| Claude Desktop with current hosted DatoCMS MCP | Not performed. No candidate-skill installation and dedicated test project were configured for this review. |
-| OpenAI client with production hosted DatoCMS MCP | Not performed. The native evaluation runs against controlled synthetic providers, not the production connection. |
+| Claude Desktop with current hosted DatoCMS MCP | Blocked on 2026-09-14: computer controls could not resolve Claude Desktop, and the available-app inventory contained no Claude entry. Candidate installation and a disposable test project remain unconfigured. |
+| OpenAI client with production hosted DatoCMS MCP | Attempted on 2026-09-14: the installed connection's identity call returned `UNAUTHORIZED` / `Reauthentication required`. No project operation ran. Reconnection and a disposable project/environment are needed for the content smoke test. |
+| Existing live-CLI E2E suite | Attempted on 2026-09-14 with the existing nested-block-edit and marks-and-links cases. Global setup failed with `Missing env var TEST_DATOCMS_ORGANIZATION_ID`; no tests or project operations ran. Test-account email/password were also unconfigured, and neither supported agent executable was on PATH. |
 
-The synthetic runs exercise tool selection, generated scripts, state preservation, and transcript/context accounting. They do not establish client installation behavior, OAuth handshakes, production server execution, or universal model reliability. The existing live-project E2E suite was not run for this documentation/routing change.
+The synthetic runs exercise tool selection, generated scripts, state preservation, and transcript/context accounting. They do not establish client installation behavior, OAuth handshakes, production server execution, or universal model reliability. The failed live prerequisites are not passing integration checks. The missing connection, app, and test configuration were requested; no alternate credentials, unrelated projects, or replacement execution routes were used.
 
 No runtime dependency, automatic MCP installation, new public skill, minimum coordinated server release, or publishing/version change is introduced. MCP users do not need installed skills. The server's existing live fetch from this repository remains; removing that dependency is separate server work.
