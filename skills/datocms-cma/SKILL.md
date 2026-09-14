@@ -26,7 +26,7 @@ Use only task-relevant capabilities already exposed in the current environment. 
 - **No preference or established route:** prefer a usable CLI. If current MCP is available and CLI execution is not usable, use MCP without package installation, CLI login, or project linking. Don't bootstrap CLI merely to displace an available MCP connection.
 - **Neither ready:** explain the missing prerequisite appropriate to this environment. Local CLI work may need CLI setup; a client without local execution needs a supported project connection for live operations. MCP is optional, not a prerequisite for all skills.
 - **Local deliverable:** migrations, repo configuration, and application code retain their local development workflow. Remote execution cannot substitute for a versioned migration or create the requested local artifacts.
-- **Confirmed legacy MCP:** direct the user to the [current DatoCMS MCP setup](https://www.datocms.com/docs/mcp-server). Do not execute, repair, reinstall, or change the legacy integration. Authentication or connection failure alone is not evidence of legacy software.
+- **Confirmed legacy MCP:** stop and tell the user to use the current DatoCMS MCP. Include the [current MCP setup link](https://www.datocms.com/docs/mcp-server), even when a current connection is already registered. Do not execute, repair, reinstall, or change the legacy integration. Authentication or connection failure alone is not evidence of legacy software.
 
 After choosing:
 
