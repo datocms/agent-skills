@@ -161,5 +161,29 @@
     "boundary_with": [
       "datocms-cli"
     ]
+  },
+  {
+    "query": "Convert this local Markdown file into DatoCMS Structured Text JSON. Only return the document; do not connect to a project, write records, or scaffold anything.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
+  },
+  {
+    "query": "Rewrite the second paragraph in this supplied DAST JSON while preserving embedded block references. Return the edited JSON only; no API calls or record writes.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
+  },
+  {
+    "query": "Convert this Markdown article to Structured Text, then write a typed CMA script to create the Article record with its title and body without publishing it.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
   }
 ]

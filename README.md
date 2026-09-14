@@ -35,6 +35,7 @@ The skills are designed to work together — they cross-link and reinforce each 
 
 - **Content modeling** — schema-design decisions: model vs block, references vs embedded blocks, taxonomies, field shapes, validators, editor appearances.
 - **Reading content** — GraphQL queries against the Content Delivery API with filters, pagination, localization, Structured Text, responsive images, SEO, and typed queries.
+- **Structured Text** — understand, build, edit, validate, and convert DAST documents; import Markdown/HTML, preserve embedded content during edits, and export to other formats.
 - **Writing content & automation** — record CRUD, bulk imports/exports, asset uploads, environment forks and promotions, webhooks, roles, scheduled publishing, audit logs.
 - **CLI workflows** — migrations, schema-type generation, typed CMA scripts, CI/CD pipelines, WordPress/Contentful imports.
 - **Frontend integrations** — draft mode, Web Previews, Visual Editing, Content Link, real-time preview subscriptions, cache-tag invalidation, SEO/sitemap wiring across Next.js, Nuxt, SvelteKit, and Astro.
@@ -109,6 +110,9 @@ You don't need to invoke the auto-triggered skills — describe what you want in
 - "Publish them"
 - "Fix those slugs"
 - "Import this CSV into the authors model"
+- "Convert this Markdown article into Structured Text"
+- "Rewrite this DAST paragraph while preserving its embedded blocks"
+- "Validate this Structured Text document"
 - "Make my plugin config screen match the DatoCMS style"
 - "Create a new DatoCMS plugin from scratch"
 

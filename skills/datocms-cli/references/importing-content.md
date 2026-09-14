@@ -2,6 +2,8 @@
 
 WordPress and Contentful import commands.
 
+Standalone Markdown/HTML → Structured Text is a different task: load [conversion](../../datocms-structured-text/references/conversion.md) from `datocms-structured-text`, then [CMA editing records](../../datocms-cma/references/editing-records.md) only when importing the result into a project. Do not run an onboarding importer for an isolated document conversion.
+
 ## Contents
 
 - Inputs to confirm before running commands

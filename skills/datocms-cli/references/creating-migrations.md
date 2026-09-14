@@ -2,6 +2,8 @@
 
 Scaffolding new migration scripts with `migrations:new`.
 
+For Structured Text backfills, load [document model](../../datocms-structured-text/references/document-model.md), then [editing](../../datocms-structured-text/references/editing.md) for existing DAST or [conversion](../../datocms-structured-text/references/conversion.md) for Markdown/HTML. Keep migration ordering here and typed record writes in [CMA editing records](../../datocms-cma/references/editing-records.md).
+
 ## Inputs to confirm before running commands
 
 Only enter this sub-task once the user has chosen the migration approach (see "Schema changes" in Step 2.5 of SKILL.md). Confirm these inputs when they are not already clear:

@@ -12,7 +12,7 @@
     "should_trigger": true
   },
   {
-    "query": "I'm building a portfolio site with DatoCMS. Each project has modular content blocks \u2014 a text block, an image gallery block, and a video embed block. How do I query these with the CDA and render them with the right components?",
+    "query": "I'm building a portfolio site with DatoCMS. Each project has modular content blocks — a text block, an image gallery block, and a video embed block. How do I query these with the CDA and render them with the right components?",
     "should_trigger": true
   },
   {
@@ -110,5 +110,29 @@
     "query": "Use datocms-cda to write a DatoCMS CMA script that bulk publishes all draft article records and uploads any missing cover images.",
     "should_trigger": false,
     "query_mode": "explicit"
+  },
+  {
+    "query": "Validate this supplied DAST JSON document and explain its invalid child nodes. Do not query any DatoCMS project.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
+  },
+  {
+    "query": "Export this supplied Structured Text JSON to plain text for a search index. The document is already loaded; no GraphQL query is needed.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
+  },
+  {
+    "query": "Write the CDA GraphQL query for article bodies with their block and link records, then extract plain text from the returned Structured Text documents for our search index.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
   }
 ]

@@ -1,26 +1,29 @@
 ---
 name: datocms-setup
 description: >-
-  Single entry point for one-shot, end-to-end DatoCMS project setup — bundles
-  prerequisites, chains recipes, takes a greenfield or partial project to
-  working state in one pass. Five lanes: (1) frontend foundation (bootstrap
-  Next.js/Nuxt/SvelteKit/Astro from scratch); (2) frontend features (draft
-  mode, visual editing, web previews, content link, real-time updates,
-  responsive images, SEO, robots/sitemaps, site search, revalidation/cache
-  tags — applied with prerequisites); (3) migrations (CLI profiles, baseline
-  migrations, shared histories, release workflow, sandbox reset loops,
-  diff-based generation); (4) onboarding imports (WordPress, Contentful —
-  content + assets); (5) platform automation (CMA scripting + project-level
-  automation). Use when user wants a named outcome scaffolded in full, when
-  related features must land together (e.g. "set up visual editing" → draft
-  mode + content link + web previews), or for broad "set up X" needing
-  routing to the smallest matching recipe bundle.
+  End-to-end DatoCMS project setup — bundles prerequisites, takes
+  greenfield or partial projects to working state. Five lanes: (1)
+  frontend foundation (bootstrap Next.js/Nuxt/SvelteKit/Astro from
+  scratch); (2) frontend features (draft mode, visual editing, web
+  previews, content link, real-time updates, responsive images, Structured
+  Text rendering, SEO, robots/sitemaps, site search, revalidation/cache
+  tags — applied with prerequisites); (3) migrations (CLI profiles,
+  baseline migrations, shared histories, release workflow, sandbox reset
+  loops, diff-based generation); (4) onboarding imports (WordPress,
+  Contentful — content + assets); (5) platform automation (CMA scripting +
+  project-level automation). Use when user wants a named outcome
+  scaffolded in full, when related features must land together (e.g. "set
+  up visual editing" → draft mode + content link + web previews), or for
+  broad "set up X" needing routing to the smallest matching recipe bundle.
+  DAST conversion/edits within setup → datocms-structured-text.
 disable-model-invocation: true
 ---
 
 # DatoCMS Setup
 
 Public setup entrypoint. Keep surface small, inspect repo first, load only needed internal recipe files.
+
+**Structured Text routing before setup:** local DAST work belongs to **datocms-structured-text** — [document model](../datocms-structured-text/references/document-model.md), [editing](../datocms-structured-text/references/editing.md), or [conversion](../datocms-structured-text/references/conversion.md). Pure document conversion needs no project bootstrap. The existing `structured-text` recipe remains frontend renderer setup. In mixed setup/import work, load only the required specialist reference; missing → install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle.
 
 ## Workflow
 

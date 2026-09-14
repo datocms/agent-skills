@@ -154,6 +154,10 @@ This skill covers **reading via GraphQL CDA**. Route to companion skill for:
 
 | Condition | Route to |
 | - | - |
+| DAST structure or validation | **datocms-structured-text** — [document model](../datocms-structured-text/references/document-model.md) |
+| DAST traversal/editing; Markdown/HTML import or format export | **datocms-structured-text** — [editing](../datocms-structured-text/references/editing.md) or [conversion](../datocms-structured-text/references/conversion.md) |
 | Mutating content, schema/uploads/webhooks, scripts (including REST queries) | **datocms-cma** |
 | Draft mode endpoints, Web Previews, Content Link, subscriptions, cache tags | **datocms-frontend-integrations** |
 | Building plugin | **datocms-plugin** |
+
+Load the specialist only for a DAST task; ordinary GraphQL selection stays here. Missing required reference → install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle.

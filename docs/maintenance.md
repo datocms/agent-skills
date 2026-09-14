@@ -35,6 +35,19 @@ python3 evals/scripts/validate_skill_repo.py --require-fresh-results-sync
 
 For the full eval workflow (running, interpreting, and updating snapshots) see [`evals/README.md`](../evals/README.md). **Do not run evals proactively** — they are expensive. Only run them when explicitly investigating trigger quality.
 
+### Structured Text checks
+
+The local converter tests copy the shipped runtime to scratch and install its locked dependencies there. They need Node >=20.19.0 and npm registry access for installation, but no DatoCMS credentials. Never install dependencies into the shipped skill directory.
+
+```bash
+node --test tests/structured-text/convert.test.mjs
+(cd tests/dastdown && npm ci --ignore-scripts --no-audit --no-fund && npm test)
+npm run typecheck
+npm run format:check
+```
+
+The Dastdown checks execute the canonical examples selected by named section in the specialist references. Live Markdown-create and HTML-update coverage runs through the existing disposable-project harness with `npm run test:e2e`; local document checks do not establish API acceptance. Keep routing scores, document correctness, instruction-loading observations, and live persistence results separate when reporting validation.
+
 ## Regenerate the claude.ai zips
 
 The [`zips/`](../zips) folder ships a pre-built `.zip` per skill for the [claude.ai](https://claude.ai) upload flow. The pre-commit hook regenerates the affected zip on every commit that touches a skill, so this should rarely need to be done by hand.

@@ -117,7 +117,12 @@ For design work, prefer public `datocms-react-ui` components when they match the
 
 ## Routing
 
+- DAST analysis, validation, or transforms → **datocms-structured-text**: [document model](../datocms-structured-text/references/document-model.md), [editing](../datocms-structured-text/references/editing.md), or [conversion](../datocms-structured-text/references/conversion.md). Keep Slate form values and editor hooks here; never pass DAST to `ctx.setFieldValue`. Load the specialist only for DAST work. Missing required reference → install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle.
+
 - Standalone CMA scripts, schema imports, record operations, or migrations outside a plugin iframe -> `datocms-cma` or `datocms-cli`.
+
 - Website preview, Content Link, draft mode, cache tags, frontend rendering, or framework setup -> `datocms-frontend-integrations` or `datocms-setup`.
+
 - Content modeling decisions -> `datocms-content-modeling`.
+
 - Content delivery GraphQL query work -> `datocms-cda`.

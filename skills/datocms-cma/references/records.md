@@ -4,17 +4,6 @@ Records: model instances. Most-used CMA resource.
 
 > Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs {items|itemVersions} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
-## Contents
-
-- Reading: `nested: true` is the primary knob
-- Selective publish / unpublish
-- `validateNew` / `validateExisting` — preflight without commit
-- Versions and restore
-- Field value formats — beyond the simple types
-- Reading structured text as dastdown markdown
-- Bulk operations are async + 200-cap
-- Typed records via generated `Schema.X`
-
 ## Reading: `nested: true` is the primary knob
 
 Records with Modular Content / Structured Text / Single Block fields default to returning **block IDs**, not block content. To get full block payloads inline, pass `nested: true`:
@@ -78,59 +67,13 @@ Scalar types (`string`, `integer`, `float`, `boolean`, `date`, `date_time`, `slu
 
 Modular Content, Structured Text, and Single Block fields are complex enough to merit their own reference — see `references/editing-records.md`.
 
-## Reading structured text as dastdown markdown
+## Structured Text create, update, and reads
 
-The `datocms-structured-text-dastdown` package serializes a DAST tree to a markdown-like string (and parses it back). For read-only use — displaying content, feeding to an LLM, extracting plain text, diffing — `serialize` alone is enough; `parse` is for the editing round-trip (see `editing-records.md` § Pass 1).
+For `items.create` / `items.update` involving Structured Text, load the [document model](../../datocms-structured-text/references/document-model.md); choose [editing](../../datocms-structured-text/references/editing.md) for existing DAST or [conversion](../../datocms-structured-text/references/conversion.md) for Markdown/HTML. Keep CMA request types, nested block payloads, locale merging, and version checks in [editing records](editing-records.md). Preflight with `validateNew` / `validateExisting` as appropriate; structural DAST validation alone does not establish target-field validity.
 
-> **Ambient-globals runtimes** (`cma:script` stdin-mode, MCP `upsert_and_execute_{safe,unsafe}_script`): `parse` / `serialize` already global — skip `import`. **Explicit-import runtimes** (`cma:script` file-mode, migrations): import as shown.
+For inspection, Dastdown syntax and round-trips live in [editing](../../datocms-structured-text/references/editing.md); plain-text/HTML export lives in [conversion](../../datocms-structured-text/references/conversion.md). Read the parent with `nested: true` when the task needs block fields. Dastdown placeholders remain opaque IDs even with expanded blocks; inspect the original response for block contents.
 
-```ts
-import { serialize } from "datocms-structured-text-dastdown";
-
-const article = await client.items.find<Schema.Article>(id, { nested: true });
-if (article.content) {
-  const text = serialize(article.content);
-  // text is dastdown markdown — paragraphs, headings, lists, blocks-as-id placeholders
-}
-```
-
-`nested: true` matters here too: without it, blocks inside the structured text are id strings only, and `serialize` encodes them as `<block id="…"/>` placeholders without any block content visible.
-
-### dastdown syntax — what's NOT plain markdown
-
-Markdown-identical: `# H1`–`###### H6`, paragraphs, `- ` / `1. ` lists (2-space indent for nesting), `> ` blockquote, ` ```lang ` fences, `---` thematic break, `**strong**` `*emphasis*` `` `code` `` `~~strike~~`, `[text](url)`, `\` escapes.
-
-**Tables are NOT supported!**
-
-The following example uses placeholder record IDs; substitute IDs from the original document before an editing round-trip:
-
-````markdown
-# Heading {style="display"}
-
-Paragraph with ==highlight==, ++underline++, <m k="footnote-ref">custom mark</m>, and a<br/>line break.
-{style="lead"}
-
-> Quote body.
-{attribution="Oscar Wilde"}
-
-```js {highlight=[0,2]}
-const first = 1;
-const second = 2;
-console.log(first + second);
-```
-
-[External link](https://example.com){rel="nofollow" target="_blank"}
-[Record link](dato:item/RECORD_ID){rel="nofollow"}
-<inlineItem id="INLINE_RECORD_ID"/> <inlineBlock id="INLINE_BLOCK_ID"/>
-
-<block id="BLOCK_ID"/>
-````
-
-Rules that bite:
-
-- `<block|inlineBlock|inlineItem id="…"/>` and `dato:item/ID`: opaque record refs. Don't invent ids — `parse(text, original)` throws on unknown `block`/`inlineBlock` ids; create them in Pass 2 (see `editing-records.md`) instead.
-- Mark canonical order outer→inner: `highlight → strikethrough → underline → strong → emphasis → code`; custom marks innermost, alphabetical. Serializer rewrites freely — don't depend on input order.
-- Canonicalization also drops empty spans and coalesces adjacent same-marks spans. `parse(null|undefined)` → `null`; `parse("")` → single empty paragraph.
+If a required specialist reference is missing, install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle. Ordinary reads, publishing, and scalar field updates remain covered here.
 
 ## Bulk operations are async + 200-cap
 

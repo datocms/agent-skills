@@ -50,7 +50,7 @@ Once modeling decision made:
 - **Implementation** — `datocms-cli` (migrations, default) or `datocms-cma` (user opts out of migrations / wants immediate schema mutation).
 - **Querying / rendering** — `datocms-cda` for GraphQL reads and Structured Text query fragments; `datocms-frontend-integrations` for framework rendering.
 - **Validator and cascade-strategy mechanics** — `datocms-cma/references/schema.md` (link/structured-text validators, `on_reference_delete_strategy`, etc.).
-- **Building or editing actual DAST tree** — `datocms-cma/references/editing-records.md` (full DAST grammar, dastdown round-trip, typed guards).
+- **Building, editing, or validating DAST** — **datocms-structured-text**: [document model](../datocms-structured-text/references/document-model.md), [editing](../datocms-structured-text/references/editing.md); source import/export → [conversion](../datocms-structured-text/references/conversion.md). CMA persists the finished payload. Missing required reference → install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle; schema-design decisions remain covered here.
 
 ## References
 
@@ -60,7 +60,7 @@ Match decision → file:
 
 - `references/separation-of-concerns.md` — naming/shaping for meaning, not appearance; redesign test; record-meta + file/gallery-meta + position duplication anti-patterns.
 - `references/models-vs-blocks.md` — model vs block; structural rules (no orphans, no link-field references, locale inheritance); per-record limits (300 KB / 500 blocks / 5 levels); locale multiplier.
-- `references/block-fields-and-structured-text.md` — `single_block` vs `rich_text` (Modular Content) vs `structured_text`; inline-vs-block-vs-itemLink-vs-inlineItem matrix; DAST cheatsheet; **native nodes (`blockquote`, `code`, `list`, `heading`, `thematicBreak`, `link`) — never recreate as blocks**; image/gallery/video block shape (no `caption` sibling); container-shape effects on limits.
+- `references/block-fields-and-structured-text.md` — `single_block` vs `rich_text` (Modular Content) vs `structured_text`; inline-vs-block-vs-itemLink-vs-inlineItem matrix; native-node modeling choices; **native nodes (`blockquote`, `code`, `list`, `heading`, `thematicBreak`, `link`) — never recreate as blocks**; image/gallery/video block shape (no `caption` sibling); container-shape effects on limits.
 - `references/content-reuse.md` — link fields, project-level Blocks Library, built-in `seo`, frameless single-block, tree taxonomies, fieldset grouping, block-library hygiene.
 - `references/taxonomy-classification.md` — flat tags, tree models, faceted classification via multiple links, cascade strategies.
 - `references/ui-organization.md` — Content tab `menu_item` (editors), Schema tab `schema_menu_item` (devs), saved views via `item_type_filter`, emoji conventions, IA heuristics.

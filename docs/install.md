@@ -130,6 +130,8 @@ ln -sfn "$repo_root/skills/datocms-cda" "$skills_dir/datocms-cda"
 
 The folder names inside `skills/` match each skill's `name:` field, so the repo path and the canonical skill name stay aligned.
 
+`datocms-structured-text` supports local document work independently. Record persistence, GraphQL reads, framework rendering, and plugin form writes use companion skills only when requested. If a referenced companion is absent, install that skill from `datocms/agent-skills` or update the full bundle before continuing the dependent portion.
+
 ## Detached Snapshot Install
 
 If you want a copy that still works after the repo is moved or deleted, copy the skill folders instead of symlinking them.
@@ -149,6 +151,7 @@ cp -R "$repo_root/skills/datocms-cda/." "$skills_dir/datocms-cda"
 - `skills/datocms-cda`
 - `skills/datocms-cli`
 - `skills/datocms-cma`
+- `skills/datocms-structured-text`
 - `skills/datocms-content-modeling`
 - `skills/datocms-frontend-integrations`
 - `skills/datocms-feedback`

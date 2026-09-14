@@ -1,6 +1,6 @@
 # Structured Text
 
-Covers querying structured text fields: the three sub-fields (`value`, `blocks`, `links`), DAST node types, inline blocks, and rendering.
+Query Structured Text through `value`, `blocks`, `links`, and `inlineBlocks`. Keep GraphQL selection and record resolution here; use [document model](../../datocms-structured-text/references/document-model.md) for DAST structure, [editing](../../datocms-structured-text/references/editing.md) for traversal/transforms, and [conversion](../../datocms-structured-text/references/conversion.md) for Markdown/HTML import or format export. Load only the reference the task needs; if missing, install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle. Routine GraphQL reads need no additional skill.
 
 ## Contents
 
@@ -66,69 +66,7 @@ query {
 
 ## The `value` Field — DAST Structure
 
-The `value` field contains a JSON object following the DAST (DatoCMS Abstract Syntax Tree) specification:
-
-```json
-{
-  "schema": "dast",
-  "document": {
-    "type": "root",
-    "children": [
-      {
-        "type": "paragraph",
-        "children": [
-          {
-            "type": "span",
-            "value": "Hello, world!"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-### DAST Node Types
-
-| Node Type | Children | Description |
-| - | - | - |
-| `root` | paragraph, heading, list, code, blockquote, block, thematicBreak | Document root — every DAST document starts with this |
-| `paragraph` | span, link, itemLink, inlineItem, inlineBlock | Text paragraph |
-| `span` | — (leaf) | Text content. Has `value` (string) and optional `marks` array |
-| `heading` | span, link, itemLink, inlineItem, inlineBlock | Heading with `level` attribute (1-6) |
-| `link` | span | External hyperlink with `url` attribute. Optional `meta` array of `{ id, value }` pairs for extra attributes (e.g., `target: "_blank"`) |
-| `itemLink` | span | Link to a DatoCMS record with `item` attribute (record ID). Optional `meta` array of `{ id, value }` pairs |
-| `inlineItem` | — | Inline record reference with `item` attribute (record ID) |
-| `inlineBlock` | — | Inline block record with `item` attribute (block record ID) |
-| `list` | listItem | Ordered or unordered list with `style` attribute (`"bulleted"` or `"numbered"`) |
-| `listItem` | paragraph, list | List item (can contain nested lists) |
-| `blockquote` | paragraph | Block quote with optional `attribution` attribute |
-| `code` | — | Code block with `code` (string), `language` (string), and optional `highlight` (line numbers array) |
-| `block` | — | Embedded block record with `item` attribute (block record ID). **Can only be a direct child of root.** |
-| `thematicBreak` | — | Horizontal rule / section divider |
-
-### Span Marks
-
-The `span` node's `marks` array can contain:
-
-| Mark | Description |
-| - | - |
-| `"strong"` | Bold text |
-| `"emphasis"` | Italic text |
-| `"underline"` | Underlined text |
-| `"strikethrough"` | Struck-through text |
-| `"highlight"` | Highlighted text |
-| `"code"` | Inline code |
-
-```json
-{
-  "type": "span",
-  "value": "bold and italic",
-  "marks": ["strong", "emphasis"]
-}
-```
-
-Spans support `\n` for line breaks within the same paragraph.
+`value` contains the DAST document, `{ schema: "dast", document: { type: "root", children: [...] } }`. The field's GraphQL response wraps it alongside resolved record arrays; do not confuse that wrapper with a CMA field value. For node properties, child rules, and marks, load [document model](../../datocms-structured-text/references/document-model.md).
 
 ## The `blocks` Field
 
@@ -206,13 +144,7 @@ DatoCMS provides `<StructuredText>` components for popular frameworks that handl
 | Svelte | `@datocms/svelte` | `<StructuredText>` |
 | Astro | `@datocms/astro` | `<StructuredText>` |
 
-For non-framework contexts (search indexing, emails, APIs), use these utility packages:
-
-| Package | Output |
-| - | - |
-| `datocms-structured-text-to-plain-text` | Plain text string |
-| `datocms-structured-text-to-html-string` | HTML string |
-| `datocms-structured-text-to-dom-nodes` | DOM nodes |
+For framework-independent plain-text, HTML-string, or DOM-node export, load [conversion](../../datocms-structured-text/references/conversion.md). For framework rendering APIs, load the matching [frontend reference](../../datocms-frontend-integrations/SKILL.md).
 
 The framework components accept custom renderers for blocks, inline records, inline blocks, and record links:
 

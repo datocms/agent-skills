@@ -185,7 +185,7 @@ async function migrateUploads(
 
 ## Field Type Migration
 
-Change a field's type or migrate data between fields:
+Change a field's type or migrate data between fields. For Structured Text targets, load [document model](../../datocms-structured-text/references/document-model.md) and [conversion](../../datocms-structured-text/references/conversion.md) before a Markdown/HTML backfill; existing DAST transforms use [editing](../../datocms-structured-text/references/editing.md). The example below handles plain text only; it is not a Markdown/HTML parser.
 
 ```ts
 async function migrateTextToStructuredText() {

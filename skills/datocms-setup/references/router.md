@@ -2,6 +2,10 @@
 
 Use this file to choose the right internal recipe bundle without loading the entire setup tree.
 
+## Structured Text boundary
+
+`structured-text` recipe means frontend rendering. DAST construction/validation → [document model](../../datocms-structured-text/references/document-model.md); existing document transforms → [editing](../../datocms-structured-text/references/editing.md); Markdown/HTML import or format export → [conversion](../../datocms-structured-text/references/conversion.md). Route pure document work to `datocms-structured-text`; do not queue frontend prerequisites or project bootstrap. For a mixed setup task, keep the recipe and load the needed DAST reference alongside it.
+
 ## Targeted Mode
 
 If the user clearly asks for one or more of these outcomes, load only the matching recipes plus their prerequisites from `recipe-manifest.json`, applying shared prerequisites once:
