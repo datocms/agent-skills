@@ -2,7 +2,7 @@
 
 Covers querying patterns for listing records: pagination, filtering, sorting, counting.
 
-> Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs {items|uploads|webhookCalls|buildEvents|itemVersions} instances` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
+> In CLI mode, endpoint shapes / payloads / TS signatures: `npx datocms cma:docs {items|uploads|webhookCalls|buildEvents|itemVersions} instances` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
 ## Always use `listPagedIterator`
 
@@ -48,7 +48,7 @@ For equality, send `{ filter: { fields: { _creator: { eq: creatorReference } } }
 
 ### Compatibility with missing SDK declarations
 
-Use the installed SDK's filter types when they include `_creator`. If its declarations reject that field, apply a narrow extension such as the following example for `@datocms/cma-client` 6.1.3, whose declarations omit it. `ApiTypes` comes from the client package, or is ambient in `cma:script`:
+Use the installed SDK's filter types when they include `_creator`. If its declarations reject that field, apply a narrow extension such as the following example for `@datocms/cma-client` 6.1.3, whose declarations omit it. Use the runtime-provided `ApiTypes`, or import it from the client package:
 
 ```ts
 const source = await client.items.find<Schema.BlogPost>(recordId);

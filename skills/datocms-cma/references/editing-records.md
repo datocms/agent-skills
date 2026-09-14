@@ -2,11 +2,13 @@
 
 Mutate record fields — block-bearing fields (Modular Content `rich_text`, Single Block `single_block`, Structured Text `structured_text` w/ `block` / `inlineBlock` nodes) + localized fields, plus add locale + backfill per-locale values.
 
-> Endpoint shapes for `items.*` (find / list / update / create / publish / …): `npx datocms cma:docs items <action>` (add `--expand-types '*'` for full TS definitions). This file owns workflow: peek-then-mutate ordering, typed guards, structured-text Pass 1 → Pass 2 → root-append invariant.
+This file owns workflow: peek-then-mutate ordering, typed guards, structured-text Pass 1 → Pass 2 → root-append invariant.
+
+> In CLI mode, endpoint shapes for `items.*`: `npx datocms cma:docs items <action>` (add `--expand-types '*'` for full TS definitions).
 
 Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.body) { ... }`. Always pass `Schema.X` as generic to typed helpers; never hand-roll JSON:API.
 
-> **`any` / `unknown` forbidden** — rejected pre-execution. Typed surface below (`Schema.X` generics, `FieldValueInRequest`, type-guard imports) makes them unnecessary. Untyped callback param → guard (`isSpan(c)`, `isBlockWithItemOfType(...)`), not `any`.
+> **Use concrete types instead of `any` / `unknown`.** Typed surface below (`Schema.X` generics, `FieldValueInRequest`, type-guard imports) makes them unnecessary. Untyped callback param → guard (`isSpan(c)`, `isBlockWithItemOfType(...)`), not `any`.
 
 ## Contents
 
@@ -30,10 +32,7 @@ Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.
 
 ## Imports
 
-> Two runtime classes (terms used throughout this file):
->
-> - **Ambient-globals** (`cma:script` stdin-mode, MCP `upsert_and_execute_{safe,unsafe}_script`): `client`, `Schema.*`, all 3 modules' named exports already on `globalThis` — skip imports below.
-> - **Explicit-import** (`cma:script` file-mode, migrations, repo scripts): import as shown.
+> Examples assume an authenticated `client` and project-specific `Schema`. Use helpers already supplied by the selected runtime; otherwise import them from the packages shown below.
 
 ```ts
 import {
@@ -42,7 +41,7 @@ import {
   isBlockOfType, SchemaRepository,
 } from "@datocms/cma-client-node";
 
-All structured-text related utilities have a different import!
+// Structured Text helpers come from their own package.
 
 import {
   mapNodes, findFirstNode, reduceNodes,
@@ -103,7 +102,7 @@ currentItem.title; // string | null
 currentItem.question; // Record<string, string | null>
 ```
 
-**Ambient-globals**: `Schema.*` ambient — no import, no `schema:generate`, no `tsconfig` change. **Explicit-import**: `Cannot find name 'Schema'` → run `npx datocms schema:generate ./datocms-schema.ts` next to script + `import * as Schema from "./datocms-schema"`.
+Use the project types supplied by the selected runtime. For local scripts that need a generated `Schema` module, see `references/type-generation.md`.
 
 Same for `client.items.update<Schema.X>`, `client.items.create<Schema.X>`, `buildBlockRecord<Schema.B>`, `duplicateBlockRecord<Schema.B>`. `client.items.list` and `client.items.listPagedIterator` accept `<Schema.X>` when `filter.type` is set, or `<Schema.AnyModel>` when unset — always generic.
 

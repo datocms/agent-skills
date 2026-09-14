@@ -2,7 +2,7 @@
 
 Covers common scripting patterns for data migrations, bulk operations, upload migrations, field type migrations, and resumable migration patterns.
 
-> Endpoint shapes for any resource the script touches: `npx datocms cma:docs <resource> <action>` (add `--expand-types '*'` for full TS definitions). This file covers the migration script boilerplate, idempotent loops, progress reporting, and bulk-operation patterns — not the per-endpoint payload.
+> In CLI mode, endpoint shapes for any resource the script touches: `npx datocms cma:docs <resource> <action>` (add `--expand-types '*'` for full TS definitions). This file covers the migration script boilerplate, idempotent loops, progress reporting, and bulk-operation patterns — not the per-endpoint payload.
 
 ## Contents
 
@@ -30,7 +30,7 @@ Use `console.error` for per-item failures so they stand out. The examples below 
 
 ## Migration Script Boilerplate
 
-Every migration script should follow this pattern:
+This standalone-script example constructs its own client. When the execution runtime supplies `client`, keep that client and adapt the function wrapper to its script format:
 
 ```ts
 import { buildClient, ApiError } from "@datocms/cma-client-node";

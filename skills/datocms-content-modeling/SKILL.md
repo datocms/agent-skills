@@ -20,7 +20,7 @@ description: >-
 
 # DatoCMS Content Modeling
 
-Principles for designing structured content in DatoCMS that's reusable, editor-friendly, and survives redesigns. This skill answers _"how should I model X?"_ — not _"how do I create the model?"_.
+Design reusable, editor-friendly DatoCMS schemas. Advice needs no CLI, MCP, login, or setup. Use supplied requirements/schema; inspect live schema through an available authorized route only when needed. Decide shape here; route implementation below.
 
 ## When to apply
 

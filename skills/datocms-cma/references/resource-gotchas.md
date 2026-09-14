@@ -1,10 +1,8 @@
 # Resource gotchas
 
-CRUD surface in `npx datocms cma:docs <resource> <action>` — always up-to-date, generated live.
+Use the selected execution mode's endpoint documentation for CRUD signatures. This file covers gotchas, runtime semantics and cross-cutting patterns.
 
-For `cma:docs` command surface, load **datocms-cli** skill, read `../../datocms-cli/references/direct-cma-calls.md` § cma:docs — single source of truth.
-
-This file indexes what `cma:docs` doesn't spell out — gotchas, runtime semantics, cross-cutting patterns. No signature duplication here.
+In CLI mode, use `npx datocms cma:docs <resource> <action>`; command options live in `../../datocms-cli/references/direct-cma-calls.md` § cma:docs.
 
 ## Contents
 
@@ -20,9 +18,9 @@ This file indexes what `cma:docs` doesn't spell out — gotchas, runtime semanti
 
 ## Webhooks (`webhooks`)
 
-`cma:docs webhooks` covers create/update/list/find/destroy, `events`/`filters`/`custom_payload` shape.
+CLI lookup: `cma:docs webhooks` covers create/update/list/find/destroy, `events`/`filters`/`custom_payload` shape.
 
-What `cma:docs` does **not** spell out:
+Operational notes:
 
 - **Timeouts:** 2s connection, 8s execution per delivery. Heavy work must be deferred — return 200 fast, process async.
 - **Auto-retry** (`auto_retry: true`): up to 7 retries — 2 min, 6 min, 30 min, 1 hr, 5 hrs, 1 day, 2 days.
@@ -32,18 +30,18 @@ What `cma:docs` does **not** spell out:
 
 ## Build triggers (`buildTriggers`)
 
-`cma:docs buildTriggers` covers create/update/list/find/destroy, adapters (`custom`, `netlify`, `vercel`, `gatsby_cloud`, `circle_ci`, `github_actions`, `travis_ci`, etc.), trigger/abort actions, `build_events`.
+CLI lookup: `cma:docs buildTriggers` covers create/update/list/find/destroy, adapters (`custom`, `netlify`, `vercel`, `gatsby_cloud`, `circle_ci`, `github_actions`, `travis_ci`, etc.), trigger/abort actions, `build_events`.
 
-What `cma:docs` does **not** spell out:
+Operational notes:
 
 - `autotrigger_on_scheduled_publications: true` bridges scheduling and deploys — without it, scheduled publish/unpublish does **not** trigger build.
 - Indexed CMA search requires build trigger with `indexing_enabled: true` configured before `searchResults.list()` returns anything (see "CMA search results" below).
 
 ## Scheduling (`scheduledPublication`, `scheduledUnpublishing`)
 
-`cma:docs scheduledPublication`, `cma:docs scheduledUnpublishing` cover create/destroy, `selective_publication` shape (`{ content_in_locales, non_localized_content }`).
+CLI lookup: `cma:docs scheduledPublication`, `cma:docs scheduledUnpublishing` cover create/destroy, `selective_publication` shape (`{ content_in_locales, non_localized_content }`).
 
-What `cma:docs` does **not** spell out:
+Operational notes:
 
 - `publication_scheduled_at` / `unpublishing_scheduled_at` must be ISO 8601 **in the future** — past timestamps rejected.
 - Single record can carry both scheduled publication and scheduled unpublishing simultaneously — time-limited visibility window (publish on Christmas, unpublish on New Year's).
@@ -51,9 +49,9 @@ What `cma:docs` does **not** spell out:
 
 ## Workflows (`workflows`)
 
-`cma:docs workflows` covers create/update/list/find/destroy, `stages` array shape.
+CLI lookup: `cma:docs workflows` covers create/update/list/find/destroy, `stages` array shape.
 
-What `cma:docs` does **not** spell out:
+Operational notes:
 
 - Exactly one stage in `stages` must have `initial: true` — new draft records land there.
 - Assign workflow to model via `client.itemTypes.update(modelId, { workflow: { id, type: "workflow" } })` — workflows not linked at creation.
@@ -61,9 +59,9 @@ What `cma:docs` does **not** spell out:
 
 ## Saved filters (`itemTypeFilters`, `uploadFilters`)
 
-`cma:docs itemTypeFilters`, `cma:docs uploadFilters` cover create/update/list/find/destroy, `filter` / `columns` / `order_by` / `shared` attributes.
+CLI lookup: `cma:docs itemTypeFilters`, `cma:docs uploadFilters` cover create/update/list/find/destroy, `filter` / `columns` / `order_by` / `shared` attributes.
 
-What `cma:docs` does **not** spell out:
+Operational notes:
 
 - `filter` object mirrors **UI's internal filter state** — exact shape depends on which field/meta filters are active in dashboard. Copy from saved view in UI rather than hand-writing.
 - `order_by` uses field-name + direction suffix: `"_updated_at_DESC"`, `"_created_at_ASC"`, `"<field_api_key>_ASC"`.
@@ -71,9 +69,9 @@ What `cma:docs` does **not** spell out:
 
 ## Plugins (`plugins`)
 
-`cma:docs plugins` covers create/update/list/find/destroy/fields and plugin attributes.
+CLI lookup: `cma:docs plugins` covers create/update/list/find/destroy/fields and plugin attributes.
 
-What `cma:docs` does **not** spell out:
+Operational notes:
 
 - Pass exactly one of `package_name` (marketplace) or `url` (custom) to `client.plugins.create()` — never both.
 - `parameters` is project-specific global configuration; modern plugins define its shape in their code. `parameter_definitions` describes legacy plugins only.
@@ -90,9 +88,9 @@ For modern plugins, these updates affect the selected installation; use a [devel
 
 ## Dashboard and schema menus (`menuItems`, `schemaMenuItems`)
 
-`cma:docs menuItems`, `cma:docs schemaMenuItems` cover create/update/list/find/destroy, `label` / `position` / `parent` / `item_type` / `external_url` attributes.
+CLI lookup: `cma:docs menuItems`, `cma:docs schemaMenuItems` cover create/update/list/find/destroy, `label` / `position` / `parent` / `item_type` / `external_url` attributes.
 
-What `cma:docs` does **not** spell out:
+Operational notes:
 
 - Leaf `menu_item` references either `item_type` **or** `external_url`, never both. Parent folder typically has neither — just groups children by `parent`.
 - `position` is **per-parent** — siblings under same `parent` (or top-level when `parent` is null) ordered by `position` numbers; positions across different parents independent.
@@ -100,9 +98,9 @@ What `cma:docs` does **not** spell out:
 
 ## Upload tracks and tags (`uploadTracks`, `uploadTags`, `uploadSmartTags`)
 
-`cma:docs uploadTracks`, `cma:docs uploadTags`, `cma:docs uploadSmartTags` cover CRUD surface, attributes.
+CLI lookup: `cma:docs uploadTracks`, `cma:docs uploadTags`, `cma:docs uploadSmartTags` cover CRUD surface, attributes.
 
-What `cma:docs` does **not** spell out:
+Operational notes:
 
 - **Track creation is async job.** Freshly created track returns with `status: "preparing"`; poll `client.uploadTracks.list(uploadId)` until `status: "ready"` (or `"errored"` with populated `error` field) before treating track as available.
 - `language_code` must be **BCP 47** (`"en"`, `"en-US"`, `"fr"`, `"pt-BR"`, …). `type` is `"subtitles"` or `"audio"`. `closed_captions: true` flags SDH (Deaf / Hard-of-hearing) variants.
@@ -111,9 +109,9 @@ What `cma:docs` does **not** spell out:
 
 ## Audit log events (`auditLogEvents`)
 
-`cma:docs auditLogEvents` covers `query` / `rawQuery`, filter parameters.
+CLI lookup: `cma:docs auditLogEvents` covers `query` / `rawQuery`, filter parameters.
 
-What `cma:docs` does **not** spell out:
+Operational notes:
 
 - **Cursor pagination.** Audit log is the **only** resource that does not use offset/limit. `query()` returns single page; for full traversal use `rawQuery()`, feed `result.meta.next_token` back as `page.token` until it stops appearing.
 - `rawQuery()` returns raw JSON:API — event data sits under `result.data[].attributes`, not flattened like `query()`.

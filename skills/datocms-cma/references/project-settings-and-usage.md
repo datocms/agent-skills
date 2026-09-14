@@ -2,7 +2,7 @@
 
 Covers project-level configuration and introspection: site, maintenance mode, public info, white-label, subscription limits/features, daily usage, usage counters.
 
-> Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs {site|maintenanceMode|publicInfo|whiteLabelSettings|subscriptionLimits|subscriptionFeatures|dailyUsages|usageCounters} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
+> In CLI mode, endpoint shapes / payloads / TS signatures: `npx datocms cma:docs {site|maintenanceMode|publicInfo|whiteLabelSettings|subscriptionLimits|subscriptionFeatures|dailyUsages|usageCounters} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
 ## `site.locales` — order is meaning
 
@@ -15,7 +15,7 @@ Covers project-level configuration and introspection: site, maintenance mode, pu
 
 Before changing the project's CMS color theme, use `site.meta.allow_custom_theme` to determine whether a custom palette is supported.
 
-When custom palettes are unavailable, an explicit `theme.type: "custom"` is rejected; omitting `theme.type` also selects the legacy custom format and is rejected. Use the supported monochromatic theme shape from `cma:docs site update` when that is the requested change. Preserve an existing eligible custom theme rather than automatically converting it, and leave the theme untouched during unrelated settings updates.
+When custom palettes are unavailable, an explicit `theme.type: "custom"` is rejected; omitting `theme.type` also selects the legacy custom format and is rejected. Use the supported monochromatic theme shape from the site-update documentation when that is the requested change. Preserve an existing eligible custom theme rather than automatically converting it, and leave the theme untouched during unrelated settings updates.
 
 ## Maintenance mode and `force`
 

@@ -2,7 +2,7 @@
 
 Models define structure. Fields define attributes. Fieldsets group fields visually.
 
-> Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs {itemTypes|fields|fieldsets} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
+> In CLI mode, endpoint shapes / payloads / TS signatures: `npx datocms cma:docs {itemTypes|fields|fieldsets} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
 ## Build order: model → fields → meta-relationships
 
@@ -30,7 +30,7 @@ Setting `singleton: true` on model causes DatoCMS to **lazily auto-create** sing
 
 ## Validator payload gotchas
 
-`field.validators` is a per-`field_type` map — never copy a validator set between field types. Use `npx datocms cma:docs fields {create|update}` or the [field doc § Validators](https://www.datocms.com/docs/content-management-api/resources/field#validators) for the authoritative keys and exact shapes. For validator and editor **choices** rather than payload mechanics, load `../../datocms-content-modeling/references/field-configuration.md`.
+`field.validators` is a per-`field_type` map — never copy a validator set between field types. Use the selected mode's documentation for field methods or the [field doc § Validators](https://www.datocms.com/docs/content-management-api/resources/field#validators) for the authoritative keys and exact shapes. For validator and editor **choices** rather than payload mechanics, load `../../datocms-content-modeling/references/field-configuration.md`.
 
 The names most often confused are `length` (characters on string/text/slug/structured text) vs `size` (linked records or Modular Content blocks), `number_range` (not `numeric_range`), and the block allowlists `rich_text_blocks` / `single_block_blocks`. The non-obvious reference-cascade, Structured Text, slug, and localized-default mechanics remain below.
 
@@ -92,4 +92,4 @@ Both are read-only queries. Run as pre-check; destroy itself does not surface im
 
 Each `field_type` has a default editor (`string` → `single_line`, `text` → `markdown`, `link` → `link_select`, single block → `framed_single_block`, modular content → `rich_text`). Omitting `appearance` uses that default — right for the common case. Set it only to override (e.g. `string_select` for a string with a fixed `enum`, `wysiwyg`/`textarea` for text) or to wire a plugin editor/addons.
 
-When you set `appearance`, supply all three keys: `editor`, `parameters`, and `addons`. Parameters are editor-specific and sometimes required, so never copy them between editors; use `npx datocms cma:docs fields create --expand-types '*'` or the [field doc § Specifying the appearance](https://www.datocms.com/docs/content-management-api/resources/field#specifying-the-appearance) for the exact shape. Plugin editors additionally require `field_extension`; addon entries use `{ id, field_extension, parameters }`. For guidance on choosing an editor, load `../../datocms-content-modeling/references/field-configuration.md`.
+When you set `appearance`, supply all three keys: `editor`, `parameters`, and `addons`. Parameters are editor-specific and sometimes required, so never copy them between editors; use the selected mode's documentation for field methods or the [field doc § Specifying the appearance](https://www.datocms.com/docs/content-management-api/resources/field#specifying-the-appearance) for the exact shape. Plugin editors additionally require `field_extension`; addon entries use `{ id, field_extension, parameters }`. For guidance on choosing an editor, load `../../datocms-content-modeling/references/field-configuration.md`.

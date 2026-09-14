@@ -12,7 +12,7 @@ These rules apply to every datocms-setup recipe. They are not repeated in indivi
 - Zero Questions Default
 - Question Format
 - Project Link or Create
-- CLI over MCP
+- Execution Route
 
 ## TypeScript Strictness
 
@@ -132,10 +132,10 @@ Triggered by SKILL.md greenfield gate (no `package.json` and no `datocms.config.
 
 Neither option is universally recommended — agent can't infer which applies. Do **not** append `(Recommended)` or set a default-on-skip — overrides the general "put recommended first" rule above. Order: "Link existing" first (more common), "Create new" second.
 
-## CLI over MCP
+## Execution Route
 
-DatoCMS CLI is the only sanctioned tool for project discovery, linking, schema inspection, CMA scripting, migrations. Never invoke any DatoCMS MCP tool even when present in the toolset.
+Use **datocms-cli** for migrations, repo linking, profiles, and recipe steps requiring local CLI artifacts. Bootstrap only when selected local workflow requires it.
 
-Why: CLI uses OAuth via `datocms login` and reads/writes `datocms.config.json` — repo stays source of truth. MCP bypasses this and produces config drift.
+For live project reads or direct CMA operations, follow **datocms-cma** route selection; a working current remote MCP connection is optional. Don't install CLI solely to replace it. Preserve recipe prerequisites and schema authorization safeguards whichever route executes live operations.
 
-Load `datocms-cli` sibling skill for the equivalent CLI command. Only `npx datocms login` is user-driven (interactive browser) — no MCP shortcut.
+Remote MCP doesn't create local config or migration files. Keep these CLI steps when required; modeling advice alone needs neither route.

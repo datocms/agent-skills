@@ -161,5 +161,25 @@
     "boundary_with": [
       "datocms-cli"
     ]
+  },
+  {
+    "query": "Use the connected DatoCMS MCP to translate these articles into Italian, preserving their blocks and leaving them unpublished.",
+    "should_trigger": true
+  },
+  {
+    "query": "In Claude Desktop, update the alt text of these DatoCMS assets through the connected MCP. I do not have a terminal.",
+    "should_trigger": true
+  },
+  {
+    "query": "My MCP connection is broken. Help me configure the server in my chat application.",
+    "should_trigger": false
+  },
+  {
+    "query": "With DatoCMS MCP connected, add a draft mode endpoint to this Next.js application.",
+    "should_trigger": false,
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ],
+    "query_mode": "overlap"
   }
 ]

@@ -2,7 +2,7 @@
 
 Covers sandbox environment management: forking, promoting, deleting.
 
-> Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs environments <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
+> In CLI mode, endpoint shapes / payloads / TS signatures: `npx datocms cma:docs environments <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
 ## Mental model
 
@@ -28,7 +28,7 @@ API tokens are bound to the **role of "primary"**, not to a specific environment
 
 ## Environment-aware client
 
-To target a non-primary environment with every call, pass `environment` to `buildClient`:
+Select the environment through the chosen execution mode. When constructing your own client, pass `environment` to `buildClient`:
 
 ```ts
 const sandboxClient = buildClient({

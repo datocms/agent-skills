@@ -1,6 +1,6 @@
 # CMA Type Generation Setup
 
-This reference covers generating TypeScript types from your DatoCMS schema for type-safe CMA record operations using `datocms`.
+Use this setup only for local scripts or application code that need a generated types file. When the execution runtime already supplies project types, use those instead.
 
 The generated types are useful for **both** CMA API styles:
 

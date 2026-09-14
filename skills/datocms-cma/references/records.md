@@ -2,7 +2,7 @@
 
 Records: model instances. Most-used CMA resource.
 
-> Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs {items|itemVersions} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
+> In CLI mode, endpoint shapes / payloads / TS signatures: `npx datocms cma:docs {items|itemVersions} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
 ## Contents
 
@@ -31,7 +31,7 @@ Two consequences:
 
 For ordinary `find`, `list`, and paged reads, `version: "current"` (the default) returns the latest edits, including drafts; `version: "published"` reads the published versions. Use `current` when inspecting preview content. A record with unpublished edits can have different current and published values.
 
-Reference-discovery endpoints have a separate `version` contract: `published-or-current` searches links in either version. It does not mean "prefer published content, otherwise return the draft" and is not an ordinary record-read preview option. Check `cma:docs items references` for that endpoint's options.
+Reference-discovery endpoints have a separate `version` contract: `published-or-current` searches links in either version. It does not mean "prefer published content, otherwise return the draft" and is not an ordinary record-read preview option. Consult the reference-discovery method documentation for its options.
 
 ## Selective publish / unpublish
 
@@ -82,7 +82,7 @@ Modular Content, Structured Text, and Single Block fields are complex enough to 
 
 The `datocms-structured-text-dastdown` package serializes a DAST tree to a markdown-like string (and parses it back). For read-only use — displaying content, feeding to an LLM, extracting plain text, diffing — `serialize` alone is enough; `parse` is for the editing round-trip (see `editing-records.md` § Pass 1).
 
-> **Ambient-globals runtimes** (`cma:script` stdin-mode, MCP `upsert_and_execute_{safe,unsafe}_script`): `parse` / `serialize` already global — skip `import`. **Explicit-import runtimes** (`cma:script` file-mode, migrations): import as shown.
+> If the selected runtime already supplies `parse` / `serialize`, omit their imports; otherwise import them as shown.
 
 ```ts
 import { serialize } from "datocms-structured-text-dastdown";
@@ -145,4 +145,4 @@ const post = await client.items.find<Schema.BlogPost>(id);          // blocks as
 const nested = await client.items.find<Schema.BlogPost>(id, { nested: true }); // blocks expanded
 ```
 
-To extract the type of a specific field for an intermediate variable, index `ApiTypes.Item<Schema.BlogPost>["field_api_key"]` (or `ApiTypes.ItemInNestedResponse<…>["…"]` when reading nested). For create/update payloads, `ApiTypes.ItemCreateSchema<Schema.BlogPost>` / `ApiTypes.ItemUpdateSchema<Schema.BlogPost>`. See `references/type-generation.md` for the generation step.
+To extract the type of a specific field for an intermediate variable, index `ApiTypes.Item<Schema.BlogPost>["field_api_key"]` (or `ApiTypes.ItemInNestedResponse<…>["…"]` when reading nested). For create/update payloads, `ApiTypes.ItemCreateSchema<Schema.BlogPost>` / `ApiTypes.ItemUpdateSchema<Schema.BlogPost>`. For local scripts that need generated types, see `references/type-generation.md`.

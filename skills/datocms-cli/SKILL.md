@@ -18,17 +18,17 @@ description: >-
 
 # DatoCMS CLI Skill
 
-You're an expert at `datocms` CLI. Follow these steps. Don't skip.
+Use for CLI commands, migrations, and local project configuration.
 
 ## Step 1: Detect Context
 
-If context already set (CLI package, config, token, migrations dir, TS setup), skip detection. Re-inspect only when can't answer from prior context.
+Reuse established CLI context. For live reads or content operations, follow **datocms-cma** route selection first. Don't install CLI solely to displace a working current remote MCP connection.
 
-**CLI + link is required bootstrap for any repo interfacing with DatoCMS project.** `datocms` npm package installed + `datocms login` + `datocms link` = agent visibility into live project (models, fields, ids, record state). Missing → fix first, same as `git init` or `npm install`.
+Bootstrap only for selected CLI execution; explaining commands needs no connection. CLI-specific migrations, linking, profiles, imports, and type generation stay here.
 
 ### Detection (don't rely on `which datocms` — CLI runs via `npx`)
 
-1. `datocms` in `package.json` devDependencies → CLI available. Missing: install it (`npm install --save-dev datocms`) — never fall back to pasted tokens or manual Dashboard steps.
+1. `datocms` in `package.json` devDependencies → CLI available. Missing for selected CLI execution: install it (`npm install --save-dev datocms`).
 2. `datocms.config.json` with `siteId` on active profile → linked. Missing: drive bootstrap below.
 3. `npx datocms whoami` succeeds → OAuth session active.
 4. `migrations/` directory → migrations already scaffolded.
@@ -48,12 +48,12 @@ npx datocms link --site-id=<ID> [--organization-id=<ID>] # agent links
 
 `datocms link` without `--site-id` requires terminal. In non-TTY it now exits cleanly with suggestion to pass `--site-id`; don't retry without it. Same when credentials missing — ask user to run `datocms login` first.
 
-Once project linked, use `npx datocms schema:inspect` (optionally with model API key, id, or display name) to learn what project actually contains — models, blocks, fields, validators, fieldsets, nested blocks, relationships. This is right tool any time agent or user needs generic info about project structure; reach for it before writing mutations, migrations, or CMA code so decisions rest on real schema rather than guesses. See `references/schema-inspect.md`.
+For CLI work, use `npx datocms schema:inspect` on selected project/environment before schema-dependent code or mutations. Filter by model API key, id, or name as needed. See `references/schema-inspect.md`.
 
 ### Authentication policy
 
-- **Interactive task**: OAuth via `login` + `link` is mechanism. Never ask user to paste token or add `DATOCMS_CMA_TOKEN=...` to `.env` for this case.
-- **Unattended execution** (CI, cron, server-side app, shared scripts without OAuth session): CMA-enabled token via env var. Read-only CDA tokens (`DATOCMS_READONLY_API_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`) won't work — flag that separate CMA-enabled token is needed. Agent itself still needs CLI + link at development time for visibility.
+- **Interactive CLI execution**: OAuth via `login` + `link`. Never ask user to paste token or add `DATOCMS_CMA_TOKEN=...` to `.env` for this case.
+- **Unattended execution** (CI, cron, server-side app, shared scripts without OAuth session): CMA-enabled token via env var. Read-only CDA tokens (`DATOCMS_READONLY_API_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`) won't work — flag that separate CMA-enabled token is needed.
 
 **Token resolution order CLI uses:**
 
@@ -248,7 +248,7 @@ Run `npx datocms cma:call --help` for full list of built-in examples, or `npx da
 
 ## Step 5: Verify
 
-Before presenting final commands or scripts:
+Before execution, verify applicable prerequisites; for command examples, state missing prerequisites without connecting:
 
 1. **API token** — Confirm CMA-enabled token available (via env var or `--api-token` flag)
 2. **Config file** — If using profiles, verify `datocms.config.json` exists and has right profile

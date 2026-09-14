@@ -9,6 +9,17 @@ Use the root [README](../README.md#install) for the fast local install commands.
 - You want the canonical path map for each shipped skill.
 - You want details on the Claude Code plugin install.
 - You want to understand how updates work.
+- You want to use skills with an optional remote MCP connection.
+
+## Skills and Remote MCP
+
+Installing these skills does not install or require an MCP server. Standalone CLI and CMA-client workflows remain available. For live reads or content operations, the CMA skill honors an explicit route; otherwise it keeps a usable CLI workflow and can use current remote MCP when appropriate. It does not bootstrap CLI just to displace a working remote connection.
+
+Connect remote MCP separately using the [current DatoCMS setup guide](https://www.datocms.com/docs/mcp-server). For a confirmed legacy installation, stop using that server and follow the current setup guide; these skills do not execute or repair legacy servers. A connection error alone does not identify a legacy installation. An existing usable CLI route remains available, subject to the user's chosen route and target.
+
+Skills must be enabled in the client running the conversation. A local coding-agent installation does not automatically upload skills to Claude chat or a ChatGPT workspace, and installing skills does not grant connector access. For Claude chat, upload and enable the [provided ZIPs](../README.md#claudeai-and-claude-desktop-chat); configure and authorize remote MCP separately. In other clients, use their supported skill installation and MCP connection paths.
+
+Content-modeling advice needs no authentication. Live content work needs an authorized project connection; migrations and repo configuration still require local artifacts and CLI support. Schema changes retain the same migration choice and target-confirmation safeguards whichever route is used.
 
 ## Claude Code Plugin Install
 
