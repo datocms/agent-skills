@@ -1,6 +1,6 @@
 {
   "skill_name": "datocms-cma",
-  "description": "Node.js/TypeScript scripts driving the DatoCMS Content Management API via @datocms/cma-client (-node/-browser). Code-first companion for content + automation work. Use for record/upload/project-automation code \u2014 short asks (\"publish them\", \"fix those slugs\", \"delete all drafts\", \"bulk import this CSV\") and checked-in scripts. Covers: (1) content ops \u2014 CRUD + publish records, bulk import/export, CSV pipelines, pagination, asset uploads (URL/file) with metadata, structured-text + block payload edits; (2) env + governance \u2014 fork/promote envs, webhooks, build triggers, project settings, maintenance mode, scheduled publish/unpublish, audit logs, usage analytics, subscription limits; (3) access + typed flows \u2014 roles, API tokens, upload tracks/tags, generated CMA types; (4) schema/UI mutation only when user opts out of migrations or embeds it in automation. Ordinary schema changes \u2192 `datocms-cli` migrations. Runs via `cma:call`/`cma:script` or checked-in `buildClient()` scripts.",
+  "description": "Manage DatoCMS records, uploads, and project automation through the Content Management API (CMA). Use for content reads/edits, publish/unpublish, bulk imports/exports, CSV scripts, localization, Structured Text and block edits, assets, roles/tokens, webhooks, scheduling, environment operations, and typed Node.js/TypeScript CMA scripts. Includes short follow-ups such as \"publish them\" or \"fix those slugs\", token/OAuth setup before content operations, and model/field changes needing a migration-versus-direct decision or embedded in CMA automation. Works with the CLI or an available DatoCMS MCP; neither MCP installation nor local execution is assumed. Route schema-inspection-only requests, versioned migrations, and standalone CLI configuration to `datocms-cli`, GraphQL reads to `datocms-cda`, and frontend or plugin code to their dedicated skills.",
   "evaluation_source": "frontmatter",
   "results": [
     {
@@ -210,10 +210,10 @@
       "should_trigger": false,
       "query_mode": "explicit",
       "boundary_with": [],
-      "trigger_rate": 1.0,
-      "triggers": 1,
+      "trigger_rate": 0.0,
+      "triggers": 0,
       "runs": 1,
-      "pass": false
+      "pass": true
     },
     {
       "query": "publish them all in DatoCMS for me",
@@ -282,10 +282,10 @@
       "boundary_with": [
         "datocms-cli"
       ],
-      "trigger_rate": 0.0,
-      "triggers": 0,
+      "trigger_rate": 1.0,
+      "triggers": 1,
       "runs": 1,
-      "pass": false
+      "pass": true
     },
     {
       "query": "I need to add a seo field to the article model on DatoCMS",
@@ -294,10 +294,10 @@
       "boundary_with": [
         "datocms-cli"
       ],
-      "trigger_rate": 0.0,
-      "triggers": 0,
+      "trigger_rate": 1.0,
+      "triggers": 1,
       "runs": 1,
-      "pass": false
+      "pass": true
     },
     {
       "query": "rename the 'body' field on blog_post to 'content' in our DatoCMS project",
@@ -306,10 +306,10 @@
       "boundary_with": [
         "datocms-cli"
       ],
-      "trigger_rate": 0.0,
-      "triggers": 0,
+      "trigger_rate": 1.0,
+      "triggers": 1,
       "runs": 1,
-      "pass": false
+      "pass": true
     },
     {
       "query": "add a required meta_description to every DatoCMS model that has a title field",
@@ -318,10 +318,10 @@
       "boundary_with": [
         "datocms-cli"
       ],
-      "trigger_rate": 0.0,
-      "triggers": 0,
+      "trigger_rate": 1.0,
+      "triggers": 1,
       "runs": 1,
-      "pass": false
+      "pass": true
     },
     {
       "query": "I just want to add a new optional text field to the author model on DatoCMS, quickly, without setting up a migrations workflow \u2014 what's the right way?",
@@ -341,6 +341,48 @@
       "query_mode": "overlap",
       "boundary_with": [
         "datocms-cli"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Use the connected DatoCMS MCP to translate these articles into Italian, preserving their blocks and leaving them unpublished.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In Claude Desktop, update the alt text of these DatoCMS assets through the connected MCP. I do not have a terminal.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "My MCP connection is broken. Help me configure the server in my chat application.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "With DatoCMS MCP connected, add a draft mode endpoint to this Next.js application.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-frontend-integrations"
       ],
       "trigger_rate": 0.0,
       "triggers": 0,
@@ -385,8 +427,8 @@
     }
   ],
   "summary": {
-    "total": 36,
-    "passed": 31,
-    "failed": 5
+    "total": 40,
+    "passed": 40,
+    "failed": 0
   }
 }

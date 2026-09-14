@@ -2,11 +2,13 @@
 
 Covers roles, API tokens, users, invitations, and SSO.
 
-> **For payloads, field shapes, enums, defaults, and TS sigs, always run `npx datocms cma:docs <resource> [<action>]`** (add `--expand-types '*'` for full TS definitions). Resources here: `roles`, `accessTokens`, `users`, `siteInvitations`, `ssoUsers`, `ssoGroups`, `ssoSettings`. The schema docs are exhaustive — including the permissions model, the discriminated unions on each `positive_*` / `negative_*` entry, inheritance resolution, action enums, environment scoping, and per-resource gotchas. This file only carries operational advice that doesn't fit on a schema page.
+Consult endpoint documentation for payloads, permission enums, inheritance and environment scoping. Resources here: `roles`, `accessTokens`, `users`, `siteInvitations`, `ssoUsers`, `ssoGroups`, `ssoSettings`. This file carries operational advice.
+
+> In CLI mode: `npx datocms cma:docs <resource> [<action>]` (add `--expand-types '*'` for full TS definitions).
 
 ## Roles
 
-The biggest footgun is **wholesale array replacement on `roles.update`** — every `positive_*` / `negative_*` array sent in the payload replaces the stored one as a unit, so a naive "patch one entry" update silently erases everything else. Read the role first and forward the entries you don't want to change, or use the `client.roles.updateCurrentEnvironmentPermissions(...)` helper (records + uploads in the current environment only — build trigger / search index / other-environment entries still need a raw `update`). See `cma:docs roles update` for the full warning and the helper signature.
+The biggest footgun is **wholesale array replacement on `roles.update`** — every `positive_*` / `negative_*` array sent in the payload replaces the stored one as a unit, so a naive "patch one entry" update silently erases everything else. Read the role first and forward the entries you don't want to change, or use the `client.roles.updateCurrentEnvironmentPermissions(...)` helper (records + uploads in the current environment only — build trigger / search index / other-environment entries still need a raw `update`). Consult the role-update method documentation for the full warning and helper signature.
 
 The standard "custom role" recipe is `roles.duplicate` → rename → `update`, not constructing a permission tree from scratch. To make targeted adjustments, prefer a single positive `action: "all"` entry plus `negative_*` entries to subtract — the resolved set lives in `meta.final_permissions` on every role response and is what to read when debugging "why can't this credential do X?".
 

@@ -1,15 +1,24 @@
 # Client Setup and Error Handling
 
-This reference is always loaded. It covers package selection, `buildClient()` setup, token and environment configuration, and the error types to handle in CMA code.
+Load for code that constructs its own client, or for the error-handling details below.
 
-> **Scope:** `buildClient()` is for **unattended runtime** code (CI, app server, webhook, long-lived automation, repo-committed scripts) — that is the scenario where you need a CMA token in the environment and you construct the client yourself. Interactive one-offs go through `cma:call` or `cma:script` (stdin-mode or file-mode), where the client is either absent or handed to you as `client` (ambient in stdin-mode, default-export parameter in file-mode and migrations) — the configuration options and error types below still apply, you just don't call `buildClient()` yourself.
+> **Scope:** Package installation, `buildClient()` and token configuration apply when constructing a client for app/server code or unattended automation. When the selected runtime supplies the authenticated client, use it and skip that setup; the CMA error types still apply.
 
 ## Contents
 
+- Existing Project Setup
 - Package Selection
 - Building the Client
 - Common Resources
 - Error Handling
+
+## Existing Project Setup
+
+Before constructing a client in local app/server code or unattended automation:
+
+1. Inspect `package.json` for the installed CMA package and runtime. Search existing `buildClient()` calls and client wrappers; reuse the package, client configuration, token source, and environment targeting already used by the project.
+2. Check existing credential variable names/configuration, including `.env` or `.env.local` when applicable, without printing secret values. An unattended runtime needs a token with `can_access_cma: true` and the role permissions the task requires. A read-only CDA token (`DATOCMS_READONLY_API_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`) is insufficient; request a separate CMA-capable credential only for that runtime. Full access is not required: scope it to the needed models, actions, and environments.
+3. Look for existing generated CMA types and generation scripts before adding files or commands. Reuse the current module and output path. Do not proactively introduce type generation; consult `type-generation.md` only when the requested local code needs missing or updated types.
 
 ## Package Selection
 
@@ -20,6 +29,8 @@ This reference is always loaded. It covers package selection, `buildClient()` se
 | `@datocms/cma-client-browser` | Browser | Use when you need browser upload helpers such as `createFromFileOrBlob()`. |
 
 All three packages expose the same core CMA resources. The main differences are the environment-specific upload convenience methods.
+
+Import `buildBlockRecord`, `ApiError`, and `TimeoutError` from the same client package as `buildClient`. Use `import type` for type-only imports. A runtime-provided client or helper needs no duplicate construction or import.
 
 Install with:
 
@@ -86,7 +97,7 @@ const client = buildClient({
 
 The client also exposes resources for record versions, webhook calls, SSO, daily usage, subscription features, white-label settings, and more.
 
-> **Tip:** When the `datocms` npm package is installed, run `npx datocms cma:docs <resource> <action>` to browse detailed, up-to-date endpoint documentation (request body schemas, required fields, parameters, examples) directly in the terminal.
+> **CLI mode:** Run `npx datocms cma:docs <resource> <action>` to browse detailed, up-to-date endpoint documentation (request body schemas, required fields, parameters, examples) directly in the terminal.
 
 ## Error Handling
 

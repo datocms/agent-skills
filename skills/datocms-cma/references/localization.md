@@ -2,7 +2,9 @@
 
 Covers working with localized field values and the normalized field value utilities.
 
-> Endpoint shapes touching localized fields: `npx datocms cma:docs {items <action>|site update}` (add `--expand-types '*'` for full TS definitions). This file covers the per-locale value shape, `all_locales_required` semantics, and the partial-vs-full-update rule for localized fields.
+This file covers the per-locale value shape, `all_locales_required` semantics, and the partial-vs-full-update rule for localized fields.
+
+> In CLI mode: `cma:docs items self` documents `client.items.find()` / `cma:call items find`; `cma:docs items update` and `cma:docs site update` document updates. Use `--expand-types <Type>` for a specific declaration.
 
 ## Contents
 
@@ -148,7 +150,7 @@ for (const field of fields) {
 
 These utilities let you work with field values uniformly, regardless of whether they are localized. They abstract away the `string` vs `{ en: string, it: string }` distinction.
 
-All utilities are imported from the same package as `buildClient`.
+Use these utilities from the runtime when supplied; otherwise import them from the same package as `buildClient`.
 
 ### `toNormalizedFieldValueEntries()`
 
@@ -293,6 +295,8 @@ Every function above has an async counterpart:
 - `visitNormalizedFieldValuesAsync()`
 
 ## Complete Example: Migrate Content to a New Locale
+
+Standalone Node.js example. When the selected runtime supplies `client` or helper exports, reuse them and omit the corresponding setup below.
 
 ```ts
 import {

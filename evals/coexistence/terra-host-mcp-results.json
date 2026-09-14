@@ -1,0 +1,835 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-14T22:25:47.723Z",
+  "liveIntegration": true,
+  "endpoint": "https://mcp.datocms.com",
+  "nativeClientVersion": "0.154.0-alpha.6.2",
+  "model": "gpt-5.6-terra",
+  "reasoningEffort": "medium",
+  "target": {
+    "project": "<throwaway-project>",
+    "environment": "<owned-sandbox>",
+    "primaryEnvironmentTouched": false
+  },
+  "authentication": {
+    "oauth": true,
+    "identityCallSucceeded": true,
+    "grant": "unrestricted"
+  },
+  "candidate": {
+    "headBeforeEvidenceCommit": "5cc4b984e9cc11b31816ffef664b9bed53297c80",
+    "correctionPatchSha256": "74eeb2ad5a32d46900f08ad426304c667a39a45935727cfb2006ab831ed4e3d8",
+    "mcpReferenceTokens": 468,
+    "mcpReferenceGate": true
+  },
+  "retainedAssessment": {
+    "cases": [
+      {
+        "alias": "simple-1",
+        "kind": "simple",
+        "log": "simple-1",
+        "route": [
+          "DatoCMS"
+        ],
+        "cliSetupDetected": false,
+        "guidanceReads": [
+          {
+            "paths": [
+              "skills/datocms-cma/SKILL.md"
+            ],
+            "outputTokens": 2237,
+            "outputSha256": "028d17b3ae2e5d9b04962c83cf30fdc05fb58bb9c5057bddaa57556d35313d8a"
+          },
+          {
+            "paths": [
+              "skills/datocms-cma/references/mcp.md",
+              "skills/datocms-cma/references/editing-records.md",
+              "skills/datocms-cma/references/localization.md"
+            ],
+            "outputTokens": 6397,
+            "outputSha256": "d1f20839aa938daf0a4f4e8130134fae5cec632ced4fd07d23bce993850c8695"
+          }
+        ],
+        "repeatedGuidanceReads": [],
+        "mcpCalls": [
+          {
+            "tool": "search_projects",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 59
+          },
+          {
+            "tool": "get_schema",
+            "status": "failed",
+            "outcome": "tool-error",
+            "outputTokens": 0
+          },
+          {
+            "tool": "get_api_methods",
+            "status": "failed",
+            "outcome": "tool-error",
+            "outputTokens": 0
+          },
+          {
+            "tool": "get_api_methods",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 10556
+          },
+          {
+            "tool": "get_schema",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 668
+          },
+          {
+            "tool": "upsert_and_execute_safe_script",
+            "status": "completed",
+            "outcome": "executed",
+            "outputTokens": 295
+          },
+          {
+            "tool": "upsert_and_execute_unsafe_script",
+            "status": "completed",
+            "outcome": "executed",
+            "outputTokens": 41
+          },
+          {
+            "tool": "upsert_and_execute_safe_script",
+            "status": "completed",
+            "outcome": "executed",
+            "outputTokens": 41
+          },
+          {
+            "tool": "upsert_and_execute_unsafe_script",
+            "status": "completed",
+            "outcome": "executed",
+            "outputTokens": 319
+          }
+        ],
+        "scripts": [
+          {
+            "toolClass": "read-only",
+            "name": "script://simple-1-dkcHrGE0S4OLX-yFakQbw.ts",
+            "bodyMode": "full",
+            "sourceSha256": "c354ab817209713c00b6580691bd3576e9d2d5838e58d47c1ac33d10e247d084",
+            "source": "const recordId = \"<dato-id-12>\";\n\nconst current = await client.items.find<Schema.HostSmokeArticle>(recordId, {\n  nested: true,\n});\n\nconsole.log(JSON.stringify({\n  title: current.title,\n  untouched: current.untouched,\n  body: current.body,\n  publication: {\n    status: current.meta.status,\n    published_at: current.meta.published_at,\n    first_published_at: current.meta.first_published_at,\n    publication_scheduled_at: current.meta.publication_scheduled_at,\n    unpublishing_scheduled_at: current.meta.unpublishing_scheduled_at,\n  },\n}));",
+            "submittedUpdateStatements": 0,
+            "outcome": "executed"
+          },
+          {
+            "toolClass": "mutation-capable",
+            "name": "script://simple-1-dkcHrGE0S4OLX-yFakQbw.ts",
+            "bodyMode": "full",
+            "sourceSha256": "5afa05dcb7277fa3127bdad4f3ff6fd79a1ff276aea9fd32183021f1bfa72760",
+            "source": "const recordId = \"<dato-id-12>.ts\";",
+            "submittedUpdateStatements": 0,
+            "outcome": "executed"
+          },
+          {
+            "toolClass": "read-only",
+            "name": "script://simple-1-dkcHrGE0S4OLX-yFakQbw.ts",
+            "bodyMode": "full",
+            "sourceSha256": "34619333b19af459b8e1b57d71370b620f1b399d0469c18cd6a970c957e13842",
+            "source": "const recordId = \"<dato-id-12>\";\n\nconst current = await client.items.find<Schema.HostSmokeArticle>(recordId, {\n  nested: true,\n});\n\nif (current.title !== \"Original title\") {\n  throw new Error(`Expected Original title before update, found ${current.title}`);\n}\n\nconst originalBody = JSON.stringify(current.body);\nconst originalUntouched = current.untouched;\nconst originalPublication = JSON.stringify({\n  status: current.meta.status,\n  published_at: current.meta.published_at,\n  first_published_at: current.meta.first_published_at,\n  publication_scheduled_at: current.meta.publication_scheduled_at,\n  unpublishing_scheduled_at: current.meta.unpublishing_scheduled_at,\n});\n\nif (current.title === \"Original title\" && false) {\n  await client.items.update<Schema.HostSmokeArticle>(recordId, {\n    title: \"Summer update\",\n    meta: { current_version: current.meta.current_version },\n  });\n\n  const saved = await client.items.find<Schema.HostSmokeArticle>(recordId, {\n    nested: true,\n  });\n\n  const bodyPreserved = JSON.stringify(saved.body) === originalBody;\n  const publicationPreserved = JSON.stringify({\n    status: saved.meta.status,\n    published_at: saved.meta.published_at,\n    first_published_at: saved.meta.first_published_at,\n    publication_scheduled_at: saved.meta.publication_scheduled_at,\n    unpublishing_scheduled_at: saved.meta.unpublishing_scheduled_at,\n  }) === originalPublication;\n\n  console.log(JSON.stringify({\n    title: saved.title,\n    titleUpdated: saved.title === \"Summer update\",\n    untouchedPreserved: saved.untouched === originalUntouched,\n    bodyPreserved,\n    publicationPreserved,\n    untouched: saved.untouched,\n    body: saved.body,\n    publication: {\n      status: saved.meta.status,\n      published_at: saved.meta.published_at,\n      first_published_at: saved.meta.first_published_at,\n      publication_scheduled_at: saved.meta.publication_scheduled_at,\n      unpublishing_scheduled_at: saved.meta.unpublishing_scheduled_at,\n    },\n  }));\n}",
+            "submittedUpdateStatements": 1,
+            "outcome": "executed"
+          },
+          {
+            "toolClass": "mutation-capable",
+            "name": "script://simple-1-dkcHrGE0S4OLX-yFakQbw.ts",
+            "bodyMode": "patch",
+            "sourceSha256": null,
+            "source": null,
+            "submittedUpdateStatements": 0,
+            "outcome": "executed"
+          }
+        ],
+        "toolOutputTokens": 20613,
+        "usage": {
+          "input_tokens": 352614,
+          "cached_input_tokens": 306432,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3567,
+          "reasoning_output_tokens": 1540
+        },
+        "assertions": {
+          "hostedMcpOnly": true,
+          "noCliSetup": true,
+          "scriptCompilationAndExecution": true,
+          "requestedContent": true,
+          "unrelatedContentPreserved": true,
+          "publicationStatePreserved": true,
+          "topLevelVersionCount": 2,
+          "exactlyOneUpdate": true
+        }
+      },
+      {
+        "alias": "simple-2",
+        "kind": "simple",
+        "log": "simple-2",
+        "route": [
+          "DatoCMS"
+        ],
+        "cliSetupDetected": false,
+        "guidanceReads": [
+          {
+            "paths": [
+              "skills/datocms-cma/SKILL.md"
+            ],
+            "outputTokens": 2262,
+            "outputSha256": "c503d71cc91df75669abd3b8920b2c6d2f7570f5e419cac9721a426d5ff652eb"
+          },
+          {
+            "paths": [
+              "skills/datocms-cma/references/mcp.md",
+              "skills/datocms-cma/references/records.md",
+              "skills/datocms-cma/references/editing-records.md"
+            ],
+            "outputTokens": 7354,
+            "outputSha256": "a349f77fc94439fd8c5ca740e8325117b51851fe9bb96ca04aa52d56d6cd8b08"
+          }
+        ],
+        "repeatedGuidanceReads": [],
+        "mcpCalls": [
+          {
+            "tool": "whoami",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 148
+          },
+          {
+            "tool": "search_projects",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 59
+          },
+          {
+            "tool": "get_api_methods",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 13324
+          },
+          {
+            "tool": "get_schema",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 355
+          },
+          {
+            "tool": "get_schema",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 668
+          },
+          {
+            "tool": "upsert_and_execute_unsafe_script",
+            "status": "completed",
+            "outcome": "executed",
+            "outputTokens": 320
+          }
+        ],
+        "scripts": [
+          {
+            "toolClass": "mutation-capable",
+            "name": "script://simple-2-title-update-qnpqjxbu-20260914.ts",
+            "bodyMode": "full",
+            "sourceSha256": "a43348d45f211ebfc00de19149076b4817e3c9153a70877a41125b561e28ab3d",
+            "source": "const recordId = \"<dato-id-26>\";\n\nconst original = await client.items.find<Schema.HostSmokeArticle>(recordId, {\n  nested: true,\n});\n\nif (original.title !== \"Original title\") {\n  throw new Error(`Expected title \"Original title\", found \"${original.title}\"`);\n}\n\nif (original.meta.status !== \"draft\") {\n  throw new Error(`Expected draft status, found \"${original.meta.status}\"`);\n}\n\nconst originalUntouched = JSON.stringify(original.untouched);\nconst originalBody = JSON.stringify(original.body);\nconst originalStatus = original.meta.status;\nconst originalPublishedAt = original.meta.published_at;\nconst originalFirstPublishedAt = original.meta.first_published_at;\n\nawait client.items.update<Schema.HostSmokeArticle>(recordId, {\n  title: \"Summer update\",\n});\n\nconst verified = await client.items.find<Schema.HostSmokeArticle>(recordId, {\n  nested: true,\n});\n\nconst verification = {\n  title: verified.title === \"Summer update\",\n  untouched: JSON.stringify(verified.untouched) === originalUntouched,\n  body: JSON.stringify(verified.body) === originalBody,\n  status: verified.meta.status === originalStatus,\n  publishedAt: verified.meta.published_at === originalPublishedAt,\n  firstPublishedAt: verified.meta.first_published_at === originalFirstPublishedAt,\n};\n\nif (Object.values(verification).some((result) => !result)) {\n  throw new Error(`Verification failed: ${JSON.stringify(verification)}`);\n}\n\nconsole.log(JSON.stringify({\n  recordId: verified.id,\n  title: verified.title,\n  untouched: verified.untouched,\n  body: verified.body,\n  status: verified.meta.status,\n  publishedAt: verified.meta.published_at,\n  firstPublishedAt: verified.meta.first_published_at,\n  verification,\n}));",
+            "submittedUpdateStatements": 1,
+            "outcome": "executed"
+          }
+        ],
+        "toolOutputTokens": 24490,
+        "usage": {
+          "input_tokens": 277824,
+          "cached_input_tokens": 229376,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2150,
+          "reasoning_output_tokens": 768
+        },
+        "assertions": {
+          "hostedMcpOnly": true,
+          "noCliSetup": true,
+          "scriptCompilationAndExecution": true,
+          "requestedContent": true,
+          "unrelatedContentPreserved": true,
+          "publicationStatePreserved": true,
+          "topLevelVersionCount": 2,
+          "exactlyOneUpdate": true
+        }
+      },
+      {
+        "alias": "simple-3",
+        "kind": "simple",
+        "log": "simple-3",
+        "route": [
+          "DatoCMS"
+        ],
+        "cliSetupDetected": false,
+        "guidanceReads": [
+          {
+            "paths": [
+              "skills/datocms-cma/SKILL.md"
+            ],
+            "outputTokens": 9865,
+            "outputSha256": "ec09e752feadb7433f8c030b7d3ed6354f11e4efca5d4797306c931c9b1d4352"
+          },
+          {
+            "paths": [
+              "skills/datocms-cma/references/mcp.md",
+              "skills/datocms-cma/references/editing-records.md",
+              "skills/datocms-cma/references/localization.md"
+            ],
+            "outputTokens": 3639,
+            "outputSha256": "a1c9813d953b719071bd8bde2643a9b27fe4086e1780e168655b6b337f4e2da6"
+          }
+        ],
+        "repeatedGuidanceReads": [],
+        "mcpCalls": [
+          {
+            "tool": "whoami",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 148
+          },
+          {
+            "tool": "search_projects",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 59
+          },
+          {
+            "tool": "get_api_methods",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 10556
+          },
+          {
+            "tool": "get_schema",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 668
+          },
+          {
+            "tool": "upsert_and_execute_unsafe_script",
+            "status": "completed",
+            "outcome": "executed",
+            "outputTokens": 88
+          }
+        ],
+        "scripts": [
+          {
+            "toolClass": "mutation-capable",
+            "name": "script://simple-3-<dato-id-5>-title-update.ts",
+            "bodyMode": "full",
+            "sourceSha256": "0baa32057a8f7c8c3982bffc6f6a402d10ae53df7bf323dc55ab984783ff42bd",
+            "source": "const recordId = \"<dato-id-5>\";\n\nconst before = await client.items.find<Schema.HostSmokeArticle>(recordId, {\n  nested: true,\n  version: \"current\",\n});\n\nif (before.title !== \"Original title\") {\n  throw new Error(`Expected title \"Original title\" before update; observed \"${before.title}\". No update was attempted.`);\n}\n\nconst untouchedBefore = before.untouched;\nconst bodyBefore = JSON.stringify(before.body);\nconst publicationBefore = JSON.stringify({\n  published_at: before.meta.published_at,\n  first_published_at: before.meta.first_published_at,\n  publication_scheduled_at: before.meta.publication_scheduled_at,\n  unpublishing_scheduled_at: before.meta.unpublishing_scheduled_at,\n  status: before.meta.status,\n});\n\nawait client.items.update<Schema.HostSmokeArticle>(recordId, {\n  title: \"Summer update\",\n  meta: { current_version: before.meta.current_version },\n});\n\nconst after = await client.items.find<Schema.HostSmokeArticle>(recordId, {\n  nested: true,\n  version: \"current\",\n});\n\nconst untouchedPreserved = after.untouched === untouchedBefore;\nconst bodyPreserved = JSON.stringify(after.body) === bodyBefore;\nconst publicationPreserved = JSON.stringify({\n  published_at: after.meta.published_at,\n  first_published_at: after.meta.first_published_at,\n  publication_scheduled_at: after.meta.publication_scheduled_at,\n  unpublishing_scheduled_at: after.meta.unpublishing_scheduled_at,\n  status: after.meta.status,\n}) === publicationBefore;\n\nif (\n  after.title !== \"Summer update\" ||\n  !untouchedPreserved ||\n  !bodyPreserved ||\n  !publicationPreserved\n) {\n  throw new Error(\"Post-update verification failed; inspect the saved record state without replaying the update.\");\n}\n\nconsole.log(JSON.stringify({\n  id: after.id,\n  title: after.title,\n  untouchedPreserved,\n  bodyPreserved,\n  publicationPreserved,\n  publicationStatus: after.meta.status,\n}));",
+            "submittedUpdateStatements": 1,
+            "outcome": "executed"
+          }
+        ],
+        "toolOutputTokens": 25023,
+        "usage": {
+          "input_tokens": 217871,
+          "cached_input_tokens": 171264,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2064,
+          "reasoning_output_tokens": 795
+        },
+        "assertions": {
+          "hostedMcpOnly": true,
+          "noCliSetup": true,
+          "scriptCompilationAndExecution": true,
+          "requestedContent": true,
+          "unrelatedContentPreserved": true,
+          "publicationStatePreserved": true,
+          "topLevelVersionCount": 2,
+          "exactlyOneUpdate": true
+        }
+      },
+      {
+        "alias": "structured-1",
+        "kind": "structured",
+        "log": "structured-2",
+        "route": [
+          "DatoCMS"
+        ],
+        "cliSetupDetected": false,
+        "guidanceReads": [
+          {
+            "paths": [
+              "skills/datocms-cma/SKILL.md"
+            ],
+            "outputTokens": 2241,
+            "outputSha256": "fea27da1f7f0374798dcc8c730021fb6bbdabd40612921000f43b33255a76851"
+          },
+          {
+            "paths": [
+              "skills/datocms-cma/references/mcp.md",
+              "skills/datocms-cma/references/editing-records.md",
+              "skills/datocms-cma/references/localization.md"
+            ],
+            "outputTokens": 7148,
+            "outputSha256": "3f0f2a56f68c9bec7130e7e039469d95a6acece51b0d46ca1e0cd91caf0d9185"
+          }
+        ],
+        "repeatedGuidanceReads": [],
+        "mcpCalls": [
+          {
+            "tool": "search_projects",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 59
+          },
+          {
+            "tool": "get_schema",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 668
+          },
+          {
+            "tool": "get_api_methods",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 11862
+          },
+          {
+            "tool": "upsert_and_execute_unsafe_script",
+            "status": "completed",
+            "outcome": "executed",
+            "outputTokens": 113
+          }
+        ],
+        "scripts": [
+          {
+            "toolClass": "mutation-capable",
+            "name": "script://structured-2-20260914-record-body-update.ts",
+            "bodyMode": "full",
+            "sourceSha256": "78d4b248728f9f3e242505ea1f6d5a4e9245a1aa6e873ecd8261c956a8b26127",
+            "source": "import { isDeepStrictEqual } from \"node:util\";\n\nconst recordId = \"<dato-id-30>\";\nconst current = await client.items.find<Schema.HostSmokeArticle>(recordId, {\n  nested: true,\n});\n\nif (!current.body || !current.body.en || !current.body.it) {\n  throw new Error(\"Expected both English and Italian Body values.\");\n}\n\nconst originalItalian = structuredClone(current.body.it);\nconst originalTitle = current.title;\nconst originalUntouched = current.untouched;\nconst originalStatus = current.meta.status;\nconst originalPublishedAt = current.meta.published_at;\nconst originalEnglish = structuredClone(current.body.en);\n\nlet greetingMatches = 0;\nlet captionMatches = 0;\n\nconst expectedEnglish = mapNodes(structuredClone(originalEnglish), (node) => {\n  if (isSpan(node) && node.value === \"Hello reader\") {\n    greetingMatches += 1;\n    return { ...node, value: \"Welcome reader\" };\n  }\n  if (\n    isBlockWithItemOfType(Schema.HostSmokeImage.ID, node) &&\n    node.item.attributes.caption === \"Keep the caption\"\n  ) {\n    captionMatches += 1;\n    return {\n      ...node,\n      item: {\n        ...node.item,\n        attributes: { ...node.item.attributes, caption: \"Summer portrait\" },\n      },\n    };\n  }\n  return node;\n});\nexpectedEnglish.document.children.push({\n  type: \"paragraph\",\n  children: [{ type: \"span\", value: \"See you soon.\" }],\n});\n\nif (greetingMatches !== 1 || captionMatches !== 1) {\n  throw new Error(\n    `Expected one greeting and one image caption; found ${greetingMatches} and ${captionMatches}.`,\n  );\n}\n\nlet updateGreetingMatches = 0;\nlet updateCaptionMatches = 0;\nlet english: NonNullable<FieldValueInRequest<typeof current, \"body\">>[\"en\"] =\n  mapNodes(current.body.en, (node) => {\n    if (isSpan(node) && node.value === \"Hello reader\") {\n      updateGreetingMatches += 1;\n      return { ...node, value: \"Welcome reader\" };\n    }\n    if (\n      isBlockWithItemOfType(Schema.HostSmokeImage.ID, node) &&\n      node.item.attributes.caption === \"Keep the caption\"\n    ) {\n      updateCaptionMatches += 1;\n      return {\n        ...node,\n        item: buildBlockRecord<Schema.HostSmokeImage>({\n          id: node.item.id,\n          caption: \"Summer portrait\",\n        }),\n      };\n    }\n    return node;\n  });\nenglish.document.children.push({\n  type: \"paragraph\",\n  children: [{ type: \"span\", value: \"See you soon.\" }],\n});\n\nif (updateGreetingMatches !== 1 || updateCaptionMatches !== 1) {\n  throw new Error(\"The update transform did not match the expected nodes exactly once.\");\n}\n\nawait client.items.update<Schema.HostSmokeArticle>(recordId, {\n  body: { ...current.body, en: english },\n});\n\nconst saved = await client.items.find<Schema.HostSmokeArticle>(recordId, {\n  nested: true,\n});\n\nif (!saved.body || !saved.body.en || !saved.body.it) {\n  throw new Error(\"Saved record is missing an expected Body locale.\");\n}\n\nconst verified =\n  isDeepStrictEqual(saved.body.en, expectedEnglish) &&\n  isDeepStrictEqual(saved.body.it, originalItalian) &&\n  saved.title === originalTitle &&\n  saved.untouched === originalUntouched &&\n  saved.meta.status === originalStatus &&\n  saved.meta.published_at === originalPublishedAt;\n\nif (!verified) {\n  throw new Error(\"Post-update verification failed; saved state was inspected without replaying the update.\");\n}\n\nconsole.log(JSON.stringify({\n  recordId: saved.id,\n  greeting: \"Welcome reader\",\n  caption: \"Summer portrait\",\n  finalParagraph: \"See you soon.\",\n  image: saved.body.en.document.children\n    .find((node) => isBlockWithItemOfType(Schema.HostSmokeImage.ID, node))\n    ? \"verified-null-by-deep-comparison\"\n    : \"missing\",\n  italianPreserved: isDeepStrictEqual(saved.body.it, originalItalian),\n  titlePreserved: saved.title === originalTitle,\n  untouchedPreserved: saved.untouched === originalUntouched,\n  publicationStatePreserved:\n    saved.meta.status === originalStatus &&\n    saved.meta.published_at === originalPublishedAt,\n  englishDeepEqualExpected: isDeepStrictEqual(saved.body.en, expectedEnglish),\n}));",
+            "submittedUpdateStatements": 1,
+            "outcome": "executed"
+          }
+        ],
+        "toolOutputTokens": 22091,
+        "usage": {
+          "input_tokens": 250024,
+          "cached_input_tokens": 203776,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3707,
+          "reasoning_output_tokens": 1798
+        },
+        "assertions": {
+          "hostedMcpOnly": true,
+          "noCliSetup": true,
+          "scriptCompilationAndExecution": true,
+          "requestedContent": true,
+          "unrelatedContentPreserved": true,
+          "publicationStatePreserved": true,
+          "topLevelVersionCount": 2,
+          "exactlyOneUpdate": true
+        }
+      },
+      {
+        "alias": "structured-2",
+        "kind": "structured",
+        "log": "structured-3",
+        "route": [
+          "DatoCMS"
+        ],
+        "cliSetupDetected": false,
+        "guidanceReads": [
+          {
+            "paths": [
+              "skills/datocms-cma/SKILL.md"
+            ],
+            "outputTokens": 2268,
+            "outputSha256": "6dffb1b13dae359bdc5c0328b0926b06008d0ddb9554d8ce75bd957ec23d9b80"
+          },
+          {
+            "paths": [
+              "skills/datocms-cma/references/mcp.md",
+              "skills/datocms-cma/references/editing-records.md"
+            ],
+            "outputTokens": 5639,
+            "outputSha256": "0db9442aa623caf091bdb37407c98e3cdeb2ec731a93ab4dca7f1ba8dab016bc"
+          }
+        ],
+        "repeatedGuidanceReads": [],
+        "mcpCalls": [
+          {
+            "tool": "search_projects",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 59
+          },
+          {
+            "tool": "get_schema",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 7
+          },
+          {
+            "tool": "get_schema",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 895
+          },
+          {
+            "tool": "get_api_methods",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 11862
+          },
+          {
+            "tool": "upsert_and_execute_unsafe_script",
+            "status": "completed",
+            "outcome": "executed",
+            "outputTokens": 109
+          }
+        ],
+        "scripts": [
+          {
+            "toolClass": "mutation-capable",
+            "name": "script://structured-3-om25bveytmwxwxn2dtglq-20260914.ts",
+            "bodyMode": "full",
+            "sourceSha256": "2358b81a8649d5ae6a02106f8223dcbc21c6ce9b804347eb89a2e9f01d5865cf",
+            "source": "import { isDeepStrictEqual } from \"node:util\";\n\nconst recordId = \"<dato-id-24>\";\nconst current = await client.items.find<Schema.HostSmokeArticle>(recordId, {\n  nested: true,\n});\nconst original = structuredClone(current);\n\nif (!current.body) {\n  throw new Error(\"Body is null\");\n}\n\nconst english = current.body.en;\nif (!english) {\n  throw new Error(\"English Body is missing\");\n}\n\nlet greetingChanges = 0;\nlet captionChanges = 0;\n\nlet expectedEnglish: NonNullable<FieldValueInRequest<typeof current, \"body\">>[\"en\"] =\n  mapNodes(structuredClone(english), (node) => {\n    if (isSpan(node) && node.value === \"Hello reader\") {\n      greetingChanges += 1;\n      return { ...node, value: \"Welcome reader\" };\n    }\n\n    if (isBlockWithItemOfType(Schema.HostSmokeImage.ID, node)) {\n      if (node.item.attributes.caption !== \"Keep the caption\") {\n        throw new Error(\"host_smoke_image Caption did not match the required source value\");\n      }\n      captionChanges += 1;\n      return {\n        ...node,\n        item: {\n          ...node.item,\n          attributes: {\n            ...node.item.attributes,\n            caption: \"Summer portrait\",\n          },\n        },\n      };\n    }\n\n    return node;\n  });\n\nif (greetingChanges !== 1 || captionChanges !== 1) {\n  throw new Error(`Expected one greeting and one image block; found ${greetingChanges} and ${captionChanges}`);\n}\n\nexpectedEnglish = {\n  ...expectedEnglish,\n  document: {\n    ...expectedEnglish.document,\n    children: [\n      ...expectedEnglish.document.children,\n      {\n        type: \"paragraph\",\n        children: [{ type: \"span\", value: \"See you soon.\" }],\n      },\n    ],\n  },\n};\n\nawait client.items.update<Schema.HostSmokeArticle>(recordId, {\n  body: {\n    ...current.body,\n    en: expectedEnglish,\n  },\n  meta: {\n    current_version: current.meta.current_version,\n  },\n});\n\nconst saved = await client.items.find<Schema.HostSmokeArticle>(recordId, {\n  nested: true,\n});\n\nif (!saved.body || !saved.body.en) {\n  throw new Error(\"Saved English Body is missing\");\n}\n\nconst <dato-id-58> = {\n  status: original.meta.status,\n  published_at: original.meta.published_at,\n  first_published_at: original.meta.first_published_at,\n  publication_scheduled_at: original.meta.publication_scheduled_at,\n  unpublishing_scheduled_at: original.meta.unpublishing_scheduled_at,\n};\nconst publicationStateAfter = {\n  status: saved.meta.status,\n  published_at: saved.meta.published_at,\n  first_published_at: saved.meta.first_published_at,\n  publication_scheduled_at: saved.meta.publication_scheduled_at,\n  unpublishing_scheduled_at: saved.meta.unpublishing_scheduled_at,\n};\n\nconst verified =\n  isDeepStrictEqual(saved.body.en, expectedEnglish) &&\n  isDeepStrictEqual(saved.body.it, original.body.it) &&\n  isDeepStrictEqual(saved.title, original.title) &&\n  isDeepStrictEqual(saved.untouched, original.untouched) &&\n  isDeepStrictEqual(publicationStateAfter, <dato-id-58>);\n\nif (!verified) {\n  throw new Error(\"Post-update deep verification failed; saved state was read but no retry was attempted\");\n}\n\nconsole.log(JSON.stringify({\n  updated: true,\n  greetingChanges,\n  captionChanges,\n  finalParagraph: saved.body.en.document.children.at(-1),\n  italianBodyPreserved: isDeepStrictEqual(saved.body.it, original.body.it),\n  titlePreserved: isDeepStrictEqual(saved.title, original.title),\n  untouchedPreserved: isDeepStrictEqual(saved.untouched, original.untouched),\n  publicationStatePreserved: isDeepStrictEqual(publicationStateAfter, <dato-id-58>),\n}));",
+            "submittedUpdateStatements": 1,
+            "outcome": "executed"
+          }
+        ],
+        "toolOutputTokens": 20839,
+        "usage": {
+          "input_tokens": 272698,
+          "cached_input_tokens": 230144,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3765,
+          "reasoning_output_tokens": 2013
+        },
+        "assertions": {
+          "hostedMcpOnly": true,
+          "noCliSetup": true,
+          "scriptCompilationAndExecution": true,
+          "requestedContent": true,
+          "unrelatedContentPreserved": true,
+          "publicationStatePreserved": true,
+          "topLevelVersionCount": 2,
+          "exactlyOneUpdate": true
+        }
+      },
+      {
+        "alias": "structured-3",
+        "kind": "structured",
+        "log": "final4-structured",
+        "route": [
+          "DatoCMS"
+        ],
+        "cliSetupDetected": false,
+        "guidanceReads": [
+          {
+            "paths": [
+              "skills/datocms-cma/SKILL.md"
+            ],
+            "outputTokens": 2237,
+            "outputSha256": "028d17b3ae2e5d9b04962c83cf30fdc05fb58bb9c5057bddaa57556d35313d8a"
+          },
+          {
+            "paths": [
+              "skills/datocms-cma/references/mcp.md",
+              "skills/datocms-cma/references/editing-records.md",
+              "skills/datocms-cma/references/localization.md"
+            ],
+            "outputTokens": 7030,
+            "outputSha256": "ab4e41b8e55a5629c42c2b6791cfed1a01f4398a0ee637ee466229257d21996f"
+          }
+        ],
+        "repeatedGuidanceReads": [],
+        "mcpCalls": [
+          {
+            "tool": "whoami",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 148
+          },
+          {
+            "tool": "search_projects",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 59
+          },
+          {
+            "tool": "get_schema",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 355
+          },
+          {
+            "tool": "get_api_methods",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 13324
+          },
+          {
+            "tool": "get_schema",
+            "status": "completed",
+            "outcome": "completed",
+            "outputTokens": 895
+          },
+          {
+            "tool": "upsert_and_execute_unsafe_script",
+            "status": "completed",
+            "outcome": "executed",
+            "outputTokens": 305
+          },
+          {
+            "tool": "upsert_and_execute_safe_script",
+            "status": "completed",
+            "outcome": "executed",
+            "outputTokens": 52
+          }
+        ],
+        "scripts": [
+          {
+            "toolClass": "mutation-capable",
+            "name": "script://host-smoke-article-one-edit-20260915.ts",
+            "bodyMode": "full",
+            "sourceSha256": "69516bd5c1a7e35f9dc5fb661f4cc994a5a668004eaadf2113a688c0fca9aaca",
+            "source": "const recordId = \"<dato-id-40>\";\n\nconst before = await client.items.find<Schema.HostSmokeArticle>(recordId, {\n  nested: true,\n});\n\nif (!before.body?.en || !before.body.it) {\n  throw new Error(\"Expected both English and Italian body values.\");\n}\n\nconst beforeSnapshot = {\n  title: before.title,\n  untouched: before.untouched,\n  english: before.body.en,\n  italian: before.body.it,\n  publication: {\n    publishedAt: before.meta.published_at,\n    firstPublishedAt: before.meta.first_published_at,\n    status: before.meta.status,\n  },\n};\n\nlet helloCount = 0;\nlet imageBlockCount = 0;\nlet english: NonNullable<FieldValueInRequest<typeof before, \"body\">>[\"en\"] =\n  before.body.en;\n\nenglish = mapNodes(english, (node) => {\n  if (isSpan(node) && node.value === \"Hello reader\") {\n    if (!node.marks?.includes(\"strong\")) {\n      throw new Error(\"Expected Hello reader to retain a strong mark.\");\n    }\n    helloCount += 1;\n    return { ...node, value: \"Welcome reader\" };\n  }\n\n  if (isBlockWithItemOfType(Schema.HostSmokeImage.ID, node)) {\n    if (\n      node.item.attributes.caption !== \"Keep the caption\" ||\n      node.item.attributes.image !== null\n    ) {\n      throw new Error(\"The existing image block did not match the expected draft state.\");\n    }\n    imageBlockCount += 1;\n    return {\n      ...node,\n      item: buildBlockRecord<Schema.HostSmokeImage>({\n        id: node.item.id,\n        caption: \"Summer portrait\",\n      }),\n    };\n  }\n\n  return node;\n});\n\nif (helloCount !== 1 || imageBlockCount !== 1) {\n  throw new Error(\"Expected exactly one target span and one image block.\");\n}\n\nenglish.document.children.push({\n  type: \"paragraph\",\n  children: [{ type: \"span\", value: \"See you soon.\" }],\n});\n\nawait client.items.update<Schema.HostSmokeArticle>(recordId, {\n  body: {\n    ...before.body,\n    en: english,\n  },\n});\n\nconsole.log(JSON.stringify({\n  mutation: \"completed-once\",\n  snapshot: beforeSnapshot,\n  targetCounts: { helloCount, imageBlockCount },\n}));",
+            "submittedUpdateStatements": 1,
+            "outcome": "executed"
+          },
+          {
+            "toolClass": "read-only",
+            "name": "script://host-smoke-article-one-edit-verify-20260915.ts",
+            "bodyMode": "full",
+            "sourceSha256": "e941b907d0cd8744a44e177f6ddacf7d985c534411b5913eee02ee720255a634",
+            "source": "const recordId = \"<dato-id-40>\";\nconst expectedImageBlockId = \"<dato-id-43>\";\n\nconst after = await client.items.find<Schema.HostSmokeArticle>(recordId, {\n  nested: true,\n});\n\nif (!after.body?.en || !after.body.it) {\n  throw new Error(\"Expected English and Italian body values after update.\");\n}\nif (after.title !== \"Original title\" || after.untouched !== \"Keep this value\") {\n  throw new Error(\"A non-body field changed.\");\n}\nif (\n  after.meta.status !== \"draft\" ||\n  after.meta.published_at !== null ||\n  after.meta.first_published_at !== null\n) {\n  throw new Error(\"Publication state changed.\");\n}\n\nconst english = after.body.en;\nif (english.document.children.length !== 3) {\n  throw new Error(\"English root must contain the original two nodes plus one final paragraph.\");\n}\n\nconst first = english.document.children[0];\nif (!isParagraph(first) || first.children.length !== 3) {\n  throw new Error(\"The original English paragraph structure changed.\");\n}\nconst welcome = first.children[0];\nconst space = first.children[1];\nconst link = first.children[2];\nif (\n  !isSpan(welcome) ||\n  welcome.value !== \"Welcome reader\" ||\n  welcome.marks?.length !== 1 ||\n  welcome.marks[0] !== \"strong\"\n) {\n  throw new Error(\"The requested English span change or its strong mark is incorrect.\");\n}\nif (\n  !isSpan(space) ||\n  space.value !== \" \" ||\n  (space.marks?.length ?? 0) !== 0\n) {\n  throw new Error(\"An untouched English span changed.\");\n}\nif (\n  !isLink(link) ||\n  link.url !== \"https://example.test/help\" ||\n  link.children.length !== 1\n) {\n  throw new Error(\"The preserved English link changed.\");\n}\nconst linkText = link.children[0];\nif (\n  !isSpan(linkText) ||\n  linkText.value !== \"Help\" ||\n  (linkText.marks?.length ?? 0) !== 0 ||\n  (link.meta?.length ?? 0) !== 0\n) {\n  throw new Error(\"The preserved English link text or metadata changed.\");\n}\n\nconst imageNode = english.document.children[1];\nif (!isBlockWithItemOfType(Schema.HostSmokeImage.ID, imageNode)) {\n  throw new Error(\"The existing image block moved or changed type.\");\n}\nif (\n  imageNode.item.id !== expectedImageBlockId ||\n  imageNode.item.attributes.caption !== \"Summer portrait\" ||\n  imageNode.item.attributes.image !== null\n) {\n  throw new Error(\"The image block ID, caption, or null image value is incorrect.\");\n}\n\nconst finalNode = english.document.children[2];\nif (\n  !isParagraph(finalNode) ||\n  finalNode.children.length !== 1 ||\n  !isSpan(finalNode.children[0]) ||\n  finalNode.children[0].value !== \"See you soon.\" ||\n  (finalNode.children[0].marks?.length ?? 0) !== 0\n) {\n  throw new Error(\"The final English paragraph is incorrect.\");\n}\n\nconst italian = after.body.it;\nif (\n  italian.document.children.length !== 1 ||\n  !isParagraph(italian.document.children[0]) ||\n  italian.document.children[0].children.length !== 1 ||\n  !isSpan(italian.document.children[0].children[0]) ||\n  italian.document.children[0].children[0].value !== \"Ciao lettore\" ||\n  (italian.document.children[0].children[0].marks?.length ?? 0) !== 0\n) {\n  throw new Error(\"The complete Italian body changed.\");\n}\n\nconst locales = Object.keys(after.body).sort();\nif (locales.length !== 2 || locales[0] !== \"en\" || locales[1] !== \"it\") {\n  throw new Error(\"The body locale set changed.\");\n}\n\nconsole.log(\"verification-passed: requested changes, preserved nodes/locales/fields, and draft state\");",
+            "submittedUpdateStatements": 0,
+            "outcome": "executed"
+          }
+        ],
+        "toolOutputTokens": 24405,
+        "usage": {
+          "input_tokens": 316217,
+          "cached_input_tokens": 271104,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 5150,
+          "reasoning_output_tokens": 2687
+        },
+        "assertions": {
+          "hostedMcpOnly": true,
+          "noCliSetup": true,
+          "scriptCompilationAndExecution": true,
+          "requestedContent": true,
+          "unrelatedContentPreserved": true,
+          "publicationStatePreserved": true,
+          "topLevelVersionCount": 2,
+          "exactlyOneUpdate": true
+        }
+      }
+    ],
+    "assertionsPassed": 48,
+    "assertionsTotal": 48,
+    "usage": {
+      "input_tokens": 1687248,
+      "cached_input_tokens": 1412096,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 20403,
+      "reasoning_output_tokens": 9601
+    },
+    "toolOutputTokens": 137461,
+    "independentVerification": {
+      "result": "pass",
+      "records": 6,
+      "topLevelVersionCountPerRecord": 2,
+      "exactlyOneUpdatePerRecord": true,
+      "noMutation": true,
+      "report": "PASS — all six records satisfy the requested checks.\n\n| Alias | Route | Current | Preservation | Publication | Versions | Duplicate-write result |\n|---|---|---|---|---|---|---|\n| simple-1 | nested read + top-level versions | draft | PASS | never published | 2: creation + one update | no duplicate top-level snapshot observed |\n| simple-2 | nested read + top-level versions | draft | PASS | never published | 2: creation + one update | no duplicate top-level snapshot observed |\n| simple-3 | nested read + top-level versions | draft | PASS | never published | 2: creation + one update | no duplicate top-level snapshot observed |\n| structured-1 | nested read + top-level versions | draft | PASS | never published | 2: creation + one update | no duplicate top-level snapshot observed |\n| structured-2 | nested read + top-level versions | draft | PASS | never published | 2: creation + one update | no duplicate top-level snapshot observed |\n| structured-3 | nested read + top-level versions | draft | PASS | never published | 2: creation + one update | no duplicate top-level snapshot observed |\n\nPreservation checks included the requested titles, localized greetings and Italian body, Untouched value, captions, exactly one nested image block with null image, strong mark, Help link, and the expected final-paragraph condition. No embedded-block version history was requested. No writes or repairs were performed.\n\nTool/script errors: three transient invocation syntax errors occurred before the verifier ran; no hosted API operation was dispatched by those attempts. The final read-only verifier completed successfully."
+    }
+  },
+  "postFinalCorrectionSmoke": {
+    "log": "final4-structured",
+    "result": "pass",
+    "mutationScripts": 1,
+    "readOnlyVerificationScripts": 1,
+    "errors": 0
+  },
+  "cleanup": {
+    "result": "pass",
+    "deletedEnvironment": "<owned-sandbox>",
+    "exactNameAndNonPrimaryChecked": true,
+    "absentAfterDeletion": true,
+    "primaryEnvironmentStillPresent": true,
+    "otherEnvironmentsModified": false,
+    "route": [
+      "DatoCMS"
+    ],
+    "calls": [
+      {
+        "tool": "search_projects",
+        "status": "completed",
+        "outcome": "completed"
+      },
+      {
+        "tool": "get_api_methods",
+        "status": "completed",
+        "outcome": "completed"
+      },
+      {
+        "tool": "whoami",
+        "status": "completed",
+        "outcome": "completed"
+      },
+      {
+        "tool": "get_api_methods",
+        "status": "failed",
+        "outcome": "tool-error"
+      },
+      {
+        "tool": "get_api_methods",
+        "status": "completed",
+        "outcome": "completed"
+      },
+      {
+        "tool": "upsert_and_execute_unsafe_script",
+        "status": "completed",
+        "outcome": "executed"
+      },
+      {
+        "tool": "upsert_and_execute_unsafe_script",
+        "status": "completed",
+        "outcome": "executed"
+      }
+    ],
+    "usage": {
+      "input_tokens": 189666,
+      "cached_input_tokens": 172032,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1560,
+      "reasoning_output_tokens": 513
+    },
+    "report": "Deleted `<owned-sandbox>`.\n\n- Prechecks: project uniquely resolved; target environment existed exactly once, was ready, and was not primary.\n- Deletion: completed successfully using the documented environment destroy method.\n- Verification: target environment is absent from the subsequent environment list.\n- Primary environment: still present."
+  },
+  "allContentEditAttempts": {
+    "total": 19,
+    "strictScriptClean": 10,
+    "retained": [
+      {
+        "stem": "simple-1",
+        "strictScriptClean": true
+      },
+      {
+        "stem": "simple-2",
+        "strictScriptClean": true
+      },
+      {
+        "stem": "simple-3",
+        "strictScriptClean": true
+      },
+      {
+        "stem": "structured-1",
+        "strictScriptClean": false
+      },
+      {
+        "stem": "structured-2",
+        "strictScriptClean": true
+      },
+      {
+        "stem": "structured-3",
+        "strictScriptClean": true
+      },
+      {
+        "stem": "structured-4",
+        "strictScriptClean": false
+      },
+      {
+        "stem": "structured-5",
+        "strictScriptClean": false
+      },
+      {
+        "stem": "structured-6",
+        "strictScriptClean": false
+      },
+      {
+        "stem": "final-structured-1",
+        "strictScriptClean": false
+      },
+      {
+        "stem": "final-structured-2",
+        "strictScriptClean": true
+      },
+      {
+        "stem": "final-structured-3",
+        "strictScriptClean": false
+      },
+      {
+        "stem": "final2-structured-1",
+        "strictScriptClean": true
+      },
+      {
+        "stem": "final2-structured-2",
+        "strictScriptClean": false
+      },
+      {
+        "stem": "final2-structured-3",
+        "strictScriptClean": false
+      },
+      {
+        "stem": "final3-structured-1",
+        "strictScriptClean": true
+      },
+      {
+        "stem": "final3-structured-2",
+        "strictScriptClean": true
+      },
+      {
+        "stem": "final3-structured-3",
+        "strictScriptClean": false
+      },
+      {
+        "stem": "final4-structured",
+        "strictScriptClean": true
+      }
+    ],
+    "note": "Earlier exploratory and correction runs remain visible; the retained six-case assessment selects clean script runs and the post-final correction smoke uses the final guidance."
+  },
+  "observations": [
+    {
+      "category": "host-connection",
+      "result": "resolved",
+      "detail": "OAuth identity and project discovery succeeded in a fresh native client session."
+    },
+    {
+      "category": "structured-text-types",
+      "result": "resolved",
+      "detail": "Generated scripts needed durable guards after indexing and for optional marks or link metadata."
+    },
+    {
+      "category": "request-response-shapes",
+      "result": "resolved",
+      "detail": "Whole-tree JSON or dastdown serialization was unreliable as a post-write oracle because saved responses normalize optional arrays and expand nested blocks."
+    },
+    {
+      "category": "uncertain-write-risk",
+      "result": "resolved",
+      "detail": "The final workflow keeps the single mutation separate from read-only verification, so a verifier defect cannot cause the mutation to be replayed."
+    },
+    {
+      "category": "embedded-block-history",
+      "result": "documented",
+      "detail": "The item-version endpoint returned 404 for embedded block IDs; duplicate-write proof uses the parent record history and nested block identity."
+    },
+    {
+      "category": "host-transients",
+      "result": "observed",
+      "detail": "Some exploratory reads returned HTTP 502 or a read-only timeout. The route stayed on current MCP and no transient was mislabeled as legacy."
+    }
+  ],
+  "limitations": [
+    "The live smoke covers one native OpenAI client and one isolated throwaway project environment.",
+    "Claude Desktop was removed from this PR acceptance scope at the user request.",
+    "Earlier exploratory runs are not presented as clean first-attempt successes."
+  ]
+}

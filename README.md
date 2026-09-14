@@ -16,14 +16,15 @@ All open source, with native plugin support on Claude Code and Codex and a unive
 
 ---
 
-## Skills or MCP?
+## Skills and optional MCP
 
-DatoCMS offers two AI integrations and they don't overlap:
+Skills guide the agent's workflow; the [DatoCMS MCP server](https://www.datocms.com/docs/mcp-server) connects it to a live project. They can work together:
 
-- **[MCP server](https://www.datocms.com/docs/mcp-server)** — for editors and PMs who want an agent to read and update a project from anywhere (web, mobile, no local setup).
-- **Agent Skills** (this repo) — for developers in their editor or CLI. A superset of MCP: every MCP capability is reachable here via `npx datocms …`, plus content modeling, frontend integrations, migrations, plugin development, and more.
+- **Standalone skills** — content modeling, application code, migrations, plugin development, and live operations through the CLI or CMA client. Installing skills does not require or install MCP.
+- **Standalone MCP** — connected project access without installing these skills. The server supplies its own tools and runtime guidance.
+- **Skills with current remote MCP** — content modeling and CMA guidance can help an agent inspect or update a project through an already connected server, including in chat clients without a local development workspace.
 
-If you're shipping code, you want Skills.
+Use the requested execution route. Otherwise, keep a usable CLI workflow; current remote MCP is an optional route for live operations. Migrations, repo configuration, and application code still need their local workflows. See [installation and compatibility](docs/install.md#skills-and-remote-mcp).
 
 ---
 
@@ -84,11 +85,11 @@ npx skills add datocms/agent-skills
 
 Update later with `npx skills update`. For scopes, single-skill installs, and detached snapshots see [`docs/install.md`](docs/install.md).
 
-### Claude.ai (web)
+### Claude.ai and Claude Desktop chat
 
-On the web you can't run CLI commands or edit local files, so most development-focused skills don't apply. The ones worth uploading are [`datocms-content-modeling.zip`](zips/datocms-content-modeling.zip) (content modeling) and [`datocms-cma.zip`](zips/datocms-cma.zip) (writing content & automation) — best paired with the [DatoCMS MCP server](https://www.datocms.com/docs/mcp-server), which lets the agent read and update your project directly from the conversation.
+For editorial work, upload [`datocms-content-modeling.zip`](zips/datocms-content-modeling.zip) for schema advice and [`datocms-cma.zip`](zips/datocms-cma.zip) for content operations. Connect the [current remote MCP server](https://www.datocms.com/docs/mcp-server) separately when live project access is needed. Modeling advice alone requires no connection; local development recipes require the relevant workspace and tools.
 
-Upload the `.zip` files via **Customize → Skills** in [claude.ai](https://claude.ai). The full set of pre-built zips lives in the [`zips/`](zips/) folder.
+Upload and enable the `.zip` files via **Customize → Skills** in [Claude](https://claude.ai). A local Claude Code skill install does not itself enable them in chat. The full set of pre-built zips lives in [`zips/`](zips/).
 
 ---
 
@@ -168,7 +169,7 @@ Issues and pull requests are welcome on [github.com/datocms/agent-skills](https:
 
 **New here?** Start with [Create free account](https://dashboard.datocms.com/signup) and the [Documentation](https://www.datocms.com/docs). Stuck? Ask the [Community](https://community.datocms.com/). Curious what's new? [Product Updates](https://www.datocms.com/product-updates).
 
-**Building with AI:** [Agent Skills](https://www.datocms.com/docs/agent-skills) turn coding assistants (Claude Code, Cursor) into expert DatoCMS developers, with full read/write via the auto-installed CLI. No local terminal? Use the [MCP Server](https://www.datocms.com/docs/mcp-server) instead.
+**Building with AI:** [Agent Skills](https://www.datocms.com/docs/agent-skills) guide DatoCMS workflows in compatible assistants. Use local CLI and code workflows for development, or pair content workflows with the optional [MCP Server](https://www.datocms.com/docs/mcp-server) for connected project access.
 
 **Talking to DatoCMS from code:**
 

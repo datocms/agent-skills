@@ -90,6 +90,8 @@ Use file-mode when:
 
 **stdin-mode** scripts type-checked with `tsc --noEmit` inside CLI workspace **before execution**. `any` and `unknown` rejected — use `Schema.*` types for record operations:
 
+CLI 4.2.0's stdin workspace targets ES2020. Use array indexing rather than newer APIs such as `.at()`; the host Node version does not determine the validation library.
+
 ```ts
 await client.items.create<Schema.Article>({
   item_type: { id: 'ABC123', type: 'item_type' },
@@ -97,7 +99,7 @@ await client.items.create<Schema.Article>({
 });
 ```
 
-- `--skip-validation` disables stdin-mode pre-flight type-check. Reach for it only when debugging false positive from workspace's `tsc`.
+- `--skip-validation` is only for a confirmed workspace validation defect. Never bypass script type errors: fix field names, `Schema.X` generics, and guards first.
 - `--rebuild-workspace` wipes and rebuilds internal workspace (`node_modules`, `tsconfig`). Use after CLI upgrade if stdin-mode scripts start failing with module resolution errors.
 
 **file-mode** does not run CLI-side typecheck. Type safety comes from your own project: your editor's LSP continuously against your `tsconfig.json`, or explicit `tsc --noEmit` you invoke yourself. This matches how `migrations:run` loads single file — no CLI-side typecheck there either. Malformed `Schema.Article` or missing field will surface in editor before you run script, or at runtime if you skip validation entirely.
@@ -187,4 +189,4 @@ File must:
 | Migration (`datocms-cli`) | Code that must be **committed, versioned, and replayed** across environments. Use `migrations:new` to scaffold — file-mode script can be promoted with `mv` since imports and signature already match. |
 | Checked-in `buildClient()` script (**datocms-cma**) | **Unattended runtime** code: CI, app server, webhook, long-lived automation. Needs CMA token in environment. |
 
-> **Tip:** Use `npx datocms cma:docs <resource> <action>` to look up exact request body shape and parameters before writing `cma:call` or `cma:script`.
+> **Method lookup:** `npx datocms cma:docs items self` documents `client.items.find()` / `cma:call items find`; `npx datocms cma:docs items update` documents `client.items.update()`. Docs actions and SDK methods are different names: discover other actions with `cma:docs <resource>`.

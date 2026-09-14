@@ -2,22 +2,26 @@
 
 Mutate record fields — block-bearing fields (Modular Content `rich_text`, Single Block `single_block`, Structured Text `structured_text` w/ `block` / `inlineBlock` nodes) + localized fields, plus add locale + backfill per-locale values.
 
-> Endpoint shapes for `items.*` (find / list / update / create / publish / …): `npx datocms cma:docs items <action>` (add `--expand-types '*'` for full TS definitions). This file owns CMA adaptation: peek-then-mutate ordering, typed guards, block request payloads, locales, and version checks. DAST algorithms live in [Structured Text editing](../../datocms-structured-text/references/editing.md).
+This file owns CMA adaptation: peek-then-mutate ordering, typed guards, block request payloads, locales, version checks, persistence, and the structured-text Pass 1 → Pass 2 → root-append invariant. When `datocms-structured-text` is available, use its document model and editing or conversion reference for the underlying DAST operation; keep this workflow for the record read, mutation, and verification boundary.
+
+> In CLI mode: `cma:docs items self` documents `client.items.find()` / `cma:call items find`; `cma:docs items update` documents `client.items.update()`. Use `--expand-types <Type>` for a specific declaration.
 
 Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.body) { ... }`. Always pass `Schema.X` as generic to typed helpers; never hand-roll JSON:API.
 
-> **`any` / `unknown` forbidden** — rejected pre-execution. Typed surface below (`Schema.X` generics, `FieldValueInRequest`, type-guard imports) makes them unnecessary. Untyped callback param → guard (`isSpan(c)`, `isBlockWithItemOfType(...)`), not `any`.
+> **Keep concrete types; don't erase them with `any`, `unknown`, casts, or JSON round-trips.** Use `Schema.X`, `FieldValueInRequest`, and guards (`isSpan(c)`, `isBlockWithItemOfType(...)`) to resolve mismatches. Record fields are top-level; `attributes` belongs to nested blocks.
 
 ## Contents
 
 - Workflow
+- Verify saved content
 - Imports
+- Chaining Structured Text helpers
 - Typing values you build up in code
 - `Schema.X` is mandatory on every typed call
 - Prerequisites the workflow assumes
+- Structured text (`structured_text`)
 - Modular content (`rich_text`)
 - Single block (`single_block`)
-- Structured text (`structured_text`)
 - Localized fields and adding a locale
 - Optimistic locking via `meta.current_version`
 
@@ -28,12 +32,17 @@ Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.
 3. Build w/ `buildBlockRecord<Schema.B>({...})` / `duplicateBlockRecord(...)`.
 4. `client.items.update<Schema.M>(id, { ... })`. Skip unchanged fields.
 
+## Verify saved content
+
+Derive preservation checks from the original values, including `null` and empty values. Preserving an optional asset means keeping its original value, not requiring a populated asset.
+
+Keep an independent snapshot of the original read. After updating, read back the same record/version with `nested: true`. Compare relevant field/node semantics in matching response shapes: optional arrays or metadata can normalize, while `===`/`!==` only compares object identity across API reads. Do not use `serialize()` or whole-tree JSON equality as the post-write oracle. Check requested field values against the intended changes and unchanged content against that snapshot. Check block identity, type, attributes, node order, marks, links, other locales, and publication state where relevant.
+
+Do not serialize an update payload to compare it with a saved response. Structured Text request types also allow new blocks without IDs, so they are not valid `serialize()` inputs. Block ID references and partial `buildBlockRecord` payloads expand into full objects on read, including unchanged attributes and response metadata; object-key order is also irrelevant. Compare the relevant values in matching response shapes. Do not strip block attributes or identity just to make equality pass. If post-write verification throws, inspect the saved state before deciding whether any further write is needed; never replay the mutation merely because its verification failed.
+
 ## Imports
 
-> Two runtime classes (terms used throughout this file):
->
-> - **Ambient-globals** (`cma:script` stdin-mode, MCP `upsert_and_execute_{safe,unsafe}_script`): `client`, `Schema.*`, all 3 modules' named exports already on `globalThis` — skip imports below.
-> - **Explicit-import** (`cma:script` file-mode, migrations, repo scripts): import as shown.
+> Examples assume an authenticated `client` and project-specific `Schema`. Use helpers already supplied by the selected runtime; otherwise import them from the packages shown below.
 
 ```ts
 import {
@@ -42,10 +51,15 @@ import {
   isBlockOfType, SchemaRepository,
 } from "@datocms/cma-client-node";
 
+// Structured Text helpers come from their own package.
+
 import {
-  mapNodes, findFirstNode,
+  mapNodes, findFirstNode, reduceNodes,
   isBlockWithItemOfType, isInlineBlockWithItemOfType,
+  isHeading, isParagraph, isSpan, isLink, isItemLink, isInlineItem,
 } from "datocms-structured-text-utils";
+
+import { parse, serialize } from "datocms-structured-text-dastdown";
 ```
 
 Every generated `Schema.X` is **both type and runtime value**. Value side exposes two typed constants:
@@ -54,6 +68,19 @@ Every generated `Schema.X` is **both type and runtime value**. Value side expose
 - `Schema.X.REF` — `{ type: "item_type", id } as const`. Use as `item_type:` value in `buildBlockRecord<Schema.X>({ item_type: Schema.X.REF, … })`.
 
 Use these instead of local `const FOO_ID = "…" as const;` literals — guards narrow w/o manual `as const`, refactors / id changes flow from single source.
+
+## Chaining Structured Text helpers
+
+Before chaining `parse` → `mapNodes`, explicitly type the writable document with `FieldValueInRequest`. An inferred response type can select the wrong mapper overload with mixed helper versions. For a localized field, after checking the locale exists:
+
+```ts
+let content: NonNullable<FieldValueInRequest<typeof currentItem, "body">>["en"] =
+  parse(editedText, currentItem.body.en);
+```
+
+Pass this typed variable to `mapNodes` and assign its result back. Keep the original response for inspecting nested attributes; request values also allow block IDs and partial objects. Apply the existing text → typed block edits → root append workflow below.
+
+Compound predicates such as `(node) => isSpan(node) && node.value === text` can return only `boolean` and lose narrowing. Reapply the corresponding guard before every node-specific access, including verification or logging after re-indexing. Guard paragraph children too: they may be links or inline records; `isParagraph(node)` does not make every child a span.
 
 ## Typing values you build up in code
 
@@ -98,7 +125,7 @@ currentItem.title; // string | null
 currentItem.question; // Record<string, string | null>
 ```
 
-**Ambient-globals**: `Schema.*` ambient — no import, no `schema:generate`, no `tsconfig` change. **Explicit-import**: `Cannot find name 'Schema'` → run `npx datocms schema:generate ./datocms-schema.ts` next to script + `import * as Schema from "./datocms-schema"`.
+Use the project types supplied by the selected runtime. For local scripts that need a generated `Schema` module, see `references/type-generation.md`.
 
 Same for `client.items.update<Schema.X>`, `client.items.create<Schema.X>`, `buildBlockRecord<Schema.B>`, `duplicateBlockRecord<Schema.B>`. `client.items.list` and `client.items.listPagedIterator` accept `<Schema.X>` when `filter.type` is set, or `<Schema.AnyModel>` when unset — always generic.
 
@@ -138,9 +165,138 @@ Custom IDs let you choose a new block's identity. Supply a DatoCMS public ID in 
 
 When creating a record, an ID on a nested block object creates that block. When updating a record, you can reuse IDs of blocks already in the field and locale you are updating. You cannot reuse a block from a different record, field, or locale. An unused ID creates a new block and requires `item_type`. A bare ID string only keeps an existing block unchanged; it cannot create one. These rules apply only to nested blocks.
 
-### Structured Text document shape
+### DAST grammar (structured text)
 
-Load [document model](../../datocms-structured-text/references/document-model.md) for the DAST envelope, nodes, marks, and child rules. New Markdown/HTML content → [conversion](../../datocms-structured-text/references/conversion.md); existing document changes → [editing](../../datocms-structured-text/references/editing.md). Keep the CMA block ID/object rules above when adapting the resulting document to a record request.
+Top-level value is `{ schema: "dast", document: { type: "root", children: [...] } }`. Children allowed per node — violations produce API errors:
+
+| Node | Allowed children |
+| - | - |
+| `root` | `paragraph`, `heading`, `list`, `code`, `blockquote`, `block`, `thematicBreak` |
+| `paragraph`, `heading` | `span`, `link`, `itemLink`, `inlineItem`, `inlineBlock` |
+| `list` | `listItem` |
+| `listItem` | `paragraph`, `list` (lists nest) |
+| `blockquote` | `paragraph` |
+| `link`, `itemLink` | `span` only — no nested links or inline embeds |
+| `span`, `code`, `thematicBreak`, `block`, `inlineBlock`, `inlineItem` | leaf — no children |
+
+`block` may only sit at root depth; inside text flow use `inlineBlock`. Line breaks live as literal `\n` inside `span.value` — no dedicated break node. Marks: `'strong' | 'emphasis' | 'code' | 'underline' | 'strikethrough' | 'highlight'`.
+
+## Structured text (`structured_text`)
+
+Wrap in `if (currentItem.content) { ... }`. Pass **original response** into `mapNodes` / `parse`.
+
+Canonical order: **Pass 1 → Pass 2 → root-level appends**. Apply only steps you need; end w/ single `client.items.update`.
+
+1. **Pass 1 — dastdown round-trip.** Text-shaped edits: rephrase paragraphs, restructure lists, reorder/delete blocks, add/remove marks on substrings (`**strong**`, `*em*`, `==highlight==`, `++underline++`, `~~strike~~`, `` `code` ``), autolink emails/URLs as `[text](url)` or `[text](mailto:…)`, swap inline link targets — anything expressible as text edit on serialized form. `serialize` to dastdown, edit text, `parse(text, currentItem.content)` rehydrates blocks by id. Output type follows `currentItem.content`; untouched blocks pass through as same object reference. Blocks opaque here — only ids encoded; can't touch internals. **Use when equivalent AST change would require writing many DAST nodes instead of simple markdown — `parse` does the split for you.**
+2. **Pass 2 — single `mapNodes` walk** over Pass 1's result (or `currentItem.content` if you skipped Pass 1). One walk handles both flavors of edit:
+   - **Prose AST surgery** — heading levels, link metas, span splits, drop empty paragraphs, mass-replacement across every link / span / heading.
+   - **Block edits, replacements, creations at existing slots** — return `{ ...node, item: buildBlockRecord<Schema.B>({ id, ...diff }) }` to edit, `buildBlockRecord<Schema.B>({ item_type, ...attrs })` (no `id`) to swap in new block at existing slot, `duplicateBlockRecord<Schema.B>(source, repo)` to clone. Source duplicate from **original** tree via `findFirstNode` — `mapNodes` may have rewritten `node.item`, so post-walk tree not safe to clone from.
+3. **Post-walk — root-level appends.** `mapNodes` can't splat at root, so push fresh top-level entries (new paragraph, `{ type: "block", item: buildBlockRecord(...) }`, duplicated block) directly into `content.document.children` after walk.
+
+**Prefer dastdown over AST building/manipulation when possible!** Much less chance of logic/typing errors.
+
+**Why Pass 1 must come first:** `parse` uses `currentItem.content` as lookup table for `<block id="…"/>` placeholders — block created or rewritten by Pass 2 first would either be missing from lookup (and `parse` would throw) or get its mutation silently overwritten by rehydration.
+
+`isBlockWithItemOfType` / `isInlineBlockWithItemOfType` narrow `node.item` to `BlockInNestedResponse<Schema.X>` automatically — no manual cast, no runtime id check. Work inside `mapNodes`/`findFirstNode` callbacks as long as `currentItem.content` carries schema generic (i.e. you called `client.items.find<Schema.M>`).
+
+Two call styles, same narrowing: curried `isBlockWithItemOfType(ID)` returns predicate (use w/ `findFirstNode` / `findAllNodes` / `Array#filter`); direct `isBlockWithItemOfType(ID, node)` checks node inline (use inside `if`).
+
+Rule: write typed-guard branch ONLY for block/inline-block IDs you actually need to mutate. Everything else — including untouched blocks/inline-blocks — falls through to bare `return node`. Update accepts original nested-response shape unchanged; rewrite to id string (`{ ...node, item: node.item.id }`) is payload-size optimization, never correctness requirement.
+
+Do NOT add generic keep-as-id catch-all (`"item" in node`, `node.type === "block" | "inlineBlock"`): once typed guards exhaust every block (or inline-block) variant schema allows for that field, TS narrows rest of union and catch-all becomes type error (`never`) or dead code. Skip it — `return node` does right thing.
+
+### Pass 1 — dastdown round-trip
+
+```ts
+import { parse, serialize } from "datocms-structured-text-dastdown";
+
+const currentItem = await client.items.find<Schema.Article>(id, { nested: true });
+
+if (currentItem.content) {
+  const text = serialize(currentItem.content);
+  const edited = /* … LLM / regex / diff-merge on `text` … */ text;
+
+  // `parse` reuses the original `item` for surviving block/inlineBlock IDs.
+  // Use the writable field type when continuing through `mapNodes`.
+  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =
+    parse(edited, currentItem.content);
+
+  await client.items.update<Schema.Article>(currentItem.id, { content });
+}
+```
+
+Creating brand new structured text content, use `parse("Your **content**")` instead of building DAST manually: much faster.
+
+`parse(text, original)` throws if edit references `<block id="…"/>` / `<inlineBlock id="…"/>` whose id not in `original` — signal to either drop placeholder or move block creation to Pass 2. Editing block's contents through dastdown impossible (only id encoded): Pass 2 owns block-internal edits.
+
+For dastdown syntax (what it adds beyond plain markdown, mark canonical order, canonicalization rules), see `records.md` § "dastdown syntax — what's NOT plain markdown".
+
+### Pass 2 — `mapNodes` walk (prose AST + block edits)
+
+**`mapNodes` walks bottom-up. Return `node` (1:1), `node[]` (splatted into parent's `children`, 1:N), or `null`/`undefined` (drop, 1:0); splat/drop at root throws.** Beyond editing `marks`, `value`, `url`, `level`, `meta`, `item` in place, you can split span into siblings, wrap span in link, drop nodes, or rewrite parent's `children` from inside callback — when mapper sees node, descendants already transformed. Pass 1 (regex on dastdown) often simpler for bulk span-splitting / autolinking.
+
+```ts
+const currentItem = await client.items.find<Schema.Article>(id, { nested: true });
+const repo = new SchemaRepository(client);
+
+if (currentItem.content) {
+  let content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =
+    currentItem.content;
+  content = mapNodes(content, (node) => {
+    if (isInlineBlockWithItemOfType(Schema.Mention.ID, node)) { // EDIT inline
+      return { ...node, item: buildBlockRecord<Schema.Mention>({
+        id: node.item.id, url: node.item.attributes.url + "?utm=x",
+      }) };
+    }
+    if (isBlockWithItemOfType(Schema.Cta.ID, node)) { // EDIT block
+      return { ...node, item: buildBlockRecord<Schema.Cta>({
+        id: node.item.id, button_url: node.item.attributes.button_url + "?utm=x",
+      }) };
+    }
+    if (isHeading(node) && node.level === 1) return { ...node, level: 2 as const };
+    if (isSpan(node)) { // marks: add/remove decorators
+      const marks = new Set(node.marks ?? []);
+      marks.add("strong"); // 'strong'|'emphasis'|'code'|'underline'|'strikethrough'|'highlight'
+      return { ...node, marks: [...marks], value: node.value.replace(/x/g, "y") };
+    }
+    if (isLink(node)) { // link: { url, meta?, children: Span[] }
+      return { ...node, url: node.url + "?utm=x", meta: [
+        ...(node.meta ?? []).filter((m) => m.id !== "rel"),
+        { id: "rel", value: "nofollow" },
+      ] };
+    }
+    if (isItemLink(node)) return { ...node, item: "NEW_RECORD_ID" }; // itemLink/inlineItem: item is a record id string
+    if (
+      isParagraph(node) &&
+      reduceNodes(node, (acc, n) => isSpan(n) ? acc + n.value.trim() : acc, "").length === 0
+    ) {
+      return null; // 1:0 — reduceNodes descends into links/itemLinks; bottom-up: drop the paragraph
+    }
+    return node; // untouched nodes pass through unchanged
+  });
+
+  // findFirstNode composes directly with the typed guard.
+  const found = findFirstNode(currentItem.content, isBlockWithItemOfType(Schema.Warn.ID));
+  if (found) {
+    content.document.children.push({
+      type: "block",
+      item: await duplicateBlockRecord<Schema.Warn>(found.node.item, repo),
+    });
+  }
+
+  // Append a paragraph at the end of the document
+  content.document.children.push({
+    type: "paragraph",
+    children: [{ type: "span", value: "Updated" }],
+  });
+
+  await client.items.update<Schema.Article>(currentItem.id, { content });
+}
+```
+
+### Post-walk — root-level appends
+
+Example's tail covers post-walk hook: `content.document.children.push({ type: "paragraph", ... })` for fresh top-level prose node, `push({ type: "block", item: await duplicateBlockRecord<Schema.Warn>(found.node.item, repo) })` for fresh top-level block. `mapNodes` can't splat at root, so root-level inserts always live here. For duplication, source donor via `findFirstNode` on **original** `currentItem.content` — Pass 2 may have rewritten `node.item` on mapped tree.
 
 ## Modular content (`rich_text`)
 
@@ -202,65 +358,9 @@ await client.items.update<Schema.Product>(id, { // duplicate
 });
 ```
 
-## Structured text (`structured_text`)
-
-Load [Structured Text editing](../../datocms-structured-text/references/editing.md) for Dastdown round-trips, traversal, preservation, and validation. For create/import from Markdown or HTML, load [conversion](../../datocms-structured-text/references/conversion.md) before constructing the CMA payload. If either reference is missing, install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle before continuing the DAST portion.
-
-**CMA adapter order:** read with `client.items.find<Schema.M>(id, { nested: true })`; guard nullable content; apply only needed passes; finish with one `client.items.update<Schema.M>`:
-
-1. Dastdown text changes first, using the original response as `parse`'s block lookup.
-2. Map the result once for requested AST changes and typed block edits. Build changed items with `buildBlockRecord<Schema.B>`; duplicate donors from the original response, not an already rewritten item.
-3. Append new root entries after the walk. Never run a Dastdown rehydration after block creation or mutation: the original lookup can lose those changes or reject new IDs.
-
-`isBlockWithItemOfType` / `isInlineBlockWithItemOfType` narrow `node.item` to `BlockInNestedResponse<Schema.X>` automatically — no manual cast, no runtime id check. Work inside `mapNodes`/`findFirstNode` callbacks as long as `currentItem.content` carries schema generic (i.e. you called `client.items.find<Schema.M>`).
-
-Two call styles, same narrowing: curried `isBlockWithItemOfType(ID)` returns predicate (use w/ `findFirstNode` / `findAllNodes` / `Array#filter`); direct `isBlockWithItemOfType(ID, node)` checks node inline (use inside `if`).
-
-Rule: write typed-guard branch ONLY for block/inline-block IDs you actually need to mutate. Everything else — including untouched blocks/inline-blocks — falls through to bare `return node`. Update accepts original nested-response shape unchanged; rewrite to id string (`{ ...node, item: node.item.id }`) is payload-size optimization, never correctness requirement.
-
-Do NOT add generic keep-as-id catch-all (`"item" in node`, `node.type === "block" | "inlineBlock"`): once typed guards exhaust every block (or inline-block) variant schema allows for that field, TS narrows rest of union and catch-all becomes type error (`never`) or dead code. Skip it — `return node` does right thing.
-
-### Typed block changes and duplication
-
-The document algorithm comes from [editing](../../datocms-structured-text/references/editing.md); this example shows the CMA request types and persistence boundary.
-
-```ts
-const currentItem = await client.items.find<Schema.Article>(id, { nested: true });
-const repo = new SchemaRepository(client);
-
-if (currentItem.content) {
-  let content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =
-    currentItem.content;
-  content = mapNodes(content, (node) => {
-    if (isInlineBlockWithItemOfType(Schema.Mention.ID, node)) { // EDIT inline
-      return { ...node, item: buildBlockRecord<Schema.Mention>({
-        id: node.item.id, url: node.item.attributes.url + "?utm=x",
-      }) };
-    }
-    if (isBlockWithItemOfType(Schema.Cta.ID, node)) { // EDIT block
-      return { ...node, item: buildBlockRecord<Schema.Cta>({
-        id: node.item.id, button_url: node.item.attributes.button_url + "?utm=x",
-      }) };
-    }
-    return node; // untouched nodes pass through unchanged
-  });
-
-  // findFirstNode composes directly with the typed guard.
-  const found = findFirstNode(currentItem.content, isBlockWithItemOfType(Schema.Warn.ID));
-  if (found) {
-    content.document.children.push({
-      type: "block",
-      item: await duplicateBlockRecord<Schema.Warn>(found.node.item, repo),
-    });
-  }
-
-  await client.items.update<Schema.Article>(currentItem.id, { content });
-}
-```
-
 ## Localized fields and adding a locale
 
-Site update + per-item backfill in ONE script. Spread existing per-locale objects. Structured Text backfills also need [editing](../../datocms-structured-text/references/editing.md) for existing DAST or [conversion](../../datocms-structured-text/references/conversion.md) for Markdown/HTML; validate each locale document independently.
+Site update + per-item backfill in ONE script. Spread existing per-locale objects.
 
 ```ts
 await client.site.update({ locales: ["en", "it", "es"] });

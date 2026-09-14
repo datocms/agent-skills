@@ -42,18 +42,21 @@ Confirm:
 
 ## Command Shape
 
+Resource and method are positional camelCase arguments, not REST-style flags. Do not invent `--endpoint`, `--method`, `--body`, or `--query-params`; use `--data` and `--params` as shown below.
+
 ```bash
 npx datocms cma:call <resourceCamelCase> <methodCamelCase> [...pathArgs] [--data '...'] [--params '...'] [--environment <env>]
 ```
 
 ### Flags
 
+`cma:call` prints JSON by default. Omit `--json`: CLI 4.2.0 suppresses the result with that flag.
+
 | Flag | Description |
 | - | - |
 | `--data <value>` | JSON/JSON5 string for request body (create/update) |
 | `--params <value>` | JSON/JSON5 string for query params (filtering, pagination) |
 | `-e, --environment <value>` | Target specific environment |
-| `--json` | Machine-readable JSON output (piping) |
 | `--api-token <value>` | Override API token for this call |
 | `--profile <value>` | Use specific CLI profile |
 | `--log-level <level>` | NONE, BASIC, BODY, or BODY_AND_HEADERS |
@@ -62,7 +65,7 @@ npx datocms cma:call <resourceCamelCase> <methodCamelCase> [...pathArgs] [--data
 
 ### `cma:docs` — Browse full API reference
 
-Use `cma:docs` for detailed, up-to-date terminal docs. Always matches installed client — never stale.
+`cma:docs <resource>` lists documentation **action names**; `cma:call` takes SDK **method names** from the action's Client Methods section. They can differ: for `items`, docs action `self` maps to method `find`, and `instances` to `list`. Discover the action, then use its documented method for calls.
 
 ```bash
 # List all available resources
@@ -70,6 +73,10 @@ npx datocms cma:docs
 
 # Describe a resource and its actions
 npx datocms cma:docs items
+
+# Read documentation uses "self"; the corresponding SDK method is "find"
+npx datocms cma:docs items self
+npx datocms cma:call items find <ITEM_ID>
 
 # Describe a specific action — description, HTTP, client method signatures
 npx datocms cma:docs items create
@@ -301,11 +308,11 @@ Default page size varies by resource. Iterating all pages? Switch to **datocms-c
 
 ## Output and Scripting
 
-Default output: pretty-printed JSON. Use `--json` for piping:
+Pipe the default JSON output directly:
 
 ```bash
-npx datocms cma:call items create --json --data '{...}' | jq '.id'
-npx datocms cma:call itemTypes list --json | jq '.[].api_key'
+npx datocms cma:call items create --data '{...}' | jq '.id'
+npx datocms cma:call itemTypes list | jq '.[].api_key'
 ```
 
 ## When to Escalate

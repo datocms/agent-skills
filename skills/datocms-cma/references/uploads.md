@@ -2,7 +2,7 @@
 
 Asset management: uploads, metadata, collections (folders), references.
 
-> Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs {uploads|uploadRequest|uploadCollections} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
+> In CLI mode, endpoint shapes / payloads / TS signatures: `npx datocms cma:docs {uploads|uploadRequest|uploadCollections} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
 ## Contents
 
@@ -29,7 +29,7 @@ _FromLocalFile / FromUrl / FromFileOrBlob_ helpers do all three steps in one cal
 
 ## Replace a file while keeping its URL
 
-When the public URL must stay the same, use `replace_strategy: 'keep_url'` on `uploads.update`. Consult `npx datocms cma:docs uploads update` or the [upload-update documentation](https://www.datocms.com/docs/content-management-api/resources/upload/update) for the operation's options.
+When the public URL must stay the same, use `replace_strategy: 'keep_url'` on `uploads.update`. Consult the selected mode's method documentation or the [upload-update documentation](https://www.datocms.com/docs/content-management-api/resources/upload/update) for the operation's options.
 
 Node.js, using an existing client, upload ID, and local file path:
 
@@ -115,7 +115,7 @@ From `@datocms/cma-client` **6.0.0** simple methods (`create`, `update`, `find`,
 
 Raw methods (`rawCreate`, `rawFind`, `rawList`, ...) hand you wire payload untouched — that's the point of raw layer. Type those with exported `UploadLocaleKeyedDefaultFieldMetadata` / `UploadLocaleKeyedDefaultFieldMetadataInRequest`.
 
-**Raw methods and clients before 6.0.0:** detect the wire shape with `const site = await client.site.find()` and read `site.meta.non_localized_focal_points` (`false` means locale-keyed; `true` means field-keyed). Match that environment's shape, or upgrade to 6.0.0+ and use simple methods for automatic conversion. `cma:docs` reflects the installed client's generated types; it does not detect the environment's wire shape.
+**Raw methods and clients before 6.0.0:** detect the wire shape with `const site = await client.site.find()` and read `site.meta.non_localized_focal_points` (`false` means locale-keyed; `true` means field-keyed). Match that environment's shape, or upgrade to 6.0.0+ and use simple methods for automatic conversion. Client type declarations do not detect the environment's wire shape.
 
 `smart_tags` (auto-populated by Dato's image analysis) appear on read-back asynchronously after upload — not present immediately on response from `create()`. Don't filter on `smart_tags` until you've waited for indexing.
 

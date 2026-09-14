@@ -179,11 +179,13 @@ Many methods accept an optional generic `D extends ItemTypeDefinition` for per-m
 
 **Legacy aliases:** `SimpleSchemaTypes = ApiTypes`, `SchemaTypes = RawApiTypes`. Prefer `ApiTypes` and `RawApiTypes` in new code.
 
-See `references/type-generation.md` for generating the project's `cma-types.ts` (the `Schema.X` markers used as generics throughout this skill).
+For local scripts that need generated `Schema.X` markers, see `references/type-generation.md`.
 
 ### Looking up a specific type
 
-For the exact, up-to-date shape of any `ApiTypes.*` / `RawApiTypes.*` type, run `npx datocms cma:docs <resource> <action>`. To print just one specific type declaration on its own, use `--expand-types <TypeName>` (e.g. `--expand-types ItemCreateSchema`) — this suppresses the docs/methods sections and emits only the type. To extend the integrated "Not expanded" type list that ships with the regular docs view, raise `--types-depth` (default 2) to 3 or higher. Reach for `--expand-types "*"` only as a last resort — its output is verbose and `--types-depth` does not constrain it. For the full command surface, load the **datocms-cli** skill and read `../../datocms-cli/references/direct-cma-calls.md` § cma:docs — that is the single source of truth.
+Use the selected execution mode's method/type documentation for exact `ApiTypes.*` / `RawApiTypes.*` declarations.
+
+In CLI mode, use `npx datocms cma:docs <resource> <action>`; request a specific `--expand-types <TypeName>` before expanding everything. For command options, read `../../datocms-cli/references/direct-cma-calls.md` § cma:docs.
 
 ## Automatic Behaviors
 

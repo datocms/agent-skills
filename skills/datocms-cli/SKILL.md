@@ -18,19 +18,19 @@ description: >-
 
 # DatoCMS CLI Skill
 
-You're an expert at `datocms` CLI. Follow these steps. Don't skip.
+Use for CLI commands, migrations, and local project configuration.
 
 Pure Structured Text conversion or local DAST work → **datocms-structured-text** before CLI bootstrap: [document model](../datocms-structured-text/references/document-model.md), [editing](../datocms-structured-text/references/editing.md), or [conversion](../datocms-structured-text/references/conversion.md). CLI execution/authentication stays here when a project operation is needed. Missing required reference → install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle; ordinary CLI tasks do not depend on it.
 
 ## Step 1: Detect Context
 
-If context already set (CLI package, config, token, migrations dir, TS setup), skip detection. Re-inspect only when can't answer from prior context.
+Reuse established CLI context. For live reads or content operations, follow **datocms-cma** route selection first. Don't install CLI solely to displace a working current remote MCP connection.
 
-**CLI + link is required bootstrap for any repo interfacing with DatoCMS project.** `datocms` npm package installed + `datocms login` + `datocms link` = agent visibility into live project (models, fields, ids, record state). Missing → fix first, same as `git init` or `npm install`.
+Bootstrap only for selected CLI execution; explaining commands needs no connection. CLI-specific migrations, linking, profiles, imports, and type generation stay here.
 
 ### Detection (don't rely on `which datocms` — CLI runs via `npx`)
 
-1. `datocms` in `package.json` devDependencies → CLI available. Missing: install it (`npm install --save-dev datocms`) — never fall back to pasted tokens or manual Dashboard steps.
+1. `datocms` in `package.json` devDependencies → CLI available. Missing for selected CLI execution: install it (`npm install --save-dev datocms`).
 2. `datocms.config.json` with `siteId` on active profile → linked. Missing: drive bootstrap below.
 3. `npx datocms whoami` succeeds → OAuth session active.
 4. `migrations/` directory → migrations already scaffolded.
@@ -50,12 +50,12 @@ npx datocms link --site-id=<ID> [--organization-id=<ID>] # agent links
 
 `datocms link` without `--site-id` requires terminal. In non-TTY it now exits cleanly with suggestion to pass `--site-id`; don't retry without it. Same when credentials missing — ask user to run `datocms login` first.
 
-Once project linked, use `npx datocms schema:inspect` (optionally with model API key, id, or display name) to learn what project actually contains — models, blocks, fields, validators, fieldsets, nested blocks, relationships. This is right tool any time agent or user needs generic info about project structure; reach for it before writing mutations, migrations, or CMA code so decisions rest on real schema rather than guesses. See `references/schema-inspect.md`.
+For CLI work, use `npx datocms schema:inspect` on selected project/environment before schema-dependent code or mutations. Filter by model API key, id, or name as needed. See `references/schema-inspect.md`.
 
 ### Authentication policy
 
-- **Interactive task**: OAuth via `login` + `link` is mechanism. Never ask user to paste token or add `DATOCMS_CMA_TOKEN=...` to `.env` for this case.
-- **Unattended execution** (CI, cron, server-side app, shared scripts without OAuth session): CMA-enabled token via env var. Read-only CDA tokens (`DATOCMS_READONLY_API_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`) won't work — flag that separate CMA-enabled token is needed. Agent itself still needs CLI + link at development time for visibility.
+- **Interactive CLI execution**: OAuth via `login` + `link`. Never ask user to paste token or add `DATOCMS_CMA_TOKEN=...` to `.env` for this case.
+- **Unattended execution** (CI, cron, server-side app, shared scripts without OAuth session): CMA-enabled token via env var. Read-only CDA tokens (`DATOCMS_READONLY_API_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`) won't work — flag that separate CMA-enabled token is needed.
 
 **Token resolution order CLI uses:**
 
@@ -132,7 +132,7 @@ If context missing, ask for explicit confirmation before proposing final command
 
 Based on task classification, read appropriate reference files from `references/` directory next to this skill file. Only load what's relevant.
 
-**Always load:**
+**Load only when setup or configuration is needed:**
 
 - `references/cli-setup.md` — Installation, configuration, profiles, global flags, token resolution
 
@@ -205,8 +205,8 @@ Write commands and scripts following mandatory rules:
 
 ### Direct CMA Calls
 
-- Use `npx datocms cma:docs <resource> <action>` to look up endpoint details (request body, parameters, examples) before constructing command
-- Use `npx datocms cma:call <resourceCamelCase> <methodCamelCase> [...pathArgs]` for single-method ad-hoc CMA operations
+- Discover actions with `npx datocms cma:docs <resource>`, then inspect `<action>` for endpoint details. Documentation actions (`self`, `instances`) differ from SDK methods (`find`, `list`).
+- Use `npx datocms cma:call <resourceCamelCase> <methodCamelCase> [...pathArgs]` for simple single-method operations. Use `cma:script` to transform localized/block/Structured Text values.
 - Pass request bodies with `--data '{...}'` and query parameters with `--params '{...}'`
 - Add `--environment` when call must target sandbox environment
 - `cma:call` is **positional** (`<resourceCamelCase> <methodCamelCase>` + URL placeholders as extra positional args). It is **not** REST wrapper: there is no `--endpoint`, `--method`, `--query-params`, or `--body` flag — don't invent these
@@ -216,6 +216,7 @@ Concrete shape, with JSON5 accepted in `--data` / `--params`:
 
 ```bash
 npx datocms cma:call items list --params='{filter: {type: "article"}}'
+npx datocms cma:docs items self # documents client.items.find(); "find" is not a docs action
 npx datocms cma:call items find <ITEM_ID>
 npx datocms cma:call items update <ITEM_ID> --data='{title: "Updated"}'
 npx datocms cma:call items publish <ITEM_ID>
@@ -250,7 +251,7 @@ Run `npx datocms cma:call --help` for full list of built-in examples, or `npx da
 
 ## Step 5: Verify
 
-Before presenting final commands or scripts:
+Before execution, verify applicable prerequisites; for command examples, state missing prerequisites without connecting:
 
 1. **API token** — Confirm CMA-enabled token available (via env var or `--api-token` flag)
 2. **Config file** — If using profiles, verify `datocms.config.json` exists and has right profile
