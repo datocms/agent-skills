@@ -5,9 +5,9 @@
   "reasoningEffort": "medium",
   "contextGatesPassed": true,
   "criticalGatesPassed": true,
-  "contentAndScriptGatesPassed": false,
+  "contentAndScriptGatesPassed": true,
   "requiredGatesPassed": true,
-  "gatesPassed": false,
+  "gatesPassed": true,
   "failures": [],
   "arms": {
     "base": {
@@ -38,9 +38,9 @@
     },
     "candidate": {
       "sessions": 48,
-      "passed": 47,
+      "passed": 48,
       "criticalPassed": 48,
-      "contentAndScriptPassed": 47,
+      "contentAndScriptPassed": 48,
       "loadedGuidanceTokens": {
         "min": 2212,
         "median": 10125,
@@ -52,14 +52,14 @@
       "toolOutputTokens": {
         "min": 2212,
         "median": 11996.5,
-        "max": 52432
+        "max": 49837
       },
       "usage": {
-        "input_tokens": 7215269,
-        "cached_input_tokens": 6082304,
+        "input_tokens": 7190705,
+        "cached_input_tokens": 5969152,
         "cache_write_input_tokens": 0,
-        "output_tokens": 49183,
-        "reasoning_output_tokens": 13065
+        "output_tokens": 46753,
+        "reasoning_output_tokens": 11634
       }
     },
     "none": {
@@ -33451,23 +33451,16 @@
         },
         {
           "path": "skills/datocms-cma/references/mcp.md",
-          "tokens": 356,
-          "sha256": "06227f52c4ebd28c4bedccd5721c9796d9372e26a0625fe0fd2e6aabe899bfad",
+          "tokens": 468,
+          "sha256": "4cd5b84994baf4cc0d3ee3b3bc352d47e322dfbc725ecf133e0781f5e9077743",
           "sequence": 3,
           "via": "file"
         },
         {
           "path": "skills/datocms-cma/references/editing-records.md",
-          "tokens": 6216,
-          "sha256": "e235b23a367695b3a7e7cf9c9f13c98a4886cf27231a5aa8ee097b0e7dc58af3",
+          "tokens": 6222,
+          "sha256": "ea9cc75ba19fd952ea5f6ea770cd766bb8211d701832a0420ec4773ca680ce4b",
           "sequence": 8,
-          "via": "file"
-        },
-        {
-          "path": "skills/datocms-cma/references/localization.md",
-          "tokens": 2776,
-          "sha256": "5b90ba80ea02d129044493117e97f31b7df208c2e7edb83e9b830d3d73caedcb",
-          "sequence": 10,
           "via": "file"
         },
         {
@@ -33476,7 +33469,7 @@
           "sha256": "a8ed91e7b820ec961d35acd37684d4da2a662d2c0191e4fbb8a950a6c801ee07",
           "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
           "projection": "remove-lines-containing-cma-colon",
-          "sequence": 12,
+          "sequence": 10,
           "via": "tool"
         },
         {
@@ -33485,23 +33478,23 @@
           "sha256": "c67f413c09b9765be619e3b5db0be60013f9f7ea797da8afd871e0ddadd018e4",
           "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
           "projection": "remove-lines-containing-cma-colon",
-          "sequence": 13,
+          "sequence": 11,
           "via": "tool"
         }
       ],
       "repeatedReads": 1,
       "repeatedTokens": 5652,
       "identicalRepeatTokens": 0,
-      "loadedGuidanceTokens": 19283,
-      "fileGuidanceTokens": 11585,
+      "loadedGuidanceTokens": 16625,
+      "fileGuidanceTokens": 8927,
       "toolGuidanceTokens": 7698,
-      "toolOutputTokens": 52432,
+      "toolOutputTokens": 49837,
       "usage": {
-        "input_tokens": 491012,
-        "cached_input_tokens": 413184,
+        "input_tokens": 557885,
+        "cached_input_tokens": 448768,
         "cache_write_input_tokens": 0,
-        "output_tokens": 3576,
-        "reasoning_output_tokens": 1067
+        "output_tokens": 3462,
+        "reasoning_output_tokens": 941
       },
       "contentFailures": [],
       "criticalFailures": [],
@@ -33512,7 +33505,7 @@
       "route": "mcp",
       "failedReadCalls": 0,
       "repeatedFailedReads": 0,
-      "elapsedMs": 69231,
+      "elapsedMs": 69140,
       "model": "gpt-5.6-terra",
       "reasoningEffort": "medium",
       "fixtureSourceSha256": "0692a1dedd3c49feb4a846768fb15baa070bb02f7dd1e95bfe497bad306d81ed",
@@ -33528,21 +33521,15 @@
         },
         {
           "path": "skills/datocms-cma/references/mcp.md",
-          "tokens": 356,
-          "sha256": "06227f52c4ebd28c4bedccd5721c9796d9372e26a0625fe0fd2e6aabe899bfad",
+          "tokens": 468,
+          "sha256": "4cd5b84994baf4cc0d3ee3b3bc352d47e322dfbc725ecf133e0781f5e9077743",
           "sequence": 3
         },
         {
           "path": "skills/datocms-cma/references/editing-records.md",
-          "tokens": 6216,
-          "sha256": "e235b23a367695b3a7e7cf9c9f13c98a4886cf27231a5aa8ee097b0e7dc58af3",
+          "tokens": 6222,
+          "sha256": "ea9cc75ba19fd952ea5f6ea770cd766bb8211d701832a0420ec4773ca680ce4b",
           "sequence": 8
-        },
-        {
-          "path": "skills/datocms-cma/references/localization.md",
-          "tokens": 2776,
-          "sha256": "5b90ba80ea02d129044493117e97f31b7df208c2e7edb83e9b830d3d73caedcb",
-          "sequence": 10
         }
       ],
       "guidanceDeliveries": [
@@ -33552,7 +33539,7 @@
           "sha256": "a8ed91e7b820ec961d35acd37684d4da2a662d2c0191e4fbb8a950a6c801ee07",
           "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
           "projection": "remove-lines-containing-cma-colon",
-          "sequence": 12
+          "sequence": 10
         },
         {
           "path": "skills/datocms-cma/references/editing-records.md",
@@ -33560,7 +33547,7 @@
           "sha256": "c67f413c09b9765be619e3b5db0be60013f9f7ea797da8afd871e0ddadd018e4",
           "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
           "projection": "remove-lines-containing-cma-colon",
-          "sequence": 13
+          "sequence": 11
         }
       ],
       "guidance": {
@@ -33574,23 +33561,16 @@
           },
           {
             "path": "skills/datocms-cma/references/mcp.md",
-            "tokens": 356,
-            "sha256": "06227f52c4ebd28c4bedccd5721c9796d9372e26a0625fe0fd2e6aabe899bfad",
+            "tokens": 468,
+            "sha256": "4cd5b84994baf4cc0d3ee3b3bc352d47e322dfbc725ecf133e0781f5e9077743",
             "sequence": 3,
             "via": "file"
           },
           {
             "path": "skills/datocms-cma/references/editing-records.md",
-            "tokens": 6216,
-            "sha256": "e235b23a367695b3a7e7cf9c9f13c98a4886cf27231a5aa8ee097b0e7dc58af3",
+            "tokens": 6222,
+            "sha256": "ea9cc75ba19fd952ea5f6ea770cd766bb8211d701832a0420ec4773ca680ce4b",
             "sequence": 8,
-            "via": "file"
-          },
-          {
-            "path": "skills/datocms-cma/references/localization.md",
-            "tokens": 2776,
-            "sha256": "5b90ba80ea02d129044493117e97f31b7df208c2e7edb83e9b830d3d73caedcb",
-            "sequence": 10,
             "via": "file"
           },
           {
@@ -33599,7 +33579,7 @@
             "sha256": "a8ed91e7b820ec961d35acd37684d4da2a662d2c0191e4fbb8a950a6c801ee07",
             "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
             "projection": "remove-lines-containing-cma-colon",
-            "sequence": 12,
+            "sequence": 10,
             "via": "tool"
           },
           {
@@ -33608,15 +33588,15 @@
             "sha256": "c67f413c09b9765be619e3b5db0be60013f9f7ea797da8afd871e0ddadd018e4",
             "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
             "projection": "remove-lines-containing-cma-colon",
-            "sequence": 13,
+            "sequence": 11,
             "via": "tool"
           }
         ],
         "repeatedReads": 1,
         "repeatedTokens": 5652,
         "identicalRepeatTokens": 0,
-        "loadedGuidanceTokens": 19283,
-        "fileGuidanceTokens": 11585,
+        "loadedGuidanceTokens": 16625,
+        "fileGuidanceTokens": 8927,
         "toolGuidanceTokens": 7698
       },
       "exitCode": 0,
@@ -33624,8 +33604,14 @@
       "sources": [
         {
           "route": "mcp",
-          "name": "script://update-article-1-english-body.ts",
-          "source": "const original = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!original.body.en) {\n  throw new Error(\"article-1 has no English Structured Text\");\n}\n\nlet greetingMarks = \"\";\nlet originalLinkUrl = \"\";\nlet originalGreetingFound = false;\nlet originalBlockFound = false;\n\nmapNodes(original.body.en, (node) => {\n  if (isSpan(node) && node.value === \"Hello reader\") {\n    originalGreetingFound = true;\n    greetingMarks = (node.marks ?? []).join(\"|\");\n  }\n  if (isLink(node)) {\n    originalLinkUrl = node.url;\n  }\n  if (isBlock(node) && node.item.id === \"block-1\") {\n    originalBlockFound = true;\n  }\n  return node;\n});\n\nif (!originalGreetingFound || !originalBlockFound) {\n  throw new Error(\"Expected greeting span or image block was not found\");\n}\n\nlet english: NonNullable<FieldValueInRequest<typeof original, \"body\">>[\"en\"] =\n  mapNodes(original.body.en, (node) => {\n    if (isSpan(node) && node.value === \"Hello reader\") {\n      return { ...node, value: \"Welcome reader\" };\n    }\n    if (isBlock(node) && node.item.id === \"block-1\") {\n      return {\n        ...node,\n        item: buildBlockRecord<Schema.ImageBlock>({\n          id: node.item.id,\n          caption: \"Summer portrait\",\n        }),\n      };\n    }\n    return node;\n  });\n\nenglish.document.children.push({\n  type: \"paragraph\",\n  children: [{ type: \"span\", value: \"See you soon.\" }],\n});\n\nawait client.items.update<Schema.Article>(original.id, {\n  body: { ...original.body, en: english },\n  meta: { current_version: original.meta.current_version },\n});\n\nconst saved = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!saved.body.en || serialize(saved.body.it) !== serialize(original.body.it)) {\n  throw new Error(\"Italian locale was not preserved\");\n}\nif (saved.title !== original.title || saved.untouched !== original.untouched) {\n  throw new Error(\"An unrelated field was changed\");\n}\n\nlet savedGreetingFound = false;\nlet savedGreetingMarks = \"\";\nlet savedBlockFound = false;\nlet savedBlockImagePreserved = false;\nlet savedLinkPreserved = false;\n\nmapNodes(saved.body.en, (node) => {\n  if (isSpan(node) && node.value === \"Welcome reader\") {\n    savedGreetingFound = true;\n    savedGreetingMarks = (node.marks ?? []).join(\"|\");\n  }\n  if (isLink(node) && node.url === originalLinkUrl) {\n    savedLinkPreserved = true;\n  }\n  if (isBlock(node) && node.item.id === \"block-1\") {\n    savedBlockFound = node.item.attributes.caption === \"Summer portrait\";\n    savedBlockImagePreserved = node.item.attributes.image === null;\n  }\n  return node;\n});\n\nconst finalNode = saved.body.en.document.children[saved.body.en.document.children.length - 1];\nconst finalParagraphValid =\n  isParagraph(finalNode) &&\n  finalNode.children.length === 1 &&\n  isSpan(finalNode.children[0]) &&\n  finalNode.children[0].value === \"See you soon.\";\n\nif (\n  !savedGreetingFound ||\n  savedGreetingMarks !== greetingMarks ||\n  !savedBlockFound ||\n  !savedBlockImagePreserved ||\n  !savedLinkPreserved ||\n  !finalParagraphValid ||\n  saved.meta.status !== \"draft\"\n) {\n  throw new Error(\"Post-update verification failed\");\n}\n\nconsole.log({\n  recordId: saved.id,\n  status: saved.meta.status,\n  greeting: \"Welcome reader\",\n  blockId: \"block-1\",\n  caption: \"Summer portrait\",\n  finalParagraph: \"See you soon.\",\n  italianLocalePreserved: true,\n});",
+          "name": "script://update-article-1-english.ts",
+          "source": "const before = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (before.body.en === null) {\n  throw new Error(\"English body is missing\");\n}\n\nlet greetingChanged = false;\nlet captionChanged = false;\nlet content: NonNullable<FieldValueInRequest<typeof before, \"body\">>[\"en\"] = before.body.en;\n\ncontent = mapNodes(content, (node) => {\n  if (isSpan(node) && node.value === \"Hello reader\") {\n    greetingChanged = true;\n    return { ...node, value: \"Welcome reader\" };\n  }\n\n  if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\") {\n    captionChanged = true;\n    return {\n      ...node,\n      item: buildBlockRecord<Schema.ImageBlock>({\n        id: node.item.id,\n        caption: \"Summer portrait\",\n      }),\n    };\n  }\n\n  return node;\n});\n\nif (!greetingChanged) {\n  throw new Error('Greeting span \"Hello reader\" was not found');\n}\n\nif (!captionChanged) {\n  throw new Error('Image block \"block-1\" was not found');\n}\n\ncontent.document.children.push({\n  type: \"paragraph\",\n  children: [{ type: \"span\", value: \"See you soon.\" }],\n});\n\nawait client.items.update<Schema.Article>(before.id, {\n  body: { ...before.body, en: content },\n  meta: { current_version: before.meta.current_version },\n});\n\nconsole.log({\n  recordId: before.id,\n  greetingChanged,\n  captionChanged,\n  appendedParagraph: \"See you soon.\",\n});",
+          "errors": []
+        },
+        {
+          "route": "mcp",
+          "name": "script://verify-article-1-english.ts",
+          "source": "const current = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (current.body.en === null || current.body.it === null) {\n  throw new Error(\"Expected both English and Italian bodies\");\n}\n\nconst finalChild = current.body.en.document.children[current.body.en.document.children.length - 1];\nconst finalParagraphOk =\n  finalChild !== undefined &&\n  isParagraph(finalChild) &&\n  finalChild.children.length === 1 &&\n  isSpan(finalChild.children[0]) &&\n  finalChild.children[0].value === \"See you soon.\";\n\nlet greetingFound = false;\nlet greetingMarks: string[] | undefined;\nlet imageBlockOk = false;\nlet linkFound = false;\n\nfor (const node of current.body.en.document.children) {\n  if (isParagraph(node)) {\n    for (const child of node.children) {\n      if (isSpan(child) && child.value === \"Welcome reader\") {\n        greetingFound = true;\n        greetingMarks = child.marks;\n      }\n      if (isLink(child)) {\n        linkFound = true;\n      }\n    }\n  }\n\n  if (\n    isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n    node.item.id === \"block-1\" &&\n    node.item.attributes.caption === \"Summer portrait\" &&\n    node.item.attributes.image === null\n  ) {\n    imageBlockOk = true;\n  }\n}\n\nif (!greetingFound || !imageBlockOk || !finalParagraphOk || !linkFound) {\n  throw new Error(\"English Structured Text verification failed\");\n}\n\nconsole.log({\n  recordId: current.id,\n  status: current.meta.status,\n  greeting: \"Welcome reader\",\n  greetingMarks,\n  imageBlockId: \"block-1\",\n  imageCaption: \"Summer portrait\",\n  imagePreserved: true,\n  existingLinkPresent: linkFound,\n  finalParagraphOk,\n  italianLocalePresent: current.body.it !== null,\n  titlePreserved: current.title,\n  untouchedPreserved: current.untouched,\n});",
           "errors": []
         }
       ],
@@ -33669,14 +33655,6 @@
           "isError": false
         },
         {
-          "role": "workspace",
-          "name": "read_file",
-          "args": {
-            "path": "skills/datocms-cma/references/localization.md"
-          },
-          "isError": false
-        },
-        {
           "role": "datocms",
           "name": "get_api_methods",
           "args": {
@@ -33703,22 +33681,39 @@
           "role": "datocms",
           "name": "upsert_and_execute_unsafe_script",
           "args": {
-            "name": "script://update-article-1-english-body.ts",
             "site_id": "fixture-project",
             "environment": "sandbox",
+            "name": "script://update-article-1-english.ts",
             "method_tokens": [
               "fixture-token-items.find",
               "fixture-token-items.update"
             ],
             "body": {
               "mode": "full",
-              "content": "const original = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!original.body.en) {\n  throw new Error(\"article-1 has no English Structured Text\");\n}\n\nlet greetingMarks = \"\";\nlet originalLinkUrl = \"\";\nlet originalGreetingFound = false;\nlet originalBlockFound = false;\n\nmapNodes(original.body.en, (node) => {\n  if (isSpan(node) && node.value === \"Hello reader\") {\n    originalGreetingFound = true;\n    greetingMarks = (node.marks ?? []).join(\"|\");\n  }\n  if (isLink(node)) {\n    originalLinkUrl = node.url;\n  }\n  if (isBlock(node) && node.item.id === \"block-1\") {\n    originalBlockFound = true;\n  }\n  return node;\n});\n\nif (!originalGreetingFound || !originalBlockFound) {\n  throw new Error(\"Expected greeting span or image block was not found\");\n}\n\nlet english: NonNullable<FieldValueInRequest<typeof original, \"body\">>[\"en\"] =\n  mapNodes(original.body.en, (node) => {\n    if (isSpan(node) && node.value === \"Hello reader\") {\n      return { ...node, value: \"Welcome reader\" };\n    }\n    if (isBlock(node) && node.item.id === \"block-1\") {\n      return {\n        ...node,\n        item: buildBlockRecord<Schema.ImageBlock>({\n          id: node.item.id,\n          caption: \"Summer portrait\",\n        }),\n      };\n    }\n    return node;\n  });\n\nenglish.document.children.push({\n  type: \"paragraph\",\n  children: [{ type: \"span\", value: \"See you soon.\" }],\n});\n\nawait client.items.update<Schema.Article>(original.id, {\n  body: { ...original.body, en: english },\n  meta: { current_version: original.meta.current_version },\n});\n\nconst saved = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!saved.body.en || serialize(saved.body.it) !== serialize(original.body.it)) {\n  throw new Error(\"Italian locale was not preserved\");\n}\nif (saved.title !== original.title || saved.untouched !== original.untouched) {\n  throw new Error(\"An unrelated field was changed\");\n}\n\nlet savedGreetingFound = false;\nlet savedGreetingMarks = \"\";\nlet savedBlockFound = false;\nlet savedBlockImagePreserved = false;\nlet savedLinkPreserved = false;\n\nmapNodes(saved.body.en, (node) => {\n  if (isSpan(node) && node.value === \"Welcome reader\") {\n    savedGreetingFound = true;\n    savedGreetingMarks = (node.marks ?? []).join(\"|\");\n  }\n  if (isLink(node) && node.url === originalLinkUrl) {\n    savedLinkPreserved = true;\n  }\n  if (isBlock(node) && node.item.id === \"block-1\") {\n    savedBlockFound = node.item.attributes.caption === \"Summer portrait\";\n    savedBlockImagePreserved = node.item.attributes.image === null;\n  }\n  return node;\n});\n\nconst finalNode = saved.body.en.document.children[saved.body.en.document.children.length - 1];\nconst finalParagraphValid =\n  isParagraph(finalNode) &&\n  finalNode.children.length === 1 &&\n  isSpan(finalNode.children[0]) &&\n  finalNode.children[0].value === \"See you soon.\";\n\nif (\n  !savedGreetingFound ||\n  savedGreetingMarks !== greetingMarks ||\n  !savedBlockFound ||\n  !savedBlockImagePreserved ||\n  !savedLinkPreserved ||\n  !finalParagraphValid ||\n  saved.meta.status !== \"draft\"\n) {\n  throw new Error(\"Post-update verification failed\");\n}\n\nconsole.log({\n  recordId: saved.id,\n  status: saved.meta.status,\n  greeting: \"Welcome reader\",\n  blockId: \"block-1\",\n  caption: \"Summer portrait\",\n  finalParagraph: \"See you soon.\",\n  italianLocalePreserved: true,\n});"
+              "content": "const before = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (before.body.en === null) {\n  throw new Error(\"English body is missing\");\n}\n\nlet greetingChanged = false;\nlet captionChanged = false;\nlet content: NonNullable<FieldValueInRequest<typeof before, \"body\">>[\"en\"] = before.body.en;\n\ncontent = mapNodes(content, (node) => {\n  if (isSpan(node) && node.value === \"Hello reader\") {\n    greetingChanged = true;\n    return { ...node, value: \"Welcome reader\" };\n  }\n\n  if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\") {\n    captionChanged = true;\n    return {\n      ...node,\n      item: buildBlockRecord<Schema.ImageBlock>({\n        id: node.item.id,\n        caption: \"Summer portrait\",\n      }),\n    };\n  }\n\n  return node;\n});\n\nif (!greetingChanged) {\n  throw new Error('Greeting span \"Hello reader\" was not found');\n}\n\nif (!captionChanged) {\n  throw new Error('Image block \"block-1\" was not found');\n}\n\ncontent.document.children.push({\n  type: \"paragraph\",\n  children: [{ type: \"span\", value: \"See you soon.\" }],\n});\n\nawait client.items.update<Schema.Article>(before.id, {\n  body: { ...before.body, en: content },\n  meta: { current_version: before.meta.current_version },\n});\n\nconsole.log({\n  recordId: before.id,\n  greetingChanged,\n  captionChanged,\n  appendedParagraph: \"See you soon.\",\n});"
+            }
+          },
+          "isError": false
+        },
+        {
+          "role": "datocms",
+          "name": "upsert_and_execute_safe_script",
+          "args": {
+            "site_id": "fixture-project",
+            "environment": "sandbox",
+            "name": "script://verify-article-1-english.ts",
+            "method_tokens": [
+              "fixture-token-items.find"
+            ],
+            "body": {
+              "mode": "full",
+              "content": "const current = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (current.body.en === null || current.body.it === null) {\n  throw new Error(\"Expected both English and Italian bodies\");\n}\n\nconst finalChild = current.body.en.document.children[current.body.en.document.children.length - 1];\nconst finalParagraphOk =\n  finalChild !== undefined &&\n  isParagraph(finalChild) &&\n  finalChild.children.length === 1 &&\n  isSpan(finalChild.children[0]) &&\n  finalChild.children[0].value === \"See you soon.\";\n\nlet greetingFound = false;\nlet greetingMarks: string[] | undefined;\nlet imageBlockOk = false;\nlet linkFound = false;\n\nfor (const node of current.body.en.document.children) {\n  if (isParagraph(node)) {\n    for (const child of node.children) {\n      if (isSpan(child) && child.value === \"Welcome reader\") {\n        greetingFound = true;\n        greetingMarks = child.marks;\n      }\n      if (isLink(child)) {\n        linkFound = true;\n      }\n    }\n  }\n\n  if (\n    isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n    node.item.id === \"block-1\" &&\n    node.item.attributes.caption === \"Summer portrait\" &&\n    node.item.attributes.image === null\n  ) {\n    imageBlockOk = true;\n  }\n}\n\nif (!greetingFound || !imageBlockOk || !finalParagraphOk || !linkFound) {\n  throw new Error(\"English Structured Text verification failed\");\n}\n\nconsole.log({\n  recordId: current.id,\n  status: current.meta.status,\n  greeting: \"Welcome reader\",\n  greetingMarks,\n  imageBlockId: \"block-1\",\n  imageCaption: \"Summer portrait\",\n  imagePreserved: true,\n  existingLinkPresent: linkFound,\n  finalParagraphOk,\n  italianLocalePresent: current.body.it !== null,\n  titlePreserved: current.title,\n  untouchedPreserved: current.untouched,\n});"
             }
           },
           "isError": false
         }
       ],
-      "finalText": "Updated `article-1`’s English Structured Text and verified it remains a draft.\n\n- Greeting is now “Welcome reader” with its marks preserved.\n- `block-1` caption is “Summer portrait”; its image and ID remain intact.\n- Added final paragraph: “See you soon.”\n- Existing link, other English nodes and fields, and the Italian locale were preserved.\n- Nothing was published.",
+      "finalText": "Updated and verified `article-1` in `sandbox`; it remains a draft.\n\n- “Hello reader” → “Welcome reader” with its `strong` mark preserved\n- `block-1` caption → “Summer portrait”; block ID and image preserved\n- Added final English paragraph: “See you soon.”\n- Existing link, Italian locale, title, and `untouched` field remain present.",
       "finalRecord": {
         "id": "article-1",
         "title": "Original title",
@@ -34494,10 +34489,8 @@
       "case": "long-followup",
       "arm": "candidate",
       "repetition": 2,
-      "passed": false,
-      "failures": [
-        "Submitted script failed compilation or bounded execution"
-      ],
+      "passed": true,
+      "failures": [],
       "deliveries": [
         {
           "path": "skills/datocms-cma/SKILL.md",
@@ -34508,15 +34501,15 @@
         },
         {
           "path": "skills/datocms-cma/references/mcp.md",
-          "tokens": 356,
-          "sha256": "06227f52c4ebd28c4bedccd5721c9796d9372e26a0625fe0fd2e6aabe899bfad",
+          "tokens": 468,
+          "sha256": "4cd5b84994baf4cc0d3ee3b3bc352d47e322dfbc725ecf133e0781f5e9077743",
           "sequence": 3,
           "via": "file"
         },
         {
           "path": "skills/datocms-cma/references/editing-records.md",
-          "tokens": 6216,
-          "sha256": "e235b23a367695b3a7e7cf9c9f13c98a4886cf27231a5aa8ee097b0e7dc58af3",
+          "tokens": 6222,
+          "sha256": "ea9cc75ba19fd952ea5f6ea770cd766bb8211d701832a0420ec4773ca680ce4b",
           "sequence": 8,
           "via": "file"
         },
@@ -34542,29 +34535,27 @@
       "repeatedReads": 1,
       "repeatedTokens": 5652,
       "identicalRepeatTokens": 0,
-      "loadedGuidanceTokens": 16507,
-      "fileGuidanceTokens": 8809,
+      "loadedGuidanceTokens": 16625,
+      "fileGuidanceTokens": 8927,
       "toolGuidanceTokens": 7698,
-      "toolOutputTokens": 49667,
+      "toolOutputTokens": 49788,
       "usage": {
-        "input_tokens": 527704,
-        "cached_input_tokens": 453888,
+        "input_tokens": 492494,
+        "cached_input_tokens": 389632,
         "cache_write_input_tokens": 0,
-        "output_tokens": 4941,
-        "reasoning_output_tokens": 1635
+        "output_tokens": 3178,
+        "reasoning_output_tokens": 764
       },
-      "contentFailures": [
-        "Submitted script failed compilation or bounded execution"
-      ],
+      "contentFailures": [],
       "criticalFailures": [],
-      "qualityPassed": false,
+      "qualityPassed": true,
       "criticalPassed": true,
       "writeCount": 1,
       "appliedWriteCount": 1,
       "route": "mcp",
       "failedReadCalls": 0,
       "repeatedFailedReads": 0,
-      "elapsedMs": 97950,
+      "elapsedMs": 61852,
       "model": "gpt-5.6-terra",
       "reasoningEffort": "medium",
       "fixtureSourceSha256": "0692a1dedd3c49feb4a846768fb15baa070bb02f7dd1e95bfe497bad306d81ed",
@@ -34580,14 +34571,14 @@
         },
         {
           "path": "skills/datocms-cma/references/mcp.md",
-          "tokens": 356,
-          "sha256": "06227f52c4ebd28c4bedccd5721c9796d9372e26a0625fe0fd2e6aabe899bfad",
+          "tokens": 468,
+          "sha256": "4cd5b84994baf4cc0d3ee3b3bc352d47e322dfbc725ecf133e0781f5e9077743",
           "sequence": 3
         },
         {
           "path": "skills/datocms-cma/references/editing-records.md",
-          "tokens": 6216,
-          "sha256": "e235b23a367695b3a7e7cf9c9f13c98a4886cf27231a5aa8ee097b0e7dc58af3",
+          "tokens": 6222,
+          "sha256": "ea9cc75ba19fd952ea5f6ea770cd766bb8211d701832a0420ec4773ca680ce4b",
           "sequence": 8
         }
       ],
@@ -34620,15 +34611,15 @@
           },
           {
             "path": "skills/datocms-cma/references/mcp.md",
-            "tokens": 356,
-            "sha256": "06227f52c4ebd28c4bedccd5721c9796d9372e26a0625fe0fd2e6aabe899bfad",
+            "tokens": 468,
+            "sha256": "4cd5b84994baf4cc0d3ee3b3bc352d47e322dfbc725ecf133e0781f5e9077743",
             "sequence": 3,
             "via": "file"
           },
           {
             "path": "skills/datocms-cma/references/editing-records.md",
-            "tokens": 6216,
-            "sha256": "e235b23a367695b3a7e7cf9c9f13c98a4886cf27231a5aa8ee097b0e7dc58af3",
+            "tokens": 6222,
+            "sha256": "ea9cc75ba19fd952ea5f6ea770cd766bb8211d701832a0420ec4773ca680ce4b",
             "sequence": 8,
             "via": "file"
           },
@@ -34654,8 +34645,8 @@
         "repeatedReads": 1,
         "repeatedTokens": 5652,
         "identicalRepeatTokens": 0,
-        "loadedGuidanceTokens": 16507,
-        "fileGuidanceTokens": 8809,
+        "loadedGuidanceTokens": 16625,
+        "fileGuidanceTokens": 8927,
         "toolGuidanceTokens": 7698
       },
       "exitCode": 0,
@@ -34664,15 +34655,13 @@
         {
           "route": "mcp",
           "name": "script://edit-article-1-english-body.ts",
-          "source": "const article = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!article.body.en) {\n  throw new Error(\"English body is missing\");\n}\n\nconst originalItalian = JSON.stringify(article.body.it);\nlet originalGreetingMarks: string[] | undefined;\nlet originalImage: null | undefined;\nlet greetingMatches = 0;\nlet blockMatches = 0;\n\nlet english: NonNullable<FieldValueInRequest<typeof article, \"body\">>[\"en\"] = mapNodes(\n  article.body.en,\n  (node) => {\n    if (isSpan(node) && node.value === \"Hello reader\") {\n      greetingMatches += 1;\n      originalGreetingMarks = node.marks;\n      return { ...node, value: \"Welcome reader\" };\n    }\n\n    if (\n      isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n      node.item.id === \"block-1\"\n    ) {\n      blockMatches += 1;\n      originalImage = node.item.attributes.image;\n      return {\n        ...node,\n        item: buildBlockRecord<Schema.ImageBlock>({\n          id: node.item.id,\n          caption: \"Summer portrait\",\n        }),\n      };\n    }\n\n    return node;\n  },\n);\n\nif (greetingMatches !== 1 || blockMatches !== 1) {\n  throw new Error(\"Expected exactly one greeting span and one image block\");\n}\n\nenglish.document.children.push({\n  type: \"paragraph\",\n  children: [{ type: \"span\", value: \"See you soon.\" }],\n});\n\nawait client.items.update<Schema.Article>(article.id, {\n  body: { ...article.body, en: english },\n  meta: { current_version: article.meta.current_version },\n});\n\nconst verified = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!verified.body.en) {\n  throw new Error(\"Saved English body is missing\");\n}\n\nlet greetingVerified = false;\nlet captionVerified = false;\nlet imageVerified = false;\nlet marksVerified = false;\n\nmapNodes(verified.body.en, (node) => {\n  if (isSpan(node) && node.value === \"Welcome reader\") {\n    greetingVerified = true;\n    const savedMarks = node.marks;\n    marksVerified =\n      savedMarks === originalGreetingMarks ||\n      (savedMarks !== undefined &&\n        originalGreetingMarks !== undefined &&\n        savedMarks.length === originalGreetingMarks.length &&\n        savedMarks.every((mark, index) => mark === originalGreetingMarks[index]));\n  }\n\n  if (\n    isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n    node.item.id === \"block-1\"\n  ) {\n    captionVerified = node.item.attributes.caption === \"Summer portrait\";\n    imageVerified = node.item.attributes.image === originalImage;\n  }\n\n  return node;\n});\n\nconst finalNode = verified.body.en.document.children[\n  verified.body.en.document.children.length - 1\n];\n\nconst paragraphVerified =\n  isParagraph(finalNode) &&\n  finalNode.children.length === 1 &&\n  isSpan(finalNode.children[0]) &&\n  finalNode.children[0].value === \"See you soon.\";\n\nif (\n  !greetingVerified ||\n  !marksVerified ||\n  !captionVerified ||\n  !imageVerified ||\n  !paragraphVerified ||\n  JSON.stringify(verified.body.it) !== originalItalian ||\n  verified.meta.status !== article.meta.status\n) {\n  throw new Error(\"Post-update verification failed\");\n}\n\nconsole.log({\n  recordId: verified.id,\n  status: verified.meta.status,\n  greetingVerified,\n  marksVerified,\n  captionVerified,\n  imageVerified,\n  paragraphVerified,\n  italianLocalePreserved: JSON.stringify(verified.body.it) === originalItalian,\n});",
-          "errors": [
-            "'originalGreetingMarks' is possibly 'undefined'."
-          ]
+          "source": "const currentItem = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (currentItem.body.en) {\n  let greetingCount = 0;\n  let blockCount = 0;\n\n  let content: NonNullable<FieldValueInRequest<typeof currentItem, \"body\">>[\"en\"] =\n    mapNodes(currentItem.body.en, (node) => {\n      if (isSpan(node) && node.value === \"Hello reader\") {\n        greetingCount += 1;\n        return { ...node, value: \"Welcome reader\" };\n      }\n      if (\n        isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n        node.item.id === \"block-1\"\n      ) {\n        blockCount += 1;\n        return {\n          ...node,\n          item: buildBlockRecord<Schema.ImageBlock>({\n            id: node.item.id,\n            caption: \"Summer portrait\",\n          }),\n        };\n      }\n      return node;\n    });\n\n  if (greetingCount !== 1 || blockCount !== 1) {\n    throw new Error(\"Expected exactly one greeting span and one image block\");\n  }\n\n  content.document.children.push({\n    type: \"paragraph\",\n    children: [{ type: \"span\", value: \"See you soon.\" }],\n  });\n\n  await client.items.update<Schema.Article>(currentItem.id, {\n    body: { ...currentItem.body, en: content },\n    meta: { current_version: currentItem.meta.current_version },\n  });\n\n  console.log(\"Updated English body without publishing\");\n} else {\n  throw new Error(\"English body is empty\");\n}",
+          "errors": []
         },
         {
           "route": "mcp",
-          "name": "script://edit-article-1-english-body.ts",
-          "source": "const article = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!article.body.en) {\n  throw new Error(\"English body is missing\");\n}\n\nconst originalItalian = JSON.stringify(article.body.it);\nlet originalGreetingMarks: string[] | undefined;\nlet originalImage: null | undefined;\nlet greetingMatches = 0;\nlet blockMatches = 0;\n\nlet english: NonNullable<FieldValueInRequest<typeof article, \"body\">>[\"en\"] = mapNodes(\n  article.body.en,\n  (node) => {\n    if (isSpan(node) && node.value === \"Hello reader\") {\n      greetingMatches += 1;\n      originalGreetingMarks = node.marks;\n      return { ...node, value: \"Welcome reader\" };\n    }\n\n    if (\n      isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n      node.item.id === \"block-1\"\n    ) {\n      blockMatches += 1;\n      originalImage = node.item.attributes.image;\n      return {\n        ...node,\n        item: buildBlockRecord<Schema.ImageBlock>({\n          id: node.item.id,\n          caption: \"Summer portrait\",\n        }),\n      };\n    }\n\n    return node;\n  },\n);\n\nif (greetingMatches !== 1 || blockMatches !== 1) {\n  throw new Error(\"Expected exactly one greeting span and one image block\");\n}\n\nenglish.document.children.push({\n  type: \"paragraph\",\n  children: [{ type: \"span\", value: \"See you soon.\" }],\n});\n\nawait client.items.update<Schema.Article>(article.id, {\n  body: { ...article.body, en: english },\n  meta: { current_version: article.meta.current_version },\n});\n\nconst verified = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!verified.body.en) {\n  throw new Error(\"Saved English body is missing\");\n}\n\nlet greetingVerified = false;\nlet captionVerified = false;\nlet imageVerified = false;\nlet marksVerified = false;\n\nmapNodes(verified.body.en, (node) => {\n  if (isSpan(node) && node.value === \"Welcome reader\") {\n    greetingVerified = true;\n    marksVerified = JSON.stringify(node.marks) === JSON.stringify(originalGreetingMarks);\n  }\n\n  if (\n    isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n    node.item.id === \"block-1\"\n  ) {\n    captionVerified = node.item.attributes.caption === \"Summer portrait\";\n    imageVerified = node.item.attributes.image === originalImage;\n  }\n\n  return node;\n});\n\nconst finalNode = verified.body.en.document.children[\n  verified.body.en.document.children.length - 1\n];\n\nconst paragraphVerified =\n  isParagraph(finalNode) &&\n  finalNode.children.length === 1 &&\n  isSpan(finalNode.children[0]) &&\n  finalNode.children[0].value === \"See you soon.\";\n\nif (\n  !greetingVerified ||\n  !marksVerified ||\n  !captionVerified ||\n  !imageVerified ||\n  !paragraphVerified ||\n  JSON.stringify(verified.body.it) !== originalItalian ||\n  verified.meta.status !== article.meta.status\n) {\n  throw new Error(\"Post-update verification failed\");\n}\n\nconsole.log({\n  recordId: verified.id,\n  status: verified.meta.status,\n  greetingVerified,\n  marksVerified,\n  captionVerified,\n  imageVerified,\n  paragraphVerified,\n  italianLocalePreserved: JSON.stringify(verified.body.it) === originalItalian,\n});",
+          "name": "script://verify-article-1-english-body.ts",
+          "source": "const savedItem = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!savedItem.body.en || !savedItem.body.it) {\n  throw new Error(\"Expected both English and Italian body values\");\n}\n\nlet welcomeMarks = \"\";\nlet oldGreetingFound = false;\nlet preservedLinkCount = 0;\nlet preservedBlockCount = 0;\nlet appendedParagraphCount = 0;\n\nmapNodes(savedItem.body.en, (node) => {\n  if (isSpan(node) && node.value === \"Welcome reader\") {\n    welcomeMarks = (node.marks ?? []).join(\",\");\n  }\n  if (isSpan(node) && node.value === \"Hello reader\") {\n    oldGreetingFound = true;\n  }\n  if (isLink(node)) {\n    preservedLinkCount += 1;\n  }\n  if (\n    isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n    node.item.id === \"block-1\" &&\n    node.item.attributes.caption === \"Summer portrait\" &&\n    node.item.attributes.image === null\n  ) {\n    preservedBlockCount += 1;\n  }\n  if (\n    isParagraph(node) &&\n    node.children.length === 1 &&\n    isSpan(node.children[0]) &&\n    node.children[0].value === \"See you soon.\"\n  ) {\n    appendedParagraphCount += 1;\n  }\n  return node;\n});\n\nif (\n  welcomeMarks === \"\" ||\n  oldGreetingFound ||\n  preservedLinkCount !== 1 ||\n  preservedBlockCount !== 1 ||\n  appendedParagraphCount !== 1 ||\n  savedItem.meta.status !== \"draft\"\n) {\n  throw new Error(\"Saved record did not meet the requested preservation checks\");\n}\n\nconsole.log({\n  status: savedItem.meta.status,\n  greetingMarks: welcomeMarks,\n  linkCount: preservedLinkCount,\n  imageBlockId: \"block-1\",\n  image: null,\n  italianLocalePresent: savedItem.body.it !== null,\n  finalParagraph: \"See you soon.\",\n  title: savedItem.title,\n  untouched: savedItem.untouched,\n});",
           "errors": []
         }
       ],
@@ -34742,40 +34731,39 @@
           "role": "datocms",
           "name": "upsert_and_execute_unsafe_script",
           "args": {
-            "name": "script://edit-article-1-english-body.ts",
             "site_id": "fixture-project",
             "environment": "sandbox",
+            "name": "script://edit-article-1-english-body.ts",
             "method_tokens": [
               "fixture-token-items.find",
               "fixture-token-items.update"
             ],
             "body": {
               "mode": "full",
-              "content": "const article = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!article.body.en) {\n  throw new Error(\"English body is missing\");\n}\n\nconst originalItalian = JSON.stringify(article.body.it);\nlet originalGreetingMarks: string[] | undefined;\nlet originalImage: null | undefined;\nlet greetingMatches = 0;\nlet blockMatches = 0;\n\nlet english: NonNullable<FieldValueInRequest<typeof article, \"body\">>[\"en\"] = mapNodes(\n  article.body.en,\n  (node) => {\n    if (isSpan(node) && node.value === \"Hello reader\") {\n      greetingMatches += 1;\n      originalGreetingMarks = node.marks;\n      return { ...node, value: \"Welcome reader\" };\n    }\n\n    if (\n      isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n      node.item.id === \"block-1\"\n    ) {\n      blockMatches += 1;\n      originalImage = node.item.attributes.image;\n      return {\n        ...node,\n        item: buildBlockRecord<Schema.ImageBlock>({\n          id: node.item.id,\n          caption: \"Summer portrait\",\n        }),\n      };\n    }\n\n    return node;\n  },\n);\n\nif (greetingMatches !== 1 || blockMatches !== 1) {\n  throw new Error(\"Expected exactly one greeting span and one image block\");\n}\n\nenglish.document.children.push({\n  type: \"paragraph\",\n  children: [{ type: \"span\", value: \"See you soon.\" }],\n});\n\nawait client.items.update<Schema.Article>(article.id, {\n  body: { ...article.body, en: english },\n  meta: { current_version: article.meta.current_version },\n});\n\nconst verified = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!verified.body.en) {\n  throw new Error(\"Saved English body is missing\");\n}\n\nlet greetingVerified = false;\nlet captionVerified = false;\nlet imageVerified = false;\nlet marksVerified = false;\n\nmapNodes(verified.body.en, (node) => {\n  if (isSpan(node) && node.value === \"Welcome reader\") {\n    greetingVerified = true;\n    const savedMarks = node.marks;\n    marksVerified =\n      savedMarks === originalGreetingMarks ||\n      (savedMarks !== undefined &&\n        originalGreetingMarks !== undefined &&\n        savedMarks.length === originalGreetingMarks.length &&\n        savedMarks.every((mark, index) => mark === originalGreetingMarks[index]));\n  }\n\n  if (\n    isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n    node.item.id === \"block-1\"\n  ) {\n    captionVerified = node.item.attributes.caption === \"Summer portrait\";\n    imageVerified = node.item.attributes.image === originalImage;\n  }\n\n  return node;\n});\n\nconst finalNode = verified.body.en.document.children[\n  verified.body.en.document.children.length - 1\n];\n\nconst paragraphVerified =\n  isParagraph(finalNode) &&\n  finalNode.children.length === 1 &&\n  isSpan(finalNode.children[0]) &&\n  finalNode.children[0].value === \"See you soon.\";\n\nif (\n  !greetingVerified ||\n  !marksVerified ||\n  !captionVerified ||\n  !imageVerified ||\n  !paragraphVerified ||\n  JSON.stringify(verified.body.it) !== originalItalian ||\n  verified.meta.status !== article.meta.status\n) {\n  throw new Error(\"Post-update verification failed\");\n}\n\nconsole.log({\n  recordId: verified.id,\n  status: verified.meta.status,\n  greetingVerified,\n  marksVerified,\n  captionVerified,\n  imageVerified,\n  paragraphVerified,\n  italianLocalePreserved: JSON.stringify(verified.body.it) === originalItalian,\n});"
+              "content": "const currentItem = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (currentItem.body.en) {\n  let greetingCount = 0;\n  let blockCount = 0;\n\n  let content: NonNullable<FieldValueInRequest<typeof currentItem, \"body\">>[\"en\"] =\n    mapNodes(currentItem.body.en, (node) => {\n      if (isSpan(node) && node.value === \"Hello reader\") {\n        greetingCount += 1;\n        return { ...node, value: \"Welcome reader\" };\n      }\n      if (\n        isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n        node.item.id === \"block-1\"\n      ) {\n        blockCount += 1;\n        return {\n          ...node,\n          item: buildBlockRecord<Schema.ImageBlock>({\n            id: node.item.id,\n            caption: \"Summer portrait\",\n          }),\n        };\n      }\n      return node;\n    });\n\n  if (greetingCount !== 1 || blockCount !== 1) {\n    throw new Error(\"Expected exactly one greeting span and one image block\");\n  }\n\n  content.document.children.push({\n    type: \"paragraph\",\n    children: [{ type: \"span\", value: \"See you soon.\" }],\n  });\n\n  await client.items.update<Schema.Article>(currentItem.id, {\n    body: { ...currentItem.body, en: content },\n    meta: { current_version: currentItem.meta.current_version },\n  });\n\n  console.log(\"Updated English body without publishing\");\n} else {\n  throw new Error(\"English body is empty\");\n}"
             }
           },
-          "isError": true
+          "isError": false
         },
         {
           "role": "datocms",
-          "name": "upsert_and_execute_unsafe_script",
+          "name": "upsert_and_execute_safe_script",
           "args": {
-            "name": "script://edit-article-1-english-body.ts",
             "site_id": "fixture-project",
             "environment": "sandbox",
+            "name": "script://verify-article-1-english-body.ts",
             "method_tokens": [
-              "fixture-token-items.find",
-              "fixture-token-items.update"
+              "fixture-token-items.find"
             ],
             "body": {
               "mode": "full",
-              "content": "const article = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!article.body.en) {\n  throw new Error(\"English body is missing\");\n}\n\nconst originalItalian = JSON.stringify(article.body.it);\nlet originalGreetingMarks: string[] | undefined;\nlet originalImage: null | undefined;\nlet greetingMatches = 0;\nlet blockMatches = 0;\n\nlet english: NonNullable<FieldValueInRequest<typeof article, \"body\">>[\"en\"] = mapNodes(\n  article.body.en,\n  (node) => {\n    if (isSpan(node) && node.value === \"Hello reader\") {\n      greetingMatches += 1;\n      originalGreetingMarks = node.marks;\n      return { ...node, value: \"Welcome reader\" };\n    }\n\n    if (\n      isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n      node.item.id === \"block-1\"\n    ) {\n      blockMatches += 1;\n      originalImage = node.item.attributes.image;\n      return {\n        ...node,\n        item: buildBlockRecord<Schema.ImageBlock>({\n          id: node.item.id,\n          caption: \"Summer portrait\",\n        }),\n      };\n    }\n\n    return node;\n  },\n);\n\nif (greetingMatches !== 1 || blockMatches !== 1) {\n  throw new Error(\"Expected exactly one greeting span and one image block\");\n}\n\nenglish.document.children.push({\n  type: \"paragraph\",\n  children: [{ type: \"span\", value: \"See you soon.\" }],\n});\n\nawait client.items.update<Schema.Article>(article.id, {\n  body: { ...article.body, en: english },\n  meta: { current_version: article.meta.current_version },\n});\n\nconst verified = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!verified.body.en) {\n  throw new Error(\"Saved English body is missing\");\n}\n\nlet greetingVerified = false;\nlet captionVerified = false;\nlet imageVerified = false;\nlet marksVerified = false;\n\nmapNodes(verified.body.en, (node) => {\n  if (isSpan(node) && node.value === \"Welcome reader\") {\n    greetingVerified = true;\n    marksVerified = JSON.stringify(node.marks) === JSON.stringify(originalGreetingMarks);\n  }\n\n  if (\n    isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n    node.item.id === \"block-1\"\n  ) {\n    captionVerified = node.item.attributes.caption === \"Summer portrait\";\n    imageVerified = node.item.attributes.image === originalImage;\n  }\n\n  return node;\n});\n\nconst finalNode = verified.body.en.document.children[\n  verified.body.en.document.children.length - 1\n];\n\nconst paragraphVerified =\n  isParagraph(finalNode) &&\n  finalNode.children.length === 1 &&\n  isSpan(finalNode.children[0]) &&\n  finalNode.children[0].value === \"See you soon.\";\n\nif (\n  !greetingVerified ||\n  !marksVerified ||\n  !captionVerified ||\n  !imageVerified ||\n  !paragraphVerified ||\n  JSON.stringify(verified.body.it) !== originalItalian ||\n  verified.meta.status !== article.meta.status\n) {\n  throw new Error(\"Post-update verification failed\");\n}\n\nconsole.log({\n  recordId: verified.id,\n  status: verified.meta.status,\n  greetingVerified,\n  marksVerified,\n  captionVerified,\n  imageVerified,\n  paragraphVerified,\n  italianLocalePreserved: JSON.stringify(verified.body.it) === originalItalian,\n});"
+              "content": "const savedItem = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!savedItem.body.en || !savedItem.body.it) {\n  throw new Error(\"Expected both English and Italian body values\");\n}\n\nlet welcomeMarks = \"\";\nlet oldGreetingFound = false;\nlet preservedLinkCount = 0;\nlet preservedBlockCount = 0;\nlet appendedParagraphCount = 0;\n\nmapNodes(savedItem.body.en, (node) => {\n  if (isSpan(node) && node.value === \"Welcome reader\") {\n    welcomeMarks = (node.marks ?? []).join(\",\");\n  }\n  if (isSpan(node) && node.value === \"Hello reader\") {\n    oldGreetingFound = true;\n  }\n  if (isLink(node)) {\n    preservedLinkCount += 1;\n  }\n  if (\n    isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n    node.item.id === \"block-1\" &&\n    node.item.attributes.caption === \"Summer portrait\" &&\n    node.item.attributes.image === null\n  ) {\n    preservedBlockCount += 1;\n  }\n  if (\n    isParagraph(node) &&\n    node.children.length === 1 &&\n    isSpan(node.children[0]) &&\n    node.children[0].value === \"See you soon.\"\n  ) {\n    appendedParagraphCount += 1;\n  }\n  return node;\n});\n\nif (\n  welcomeMarks === \"\" ||\n  oldGreetingFound ||\n  preservedLinkCount !== 1 ||\n  preservedBlockCount !== 1 ||\n  appendedParagraphCount !== 1 ||\n  savedItem.meta.status !== \"draft\"\n) {\n  throw new Error(\"Saved record did not meet the requested preservation checks\");\n}\n\nconsole.log({\n  status: savedItem.meta.status,\n  greetingMarks: welcomeMarks,\n  linkCount: preservedLinkCount,\n  imageBlockId: \"block-1\",\n  image: null,\n  italianLocalePresent: savedItem.body.it !== null,\n  finalParagraph: \"See you soon.\",\n  title: savedItem.title,\n  untouched: savedItem.untouched,\n});"
             }
           },
           "isError": false
         }
       ],
-      "finalText": "Updated `article-1` in `fixture-project` / `sandbox`.\n\nVerified:\n- “Hello reader” → “Welcome reader”, with marks preserved\n- `block-1` caption → “Summer portrait”; its image remains unchanged\n- Added final paragraph: “See you soon.”\n- Italian locale preserved\n- Record remains a draft; nothing was published.",
+      "finalText": "Updated `article-1`’s English Structured Text and left it unpublished.\n\nVerified: greeting marks remain `strong`; the existing link remains; `block-1` retains its ID and null image with caption “Summer portrait”; the Italian locale remains present; the final paragraph is “See you soon.”; unrelated fields are unchanged.",
       "finalRecord": {
         "id": "article-1",
         "title": "Original title",
@@ -34876,16 +34864,16 @@
         },
         {
           "path": "skills/datocms-cma/references/mcp.md",
-          "tokens": 356,
-          "sha256": "06227f52c4ebd28c4bedccd5721c9796d9372e26a0625fe0fd2e6aabe899bfad",
+          "tokens": 468,
+          "sha256": "4cd5b84994baf4cc0d3ee3b3bc352d47e322dfbc725ecf133e0781f5e9077743",
           "sequence": 3,
           "via": "file"
         },
         {
           "path": "skills/datocms-cma/references/editing-records.md",
-          "tokens": 6216,
-          "sha256": "e235b23a367695b3a7e7cf9c9f13c98a4886cf27231a5aa8ee097b0e7dc58af3",
-          "sequence": 9,
+          "tokens": 6222,
+          "sha256": "ea9cc75ba19fd952ea5f6ea770cd766bb8211d701832a0420ec4773ca680ce4b",
+          "sequence": 8,
           "via": "file"
         },
         {
@@ -34894,7 +34882,7 @@
           "sha256": "a8ed91e7b820ec961d35acd37684d4da2a662d2c0191e4fbb8a950a6c801ee07",
           "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
           "projection": "remove-lines-containing-cma-colon",
-          "sequence": 11,
+          "sequence": 10,
           "via": "tool"
         },
         {
@@ -34903,23 +34891,23 @@
           "sha256": "c67f413c09b9765be619e3b5db0be60013f9f7ea797da8afd871e0ddadd018e4",
           "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
           "projection": "remove-lines-containing-cma-colon",
-          "sequence": 12,
+          "sequence": 11,
           "via": "tool"
         }
       ],
       "repeatedReads": 1,
       "repeatedTokens": 5652,
       "identicalRepeatTokens": 0,
-      "loadedGuidanceTokens": 16507,
-      "fileGuidanceTokens": 8809,
+      "loadedGuidanceTokens": 16625,
+      "fileGuidanceTokens": 8927,
       "toolGuidanceTokens": 7698,
-      "toolOutputTokens": 49678,
+      "toolOutputTokens": 49796,
       "usage": {
-        "input_tokens": 528699,
-        "cached_input_tokens": 452352,
+        "input_tokens": 472472,
+        "cached_input_tokens": 367872,
         "cache_write_input_tokens": 0,
-        "output_tokens": 3559,
-        "reasoning_output_tokens": 963
+        "output_tokens": 3006,
+        "reasoning_output_tokens": 529
       },
       "contentFailures": [],
       "criticalFailures": [],
@@ -34930,7 +34918,7 @@
       "route": "mcp",
       "failedReadCalls": 0,
       "repeatedFailedReads": 0,
-      "elapsedMs": 67182,
+      "elapsedMs": 58611,
       "model": "gpt-5.6-terra",
       "reasoningEffort": "medium",
       "fixtureSourceSha256": "0692a1dedd3c49feb4a846768fb15baa070bb02f7dd1e95bfe497bad306d81ed",
@@ -34946,15 +34934,15 @@
         },
         {
           "path": "skills/datocms-cma/references/mcp.md",
-          "tokens": 356,
-          "sha256": "06227f52c4ebd28c4bedccd5721c9796d9372e26a0625fe0fd2e6aabe899bfad",
+          "tokens": 468,
+          "sha256": "4cd5b84994baf4cc0d3ee3b3bc352d47e322dfbc725ecf133e0781f5e9077743",
           "sequence": 3
         },
         {
           "path": "skills/datocms-cma/references/editing-records.md",
-          "tokens": 6216,
-          "sha256": "e235b23a367695b3a7e7cf9c9f13c98a4886cf27231a5aa8ee097b0e7dc58af3",
-          "sequence": 9
+          "tokens": 6222,
+          "sha256": "ea9cc75ba19fd952ea5f6ea770cd766bb8211d701832a0420ec4773ca680ce4b",
+          "sequence": 8
         }
       ],
       "guidanceDeliveries": [
@@ -34964,7 +34952,7 @@
           "sha256": "a8ed91e7b820ec961d35acd37684d4da2a662d2c0191e4fbb8a950a6c801ee07",
           "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
           "projection": "remove-lines-containing-cma-colon",
-          "sequence": 11
+          "sequence": 10
         },
         {
           "path": "skills/datocms-cma/references/editing-records.md",
@@ -34972,7 +34960,7 @@
           "sha256": "c67f413c09b9765be619e3b5db0be60013f9f7ea797da8afd871e0ddadd018e4",
           "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
           "projection": "remove-lines-containing-cma-colon",
-          "sequence": 12
+          "sequence": 11
         }
       ],
       "guidance": {
@@ -34986,16 +34974,16 @@
           },
           {
             "path": "skills/datocms-cma/references/mcp.md",
-            "tokens": 356,
-            "sha256": "06227f52c4ebd28c4bedccd5721c9796d9372e26a0625fe0fd2e6aabe899bfad",
+            "tokens": 468,
+            "sha256": "4cd5b84994baf4cc0d3ee3b3bc352d47e322dfbc725ecf133e0781f5e9077743",
             "sequence": 3,
             "via": "file"
           },
           {
             "path": "skills/datocms-cma/references/editing-records.md",
-            "tokens": 6216,
-            "sha256": "e235b23a367695b3a7e7cf9c9f13c98a4886cf27231a5aa8ee097b0e7dc58af3",
-            "sequence": 9,
+            "tokens": 6222,
+            "sha256": "ea9cc75ba19fd952ea5f6ea770cd766bb8211d701832a0420ec4773ca680ce4b",
+            "sequence": 8,
             "via": "file"
           },
           {
@@ -35004,7 +34992,7 @@
             "sha256": "a8ed91e7b820ec961d35acd37684d4da2a662d2c0191e4fbb8a950a6c801ee07",
             "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
             "projection": "remove-lines-containing-cma-colon",
-            "sequence": 11,
+            "sequence": 10,
             "via": "tool"
           },
           {
@@ -35013,15 +35001,15 @@
             "sha256": "c67f413c09b9765be619e3b5db0be60013f9f7ea797da8afd871e0ddadd018e4",
             "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
             "projection": "remove-lines-containing-cma-colon",
-            "sequence": 12,
+            "sequence": 11,
             "via": "tool"
           }
         ],
         "repeatedReads": 1,
         "repeatedTokens": 5652,
         "identicalRepeatTokens": 0,
-        "loadedGuidanceTokens": 16507,
-        "fileGuidanceTokens": 8809,
+        "loadedGuidanceTokens": 16625,
+        "fileGuidanceTokens": 8927,
         "toolGuidanceTokens": 7698
       },
       "exitCode": 0,
@@ -35029,8 +35017,14 @@
       "sources": [
         {
           "route": "mcp",
-          "name": "script://update-article-1-english.ts",
-          "source": "const current = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (current.body.en && current.body.it) {\n  const italianBefore = JSON.stringify(current.body.it);\n  const titleBefore = current.title;\n  const untouchedBefore = current.untouched;\n  const originalChildCount = current.body.en.document.children.length;\n  let greetingMarksBefore = \"\";\n  let linkUrlBefore = \"\";\n  let blockImageBefore = \"\";\n  let greetingCount = 0;\n  let blockCount = 0;\n\n  let english: NonNullable<FieldValueInRequest<typeof current, \"body\">>[\"en\"] = current.body.en;\n  english = mapNodes(english, (node) => {\n    if (isSpan(node) && node.value === \"Hello reader\") {\n      greetingCount += 1;\n      greetingMarksBefore = JSON.stringify(node.marks ?? []);\n      return { ...node, value: \"Welcome reader\" };\n    }\n    if (isLink(node)) {\n      linkUrlBefore = node.url;\n      return node;\n    }\n    if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\") {\n      blockCount += 1;\n      blockImageBefore = JSON.stringify(node.item.attributes.image);\n      return {\n        ...node,\n        item: buildBlockRecord<Schema.ImageBlock>({\n          id: node.item.id,\n          caption: \"Summer portrait\",\n        }),\n      };\n    }\n    return node;\n  });\n\n  if (greetingCount !== 1 || blockCount !== 1) {\n    throw new Error(\"Expected exactly one greeting span and one image block.\");\n  }\n\n  english.document.children.push({\n    type: \"paragraph\",\n    children: [{ type: \"span\", value: \"See you soon.\" }],\n  });\n\n  await client.items.update<Schema.Article>(current.id, {\n    body: { ...current.body, en: english },\n    meta: { current_version: current.meta.current_version },\n  });\n\n  const saved = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n  if (!saved.body.en || !saved.body.it) {\n    throw new Error(\"Expected both English and Italian content after update.\");\n  }\n\n  const savedGreeting = findFirstNode(saved.body.en, (node) => isSpan(node) && node.value === \"Welcome reader\");\n  const savedBlock = findFirstNode(saved.body.en, (node) => isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\");\n  const finalNode = saved.body.en.document.children[saved.body.en.document.children.length - 1];\n\n  if (\n    !savedGreeting ||\n    !isSpan(savedGreeting.node) ||\n    JSON.stringify(savedGreeting.node.marks ?? []) !== greetingMarksBefore ||\n    !savedBlock ||\n    !isBlockWithItemOfType(Schema.ImageBlock.ID, savedBlock.node) ||\n    savedBlock.node.item.attributes.caption !== \"Summer portrait\" ||\n    JSON.stringify(savedBlock.node.item.attributes.image) !== blockImageBefore ||\n    JSON.stringify(saved.body.it) !== italianBefore ||\n    saved.title !== titleBefore ||\n    saved.untouched !== untouchedBefore ||\n    saved.body.en.document.children.length !== originalChildCount + 1 ||\n    !isParagraph(finalNode) ||\n    finalNode.children.length !== 1 ||\n    !isSpan(finalNode.children[0]) ||\n    finalNode.children[0].value !== \"See you soon.\" ||\n    saved.meta.status !== \"draft\"\n  ) {\n    throw new Error(\"Post-update verification failed.\");\n  }\n\n  const savedLink = findFirstNode(saved.body.en, isLink);\n  if (!savedLink || !isLink(savedLink.node) || savedLink.node.url !== linkUrlBefore) {\n    throw new Error(\"Existing link was not preserved.\");\n  }\n\n  console.log({\n    greeting: savedGreeting.node.value,\n    marksPreserved: true,\n    blockId: savedBlock.node.item.id,\n    caption: savedBlock.node.item.attributes.caption,\n    imagePreserved: true,\n    italianPreserved: true,\n    finalParagraph: finalNode.children[0].value,\n    status: saved.meta.status,\n  });\n} else {\n  throw new Error(\"Expected both English and Italian Structured Text values.\");\n}",
+          "name": "script://edit-article-1-english.ts",
+          "source": "const currentItem = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (currentItem.body.en && currentItem.body.it) {\n  let greetingEdits = 0;\n  let captionEdits = 0;\n  let content: FieldValueInRequest<typeof currentItem, \"body\">[\"en\"] = currentItem.body.en;\n\n  content = mapNodes(content, (node) => {\n    if (isSpan(node) && node.value === \"Hello reader\") {\n      greetingEdits += 1;\n      return { ...node, value: \"Welcome reader\" };\n    }\n\n    if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\") {\n      captionEdits += 1;\n      return {\n        ...node,\n        item: buildBlockRecord<Schema.ImageBlock>({\n          id: node.item.id,\n          caption: \"Summer portrait\",\n        }),\n      };\n    }\n\n    return node;\n  });\n\n  if (greetingEdits !== 1 || captionEdits !== 1) {\n    throw new Error(\"Expected exactly one greeting span and one image block to edit\");\n  }\n\n  content.document.children.push({\n    type: \"paragraph\",\n    children: [{ type: \"span\", value: \"See you soon.\" }],\n  });\n\n  const saved = await client.items.update<Schema.Article>(currentItem.id, {\n    body: { ...currentItem.body, en: content },\n    meta: { current_version: currentItem.meta.current_version },\n  });\n\n  console.log({\n    id: saved.id,\n    status: saved.meta.status,\n    greetingEdits,\n    captionEdits,\n    englishNodes: content.document.children.length,\n  });\n}",
+          "errors": []
+        },
+        {
+          "route": "mcp",
+          "name": "script://verify-article-1-english.ts",
+          "source": "const article = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!article.body.en || !article.body.it) {\n  throw new Error(\"Both English and Italian body values must be present\");\n}\n\nlet welcomeCount = 0;\nlet greetingHasMarks = false;\nlet linkCount = 0;\nlet captionMatches = false;\nlet blockIdMatches = false;\nlet imagePreserved = false;\n\nfor (const node of article.body.en.document.children) {\n  if (isParagraph(node)) {\n    for (const child of node.children) {\n      if (isSpan(child) && child.value === \"Welcome reader\") {\n        welcomeCount += 1;\n        greetingHasMarks = (child.marks?.length ?? 0) > 0;\n      }\n      if (isLink(child)) {\n        linkCount += 1;\n      }\n    }\n  }\n\n  if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\") {\n    blockIdMatches = true;\n    captionMatches = node.item.attributes.caption === \"Summer portrait\";\n    imagePreserved = node.item.attributes.image === null;\n  }\n}\n\nconst finalNode = article.body.en.document.children[article.body.en.document.children.length - 1];\nconst finalParagraphMatches =\n  isParagraph(finalNode) &&\n  finalNode.children.length === 1 &&\n  isSpan(finalNode.children[0]) &&\n  finalNode.children[0].value === \"See you soon.\";\n\nif (\n  welcomeCount !== 1 ||\n  !greetingHasMarks ||\n  linkCount < 1 ||\n  !blockIdMatches ||\n  !captionMatches ||\n  !imagePreserved ||\n  !finalParagraphMatches ||\n  article.meta.status !== \"draft\"\n) {\n  throw new Error(\"Saved record does not satisfy the requested invariants\");\n}\n\nconsole.log({\n  id: article.id,\n  status: article.meta.status,\n  welcomeCount,\n  greetingHasMarks,\n  linkCount,\n  blockIdMatches,\n  captionMatches,\n  imagePreserved,\n  finalParagraphMatches,\n  italianLocalePresent: article.body.it !== null,\n});",
           "errors": []
         }
       ],
@@ -35053,23 +35047,16 @@
         },
         {
           "role": "datocms",
-          "name": "search_projects",
-          "args": {
-            "query": "fixture-project"
-          },
-          "isError": false
-        },
-        {
-          "role": "datocms",
           "name": "get_schema",
           "args": {
             "site_id": "fixture-project",
             "environment": "sandbox",
             "fields_details": "complete",
+            "filter_by_type": "all",
+            "include_embedding_models": true,
             "include_fieldsets": true,
             "include_nested_blocks": true,
-            "include_referenced_models": true,
-            "include_embedding_models": true
+            "include_referenced_models": true
           },
           "isError": false
         },
@@ -35100,30 +35087,41 @@
         },
         {
           "role": "datocms",
-          "name": "whoami",
-          "args": {},
-          "isError": false
-        },
-        {
-          "role": "datocms",
           "name": "upsert_and_execute_unsafe_script",
           "args": {
             "site_id": "fixture-project",
             "environment": "sandbox",
-            "name": "script://update-article-1-english.ts",
-            "body": {
-              "mode": "full",
-              "content": "const current = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (current.body.en && current.body.it) {\n  const italianBefore = JSON.stringify(current.body.it);\n  const titleBefore = current.title;\n  const untouchedBefore = current.untouched;\n  const originalChildCount = current.body.en.document.children.length;\n  let greetingMarksBefore = \"\";\n  let linkUrlBefore = \"\";\n  let blockImageBefore = \"\";\n  let greetingCount = 0;\n  let blockCount = 0;\n\n  let english: NonNullable<FieldValueInRequest<typeof current, \"body\">>[\"en\"] = current.body.en;\n  english = mapNodes(english, (node) => {\n    if (isSpan(node) && node.value === \"Hello reader\") {\n      greetingCount += 1;\n      greetingMarksBefore = JSON.stringify(node.marks ?? []);\n      return { ...node, value: \"Welcome reader\" };\n    }\n    if (isLink(node)) {\n      linkUrlBefore = node.url;\n      return node;\n    }\n    if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\") {\n      blockCount += 1;\n      blockImageBefore = JSON.stringify(node.item.attributes.image);\n      return {\n        ...node,\n        item: buildBlockRecord<Schema.ImageBlock>({\n          id: node.item.id,\n          caption: \"Summer portrait\",\n        }),\n      };\n    }\n    return node;\n  });\n\n  if (greetingCount !== 1 || blockCount !== 1) {\n    throw new Error(\"Expected exactly one greeting span and one image block.\");\n  }\n\n  english.document.children.push({\n    type: \"paragraph\",\n    children: [{ type: \"span\", value: \"See you soon.\" }],\n  });\n\n  await client.items.update<Schema.Article>(current.id, {\n    body: { ...current.body, en: english },\n    meta: { current_version: current.meta.current_version },\n  });\n\n  const saved = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n  if (!saved.body.en || !saved.body.it) {\n    throw new Error(\"Expected both English and Italian content after update.\");\n  }\n\n  const savedGreeting = findFirstNode(saved.body.en, (node) => isSpan(node) && node.value === \"Welcome reader\");\n  const savedBlock = findFirstNode(saved.body.en, (node) => isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\");\n  const finalNode = saved.body.en.document.children[saved.body.en.document.children.length - 1];\n\n  if (\n    !savedGreeting ||\n    !isSpan(savedGreeting.node) ||\n    JSON.stringify(savedGreeting.node.marks ?? []) !== greetingMarksBefore ||\n    !savedBlock ||\n    !isBlockWithItemOfType(Schema.ImageBlock.ID, savedBlock.node) ||\n    savedBlock.node.item.attributes.caption !== \"Summer portrait\" ||\n    JSON.stringify(savedBlock.node.item.attributes.image) !== blockImageBefore ||\n    JSON.stringify(saved.body.it) !== italianBefore ||\n    saved.title !== titleBefore ||\n    saved.untouched !== untouchedBefore ||\n    saved.body.en.document.children.length !== originalChildCount + 1 ||\n    !isParagraph(finalNode) ||\n    finalNode.children.length !== 1 ||\n    !isSpan(finalNode.children[0]) ||\n    finalNode.children[0].value !== \"See you soon.\" ||\n    saved.meta.status !== \"draft\"\n  ) {\n    throw new Error(\"Post-update verification failed.\");\n  }\n\n  const savedLink = findFirstNode(saved.body.en, isLink);\n  if (!savedLink || !isLink(savedLink.node) || savedLink.node.url !== linkUrlBefore) {\n    throw new Error(\"Existing link was not preserved.\");\n  }\n\n  console.log({\n    greeting: savedGreeting.node.value,\n    marksPreserved: true,\n    blockId: savedBlock.node.item.id,\n    caption: savedBlock.node.item.attributes.caption,\n    imagePreserved: true,\n    italianPreserved: true,\n    finalParagraph: finalNode.children[0].value,\n    status: saved.meta.status,\n  });\n} else {\n  throw new Error(\"Expected both English and Italian Structured Text values.\");\n}"
-            },
+            "name": "script://edit-article-1-english.ts",
             "method_tokens": [
               "fixture-token-items.find",
               "fixture-token-items.update"
-            ]
+            ],
+            "body": {
+              "mode": "full",
+              "content": "const currentItem = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (currentItem.body.en && currentItem.body.it) {\n  let greetingEdits = 0;\n  let captionEdits = 0;\n  let content: FieldValueInRequest<typeof currentItem, \"body\">[\"en\"] = currentItem.body.en;\n\n  content = mapNodes(content, (node) => {\n    if (isSpan(node) && node.value === \"Hello reader\") {\n      greetingEdits += 1;\n      return { ...node, value: \"Welcome reader\" };\n    }\n\n    if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\") {\n      captionEdits += 1;\n      return {\n        ...node,\n        item: buildBlockRecord<Schema.ImageBlock>({\n          id: node.item.id,\n          caption: \"Summer portrait\",\n        }),\n      };\n    }\n\n    return node;\n  });\n\n  if (greetingEdits !== 1 || captionEdits !== 1) {\n    throw new Error(\"Expected exactly one greeting span and one image block to edit\");\n  }\n\n  content.document.children.push({\n    type: \"paragraph\",\n    children: [{ type: \"span\", value: \"See you soon.\" }],\n  });\n\n  const saved = await client.items.update<Schema.Article>(currentItem.id, {\n    body: { ...currentItem.body, en: content },\n    meta: { current_version: currentItem.meta.current_version },\n  });\n\n  console.log({\n    id: saved.id,\n    status: saved.meta.status,\n    greetingEdits,\n    captionEdits,\n    englishNodes: content.document.children.length,\n  });\n}"
+            }
+          },
+          "isError": false
+        },
+        {
+          "role": "datocms",
+          "name": "upsert_and_execute_safe_script",
+          "args": {
+            "site_id": "fixture-project",
+            "environment": "sandbox",
+            "name": "script://verify-article-1-english.ts",
+            "method_tokens": [
+              "fixture-token-items.find"
+            ],
+            "body": {
+              "mode": "full",
+              "content": "const article = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!article.body.en || !article.body.it) {\n  throw new Error(\"Both English and Italian body values must be present\");\n}\n\nlet welcomeCount = 0;\nlet greetingHasMarks = false;\nlet linkCount = 0;\nlet captionMatches = false;\nlet blockIdMatches = false;\nlet imagePreserved = false;\n\nfor (const node of article.body.en.document.children) {\n  if (isParagraph(node)) {\n    for (const child of node.children) {\n      if (isSpan(child) && child.value === \"Welcome reader\") {\n        welcomeCount += 1;\n        greetingHasMarks = (child.marks?.length ?? 0) > 0;\n      }\n      if (isLink(child)) {\n        linkCount += 1;\n      }\n    }\n  }\n\n  if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\") {\n    blockIdMatches = true;\n    captionMatches = node.item.attributes.caption === \"Summer portrait\";\n    imagePreserved = node.item.attributes.image === null;\n  }\n}\n\nconst finalNode = article.body.en.document.children[article.body.en.document.children.length - 1];\nconst finalParagraphMatches =\n  isParagraph(finalNode) &&\n  finalNode.children.length === 1 &&\n  isSpan(finalNode.children[0]) &&\n  finalNode.children[0].value === \"See you soon.\";\n\nif (\n  welcomeCount !== 1 ||\n  !greetingHasMarks ||\n  linkCount < 1 ||\n  !blockIdMatches ||\n  !captionMatches ||\n  !imagePreserved ||\n  !finalParagraphMatches ||\n  article.meta.status !== \"draft\"\n) {\n  throw new Error(\"Saved record does not satisfy the requested invariants\");\n}\n\nconsole.log({\n  id: article.id,\n  status: article.meta.status,\n  welcomeCount,\n  greetingHasMarks,\n  linkCount,\n  blockIdMatches,\n  captionMatches,\n  imagePreserved,\n  finalParagraphMatches,\n  italianLocalePresent: article.body.it !== null,\n});"
+            }
           },
           "isError": false
         }
       ],
-      "finalText": "Updated `article-1` in `fixture-project` / `sandbox`.\n\nVerified: greeting marks and link preserved; `block-1` remains the same block with its image preserved and caption set to “Summer portrait”; the English final paragraph was appended; Italian content and other fields are unchanged. The record remains a draft and was not published.",
+      "finalText": "Updated `article-1` in `sandbox` via the hosted MCP:\n\n- English greeting is now “Welcome reader” with marks retained.\n- `block-1` caption is now “Summer portrait”; its ID and image remain unchanged.\n- Added final paragraph: “See you soon.”\n- Existing link and Italian locale remain present.\n- Record remains a draft; it was not published.",
       "finalRecord": {
         "id": "article-1",
         "title": "Original title",
@@ -35209,8 +35207,8 @@
       }
     }
   ],
-  "date": "2026-09-14",
-  "nativeBinaryVersion": "0.154.0-alpha.6.2",
+  "date": "2026-09-15",
+  "nativeBinaryVersion": "codex-cli 0.154.0-alpha.6.2",
   "staticContext": {
     "base": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
     "tokenizer": "gpt-tokenizer",
@@ -35281,7 +35279,7 @@
       }
     ],
     "cmaReductionPercent": 62.64,
-    "mcpTokens": 356,
+    "mcpTokens": 468,
     "gates": {
       "cmaReduction": true,
       "optionalMcp": true,
@@ -35294,10 +35292,10 @@
     "baseline": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
     "mcpContract": "beeca70bdf702461ae8e226bfd9714d8e58f33ac",
     "controls": "terra-final-06",
-    "candidate": "36 unaffected runs from terra-candidate-07 and all 12 fresh repetitions of the four corrected cases from terra-correction-09",
+    "candidate": "36 unaffected runs from terra-candidate-07, nine retained corrected runs from terra-correction-09, and three fresh long-follow-up repetitions from terra-host-final-longfollowup",
     "fixtureSourceSha256": "0692a1dedd3c49feb4a846768fb15baa070bb02f7dd1e95bfe497bad306d81ed",
     "dependencyLockSha256": "06012e9e7d342e7871177253f3a866e31e670f4f1d833f8de60c3ff108e64492",
-    "method": "All arms use identical prompts and fixtures, one model and effort. Candidate refinements and earlier failures are retained separately, not a first-attempt perfect success claim. This exercises synthetic tool contracts, not hosted integration."
+    "method": "All arms use identical prompts and fixtures, one model and effort. Candidate refinements and earlier failures remain separately retained; the final selected comparison uses the latest passing replacement for every corrected scenario. This exercises synthetic tool contracts, not hosted integration."
   },
   "authoring": {
     "summary": {
@@ -36526,16 +36524,16 @@
     "transcriptSha256": "8001675e03c6d714bed8360ae6c8fc5ba8474ea75bc8d41b4d62561a9c66db93"
   },
   "allControlledAttempts": {
-    "sessions": 417,
-    "passed": 368,
-    "criticalPassed": 390,
-    "toolOutputTokens": 6033269,
+    "sessions": 420,
+    "passed": 371,
+    "criticalPassed": 393,
+    "toolOutputTokens": 6182690,
     "usage": {
-      "input_tokens": 63754714,
-      "cached_input_tokens": 52733952,
+      "input_tokens": 65277565,
+      "cached_input_tokens": 53940224,
       "cache_write_input_tokens": 0,
-      "output_tokens": 452367,
-      "reasoning_output_tokens": 137324
+      "output_tokens": 462013,
+      "reasoning_output_tokens": 139558
     },
     "batches": [
       {
@@ -78526,11 +78524,856 @@
           }
         ],
         "resultsSha256": "1b37b91bf105e1be69c1dc06c9f68fefd7fb088abcd273fd61d5603c1f116e2c"
+      },
+      {
+        "name": "terra-host-final-longfollowup",
+        "complete": true,
+        "summary": {
+          "sessions": 3,
+          "passed": 3,
+          "criticalPassed": 3,
+          "toolOutputTokens": 149421,
+          "usage": {
+            "input_tokens": 1522851,
+            "cached_input_tokens": 1206272,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 9646,
+            "reasoning_output_tokens": 2234
+          }
+        },
+        "runs": [
+          {
+            "case": "long-followup",
+            "arm": "candidate",
+            "repetition": 3,
+            "passed": true,
+            "failures": [],
+            "contentFailures": [],
+            "criticalFailures": [],
+            "qualityPassed": true,
+            "criticalPassed": true,
+            "writeCount": 1,
+            "appliedWriteCount": 1,
+            "route": "mcp",
+            "failedReadCalls": 0,
+            "repeatedFailedReads": 0,
+            "accessInspectedBeforeWrite": false,
+            "elapsedMs": 58611,
+            "model": "gpt-5.6-terra",
+            "reasoningEffort": "medium",
+            "usage": {
+              "input_tokens": 472472,
+              "cached_input_tokens": 367872,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3006,
+              "reasoning_output_tokens": 529
+            },
+            "baseline": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
+            "candidateRevision": "5cc4b984e9cc11b31816ffef664b9bed53297c80",
+            "fixtureSourceSha256": "0692a1dedd3c49feb4a846768fb15baa070bb02f7dd1e95bfe497bad306d81ed",
+            "dependencyLockSha256": "06012e9e7d342e7871177253f3a866e31e670f4f1d833f8de60c3ff108e64492",
+            "mcpContractRevision": "beeca70bdf702461ae8e226bfd9714d8e58f33ac",
+            "promptSha256": "ebe806c75bcda7043b0785124095c94e9c6c210019c9734062730d08d83681da",
+            "catalogueSha256": "2cae92f062bbecbe1015fb12456c6039e80f9e10ec94a525c9c2dd6f69fbd551",
+            "referenceReads": [
+              {
+                "path": "skills/datocms-cma/SKILL.md",
+                "tokens": 2237,
+                "sha256": "028d17b3ae2e5d9b04962c83cf30fdc05fb58bb9c5057bddaa57556d35313d8a",
+                "sequence": 1
+              },
+              {
+                "path": "skills/datocms-cma/references/mcp.md",
+                "tokens": 468,
+                "sha256": "4cd5b84994baf4cc0d3ee3b3bc352d47e322dfbc725ecf133e0781f5e9077743",
+                "sequence": 3
+              },
+              {
+                "path": "skills/datocms-cma/references/editing-records.md",
+                "tokens": 6222,
+                "sha256": "ea9cc75ba19fd952ea5f6ea770cd766bb8211d701832a0420ec4773ca680ce4b",
+                "sequence": 8
+              }
+            ],
+            "guidanceDeliveries": [
+              {
+                "path": "skills/datocms-cma/references/records.md",
+                "tokens": 2046,
+                "sha256": "a8ed91e7b820ec961d35acd37684d4da2a662d2c0191e4fbb8a950a6c801ee07",
+                "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
+                "projection": "remove-lines-containing-cma-colon",
+                "sequence": 10
+              },
+              {
+                "path": "skills/datocms-cma/references/editing-records.md",
+                "tokens": 5652,
+                "sha256": "c67f413c09b9765be619e3b5db0be60013f9f7ea797da8afd871e0ddadd018e4",
+                "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
+                "projection": "remove-lines-containing-cma-colon",
+                "sequence": 11
+              }
+            ],
+            "toolOutputTokens": 49796,
+            "catalogueTokens": 1896,
+            "nativeCallCount": 7,
+            "calls": [
+              {
+                "role": "workspace",
+                "name": "read_file",
+                "args": {
+                  "path": "skills/datocms-cma/SKILL.md"
+                },
+                "isError": false
+              },
+              {
+                "role": "workspace",
+                "name": "read_file",
+                "args": {
+                  "path": "skills/datocms-cma/references/mcp.md"
+                },
+                "isError": false
+              },
+              {
+                "role": "datocms",
+                "name": "get_schema",
+                "args": {
+                  "site_id": "fixture-project",
+                  "environment": "sandbox",
+                  "fields_details": "complete",
+                  "filter_by_type": "all",
+                  "include_embedding_models": true,
+                  "include_fieldsets": true,
+                  "include_nested_blocks": true,
+                  "include_referenced_models": true
+                },
+                "isError": false
+              },
+              {
+                "role": "workspace",
+                "name": "read_file",
+                "args": {
+                  "path": "skills/datocms-cma/references/editing-records.md"
+                },
+                "isError": false
+              },
+              {
+                "role": "datocms",
+                "name": "get_api_methods",
+                "args": {
+                  "methods": [
+                    {
+                      "resource": "items",
+                      "method": "find"
+                    },
+                    {
+                      "resource": "items",
+                      "method": "update"
+                    }
+                  ]
+                },
+                "isError": false
+              },
+              {
+                "role": "datocms",
+                "name": "upsert_and_execute_unsafe_script",
+                "args": {
+                  "site_id": "fixture-project",
+                  "environment": "sandbox",
+                  "name": "script://edit-article-1-english.ts",
+                  "method_tokens": [
+                    "fixture-token-items.find",
+                    "fixture-token-items.update"
+                  ],
+                  "body": {
+                    "mode": "full",
+                    "content": "const currentItem = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (currentItem.body.en && currentItem.body.it) {\n  let greetingEdits = 0;\n  let captionEdits = 0;\n  let content: FieldValueInRequest<typeof currentItem, \"body\">[\"en\"] = currentItem.body.en;\n\n  content = mapNodes(content, (node) => {\n    if (isSpan(node) && node.value === \"Hello reader\") {\n      greetingEdits += 1;\n      return { ...node, value: \"Welcome reader\" };\n    }\n\n    if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\") {\n      captionEdits += 1;\n      return {\n        ...node,\n        item: buildBlockRecord<Schema.ImageBlock>({\n          id: node.item.id,\n          caption: \"Summer portrait\",\n        }),\n      };\n    }\n\n    return node;\n  });\n\n  if (greetingEdits !== 1 || captionEdits !== 1) {\n    throw new Error(\"Expected exactly one greeting span and one image block to edit\");\n  }\n\n  content.document.children.push({\n    type: \"paragraph\",\n    children: [{ type: \"span\", value: \"See you soon.\" }],\n  });\n\n  const saved = await client.items.update<Schema.Article>(currentItem.id, {\n    body: { ...currentItem.body, en: content },\n    meta: { current_version: currentItem.meta.current_version },\n  });\n\n  console.log({\n    id: saved.id,\n    status: saved.meta.status,\n    greetingEdits,\n    captionEdits,\n    englishNodes: content.document.children.length,\n  });\n}"
+                  }
+                },
+                "isError": false
+              },
+              {
+                "role": "datocms",
+                "name": "upsert_and_execute_safe_script",
+                "args": {
+                  "site_id": "fixture-project",
+                  "environment": "sandbox",
+                  "name": "script://verify-article-1-english.ts",
+                  "method_tokens": [
+                    "fixture-token-items.find"
+                  ],
+                  "body": {
+                    "mode": "full",
+                    "content": "const article = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!article.body.en || !article.body.it) {\n  throw new Error(\"Both English and Italian body values must be present\");\n}\n\nlet welcomeCount = 0;\nlet greetingHasMarks = false;\nlet linkCount = 0;\nlet captionMatches = false;\nlet blockIdMatches = false;\nlet imagePreserved = false;\n\nfor (const node of article.body.en.document.children) {\n  if (isParagraph(node)) {\n    for (const child of node.children) {\n      if (isSpan(child) && child.value === \"Welcome reader\") {\n        welcomeCount += 1;\n        greetingHasMarks = (child.marks?.length ?? 0) > 0;\n      }\n      if (isLink(child)) {\n        linkCount += 1;\n      }\n    }\n  }\n\n  if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\") {\n    blockIdMatches = true;\n    captionMatches = node.item.attributes.caption === \"Summer portrait\";\n    imagePreserved = node.item.attributes.image === null;\n  }\n}\n\nconst finalNode = article.body.en.document.children[article.body.en.document.children.length - 1];\nconst finalParagraphMatches =\n  isParagraph(finalNode) &&\n  finalNode.children.length === 1 &&\n  isSpan(finalNode.children[0]) &&\n  finalNode.children[0].value === \"See you soon.\";\n\nif (\n  welcomeCount !== 1 ||\n  !greetingHasMarks ||\n  linkCount < 1 ||\n  !blockIdMatches ||\n  !captionMatches ||\n  !imagePreserved ||\n  !finalParagraphMatches ||\n  article.meta.status !== \"draft\"\n) {\n  throw new Error(\"Saved record does not satisfy the requested invariants\");\n}\n\nconsole.log({\n  id: article.id,\n  status: article.meta.status,\n  welcomeCount,\n  greetingHasMarks,\n  linkCount,\n  blockIdMatches,\n  captionMatches,\n  imagePreserved,\n  finalParagraphMatches,\n  italianLocalePresent: article.body.it !== null,\n});"
+                  }
+                },
+                "isError": false
+              }
+            ],
+            "sources": [
+              {
+                "route": "mcp",
+                "name": "script://edit-article-1-english.ts",
+                "source": "const currentItem = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (currentItem.body.en && currentItem.body.it) {\n  let greetingEdits = 0;\n  let captionEdits = 0;\n  let content: FieldValueInRequest<typeof currentItem, \"body\">[\"en\"] = currentItem.body.en;\n\n  content = mapNodes(content, (node) => {\n    if (isSpan(node) && node.value === \"Hello reader\") {\n      greetingEdits += 1;\n      return { ...node, value: \"Welcome reader\" };\n    }\n\n    if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\") {\n      captionEdits += 1;\n      return {\n        ...node,\n        item: buildBlockRecord<Schema.ImageBlock>({\n          id: node.item.id,\n          caption: \"Summer portrait\",\n        }),\n      };\n    }\n\n    return node;\n  });\n\n  if (greetingEdits !== 1 || captionEdits !== 1) {\n    throw new Error(\"Expected exactly one greeting span and one image block to edit\");\n  }\n\n  content.document.children.push({\n    type: \"paragraph\",\n    children: [{ type: \"span\", value: \"See you soon.\" }],\n  });\n\n  const saved = await client.items.update<Schema.Article>(currentItem.id, {\n    body: { ...currentItem.body, en: content },\n    meta: { current_version: currentItem.meta.current_version },\n  });\n\n  console.log({\n    id: saved.id,\n    status: saved.meta.status,\n    greetingEdits,\n    captionEdits,\n    englishNodes: content.document.children.length,\n  });\n}",
+                "errors": []
+              },
+              {
+                "route": "mcp",
+                "name": "script://verify-article-1-english.ts",
+                "source": "const article = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!article.body.en || !article.body.it) {\n  throw new Error(\"Both English and Italian body values must be present\");\n}\n\nlet welcomeCount = 0;\nlet greetingHasMarks = false;\nlet linkCount = 0;\nlet captionMatches = false;\nlet blockIdMatches = false;\nlet imagePreserved = false;\n\nfor (const node of article.body.en.document.children) {\n  if (isParagraph(node)) {\n    for (const child of node.children) {\n      if (isSpan(child) && child.value === \"Welcome reader\") {\n        welcomeCount += 1;\n        greetingHasMarks = (child.marks?.length ?? 0) > 0;\n      }\n      if (isLink(child)) {\n        linkCount += 1;\n      }\n    }\n  }\n\n  if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\") {\n    blockIdMatches = true;\n    captionMatches = node.item.attributes.caption === \"Summer portrait\";\n    imagePreserved = node.item.attributes.image === null;\n  }\n}\n\nconst finalNode = article.body.en.document.children[article.body.en.document.children.length - 1];\nconst finalParagraphMatches =\n  isParagraph(finalNode) &&\n  finalNode.children.length === 1 &&\n  isSpan(finalNode.children[0]) &&\n  finalNode.children[0].value === \"See you soon.\";\n\nif (\n  welcomeCount !== 1 ||\n  !greetingHasMarks ||\n  linkCount < 1 ||\n  !blockIdMatches ||\n  !captionMatches ||\n  !imagePreserved ||\n  !finalParagraphMatches ||\n  article.meta.status !== \"draft\"\n) {\n  throw new Error(\"Saved record does not satisfy the requested invariants\");\n}\n\nconsole.log({\n  id: article.id,\n  status: article.meta.status,\n  welcomeCount,\n  greetingHasMarks,\n  linkCount,\n  blockIdMatches,\n  captionMatches,\n  imagePreserved,\n  finalParagraphMatches,\n  italianLocalePresent: article.body.it !== null,\n});",
+                "errors": []
+              }
+            ],
+            "finalText": "Updated `article-1` in `sandbox` via the hosted MCP:\n\n- English greeting is now “Welcome reader” with marks retained.\n- `block-1` caption is now “Summer portrait”; its ID and image remain unchanged.\n- Added final paragraph: “See you soon.”\n- Existing link and Italian locale remain present.\n- Record remains a draft; it was not published.",
+            "finalRecord": {
+              "id": "article-1",
+              "title": "Original title",
+              "untouched": "Keep this value",
+              "body": {
+                "en": {
+                  "schema": "dast",
+                  "document": {
+                    "type": "root",
+                    "children": [
+                      {
+                        "type": "paragraph",
+                        "children": [
+                          {
+                            "type": "span",
+                            "value": "Welcome reader",
+                            "marks": [
+                              "strong"
+                            ]
+                          },
+                          {
+                            "type": "span",
+                            "value": " — "
+                          },
+                          {
+                            "type": "link",
+                            "url": "https://example.test/help",
+                            "children": [
+                              {
+                                "type": "span",
+                                "value": "Help"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "block",
+                        "item": {
+                          "id": "block-1",
+                          "type": "item",
+                          "__itemTypeId": "image-block",
+                          "attributes": {
+                            "caption": "Summer portrait",
+                            "image": null
+                          }
+                        }
+                      },
+                      {
+                        "type": "paragraph",
+                        "children": [
+                          {
+                            "type": "span",
+                            "value": "See you soon."
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "it": {
+                  "schema": "dast",
+                  "document": {
+                    "type": "root",
+                    "children": [
+                      {
+                        "type": "paragraph",
+                        "children": [
+                          {
+                            "type": "span",
+                            "value": "Ciao lettore"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              },
+              "meta": {
+                "current_version": "2",
+                "status": "draft"
+              }
+            },
+            "exitCode": 0,
+            "timedOut": false,
+            "spawnError": null,
+            "transcriptPath": "/Users/marcelofinamorvieira/datoCMS/.worktrees/optional-mcp-20260914/local/coexistence/terra-host-final-longfollowup/long-followup/candidate/3/native.jsonl",
+            "nativeTurns": 3,
+            "threadId": "01a0a1fe-02a8-77f0-8899-e5e1fbec7ddd"
+          },
+          {
+            "case": "long-followup",
+            "arm": "candidate",
+            "repetition": 2,
+            "passed": true,
+            "failures": [],
+            "contentFailures": [],
+            "criticalFailures": [],
+            "qualityPassed": true,
+            "criticalPassed": true,
+            "writeCount": 1,
+            "appliedWriteCount": 1,
+            "route": "mcp",
+            "failedReadCalls": 0,
+            "repeatedFailedReads": 0,
+            "accessInspectedBeforeWrite": true,
+            "elapsedMs": 61852,
+            "model": "gpt-5.6-terra",
+            "reasoningEffort": "medium",
+            "usage": {
+              "input_tokens": 492494,
+              "cached_input_tokens": 389632,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3178,
+              "reasoning_output_tokens": 764
+            },
+            "baseline": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
+            "candidateRevision": "5cc4b984e9cc11b31816ffef664b9bed53297c80",
+            "fixtureSourceSha256": "0692a1dedd3c49feb4a846768fb15baa070bb02f7dd1e95bfe497bad306d81ed",
+            "dependencyLockSha256": "06012e9e7d342e7871177253f3a866e31e670f4f1d833f8de60c3ff108e64492",
+            "mcpContractRevision": "beeca70bdf702461ae8e226bfd9714d8e58f33ac",
+            "promptSha256": "ebe806c75bcda7043b0785124095c94e9c6c210019c9734062730d08d83681da",
+            "catalogueSha256": "2cae92f062bbecbe1015fb12456c6039e80f9e10ec94a525c9c2dd6f69fbd551",
+            "referenceReads": [
+              {
+                "path": "skills/datocms-cma/SKILL.md",
+                "tokens": 2237,
+                "sha256": "028d17b3ae2e5d9b04962c83cf30fdc05fb58bb9c5057bddaa57556d35313d8a",
+                "sequence": 1
+              },
+              {
+                "path": "skills/datocms-cma/references/mcp.md",
+                "tokens": 468,
+                "sha256": "4cd5b84994baf4cc0d3ee3b3bc352d47e322dfbc725ecf133e0781f5e9077743",
+                "sequence": 3
+              },
+              {
+                "path": "skills/datocms-cma/references/editing-records.md",
+                "tokens": 6222,
+                "sha256": "ea9cc75ba19fd952ea5f6ea770cd766bb8211d701832a0420ec4773ca680ce4b",
+                "sequence": 8
+              }
+            ],
+            "guidanceDeliveries": [
+              {
+                "path": "skills/datocms-cma/references/records.md",
+                "tokens": 2046,
+                "sha256": "a8ed91e7b820ec961d35acd37684d4da2a662d2c0191e4fbb8a950a6c801ee07",
+                "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
+                "projection": "remove-lines-containing-cma-colon",
+                "sequence": 10
+              },
+              {
+                "path": "skills/datocms-cma/references/editing-records.md",
+                "tokens": 5652,
+                "sha256": "c67f413c09b9765be619e3b5db0be60013f9f7ea797da8afd871e0ddadd018e4",
+                "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
+                "projection": "remove-lines-containing-cma-colon",
+                "sequence": 11
+              }
+            ],
+            "toolOutputTokens": 49788,
+            "catalogueTokens": 1896,
+            "nativeCallCount": 8,
+            "calls": [
+              {
+                "role": "workspace",
+                "name": "read_file",
+                "args": {
+                  "path": "skills/datocms-cma/SKILL.md"
+                },
+                "isError": false
+              },
+              {
+                "role": "workspace",
+                "name": "read_file",
+                "args": {
+                  "path": "skills/datocms-cma/references/mcp.md"
+                },
+                "isError": false
+              },
+              {
+                "role": "datocms",
+                "name": "get_schema",
+                "args": {
+                  "site_id": "fixture-project",
+                  "environment": "sandbox",
+                  "fields_details": "complete",
+                  "include_embedding_models": true,
+                  "include_fieldsets": true,
+                  "include_nested_blocks": true,
+                  "include_referenced_models": true
+                },
+                "isError": false
+              },
+              {
+                "role": "workspace",
+                "name": "read_file",
+                "args": {
+                  "path": "skills/datocms-cma/references/editing-records.md"
+                },
+                "isError": false
+              },
+              {
+                "role": "datocms",
+                "name": "get_api_methods",
+                "args": {
+                  "methods": [
+                    {
+                      "resource": "items",
+                      "method": "find"
+                    },
+                    {
+                      "resource": "items",
+                      "method": "update"
+                    }
+                  ]
+                },
+                "isError": false
+              },
+              {
+                "role": "datocms",
+                "name": "whoami",
+                "args": {},
+                "isError": false
+              },
+              {
+                "role": "datocms",
+                "name": "upsert_and_execute_unsafe_script",
+                "args": {
+                  "site_id": "fixture-project",
+                  "environment": "sandbox",
+                  "name": "script://edit-article-1-english-body.ts",
+                  "method_tokens": [
+                    "fixture-token-items.find",
+                    "fixture-token-items.update"
+                  ],
+                  "body": {
+                    "mode": "full",
+                    "content": "const currentItem = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (currentItem.body.en) {\n  let greetingCount = 0;\n  let blockCount = 0;\n\n  let content: NonNullable<FieldValueInRequest<typeof currentItem, \"body\">>[\"en\"] =\n    mapNodes(currentItem.body.en, (node) => {\n      if (isSpan(node) && node.value === \"Hello reader\") {\n        greetingCount += 1;\n        return { ...node, value: \"Welcome reader\" };\n      }\n      if (\n        isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n        node.item.id === \"block-1\"\n      ) {\n        blockCount += 1;\n        return {\n          ...node,\n          item: buildBlockRecord<Schema.ImageBlock>({\n            id: node.item.id,\n            caption: \"Summer portrait\",\n          }),\n        };\n      }\n      return node;\n    });\n\n  if (greetingCount !== 1 || blockCount !== 1) {\n    throw new Error(\"Expected exactly one greeting span and one image block\");\n  }\n\n  content.document.children.push({\n    type: \"paragraph\",\n    children: [{ type: \"span\", value: \"See you soon.\" }],\n  });\n\n  await client.items.update<Schema.Article>(currentItem.id, {\n    body: { ...currentItem.body, en: content },\n    meta: { current_version: currentItem.meta.current_version },\n  });\n\n  console.log(\"Updated English body without publishing\");\n} else {\n  throw new Error(\"English body is empty\");\n}"
+                  }
+                },
+                "isError": false
+              },
+              {
+                "role": "datocms",
+                "name": "upsert_and_execute_safe_script",
+                "args": {
+                  "site_id": "fixture-project",
+                  "environment": "sandbox",
+                  "name": "script://verify-article-1-english-body.ts",
+                  "method_tokens": [
+                    "fixture-token-items.find"
+                  ],
+                  "body": {
+                    "mode": "full",
+                    "content": "const savedItem = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!savedItem.body.en || !savedItem.body.it) {\n  throw new Error(\"Expected both English and Italian body values\");\n}\n\nlet welcomeMarks = \"\";\nlet oldGreetingFound = false;\nlet preservedLinkCount = 0;\nlet preservedBlockCount = 0;\nlet appendedParagraphCount = 0;\n\nmapNodes(savedItem.body.en, (node) => {\n  if (isSpan(node) && node.value === \"Welcome reader\") {\n    welcomeMarks = (node.marks ?? []).join(\",\");\n  }\n  if (isSpan(node) && node.value === \"Hello reader\") {\n    oldGreetingFound = true;\n  }\n  if (isLink(node)) {\n    preservedLinkCount += 1;\n  }\n  if (\n    isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n    node.item.id === \"block-1\" &&\n    node.item.attributes.caption === \"Summer portrait\" &&\n    node.item.attributes.image === null\n  ) {\n    preservedBlockCount += 1;\n  }\n  if (\n    isParagraph(node) &&\n    node.children.length === 1 &&\n    isSpan(node.children[0]) &&\n    node.children[0].value === \"See you soon.\"\n  ) {\n    appendedParagraphCount += 1;\n  }\n  return node;\n});\n\nif (\n  welcomeMarks === \"\" ||\n  oldGreetingFound ||\n  preservedLinkCount !== 1 ||\n  preservedBlockCount !== 1 ||\n  appendedParagraphCount !== 1 ||\n  savedItem.meta.status !== \"draft\"\n) {\n  throw new Error(\"Saved record did not meet the requested preservation checks\");\n}\n\nconsole.log({\n  status: savedItem.meta.status,\n  greetingMarks: welcomeMarks,\n  linkCount: preservedLinkCount,\n  imageBlockId: \"block-1\",\n  image: null,\n  italianLocalePresent: savedItem.body.it !== null,\n  finalParagraph: \"See you soon.\",\n  title: savedItem.title,\n  untouched: savedItem.untouched,\n});"
+                  }
+                },
+                "isError": false
+              }
+            ],
+            "sources": [
+              {
+                "route": "mcp",
+                "name": "script://edit-article-1-english-body.ts",
+                "source": "const currentItem = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (currentItem.body.en) {\n  let greetingCount = 0;\n  let blockCount = 0;\n\n  let content: NonNullable<FieldValueInRequest<typeof currentItem, \"body\">>[\"en\"] =\n    mapNodes(currentItem.body.en, (node) => {\n      if (isSpan(node) && node.value === \"Hello reader\") {\n        greetingCount += 1;\n        return { ...node, value: \"Welcome reader\" };\n      }\n      if (\n        isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n        node.item.id === \"block-1\"\n      ) {\n        blockCount += 1;\n        return {\n          ...node,\n          item: buildBlockRecord<Schema.ImageBlock>({\n            id: node.item.id,\n            caption: \"Summer portrait\",\n          }),\n        };\n      }\n      return node;\n    });\n\n  if (greetingCount !== 1 || blockCount !== 1) {\n    throw new Error(\"Expected exactly one greeting span and one image block\");\n  }\n\n  content.document.children.push({\n    type: \"paragraph\",\n    children: [{ type: \"span\", value: \"See you soon.\" }],\n  });\n\n  await client.items.update<Schema.Article>(currentItem.id, {\n    body: { ...currentItem.body, en: content },\n    meta: { current_version: currentItem.meta.current_version },\n  });\n\n  console.log(\"Updated English body without publishing\");\n} else {\n  throw new Error(\"English body is empty\");\n}",
+                "errors": []
+              },
+              {
+                "route": "mcp",
+                "name": "script://verify-article-1-english-body.ts",
+                "source": "const savedItem = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (!savedItem.body.en || !savedItem.body.it) {\n  throw new Error(\"Expected both English and Italian body values\");\n}\n\nlet welcomeMarks = \"\";\nlet oldGreetingFound = false;\nlet preservedLinkCount = 0;\nlet preservedBlockCount = 0;\nlet appendedParagraphCount = 0;\n\nmapNodes(savedItem.body.en, (node) => {\n  if (isSpan(node) && node.value === \"Welcome reader\") {\n    welcomeMarks = (node.marks ?? []).join(\",\");\n  }\n  if (isSpan(node) && node.value === \"Hello reader\") {\n    oldGreetingFound = true;\n  }\n  if (isLink(node)) {\n    preservedLinkCount += 1;\n  }\n  if (\n    isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n    node.item.id === \"block-1\" &&\n    node.item.attributes.caption === \"Summer portrait\" &&\n    node.item.attributes.image === null\n  ) {\n    preservedBlockCount += 1;\n  }\n  if (\n    isParagraph(node) &&\n    node.children.length === 1 &&\n    isSpan(node.children[0]) &&\n    node.children[0].value === \"See you soon.\"\n  ) {\n    appendedParagraphCount += 1;\n  }\n  return node;\n});\n\nif (\n  welcomeMarks === \"\" ||\n  oldGreetingFound ||\n  preservedLinkCount !== 1 ||\n  preservedBlockCount !== 1 ||\n  appendedParagraphCount !== 1 ||\n  savedItem.meta.status !== \"draft\"\n) {\n  throw new Error(\"Saved record did not meet the requested preservation checks\");\n}\n\nconsole.log({\n  status: savedItem.meta.status,\n  greetingMarks: welcomeMarks,\n  linkCount: preservedLinkCount,\n  imageBlockId: \"block-1\",\n  image: null,\n  italianLocalePresent: savedItem.body.it !== null,\n  finalParagraph: \"See you soon.\",\n  title: savedItem.title,\n  untouched: savedItem.untouched,\n});",
+                "errors": []
+              }
+            ],
+            "finalText": "Updated `article-1`’s English Structured Text and left it unpublished.\n\nVerified: greeting marks remain `strong`; the existing link remains; `block-1` retains its ID and null image with caption “Summer portrait”; the Italian locale remains present; the final paragraph is “See you soon.”; unrelated fields are unchanged.",
+            "finalRecord": {
+              "id": "article-1",
+              "title": "Original title",
+              "untouched": "Keep this value",
+              "body": {
+                "en": {
+                  "schema": "dast",
+                  "document": {
+                    "type": "root",
+                    "children": [
+                      {
+                        "type": "paragraph",
+                        "children": [
+                          {
+                            "type": "span",
+                            "value": "Welcome reader",
+                            "marks": [
+                              "strong"
+                            ]
+                          },
+                          {
+                            "type": "span",
+                            "value": " — "
+                          },
+                          {
+                            "type": "link",
+                            "url": "https://example.test/help",
+                            "children": [
+                              {
+                                "type": "span",
+                                "value": "Help"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "block",
+                        "item": {
+                          "id": "block-1",
+                          "type": "item",
+                          "__itemTypeId": "image-block",
+                          "attributes": {
+                            "caption": "Summer portrait",
+                            "image": null
+                          }
+                        }
+                      },
+                      {
+                        "type": "paragraph",
+                        "children": [
+                          {
+                            "type": "span",
+                            "value": "See you soon."
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "it": {
+                  "schema": "dast",
+                  "document": {
+                    "type": "root",
+                    "children": [
+                      {
+                        "type": "paragraph",
+                        "children": [
+                          {
+                            "type": "span",
+                            "value": "Ciao lettore"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              },
+              "meta": {
+                "current_version": "2",
+                "status": "draft"
+              }
+            },
+            "exitCode": 0,
+            "timedOut": false,
+            "spawnError": null,
+            "transcriptPath": "/Users/marcelofinamorvieira/datoCMS/.worktrees/optional-mcp-20260914/local/coexistence/terra-host-final-longfollowup/long-followup/candidate/2/native.jsonl",
+            "nativeTurns": 3,
+            "threadId": "01a0a1fe-027f-7c03-85eb-358e5bce13e2"
+          },
+          {
+            "case": "long-followup",
+            "arm": "candidate",
+            "repetition": 1,
+            "passed": true,
+            "failures": [],
+            "contentFailures": [],
+            "criticalFailures": [],
+            "qualityPassed": true,
+            "criticalPassed": true,
+            "writeCount": 1,
+            "appliedWriteCount": 1,
+            "route": "mcp",
+            "failedReadCalls": 0,
+            "repeatedFailedReads": 0,
+            "accessInspectedBeforeWrite": true,
+            "elapsedMs": 69140,
+            "model": "gpt-5.6-terra",
+            "reasoningEffort": "medium",
+            "usage": {
+              "input_tokens": 557885,
+              "cached_input_tokens": 448768,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 3462,
+              "reasoning_output_tokens": 941
+            },
+            "baseline": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
+            "candidateRevision": "5cc4b984e9cc11b31816ffef664b9bed53297c80",
+            "fixtureSourceSha256": "0692a1dedd3c49feb4a846768fb15baa070bb02f7dd1e95bfe497bad306d81ed",
+            "dependencyLockSha256": "06012e9e7d342e7871177253f3a866e31e670f4f1d833f8de60c3ff108e64492",
+            "mcpContractRevision": "beeca70bdf702461ae8e226bfd9714d8e58f33ac",
+            "promptSha256": "ebe806c75bcda7043b0785124095c94e9c6c210019c9734062730d08d83681da",
+            "catalogueSha256": "2cae92f062bbecbe1015fb12456c6039e80f9e10ec94a525c9c2dd6f69fbd551",
+            "referenceReads": [
+              {
+                "path": "skills/datocms-cma/SKILL.md",
+                "tokens": 2237,
+                "sha256": "028d17b3ae2e5d9b04962c83cf30fdc05fb58bb9c5057bddaa57556d35313d8a",
+                "sequence": 1
+              },
+              {
+                "path": "skills/datocms-cma/references/mcp.md",
+                "tokens": 468,
+                "sha256": "4cd5b84994baf4cc0d3ee3b3bc352d47e322dfbc725ecf133e0781f5e9077743",
+                "sequence": 3
+              },
+              {
+                "path": "skills/datocms-cma/references/editing-records.md",
+                "tokens": 6222,
+                "sha256": "ea9cc75ba19fd952ea5f6ea770cd766bb8211d701832a0420ec4773ca680ce4b",
+                "sequence": 8
+              }
+            ],
+            "guidanceDeliveries": [
+              {
+                "path": "skills/datocms-cma/references/records.md",
+                "tokens": 2046,
+                "sha256": "a8ed91e7b820ec961d35acd37684d4da2a662d2c0191e4fbb8a950a6c801ee07",
+                "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
+                "projection": "remove-lines-containing-cma-colon",
+                "sequence": 10
+              },
+              {
+                "path": "skills/datocms-cma/references/editing-records.md",
+                "tokens": 5652,
+                "sha256": "c67f413c09b9765be619e3b5db0be60013f9f7ea797da8afd871e0ddadd018e4",
+                "sourceRevision": "94e4bd8128e52963829f65bce8f202fcd68ac8d6",
+                "projection": "remove-lines-containing-cma-colon",
+                "sequence": 11
+              }
+            ],
+            "toolOutputTokens": 49837,
+            "catalogueTokens": 1896,
+            "nativeCallCount": 8,
+            "calls": [
+              {
+                "role": "workspace",
+                "name": "read_file",
+                "args": {
+                  "path": "skills/datocms-cma/SKILL.md"
+                },
+                "isError": false
+              },
+              {
+                "role": "workspace",
+                "name": "read_file",
+                "args": {
+                  "path": "skills/datocms-cma/references/mcp.md"
+                },
+                "isError": false
+              },
+              {
+                "role": "datocms",
+                "name": "get_schema",
+                "args": {
+                  "site_id": "fixture-project",
+                  "environment": "sandbox",
+                  "fields_details": "complete",
+                  "include_embedding_models": true,
+                  "include_fieldsets": true,
+                  "include_nested_blocks": true,
+                  "include_referenced_models": true
+                },
+                "isError": false
+              },
+              {
+                "role": "workspace",
+                "name": "read_file",
+                "args": {
+                  "path": "skills/datocms-cma/references/editing-records.md"
+                },
+                "isError": false
+              },
+              {
+                "role": "datocms",
+                "name": "get_api_methods",
+                "args": {
+                  "methods": [
+                    {
+                      "resource": "items",
+                      "method": "find"
+                    },
+                    {
+                      "resource": "items",
+                      "method": "update"
+                    }
+                  ]
+                },
+                "isError": false
+              },
+              {
+                "role": "datocms",
+                "name": "whoami",
+                "args": {},
+                "isError": false
+              },
+              {
+                "role": "datocms",
+                "name": "upsert_and_execute_unsafe_script",
+                "args": {
+                  "site_id": "fixture-project",
+                  "environment": "sandbox",
+                  "name": "script://update-article-1-english.ts",
+                  "method_tokens": [
+                    "fixture-token-items.find",
+                    "fixture-token-items.update"
+                  ],
+                  "body": {
+                    "mode": "full",
+                    "content": "const before = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (before.body.en === null) {\n  throw new Error(\"English body is missing\");\n}\n\nlet greetingChanged = false;\nlet captionChanged = false;\nlet content: NonNullable<FieldValueInRequest<typeof before, \"body\">>[\"en\"] = before.body.en;\n\ncontent = mapNodes(content, (node) => {\n  if (isSpan(node) && node.value === \"Hello reader\") {\n    greetingChanged = true;\n    return { ...node, value: \"Welcome reader\" };\n  }\n\n  if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\") {\n    captionChanged = true;\n    return {\n      ...node,\n      item: buildBlockRecord<Schema.ImageBlock>({\n        id: node.item.id,\n        caption: \"Summer portrait\",\n      }),\n    };\n  }\n\n  return node;\n});\n\nif (!greetingChanged) {\n  throw new Error('Greeting span \"Hello reader\" was not found');\n}\n\nif (!captionChanged) {\n  throw new Error('Image block \"block-1\" was not found');\n}\n\ncontent.document.children.push({\n  type: \"paragraph\",\n  children: [{ type: \"span\", value: \"See you soon.\" }],\n});\n\nawait client.items.update<Schema.Article>(before.id, {\n  body: { ...before.body, en: content },\n  meta: { current_version: before.meta.current_version },\n});\n\nconsole.log({\n  recordId: before.id,\n  greetingChanged,\n  captionChanged,\n  appendedParagraph: \"See you soon.\",\n});"
+                  }
+                },
+                "isError": false
+              },
+              {
+                "role": "datocms",
+                "name": "upsert_and_execute_safe_script",
+                "args": {
+                  "site_id": "fixture-project",
+                  "environment": "sandbox",
+                  "name": "script://verify-article-1-english.ts",
+                  "method_tokens": [
+                    "fixture-token-items.find"
+                  ],
+                  "body": {
+                    "mode": "full",
+                    "content": "const current = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (current.body.en === null || current.body.it === null) {\n  throw new Error(\"Expected both English and Italian bodies\");\n}\n\nconst finalChild = current.body.en.document.children[current.body.en.document.children.length - 1];\nconst finalParagraphOk =\n  finalChild !== undefined &&\n  isParagraph(finalChild) &&\n  finalChild.children.length === 1 &&\n  isSpan(finalChild.children[0]) &&\n  finalChild.children[0].value === \"See you soon.\";\n\nlet greetingFound = false;\nlet greetingMarks: string[] | undefined;\nlet imageBlockOk = false;\nlet linkFound = false;\n\nfor (const node of current.body.en.document.children) {\n  if (isParagraph(node)) {\n    for (const child of node.children) {\n      if (isSpan(child) && child.value === \"Welcome reader\") {\n        greetingFound = true;\n        greetingMarks = child.marks;\n      }\n      if (isLink(child)) {\n        linkFound = true;\n      }\n    }\n  }\n\n  if (\n    isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n    node.item.id === \"block-1\" &&\n    node.item.attributes.caption === \"Summer portrait\" &&\n    node.item.attributes.image === null\n  ) {\n    imageBlockOk = true;\n  }\n}\n\nif (!greetingFound || !imageBlockOk || !finalParagraphOk || !linkFound) {\n  throw new Error(\"English Structured Text verification failed\");\n}\n\nconsole.log({\n  recordId: current.id,\n  status: current.meta.status,\n  greeting: \"Welcome reader\",\n  greetingMarks,\n  imageBlockId: \"block-1\",\n  imageCaption: \"Summer portrait\",\n  imagePreserved: true,\n  existingLinkPresent: linkFound,\n  finalParagraphOk,\n  italianLocalePresent: current.body.it !== null,\n  titlePreserved: current.title,\n  untouchedPreserved: current.untouched,\n});"
+                  }
+                },
+                "isError": false
+              }
+            ],
+            "sources": [
+              {
+                "route": "mcp",
+                "name": "script://update-article-1-english.ts",
+                "source": "const before = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (before.body.en === null) {\n  throw new Error(\"English body is missing\");\n}\n\nlet greetingChanged = false;\nlet captionChanged = false;\nlet content: NonNullable<FieldValueInRequest<typeof before, \"body\">>[\"en\"] = before.body.en;\n\ncontent = mapNodes(content, (node) => {\n  if (isSpan(node) && node.value === \"Hello reader\") {\n    greetingChanged = true;\n    return { ...node, value: \"Welcome reader\" };\n  }\n\n  if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === \"block-1\") {\n    captionChanged = true;\n    return {\n      ...node,\n      item: buildBlockRecord<Schema.ImageBlock>({\n        id: node.item.id,\n        caption: \"Summer portrait\",\n      }),\n    };\n  }\n\n  return node;\n});\n\nif (!greetingChanged) {\n  throw new Error('Greeting span \"Hello reader\" was not found');\n}\n\nif (!captionChanged) {\n  throw new Error('Image block \"block-1\" was not found');\n}\n\ncontent.document.children.push({\n  type: \"paragraph\",\n  children: [{ type: \"span\", value: \"See you soon.\" }],\n});\n\nawait client.items.update<Schema.Article>(before.id, {\n  body: { ...before.body, en: content },\n  meta: { current_version: before.meta.current_version },\n});\n\nconsole.log({\n  recordId: before.id,\n  greetingChanged,\n  captionChanged,\n  appendedParagraph: \"See you soon.\",\n});",
+                "errors": []
+              },
+              {
+                "route": "mcp",
+                "name": "script://verify-article-1-english.ts",
+                "source": "const current = await client.items.find<Schema.Article>(\"article-1\", { nested: true });\n\nif (current.body.en === null || current.body.it === null) {\n  throw new Error(\"Expected both English and Italian bodies\");\n}\n\nconst finalChild = current.body.en.document.children[current.body.en.document.children.length - 1];\nconst finalParagraphOk =\n  finalChild !== undefined &&\n  isParagraph(finalChild) &&\n  finalChild.children.length === 1 &&\n  isSpan(finalChild.children[0]) &&\n  finalChild.children[0].value === \"See you soon.\";\n\nlet greetingFound = false;\nlet greetingMarks: string[] | undefined;\nlet imageBlockOk = false;\nlet linkFound = false;\n\nfor (const node of current.body.en.document.children) {\n  if (isParagraph(node)) {\n    for (const child of node.children) {\n      if (isSpan(child) && child.value === \"Welcome reader\") {\n        greetingFound = true;\n        greetingMarks = child.marks;\n      }\n      if (isLink(child)) {\n        linkFound = true;\n      }\n    }\n  }\n\n  if (\n    isBlockWithItemOfType(Schema.ImageBlock.ID, node) &&\n    node.item.id === \"block-1\" &&\n    node.item.attributes.caption === \"Summer portrait\" &&\n    node.item.attributes.image === null\n  ) {\n    imageBlockOk = true;\n  }\n}\n\nif (!greetingFound || !imageBlockOk || !finalParagraphOk || !linkFound) {\n  throw new Error(\"English Structured Text verification failed\");\n}\n\nconsole.log({\n  recordId: current.id,\n  status: current.meta.status,\n  greeting: \"Welcome reader\",\n  greetingMarks,\n  imageBlockId: \"block-1\",\n  imageCaption: \"Summer portrait\",\n  imagePreserved: true,\n  existingLinkPresent: linkFound,\n  finalParagraphOk,\n  italianLocalePresent: current.body.it !== null,\n  titlePreserved: current.title,\n  untouchedPreserved: current.untouched,\n});",
+                "errors": []
+              }
+            ],
+            "finalText": "Updated and verified `article-1` in `sandbox`; it remains a draft.\n\n- “Hello reader” → “Welcome reader” with its `strong` mark preserved\n- `block-1` caption → “Summer portrait”; block ID and image preserved\n- Added final English paragraph: “See you soon.”\n- Existing link, Italian locale, title, and `untouched` field remain present.",
+            "finalRecord": {
+              "id": "article-1",
+              "title": "Original title",
+              "untouched": "Keep this value",
+              "body": {
+                "en": {
+                  "schema": "dast",
+                  "document": {
+                    "type": "root",
+                    "children": [
+                      {
+                        "type": "paragraph",
+                        "children": [
+                          {
+                            "type": "span",
+                            "value": "Welcome reader",
+                            "marks": [
+                              "strong"
+                            ]
+                          },
+                          {
+                            "type": "span",
+                            "value": " — "
+                          },
+                          {
+                            "type": "link",
+                            "url": "https://example.test/help",
+                            "children": [
+                              {
+                                "type": "span",
+                                "value": "Help"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "block",
+                        "item": {
+                          "id": "block-1",
+                          "type": "item",
+                          "__itemTypeId": "image-block",
+                          "attributes": {
+                            "caption": "Summer portrait",
+                            "image": null
+                          }
+                        }
+                      },
+                      {
+                        "type": "paragraph",
+                        "children": [
+                          {
+                            "type": "span",
+                            "value": "See you soon."
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "it": {
+                  "schema": "dast",
+                  "document": {
+                    "type": "root",
+                    "children": [
+                      {
+                        "type": "paragraph",
+                        "children": [
+                          {
+                            "type": "span",
+                            "value": "Ciao lettore"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              },
+              "meta": {
+                "current_version": "2",
+                "status": "draft"
+              }
+            },
+            "exitCode": 0,
+            "timedOut": false,
+            "spawnError": null,
+            "transcriptPath": "/Users/marcelofinamorvieira/datoCMS/.worktrees/optional-mcp-20260914/local/coexistence/terra-host-final-longfollowup/long-followup/candidate/1/native.jsonl",
+            "nativeTurns": 3,
+            "threadId": "01a0a1fe-027f-7d60-af65-edfae88a23d5"
+          }
+        ]
       }
     ]
   },
   "limitations": [
-    "Synthetic tool execution is separate from the real CLI smoke tests. Hosted MCP OAuth and Claude Desktop checks remain unperformed after the recorded connection/client blockers.",
+    "Synthetic tool execution is separate from the real CLI and hosted MCP smoke tests. The hosted OAuth smoke is recorded in terra-host-mcp-results.json; Claude Desktop is outside this PR acceptance scope.",
     "All diagnostics are retained, including interrupted batches and earlier fixture/isolation defects. Their results are not interchangeable with the corrected final comparison.",
     "Provider usage counters include cache reuse and repeated turns; they are not unique context size or monetary/account-limit attribution.",
     "The server-imported guidance is frozen at the PR base in every arm. Native skill installation and automatic invocation are not exercised."

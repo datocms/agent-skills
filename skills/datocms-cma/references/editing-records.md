@@ -36,7 +36,7 @@ Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.
 
 Derive preservation checks from the original values, including `null` and empty values. Preserving an optional asset means keeping its original value, not requiring a populated asset.
 
-Keep an independent snapshot of the original read. After updating, read back the same record/version with `nested: true`. Compare field/node values by deep equality: serialized text can normalize whitespace or markup, and `===`/`!==` compares object identity across API reads. Check requested field values against the intended changes and unchanged content against that snapshot. Check block identity, type, attributes, node order, marks, links, other locales, and publication state where relevant.
+Keep an independent snapshot of the original read. After updating, read back the same record/version with `nested: true`. Compare relevant field/node semantics in matching response shapes: optional arrays or metadata can normalize, while `===`/`!==` only compares object identity across API reads. Do not use `serialize()` or whole-tree JSON equality as the post-write oracle. Check requested field values against the intended changes and unchanged content against that snapshot. Check block identity, type, attributes, node order, marks, links, other locales, and publication state where relevant.
 
 Do not serialize an update payload to compare it with a saved response. Structured Text request types also allow new blocks without IDs, so they are not valid `serialize()` inputs. Block ID references and partial `buildBlockRecord` payloads expand into full objects on read, including unchanged attributes and response metadata; object-key order is also irrelevant. Compare the relevant values in matching response shapes. Do not strip block attributes or identity just to make equality pass. If post-write verification throws, inspect the saved state before deciding whether any further write is needed; never replay the mutation merely because its verification failed.
 
@@ -80,7 +80,7 @@ let content: NonNullable<FieldValueInRequest<typeof currentItem, "body">>["en"] 
 
 Pass this typed variable to `mapNodes` and assign its result back. Keep the original response for inspecting nested attributes; request values also allow block IDs and partial objects. Apply the existing text → typed block edits → root append workflow below.
 
-A compound search predicate such as `(node) => isSpan(node) && node.value === text` may return only `boolean`, losing type narrowing. Before reading `found.node.marks`, check `found && isSpan(found.node)`; use the corresponding guard for other node-specific properties. Guard paragraph children too: they may contain links or inline records. `isParagraph(node)` does not make every child a span with `.value`.
+Compound predicates such as `(node) => isSpan(node) && node.value === text` can return only `boolean` and lose narrowing. Reapply the corresponding guard before every node-specific access, including verification or logging after re-indexing. Guard paragraph children too: they may be links or inline records; `isParagraph(node)` does not make every child a span.
 
 ## Typing values you build up in code
 
