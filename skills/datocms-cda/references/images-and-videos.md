@@ -198,7 +198,7 @@ url(imgixParams: { w: 200, h: 200, fit: crop })
 url(imgixParams: { w: 200, skipDefaultOptimizations: true })
 ```
 
-Here `w: 200` still applies, but project defaults do not. Keep the defaults unless the task needs a per-image bypass; disabling optimization can increase bandwidth. This does not require changing project settings.
+Here `w: 200` still applies, but project defaults do not. Keep the defaults unless the task needs a per-image bypass; disabling optimization can produce larger image files, slow page loading, and increase bandwidth usage and traffic costs. This does not require changing project settings.
 
 ## Video (Mux Integration)
 
