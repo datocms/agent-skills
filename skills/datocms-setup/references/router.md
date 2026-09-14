@@ -16,17 +16,18 @@ If the user clearly asks for one of these outcomes, load only that recipe plus i
 
 ## Discovery Mode
 
-Use discovery mode only when the user asks for broad setup such as “set up DatoCMS for this project” or mixes several unrelated setup goals.
+Use discovery mode only when a broad or mixed setup request leaves the desired outcome unclear, such as “set up DatoCMS for this project”. If the user already supplied a clear goal, continue in targeted mode.
 
-### Stage A — choose the lane
+### Stage A — clarify the desired outcome
 
-Ask one compact grouped clarification pass that covers:
+After inspecting the repo, ask **“What would you like to build or change?”** with 2–4 relevant choices based on the request and existing project. Follow `../patterns/MANDATORY_RULES.md` § Question Format. Give each choice a concrete goal label and one sentence explaining the result. Keep lane names, recipe IDs, and Stage A/B terminology internal; avoid descriptions that merely list packages or features.
 
-1. Which setup lane they want first: frontend foundation, frontend features, migrations, onboarding, or platform.
-2. Whether they need published-only reads, preview/editor workflows, or the full `visual-editing` bundle.
-3. Whether imports, schema workflows, or platform automation are in scope right now.
+Illustrative choices for an existing website — adapt to the project rather than using a fixed menu:
 
-Then select the smallest recipe bundle that satisfies the answer set.
+- **Connect this website to DatoCMS** — Set up this website to fetch and display your DatoCMS content.
+- **Add a feature to this website** — Add something specific, such as content previews or site search.
+
+Make clear that a choice identifies the desired outcome; it does not mean installing every feature in an internal group. Once the outcome is clear, ask about previews, imports, schema workflows, or automation only when relevant and still unresolved. Select the smallest recipe bundle that satisfies the request.
 
 ### Stage B — ask only the smallest unresolved bundle-specific follow-up
 
