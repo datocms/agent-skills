@@ -122,7 +122,7 @@ Regardless of which skill loaded — **question to ask user is same** for revers
 
 **Cross-skill routing.**
 
-- User-requested one-offs, content operations, and direct-mutation branch of reversible schema change = this skill's core: `cma:call`, `cma:script` stdin-mode (file-mode only as debug fallback — see Step 4). Stay here + load references in Step 3.
+- User-requested one-offs, content operations, and direct-mutation branch of reversible schema change = this skill's core: `cma:call` or `cma:script` (stdin or file mode — see Step 4). Stay here + load references in Step 3.
 - Destructive schema changes, migration branch of reversible schema change, and anything that must be committed/versioned/replayed across environments better covered by **datocms-cli** (`migrations:new`, `migrations:run`). Switch when change is destructive, when repo already uses migrations workflow, or when user wants change as reviewable migration. Handoff = loading sibling skill's references — do not bounce the user.
 - Unattended runtime code (CI, app server, webhook, long-lived automation) = separate scenario — where checked-in `buildClient()` script belongs. See Step 4 ("Client Setup").
 
@@ -207,11 +207,11 @@ npx datocms cma:call fields create <ITEM_TYPE_ID> --data='{label: "Title", api_k
 
 `--data` / `--params` accept JSON5 (unquoted keys, single-quoted wrapping) — keeps shell escaping sane. If unsure about exact resource/method/body shape → run `npx datocms cma:docs <resource> <action>` — that = authoritative source.
 
-#### `cma:script` shape — stdin-mode is the main road; file-mode is debug-only
+#### `cma:script` shape — choose stdin or file mode for the task
 
-Three main roads, picked by _deliverable shape_: stable/replayable → migration (`datocms-cli`); one-off interactive (loops, branching, dependent calls, typed `Schema.*`) → `cma:script` **stdin-mode**; code that runs inside the app/server/cron/webhook → checked-in `buildClient()` script (Step 4). **file-mode `cma:script` is none of these** — last-resort debug fallback only, when stdin-mode misbehaves and you need editor LSP, breakpoints, intermediate-state dumps, or a non-prebundled module to bisect. Long heredoc / "rerun by name" are not reasons — those belong in a migration or `buildClient()` script.
+Choose by _deliverable shape_: versioned changes replayed across environments → migration (`datocms-cli`); interactive one-offs → `cma:script`; code that runs inside the app/server/cron/webhook → checked-in `buildClient()` script (Step 4). For `cma:script`, use stdin for short scripts and pipes; use file mode for longer scripts, local helper imports, repeat execution by filename, or project-local type checking. See the [CLI script reference](../datocms-cli/references/cma-script.md) for mode selection and runtime details.
 
-**stdin-mode** — top-level await, piped or heredoc. Zero setup. `client` (pre-authenticated), `Schema.*` (project record types), and every named export of `@datocms/cma-client-node`, `datocms-structured-text-utils`, `datocms-structured-text-dastdown` are **ambient globals** inside CLI-bundled workspace — no `import` needed (e.g. `buildBlockRecord`, `mapNodes`, `parse`, `serialize`, `SchemaRepository`, `ApiTypes`). `tsc --noEmit` type-checks before execution; `any` + `unknown` rejected. `export default` not supported here — drop to file-mode only when _debugging_ requires a function shape. Anything outside those 3 modules (e.g. `datocms-html-to-structured-text`, `datocms-structured-text-to-{plain-text,html-string,markdown}`, `parse5`) is unavailable in stdin-mode — debug fallback to file-mode and install it.
+**stdin-mode** — top-level await, piped or heredoc. Zero setup. `client` (pre-authenticated), `Schema.*` (project record types), and every named export of `@datocms/cma-client-node`, `datocms-structured-text-utils`, `datocms-structured-text-dastdown` are **ambient globals** inside CLI-bundled workspace — no `import` needed (e.g. `buildBlockRecord`, `mapNodes`, `parse`, `serialize`, `SchemaRepository`, `ApiTypes`). `tsc --noEmit` type-checks before execution; `any` + `unknown` rejected. `export default` is not supported here. For packages outside those three modules, use file mode with explicit imports and install the required dependencies in the script's project.
 
 ```bash
 npx datocms cma:script <<'EOF'
@@ -220,7 +220,7 @@ console.log(items.length);
 EOF
 ```
 
-**file-mode (debug fallback only)** — `export default async function(client: Client)` in `.ts` file on disk. Runs in user's own TypeScript context (editor LSP against `tsconfig.json`, or explicit `tsc --noEmit`; no CLI-side typecheck). See cap above for when to reach for it; not "code to commit".
+**file-mode** — `export default async function(client: Client)` in a `.ts` file on disk. Imports resolve from the script's project. Use editor LSP against `tsconfig.json` or explicit `tsc --noEmit`; there is no CLI-side typecheck. Keep scratch scripts separate from the migration directory; choose a migration when the deliverable must be versioned and replayed across environments.
 
 ```ts
 // tmp/scripts/publish-drafts.ts

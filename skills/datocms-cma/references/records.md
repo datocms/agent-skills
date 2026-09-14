@@ -51,6 +51,10 @@ For tree-model records, `{ recursive: true }` as the third argument auto-cascade
 - `publish` with `recursive: true` auto-publishes unpublished parents (avoids `UNPUBLISHED_PARENT`).
 - `unpublish` with `recursive: true` auto-unpublishes published children (avoids dangling published descendants).
 
+Linked-record publication is a different mechanism: the linking field's `on_publish_with_unpublished_references_strategy` decides whether an unpublished reference blocks publication (`fail`) or is published with it (`publish_references`). See `schema.md` → "Reference-cascade strategies" for the field settings.
+
+A single cascading publication runs in a transaction: a blocked or invalid dependency can abort the requested publication and its cascade. Inspect the API error's available dependency details (including the cascade path when provided) to identify the blocker. Do not assume partial success, blindly retry unchanged content, change validators, or publish additional records outside the user's authorization. This transaction boundary does not imply that an entire bulk job is atomic; inspect its result separately.
+
 ## `validateNew` / `validateExisting` — preflight without commit
 
 Same input shapes as `create` / `update` respectively, but no commit. Throw the same `ApiError` shape on validation failure.
@@ -98,13 +102,33 @@ Markdown-identical: `# H1`–`###### H6`, paragraphs, `- ` / `1. ` lists (2-spac
 
 **Tables are NOT supported!**
 
-Everything dastdown adds, in one document:
+The following example uses placeholder record IDs; substitute IDs from the original document before an editing round-trip:
 
-\| # Heading {style="display"} ← style trailer on heading line | | Paragraph with ==highlight==, ++underline++, custom mark <m k="footnote-ref">x</m>, and span-internal<br/>linebreak. | {style="lead"} ← paragraph style: own line AFTER | | > Quote body. | {attribution="Oscar Wilde"} ← blockquote attribution: own line AFTER | | `js {highlight=[0,2]} ← highlight 0-indexed; no escapes inside fence | code | ` | | Link with meta: [text](https://x.com){rel="nofollow" target="\_blank"} Record link: [text](dato:item/RECORD_ID){rel="nofollow"} Inline refs: <inlineItem id="…"/>  <inlineBlock id="…"/> | | <block id="…"/> ← root-level only, own line
+````markdown
+# Heading {style="display"}
+
+Paragraph with ==highlight==, ++underline++, <m k="footnote-ref">custom mark</m>, and a<br/>line break.
+{style="lead"}
+
+> Quote body.
+{attribution="Oscar Wilde"}
+
+```js {highlight=[0,2]}
+const first = 1;
+const second = 2;
+console.log(first + second);
+```
+
+[External link](https://example.com){rel="nofollow" target="_blank"}
+[Record link](dato:item/RECORD_ID){rel="nofollow"}
+<inlineItem id="INLINE_RECORD_ID"/> <inlineBlock id="INLINE_BLOCK_ID"/>
+
+<block id="BLOCK_ID"/>
+````
 
 Rules that bite:
 
-- `<block|inlineBlock|inlineItem id="…"/>` and `dato:item/ID`: opaque record refs. Don't invent ids — `parse` throws on unknown `block`/`inlineBlock` ids; create them in Pass 2 (see `editing-records.md`) instead.
+- `<block|inlineBlock|inlineItem id="…"/>` and `dato:item/ID`: opaque record refs. Don't invent ids — `parse(text, original)` throws on unknown `block`/`inlineBlock` ids; create them in Pass 2 (see `editing-records.md`) instead.
 - Mark canonical order outer→inner: `highlight → strikethrough → underline → strong → emphasis → code`; custom marks innermost, alphabetical. Serializer rewrites freely — don't depend on input order.
 - Canonicalization also drops empty spans and coalesces adjacent same-marks spans. `parse(null|undefined)` → `null`; `parse("")` → single empty paragraph.
 

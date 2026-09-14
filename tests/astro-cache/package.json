@@ -1,0 +1,16 @@
+{
+  "name": "validate-astro-cache",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test.mjs"
+  },
+  "devDependencies": {
+    "@astrojs/netlify": "8.2.5",
+    "@astrojs/node": "11.1.5",
+    "@datocms/cda-client": "0.3.2",
+    "@types/node": "24.10.1",
+    "astro": "7.3.2",
+    "typescript": "5.9.3"
+  }
+}
