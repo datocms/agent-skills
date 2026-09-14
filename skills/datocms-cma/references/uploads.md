@@ -4,6 +4,15 @@ Asset management: uploads, metadata, collections (folders), references.
 
 > Endpoint shapes / payloads / TS sigs: `npx datocms cma:docs {uploads|uploadRequest|uploadCollections} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
+## Contents
+
+- Picking upload method
+- Replace a file while keeping its URL
+- 3-step raw flow
+- Helper-only options
+- Metadata: defaults vs per-use overrides
+- `uploads.references(id)` — find what uses asset
+
 ## Picking upload method
 
 CMA upload surface looks large because same operation has different ergonomics per runtime:
@@ -16,7 +25,29 @@ CMA upload surface looks large because same operation has different ergonomics p
 
 _FromLocalFile / FromUrl / FromFileOrBlob_ helpers do all three steps in one call (request signed URL, PUT to S3, create upload record). Use by default; fall back to raw flow when runtime's helper unavailable.
 
-`updateFromLocalFile(id, { localPath })` / `updateFromUrl(id, { url })` / `updateFromFileOrBlob(id, { file })` replace underlying file of existing upload while keeping id and metadata — useful for in-place asset rotation.
+`updateFromLocalFile(id, { localPath })` / `updateFromUrl(id, { url })` / `updateFromFileOrBlob(id, { file })` replace underlying file of existing upload while keeping id and metadata — useful for in-place asset rotation. Replacement generates a new URL by default; preserving the ID does not preserve the URL.
+
+## Replace a file while keeping its URL
+
+When the public URL must stay the same, use `replace_strategy: 'keep_url'` on `uploads.update`. Consult `npx datocms cma:docs uploads update` or the [upload-update documentation](https://www.datocms.com/docs/content-management-api/resources/upload/update) for the operation's options.
+
+Node.js, using an existing client, upload ID, and local file path:
+
+```ts
+import { uploadLocalFileAndReturnPath } from '@datocms/cma-client-node';
+
+const replacementPath = await uploadLocalFileAndReturnPath(client, localPath);
+
+const updatedUpload = await client.uploads.update(
+  uploadId,
+  { path: replacementPath },
+  { replace_strategy: 'keep_url' },
+);
+```
+
+`replace_strategy` belongs in the third argument (query parameters), not the upload attributes. The current `updateFrom*` convenience methods do not forward this option; use the two calls above for URL preservation.
+
+This requires default DatoCMS storage, an equivalent file format, and the same MIME type. Cached copies may still serve the old file during propagation. Uploads sharing the same asset path are also affected, including those in other environments.
 
 ## 3-step raw flow
 
