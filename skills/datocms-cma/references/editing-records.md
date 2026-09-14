@@ -13,6 +13,7 @@ Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.
 ## Contents
 
 - Workflow
+- Verify saved content
 - Imports
 - Typing values you build up in code
 - `Schema.X` is mandatory on every typed call
@@ -29,11 +30,10 @@ Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.
 2. `client.items.find<Schema.M>(id, { nested: true })` — `<Schema.M>` generic is **mandatory**, not optional (see "`Schema.X` is mandatory on every typed call" below). Blocks have `.id`, `.__itemTypeId`, fields under `.attributes` (NOT `block.title`). Every field on `.attributes` typed as nullable (`string | null`, etc.) regardless of validator — generated types reflect what CMA can transport, not whether `required` set. Guard against `null` before passing values to APIs expecting non-nullable type (e.g. `new URL(...)`, string concat that would coerce `null` to `"null"`).
 3. Build w/ `buildBlockRecord<Schema.B>({...})` / `duplicateBlockRecord(...)`.
 4. `client.items.update<Schema.M>(id, { ... })`. Skip unchanged fields.
-5. Read back the same record/version with `nested: true` and verify saved content as described below. A verification failure after an update does not mean the write failed.
 
-### Verify saved content
+## Verify saved content
 
-Keep an independent snapshot of the original read. After updating, check the requested field values against the intended changes and unchanged content against that snapshot, using the same read mode/version. Check block identity, type, attributes, node order, marks, links, other locales, and publication state where relevant.
+Keep an independent snapshot of the original read. After updating, read back the same record/version with `nested: true`. Check requested field values against the intended changes and unchanged content against that snapshot. Check block identity, type, attributes, node order, marks, links, other locales, and publication state where relevant.
 
 Do not compare `JSON.stringify(saved)` with the serialized update payload. Block ID references and partial `buildBlockRecord` payloads expand into full objects on read, including unchanged attributes and response metadata; object-key order is also irrelevant. Compare the relevant values in matching response shapes. Do not strip block attributes or identity just to make equality pass. If post-write verification throws, inspect the saved state before deciding whether any further write is needed; never replay the mutation merely because its verification failed.
 
