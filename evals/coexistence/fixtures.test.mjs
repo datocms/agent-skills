@@ -152,6 +152,52 @@ test("document round-trip and typed block helpers perform all three localized ed
   assert.equal(result.calls.filter((call) => call.method === "items.update" && call.applied).length, 1);
 });
 
+const partialBlockEdit = `
+  const before = await client.items.find<Schema.Article>("article-1", { nested: true, version: "current" });
+  if (!before.body.en) throw new Error("Missing English content");
+  const body = { ...before.body, en: mapNodes(before.body.en, (node) =>
+    isBlockWithItemOfType(Schema.ImageBlock.ID, node)
+      ? { ...node, item: buildBlockRecord<Schema.ImageBlock>({ id: node.item.id, caption: "Summer portrait" }) }
+      : node) };
+  await client.items.update<Schema.Article>(before.id, { body, meta: { current_version: before.meta.current_version } });
+  const saved = await client.items.find<Schema.Article>(before.id, { nested: true, version: "current" });
+`;
+
+const verifySavedBlock = `
+  const previousBlock = before.body.en.document.children[1];
+  const savedBlock = saved.body.en?.document.children[1];
+  if (!savedBlock || !isBlockWithItemOfType(Schema.ImageBlock.ID, savedBlock)
+      || !isBlockWithItemOfType(Schema.ImageBlock.ID, previousBlock)
+      || savedBlock.item.id !== previousBlock.item.id
+      || savedBlock.item.attributes.caption !== "Summer portrait"
+      || savedBlock.item.attributes.image !== previousBlock.item.attributes.image) {
+    throw new Error("Saved block values or identity differ");
+  }
+  if (JSON.stringify(saved.body.it) !== JSON.stringify(before.body.it)
+      || JSON.stringify(saved.body.en?.document.children[0]) !== JSON.stringify(before.body.en.document.children[0])
+      || saved.body.en?.document.children.length !== before.body.en.document.children.length
+      || saved.title !== before.title || saved.untouched !== before.untouched
+      || saved.meta.status !== before.meta.status) throw new Error("Unrelated content changed");
+`;
+
+test("partial block payload equality fails after a correct write while saved-value verification passes", () => {
+  const bad = execute(`${partialBlockEdit}
+    if (JSON.stringify(saved.body) !== JSON.stringify(body)) throw new Error("Raw payload comparison failed");`, initialRecord(), { writable: true });
+  assert.match(bad.errors.join("\n"), /Raw payload comparison failed/);
+  const good = execute(partialBlockEdit + verifySavedBlock, initialRecord(), { writable: true });
+  assert.deepEqual(good.errors, []);
+  assert.deepEqual(good.record, bad.record);
+  assert.equal(good.calls.filter((call) => call.method === "items.update" && call.applied).length, 1);
+  assert.equal(good.calls.filter((call) => call.method === "items.find").length, 2);
+});
+
+test("saved-value verification still rejects actual loss of unrelated localized content", () => {
+  const source = partialBlockEdit.replace("{ body, meta:", "{ body: { ...body, it: null }, meta:") + verifySavedBlock;
+  const result = execute(source, initialRecord(), { writable: true });
+  assert.match(result.errors.join("\n"), /Unrelated content changed/);
+  assert.equal(result.calls.filter((call) => call.method === "items.update" && call.applied).length, 1);
+});
+
 test("scoring observes state and executions rather than trusting completion text", () => {
   const testCase = caseById("explicit-mcp");
   assert.equal(score(testCase, [], initialRecord(), "Done, updated and verified.", 0).passed, false);

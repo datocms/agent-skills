@@ -90,7 +90,7 @@ Combine references only when the task spans their subjects: for example, a local
 
 ## 5. Verify and report
 
-Verify against the same project, environment, and authorized scope. Check the changed values and preservation of unrelated content, locale values, links, and publication state. Publishing is a separate operation and requires authorization. For scripts, validate applicable types, imports/helpers, pagination, and error handling against the chosen runtime contract.
+Verify against the same project, environment, and authorized scope. Check the changed values and preservation of unrelated content, locale values, links, and publication state. Compare saved field values, not serialized update payloads: nested reads expand block IDs and partial block updates into full objects. Publishing is a separate operation and requires authorization. For scripts, validate applicable types, imports/helpers, pagination, and error handling against the chosen runtime contract.
 
 Report what was actually executed and verified, including partial or uncertain outcomes. For local code deliverables, distinguish validation from live execution. Missing local CLI setup is relevant only when that deliverable or selected route needs it.
 
