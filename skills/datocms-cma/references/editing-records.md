@@ -133,13 +133,15 @@ Mutation rules in parent record's `update` call:
 | Operation | Payload form |
 | - | - |
 | **Create** a new block (default) | `buildBlockRecord<Schema.B>({ item_type: Schema.B.REF, ...attrs })` — server assigns the ID |
-| **Create** with a custom ID | `buildBlockRecord<Schema.B>({ id: importedBlockId, item_type: Schema.B.REF, ...attrs })` — valid unused ID, with the block type supplied |
+| **Create** with a custom ID | `buildBlockRecord<Schema.B>({ id: customBlockId, item_type: Schema.B.REF, ...attrs })` — valid unused ID, with the block type supplied |
 | **Update** an existing block | `buildBlockRecord<Schema.B>({ id, ...changedAttrs })` — only the diff; `item_type` is implicit |
 | **Keep** unchanged | Its ID string |
 | **Delete** | Omit it — remove from the array; set `null` for `single_block` |
 | **Reorder** (modular content) | Place IDs / objects in desired order |
 
-Custom IDs are useful when an import needs stable block identities. Supply a DatoCMS public ID in URL-safe base64 UUIDv4 format; it must be unused in the environment. On parent creation, an ID on a nested block creates that block. On parent update, an existing ID must belong to that same parent record, field, and locale; an ID owned elsewhere is rejected. An unused ID still creates a new block and requires `item_type`. A bare ID string only keeps an existing owned block; it cannot create one. These rules apply to nested blocks, not every CMA resource.
+Custom IDs let you choose a new block's identity. Supply a DatoCMS public ID in URL-safe base64 UUIDv4 format that is unused in the environment.
+
+When creating a record, an ID on a nested block object creates that block. When updating a record, you can reuse an existing block ID only if the block is already in that record's same field and locale. Blocks from another record, field, or locale are rejected. An unused ID creates a new block and requires `item_type`. A bare ID string only keeps an existing block in place; it cannot create one. These rules apply only to nested blocks.
 
 ### DAST grammar (structured text)
 
