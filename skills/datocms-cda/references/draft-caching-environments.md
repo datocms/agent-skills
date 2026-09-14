@@ -104,7 +104,7 @@ There are two main approaches to consuming cache tags:
 
 | CDN | Header to set on your response |
 | - | - |
-| Netlify | `Netlify-Cache-Tag` (comma-separated) |
+| Netlify | `Netlify-Cache-Tag` or `Cache-Tag` (comma-separated) |
 | Cloudflare | `Cache-Tag` (comma-separated) |
 | Bunny | `CDN-Tag` (confirm serialization in the selected adapter) |
 | Fastly | `Surrogate-Key` (space-separated) |

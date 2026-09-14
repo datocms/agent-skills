@@ -838,6 +838,8 @@ For webhook payload/CDN header table: `skills/datocms-cda/references/draft-cachi
 
 Keep requests in a server utility, preserving the existing draft cookie helper and token selection. Return the cache header alongside the result; do not put draft tokens in public configuration.
 
+The example assumes preview mode exists. For a published-only project, omit the draft helper and draft token, use the published token, and set `includeDrafts: false`. Preserve authenticated preview handling when already configured; do not add preview mode just to enable caching.
+
 **File:** `server/utils/fetchWithCacheTags.ts`
 
 ```ts

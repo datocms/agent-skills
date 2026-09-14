@@ -802,159 +802,138 @@ Key points:
 
 ## Cache Tags (Optional)
 
-CDN-first cache tag invalidation for Astro. Forwards DatoCMS cache tags to CDN, purges only affected pages when content changes.
+Use native route caching when the installed Astro 7+ version and hosting adapter support it. Preserve a working older integration; adding cache tags does not require an Astro upgrade or hosting migration. SSR/on-demand rendering is needed to tag request-time responses; prerendered pages still need their existing rebuild strategy.
 
-### When to Use
+### Astro 7 provider configuration
 
-- Astro site deployed behind CDN supporting tag-based purging (Netlify, Cloudflare, Fastly, Bunny)
-- Per-record granularity in cache invalidation needed
-- Astro config uses `output: 'server'` or `output: 'hybrid'` (SSR required to set response headers)
-
-For webhook payload structure and CDN header table, see `skills/datocms-cda/references/draft-caching-environments.md` → "Cache Tags".
-
-### Modified Query Function
-
-Switch from `executeQuery` to `rawExecuteQuery` to access `x-cache-tags` response header:
-
-**File:** `src/lib/datocms/executeQuery.ts`
+Keep the current adapter and add its compatible cache provider. For example, on Netlify:
 
 ```ts
-import { rawExecuteQuery } from '@datocms/cda-client';
-import {
-  DATOCMS_DRAFT_CONTENT_CDA_TOKEN,
-  DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN,
-} from 'astro:env/server';
-import type { TadaDocumentNode } from 'gql.tada';
+import { defineConfig } from 'astro/config';
+import { cacheNetlify } from '@astrojs/netlify/cache';
 
-export async function executeQueryWithCacheTags<Result, Variables>(
-  query: TadaDocumentNode<Result, Variables>,
-  options?: ExecuteQueryWithCacheTagsOptions<Variables>,
-) {
-  const [data, response] = await rawExecuteQuery(query, {
-    variables: options?.variables,
-    excludeInvalid: true,
-    includeDrafts: options?.includeDrafts,
-    token: options?.includeDrafts
-      ? DATOCMS_DRAFT_CONTENT_CDA_TOKEN
-      : DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN,
-    returnCacheTags: !options?.includeDrafts,
-    requestInitOptions: options?.includeDrafts ? { cache: 'no-store' } : undefined,
-  });
-
-  const cacheTags = response.headers.get('x-cache-tags') ?? '';
-
-  return { data, cacheTags, includeDrafts: Boolean(options?.includeDrafts) };
-}
-
-type ExecuteQueryWithCacheTagsOptions<Variables> = {
-  variables?: Variables;
-  includeDrafts?: boolean;
-};
-```
-
-### Setting CDN Headers
-
-Use `createPageCacheTags` from the [manual CDN adapter reference](cache-tag-adapters.md). Collect every query contributing to the response before setting headers once:
-
-```astro
----
-import { createPageCacheTags } from '~/lib/datocms/cache-tags';
-import { executeQueryWithCacheTags } from '~/lib/datocms/executeQuery';
-import { isDraftModeEnabled } from '~/lib/draftMode';
-
-const collector = createPageCacheTags();
-const includeDrafts = isDraftModeEnabled(Astro.cookies);
-const results = await Promise.all([
-  executeQueryWithCacheTags(pageQuery, { includeDrafts }),
-  executeQueryWithCacheTags(navigationQuery, { includeDrafts }),
-]);
-for (const result of results) collector.add(result.cacheTags, result.includeDrafts);
-for (const [name, value] of Object.entries(collector.headers('cloudflare'))) {
-  Astro.response.headers.set(name, value);
-}
----
-<!-- Render results -->
-```
-
-Choose the actual CDN. If child components fetch additional data, share a request-local collector and finish those queries before committing headers; streaming can otherwise omit their tags. Keep draft requests out of shared caches before lookup. Preserve the existing rendering/adapter configuration.
-
-### Webhook Handler
-
-Implement the [purge adapter contract](cache-tag-adapters.md#purge-adapter-contract), including its failure handling and completion requirements.
-
-**File:** `src/pages/api/invalidate-cache.ts`
-
-Receives DatoCMS cache tag invalidation webhook and calls CDN's purge API:
-
-```ts
-import { purgeInBatches } from '~/lib/datocms/cache-tags';
-import { purgeBatch, purgeBatchSize } from '~/lib/datocms/purge-adapter';
-import type { APIRoute } from 'astro';
-import { CACHE_INVALIDATION_WEBHOOK_SECRET } from 'astro:env/server';
-
-export const POST: APIRoute = async ({ request }) => {
-  const authHeader = request.headers.get('authorization');
-
-  if (!CACHE_INVALIDATION_WEBHOOK_SECRET || authHeader !== `Bearer ${CACHE_INVALIDATION_WEBHOOK_SECRET}`) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
-  }
-
-  const body = await request.json();
-  const tags: string[] = body?.entity?.attributes?.tags;
-  if (!Array.isArray(tags) || tags.some((tag) => typeof tag !== 'string' || !tag)) {
-    return Response.json({ error: 'Invalid tags' }, { status: 400 });
-  }
-
-  if (tags.length === 0) {
-    return new Response(JSON.stringify({ purged: false }));
-  }
-
-  try {
-    await purgeInBatches(tags, purgeBatchSize, purgeBatch);
-  } catch {
-    return Response.json({ error: 'Cache invalidation failed' }, { status: 502 });
-  }
-
-  return new Response(JSON.stringify({ purged: true, tags }));
-};
-```
-
-### Astro Config Cache Tags Addition
-
-Add webhook secret and CDN-specific env vars to `astro.config.mjs`:
-
-```js
 export default defineConfig({
-  env: {
-    schema: {
-      // ... existing schema ...
-      CACHE_INVALIDATION_WEBHOOK_SECRET: envField.string({
-        context: 'server',
-        access: 'secret',
-      }),
-      // CDN-specific (example for Fastly):
-      // FASTLY_SERVICE_ID: envField.string({
-      //   context: 'server',
-      //   access: 'secret',
-      // }),
-      // FASTLY_KEY: envField.string({
-      //   context: 'server',
-      //   access: 'secret',
-      // }),
-    },
-  },
+  // Preserve the existing adapter, output, env schema, and other configuration.
+  cache: { provider: cacheNetlify() },
 });
 ```
 
-### Cache Tags Environment Variables
+Cloudflare and Vercel expose corresponding `cacheCloudflare` / `cacheVercel` helpers from their adapter's `/cache` entrypoint. Check installed adapter compatibility; these CDN providers may still be experimental even though Astro 7's route-cache API is stable. A memory provider is only suitable for a single instance and needs its own preview bypass before a cache lookup. Do not substitute it for a distributed production cache.
 
+Configure the hosting cache to bypass requests carrying the project's preview cookie **before lookup**, and keep preview/authentication endpoints uncached. Origin response headers cannot undo a hit already served by a CDN. Preserve the existing authenticated draft-mode cookie; do not grant preview access from a query parameter.
+
+### Collect every query dependency
+
+Adapt the existing query wrapper to accept the request context. `cache.set({ tags })` accumulates tags from page, layout, and nested-component queries within that request. Keep tags opaque and do not store them in module-global state. The example uses a string query for brevity; retain existing typed documents, environment selection, and Content Link options when extending a working wrapper.
+
+The examples below assume preview mode exists. For a published-only project, omit the draft helper, draft token, and draft-specific branches in the query wrapper and middleware; use the published token with `includeDrafts: false`. Preserve authenticated preview handling when already configured; do not add preview mode just to enable caching.
+
+**File:** `src/lib/datocms/executeQueryWithCacheTags.ts`
+
+```ts
+import type { APIContext } from 'astro';
+import { rawExecuteQuery } from '@datocms/cda-client';
+import { DATOCMS_DRAFT_CONTENT_CDA_TOKEN, DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN } from 'astro:env/server';
+import { isDraftModeEnabled } from '../draftMode';
+
+type QueryContext = Pick<APIContext, 'cookies' | 'cache'>;
+
+export async function executeQueryWithCacheTags<Result, Variables = Record<string, unknown>>(
+  context: QueryContext, query: string, variables?: Variables,
+): Promise<Result> {
+  const includeDrafts = isDraftModeEnabled(context.cookies);
+  const [data, response] = await rawExecuteQuery<Result, Variables>(query, {
+    variables, includeDrafts, excludeInvalid: true,
+    token: includeDrafts ? DATOCMS_DRAFT_CONTENT_CDA_TOKEN : DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN,
+    returnCacheTags: !includeDrafts,
+    requestInitOptions: { cache: 'no-store' },
+  });
+  if (includeDrafts) {
+    context.cache.set(false);
+  } else if (context.cache.enabled) {
+    const tags = (response.headers.get('x-cache-tags') ?? '').split(/\s+/).filter(Boolean);
+    context.cache.set({ maxAge: 3600, tags }); // Keep the project's chosen freshness policy.
+  }
+  return data;
+}
 ```
-CACHE_INVALIDATION_WEBHOOK_SECRET=   # Shared secret to verify webhook requests
-# CDN-specific vars (uncomment for your CDN):
-# FASTLY_SERVICE_ID=                 # Fastly service ID
-# FASTLY_KEY=                        # Fastly API key
+
+Call `executeQueryWithCacheTags(Astro, query, variables)` from pages **and nested components** contributing to the response. Keep draft responses private and tag-free. Do not subsequently call `cache.set({...})` on a draft request: it can re-enable caching.
+
+### Finalize headers after nested queries
+
+Astro can stream a response before nested components finish. Integrate this step into existing middleware for GET HTML responses on routes using the cache-tagged query wrapper. Replace the illustrative `/articles` route predicate with those application routes, including routes with nested-component queries. Buffering delays the first byte and is unsuitable for streaming endpoints or large downloads; other responses pass through without buffering.
+
+**File:** `src/middleware.ts`
+
+```ts
+import { defineMiddleware } from 'astro:middleware';
+import { isDraftModeEnabled } from './lib/draftMode';
+
+// Adapt this predicate to the application's cache-tagged content routes.
+function usesDatoCacheTags(pathname: string): boolean {
+  return pathname === '/articles' || pathname.startsWith('/articles/');
+}
+
+export const onRequest = defineMiddleware(async (context, next) => {
+  const shouldBuffer = context.request.method === 'GET' && usesDatoCacheTags(context.url.pathname);
+  const draft = isDraftModeEnabled(context.cookies);
+  if (draft) context.cache.set(false);
+  const response = await next();
+  const isHtml = response.headers.get('content-type')?.includes('text/html');
+  if (!isHtml) return response;
+  const body = shouldBuffer ? await response.arrayBuffer() : undefined;
+  if (draft || response.status !== 200) {
+    context.cache.set(false);
+    response.headers.set('Cache-Control', 'private, no-store');
+  }
+  if (!shouldBuffer) return response;
+  return new Response(body, {
+    status: response.status, statusText: response.statusText, headers: response.headers,
+  });
+});
 ```
 
-### Cache Tags Dependencies
+### Authenticated invalidation
 
-No additional dependencies — `rawExecuteQuery` provided by `@datocms/cda-client` (should already be installed).
+Keep `CACHE_INVALIDATION_WEBHOOK_SECRET` as a secret server-side field in the existing Astro env schema. Configure the DatoCMS `cda_cache_tags` / `invalidate` webhook to use `Authorization: Bearer <secret>`. Use the installed provider's invalidation support; batch requests to its limits and configure any required provider credentials. Do not swallow provider failures or mark an unconfigured adapter complete.
+
+**File:** `src/pages/api/invalidate-cache.ts`
+
+```ts
+import type { APIRoute } from 'astro';
+import { CACHE_INVALIDATION_WEBHOOK_SECRET } from 'astro:env/server';
+
+export const POST: APIRoute = async ({ request, cache }) => {
+  cache.set(false);
+  const headers = { 'Cache-Control': 'private, no-store' };
+  if (!CACHE_INVALIDATION_WEBHOOK_SECRET || request.headers.get('authorization') !== `Bearer ${CACHE_INVALIDATION_WEBHOOK_SECRET}`) {
+    return new Response('Unauthorized', { status: 401, headers });
+  }
+  let body;
+  try { body = await request.json(); } catch { return new Response('Invalid JSON', { status: 400, headers }); }
+  const tags = body?.entity?.attributes?.tags;
+  if (!Array.isArray(tags) || tags.some(tag => typeof tag !== 'string' || !tag)) {
+    return new Response('Invalid tags', { status: 400, headers });
+  }
+  if (!cache.enabled) return new Response('Cache provider unavailable', { status: 503, headers });
+  try {
+    await cache.invalidate({ tags: [...new Set<string>(tags)] });
+  } catch {
+    return new Response('Invalidation failed', { status: 502, headers });
+  }
+  return Response.json({ invalidated: tags.length > 0 }, { headers });
+};
+```
+
+The selected provider owns serialization and API calls. If it does not handle the provider's purge limits/retries, add a bounded adapter at that boundary; a failed purge must remain an error for webhook redelivery. Content webhooks do not cover deployments: preserve automatic host deployment invalidation or the existing deployment purge workflow.
+
+### Older integrations and verification
+
+For older Astro versions, retain the existing request wrapper, CDN response headers, and authenticated purge adapter. Collect the union from all contributing queries before setting headers, serialize according to the selected CDN, and exclude drafts. Do not add a second independent cache/purge mechanism beside a working one.
+
+For this manual CDN path, use the [collector and purge adapter reference](cache-tag-adapters.md): share `createPageCacheTags` across the request, finalize headers after every contributing query, and use `purgeInBatches` with the selected provider's concrete adapter. Keep draft requests uncached and propagate purge failures. Skip these manual helpers when using the native provider above.
+
+Run a production build and the adapter's production preview/runtime: development mode does not exercise caching. Verify tags from both a page query and a delayed nested-component query, authenticated invalidation and provider failures, then warm a published URL and request the **same URL** with the preview cookie to verify lookup bypass and uncached draft output. Check the deployed host's rules separately; a local fixture cannot prove CDN configuration.
+
+See [DatoCMS's Astro cache guide](https://www.datocms.com/docs/astro/using-cache-tags) and [Astro route caching](https://docs.astro.build/en/guides/caching/) for the current provider APIs.
