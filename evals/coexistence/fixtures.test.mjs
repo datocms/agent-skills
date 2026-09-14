@@ -1,14 +1,14 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
 import { cases, expectedRecord, initialRecord, TARGET } from "./cases.mjs";
 import { execute } from "./runtime.mjs";
-import { score } from "./run.mjs";
+import { externalSkillOverrides, score } from "./run.mjs";
 
 const sourceDir = dirname(fileURLToPath(import.meta.url));
 const caseById = (id) => {
@@ -18,6 +18,27 @@ const caseById = (id) => {
 };
 const toolEvent = (name, extra = {}) => ({ kind: "tool", role: "datocms", name, args: {}, isError: false, output: "", ...extra });
 const writeEvent = (route = "mcp") => ({ kind: "execution", route, name: "script://edit.ts", errors: [], calls: [{ method: "items.update", id: "article-1", values: { title: "Summer update" }, applied: true }] });
+
+test("host-skill isolation disables actual entrypoint files, including symlinks", () => {
+  const root = mkdtempSync(join(tmpdir(), "coexistence-skills-"));
+  try {
+    const skills = join(root, "skills"), external = join(root, "external");
+    mkdirSync(skills); mkdirSync(external);
+    writeFileSync(join(external, "SKILL.md"), "# External skill");
+    symlinkSync(external, join(skills, "linked"), "dir");
+    symlinkSync(skills, join(skills, "cycle"), "dir");
+    const overrides = externalSkillOverrides([skills]);
+    assert.deepEqual(new Set(overrides.map((entry) => entry.path)), new Set([realpathSync(join(external, "SKILL.md")), join(skills, "linked", "SKILL.md")]));
+    assert.ok(overrides.every((entry) => entry.enabled === false));
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test("script logging accepts mixed primitive and nullable field values", () => {
+  const result = execute('const item = await client.items.find<Schema.Article>("article-1"); console.log(null, undefined, true, 3, "text", item.body.it);', initialRecord(), { writable: false });
+  assert.deepEqual(result.errors, []);
+  assert.match(result.output[0], /null.*true.*3.*text/);
+  assert.deepEqual(result.record, initialRecord());
+});
 
 async function withServer(testCase, role, run) {
   const directory = mkdtempSync(join(tmpdir(), "coexistence-unit-"));
@@ -67,6 +88,20 @@ test("unchanged record expectations cover migration and unavailable connections"
   for (const id of ["migration-local", "neither-ready", "permission-denied", "current-auth-error", "current-connection-error", "legacy-only"]) {
     assert.deepEqual(expectedRecord(caseById(id)), initialRecord(), id);
   }
+});
+
+test("saved migration artifacts can be read back without executing them", async () => {
+  await withServer(caseById("migration-local"), "workspace", async ({ call, state }) => {
+    const path = "migrations/20260914-add-subtitle.ts";
+    const content = "export default async function (client) { /* review only */ }";
+    assert.ok(!(await call("write_file", { path, content })).isError);
+    const saved = await call("read_file", { path });
+    assert.ok(!saved.isError);
+    assert.equal(saved.content[0].text, content);
+    assert.deepEqual(state().record, initialRecord());
+    assert.equal(state().writes, 0);
+    assert.ok((await call("read_file", { path: "../state.json" })).isError);
+  });
 });
 
 test("runtime executes typed synthetic edits and preserves effects before a later error", () => {
@@ -231,7 +266,7 @@ const scoreMigration = (content, path = caseById("migration-local").artifact) =>
 );
 
 test("migration scoring accepts the requested field using its model key or an explicit ID lookup", () => {
-  for (const source of [migrationSource(), migrationSource("article.id", "const article = await client.itemTypes.find('article');")]) {
+  for (const source of [migrationSource(), migrationSource().replace("validators: {},", ""), migrationSource("article.id", "const article = await client.itemTypes.find('article');")]) {
     const result = scoreMigration(source);
     assert.equal(result.passed, true, result.failures.join("\n"));
   }
@@ -248,6 +283,8 @@ test("migration scoring rejects wrong paths, comment-only artifacts and invalid 
     [valid.replace("api_key: 'subtitle'", "api_key: 'title'")],
     [valid.replace("field_type: 'string'", "field_type: 'text'")],
     [valid.replace("validators: {}", "validators: { required: {} }")],
+    [valid.replace("validators: {}", "required: false")],
+    [valid.replace("validators: {}", "required: false, validators: {}")],
     [valid.replace("await client.fields.create", "return; await client.fields.create")],
     [migrationSource("'unrelated_model'")],
     [migrationSource("article.id", "const article = await client.itemTypes.find('unrelated_model');")],
@@ -312,6 +349,35 @@ test("CLI fixture rejects wrong environment and supports ordinary single calls",
     const updated = await call("exec_command", { cmd: 'npx datocms cma:call items update article-1 --environment sandbox --data=\'{"title":"Summer update"}\'' });
     assert.notEqual(updated.isError, true, updated.content[0].text);
     assert.deepEqual(state().record, expectedRecord(caseById("skills-only-cli")));
+  });
+});
+
+test("CLI documentation actions differ from callable SDK methods", { timeout: 15000 }, async () => {
+  await withServer(caseById("skills-only-cli"), "workspace", async ({ call, state }) => {
+    const invalid = await call("exec_command", { cmd: "npx datocms cma:docs items find" });
+    assert.equal(invalid.isError, true);
+    const actions = await call("exec_command", { cmd: "npx datocms cma:docs items" });
+    assert.match(actions.content[0].text, /self.*client.items.find/);
+    const method = await call("exec_command", { cmd: "npx datocms cma:docs items self" });
+    assert.match(method.content[0].text, /client.items.find<Schema.Article>/);
+    const wrongFlag = await call("exec_command", { cmd: "npx datocms cma:docs items self --environment sandbox" });
+    assert.equal(wrongFlag.isError, true);
+    const wrongMethod = await call("exec_command", { cmd: "npx datocms cma:call items self article-1" });
+    assert.equal(wrongMethod.isError, true);
+    assert.deepEqual(state().record, initialRecord());
+  });
+});
+
+test("CLI JSON flag can suppress output after a successful write", { timeout: 15000 }, async () => {
+  await withServer(caseById("skills-only-cli"), "workspace", async ({ call, state }) => {
+    const result = await call("exec_command", { cmd: 'npx datocms cma:call items update article-1 --environment sandbox --data=\'{"title":"Summer update"}\' --json' });
+    assert.notEqual(result.isError, true);
+    assert.equal(result.content[0].text, "");
+    assert.deepEqual(state().record, expectedRecord(caseById("skills-only-cli")));
+    assert.equal(state().writes, 1);
+    const saved = await call("exec_command", { cmd: "npx datocms cma:call items find article-1 --environment sandbox" });
+    assert.match(saved.content[0].text, /Summer update/);
+    assert.equal(state().writes, 1);
   });
 });
 

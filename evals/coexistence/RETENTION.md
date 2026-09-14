@@ -4,11 +4,13 @@ The first rewrite omitted useful project-detection instructions. Token and coexi
 
 The correction restores existing client/package/configuration detection, existing type-module reuse, explicit CMA credential scope, package-consistent helper/error imports, the secondary-branch migration preference, the locale-backfill reference, explicit CLI argument guards, named error handling, and long-script progress reporting. Shared decisions remain in the entrypoint; runtime-specific details stay in the relevant reference.
 
+The subsequent live-test correction moves the complete Structured Text workflow ahead of the basic block examples so a partial read includes its typed mapper. The parsing example now declares its writable field type explicitly, verified against the real managed CLI workspace without writing data. All 14 retained domain workflows remain present. The retention test permits only that exact type annotation and explanatory-comment change; it still compares the remaining prose and code against the base.
+
 Paths below are relative to `skills/`. “Retained” includes equivalent instructions and existing reference examples; “restored” identifies details added back by the correction. All old line ranges refer to the pinned source above.
 
 | Original lines | Instruction group | Disposition and reachable destination |
 | - | - | - |
-| 1–17 | Skill name, discovery scope, short follow-ups, domain coverage | Name and invocation policy retained. Description intentionally changed to permit optional MCP; domain topics remain in the task map. Existing 37-case trigger result applies because this correction changes no discovery metadata. |
+| 1–17 | Skill name, discovery scope, short follow-ups, domain coverage | Name and invocation policy retained. Description intentionally changed to permit optional MCP; domain topics remain in the task map. A fresh 37-case run covers the clarified token/OAuth setup and schema-inspection-only boundaries. |
 | 20–24 | Default CMA workflow; skip execution for advice; preserve follow-up context; recognize project conventions | Retained in `datocms-cma/SKILL.md` introduction and route selection. Package/configuration/type detection is restored for local application code; CLI detection remains in `datocms-cli/SKILL.md`. |
 | 26 | Absolute MCP ban and unconditional CLI ownership | Intentionally replaced by the approved optional-MCP routing policy. The ban is not preserved. |
 | 28–30 | Reuse known context and avoid broad repeated detection | Retained in CMA route selection and scope establishment. |

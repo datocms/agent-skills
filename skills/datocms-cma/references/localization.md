@@ -4,7 +4,7 @@ Covers working with localized field values and the normalized field value utilit
 
 This file covers the per-locale value shape, `all_locales_required` semantics, and the partial-vs-full-update rule for localized fields.
 
-> In CLI mode, endpoint shapes: `npx datocms cma:docs {items <action>|site update}` (add `--expand-types '*'` for full TS definitions).
+> In CLI mode: `cma:docs items self` documents `client.items.find()` / `cma:call items find`; `cma:docs items update` and `cma:docs site update` document updates. Use `--expand-types <Type>` for a specific declaration.
 
 ## Contents
 

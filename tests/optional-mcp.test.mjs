@@ -56,11 +56,19 @@ function section(tree, title) {
   const heading = tree.children[start];
   let end = start + 1;
   while (end < tree.children.length && !(tree.children[end].type === 'heading' && tree.children[end].depth <= heading.depth)) end++;
-  return tree.children.slice(start, end).map(semanticTree);
+  return tree.children.slice(start, end).map(semanticTree).map((node) => {
+    if (node.type !== 'code') return node;
+    // One reviewed type correction leaves the parsing/update workflow unchanged.
+    // All other code and prose must still match the base exactly.
+    return { ...node, value: node.value.replace(
+      '  // `parse` reuses the original `item` for surviving block/inlineBlock IDs.\n  // Use the writable field type when continuing through `mapNodes`.\n  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    parse(edited, currentItem.content);',
+      '  // `content` keeps the static type of `currentItem.content` and reuses the original\n  // `item` object for every block/inlineBlock whose id survives the edit.\n  const content = parse(edited, currentItem.content);',
+    ) };
+  });
 }
 
-// These domain workflows are deliberately unchanged by the execution-routing work.
-// Compare their full prose, lists, tables and code with the reviewed base commit.
+// Preserve domain workflows, allowing only the explicit request-type correction above.
+// Compare their full prose, lists, tables and remaining code with the reviewed base.
 const preservedWorkflows = {
   records: [
     'Selective publish / unpublish',

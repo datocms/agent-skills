@@ -50,7 +50,7 @@ declare function serialize(content: Dast | null): string;
 declare function parse(text: string, original: Dast): Dast;
 declare function parse(text: string): Dast;
 declare function buildBlockRecord<T>(attributes: Partial<T> & {id?: string; item_type?: {type: 'item_type'; id: string}}): BlockInNestedResponse<T>;
-declare const console: { log(...values: object[] | string[]): void };
+declare const console: { log(...values: (object | string | number | boolean | null | undefined)[]): void };
 `;
 
 export function inspectSource(source) {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawn, spawnSync } from "node:child_process";
-import { appendFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -67,7 +67,8 @@ function isRequestedMigration(artifact, testCase) {
     };
     const validators = properties.get("validators");
     if (literalPropertiesOnly && literalEquals("api_key", "subtitle") && literalEquals("field_type", "string")
-      && validators && ts.isObjectLiteralExpression(validators) && validators.properties.length === 0) return true;
+      && !properties.has("required")
+      && (!validators || (ts.isObjectLiteralExpression(validators) && validators.properties.length === 0))) return true;
   }
   return false;
 }
@@ -153,21 +154,24 @@ function configuredModel() {
   if (!model) throw Error("No explicit configured model found. Pass --model to select the same model for all arms.");
   return { model, effort: value("model_reasoning_effort") };
 }
-function externalSkillOverrides() {
-  const found = [];
+export function externalSkillOverrides(roots = [join(process.env.CODEX_HOME ?? join(homedir(), ".codex"), "skills"), join(homedir(), ".agents", "skills")]) {
+  const found = new Set(), seen = new Set();
   function walk(path, depth = 0) {
     if (!existsSync(path) || depth > 4) return;
+    const canonical = realpathSync(path);
+    if (seen.has(canonical)) return;
+    seen.add(canonical);
     for (const entry of readdirSync(path, { withFileTypes: true })) {
-      if (entry.isDirectory()) {
-        const directory = join(path, entry.name);
-        if (existsSync(join(directory, "SKILL.md"))) found.push({ path: directory, enabled: false });
+      const directory = join(path, entry.name);
+      if (existsSync(directory) && statSync(directory).isDirectory()) {
+        const file = join(directory, "SKILL.md");
+        if (existsSync(file)) { found.add(file); found.add(realpathSync(file)); }
         else walk(directory, depth + 1);
       }
     }
   }
-  walk(join(process.env.CODEX_HOME ?? join(homedir(), ".codex"), "skills"));
-  walk(join(homedir(), ".agents", "skills"));
-  return found;
+  roots.forEach((root) => walk(root));
+  return [...found].sort().map((path) => ({ path, enabled: false }));
 }
 function toml(value) {
   if (Array.isArray(value)) return `[${value.map(toml).join(",")}]`;
@@ -234,7 +238,7 @@ export async function runOne({ testCase, arm, repetition, settings, output, base
     "features.computer_use": false, "features.image_generation": false,
     "features.workspace_dependencies": false, "features.code_mode": false,
     "features.code_mode_host": true, "features.tool_suggest": false,
-    "skills.config": externalSkillOverrides(), "skills.max_context_tokens": 1,
+    "skills.config": externalSkillOverrides(),
     tool_output_token_limit: testCase.long ? 45000 : 16000,
     developer_instructions: instruction,
   };

@@ -30,6 +30,8 @@ Setting `singleton: true` on model causes DatoCMS to **lazily auto-create** sing
 
 ## Validator payload gotchas
 
+Requiredness is a validator, not a top-level field property: use `validators: { required: {} }` for a required field, or `validators: {}` for a new optional field. Do not send `required: false` to `fields.create()`.
+
 `field.validators` is a per-`field_type` map — never copy a validator set between field types. Use the selected mode's documentation for field methods or the [field doc § Validators](https://www.datocms.com/docs/content-management-api/resources/field#validators) for the authoritative keys and exact shapes. For validator and editor **choices** rather than payload mechanics, load `../../datocms-content-modeling/references/field-configuration.md`.
 
 The names most often confused are `length` (characters on string/text/slug/structured text) vs `size` (linked records or Modular Content blocks), `number_range` (not `numeric_range`), and the block allowlists `rich_text_blocks` / `single_block_blocks`. The non-obvious reference-cascade, Structured Text, slug, and localized-default mechanics remain below.

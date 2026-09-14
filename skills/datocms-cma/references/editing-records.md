@@ -4,7 +4,7 @@ Mutate record fields — block-bearing fields (Modular Content `rich_text`, Sing
 
 This file owns workflow: peek-then-mutate ordering, typed guards, structured-text Pass 1 → Pass 2 → root-append invariant.
 
-> In CLI mode, endpoint shapes for `items.*`: `npx datocms cma:docs items <action>` (add `--expand-types '*'` for full TS definitions).
+> In CLI mode: `cma:docs items self` documents `client.items.find()` / `cma:call items find`; `cma:docs items update` documents `client.items.update()`. Use `--expand-types <Type>` for a specific declaration.
 
 Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.body) { ... }`. Always pass `Schema.X` as generic to typed helpers; never hand-roll JSON:API.
 
@@ -15,12 +15,13 @@ Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.
 - Workflow
 - Verify saved content
 - Imports
+- Chaining Structured Text helpers
 - Typing values you build up in code
 - `Schema.X` is mandatory on every typed call
 - Prerequisites the workflow assumes
+- Structured text (`structured_text`)
 - Modular content (`rich_text`)
 - Single block (`single_block`)
-- Structured text (`structured_text`)
 - Localized fields and adding a locale
 - Optimistic locking via `meta.current_version`
 
@@ -33,9 +34,11 @@ Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.
 
 ## Verify saved content
 
-Keep an independent snapshot of the original read. After updating, read back the same record/version with `nested: true`. Check requested field values against the intended changes and unchanged content against that snapshot. Check block identity, type, attributes, node order, marks, links, other locales, and publication state where relevant.
+Derive preservation checks from the original values, including `null` and empty values. Preserving an optional asset means keeping its original value, not requiring a populated asset.
 
-Do not compare `JSON.stringify(saved)` with the serialized update payload. Block ID references and partial `buildBlockRecord` payloads expand into full objects on read, including unchanged attributes and response metadata; object-key order is also irrelevant. Compare the relevant values in matching response shapes. Do not strip block attributes or identity just to make equality pass. If post-write verification throws, inspect the saved state before deciding whether any further write is needed; never replay the mutation merely because its verification failed.
+Keep an independent snapshot of the original read. After updating, read back the same record/version with `nested: true`. Compare field/node values by deep equality: serialized text can normalize whitespace or markup, and `===`/`!==` compares object identity across API reads. Check requested field values against the intended changes and unchanged content against that snapshot. Check block identity, type, attributes, node order, marks, links, other locales, and publication state where relevant.
+
+Do not serialize an update payload to compare it with a saved response. Structured Text request types also allow new blocks without IDs, so they are not valid `serialize()` inputs. Block ID references and partial `buildBlockRecord` payloads expand into full objects on read, including unchanged attributes and response metadata; object-key order is also irrelevant. Compare the relevant values in matching response shapes. Do not strip block attributes or identity just to make equality pass. If post-write verification throws, inspect the saved state before deciding whether any further write is needed; never replay the mutation merely because its verification failed.
 
 ## Imports
 
@@ -65,6 +68,19 @@ Every generated `Schema.X` is **both type and runtime value**. Value side expose
 - `Schema.X.REF` — `{ type: "item_type", id } as const`. Use as `item_type:` value in `buildBlockRecord<Schema.X>({ item_type: Schema.X.REF, … })`.
 
 Use these instead of local `const FOO_ID = "…" as const;` literals — guards narrow w/o manual `as const`, refactors / id changes flow from single source.
+
+## Chaining Structured Text helpers
+
+Before chaining `parse` → `mapNodes`, explicitly type the writable document with `FieldValueInRequest`. An inferred response type can select the wrong mapper overload with mixed helper versions. For a localized field, after checking the locale exists:
+
+```ts
+let content: NonNullable<FieldValueInRequest<typeof currentItem, "body">>["en"] =
+  parse(editedText, currentItem.body.en);
+```
+
+Pass this typed variable to `mapNodes` and assign its result back. Keep the original response for inspecting nested attributes; request values also allow block IDs and partial objects. Apply the existing text → typed block edits → root append workflow below.
+
+A compound search predicate such as `(node) => isSpan(node) && node.value === text` may return only `boolean`, losing type narrowing. Before reading `found.node.marks`, check `found && isSpan(found.node)`; use the corresponding guard for other node-specific properties. Guard paragraph children too: they may contain links or inline records. `isParagraph(node)` does not make every child a span with `.value`.
 
 ## Typing values you build up in code
 
@@ -165,66 +181,6 @@ Top-level value is `{ schema: "dast", document: { type: "root", children: [...] 
 
 `block` may only sit at root depth; inside text flow use `inlineBlock`. Line breaks live as literal `\n` inside `span.value` — no dedicated break node. Marks: `'strong' | 'emphasis' | 'code' | 'underline' | 'strikethrough' | 'highlight'`.
 
-## Modular content (`rich_text`)
-
-Each entry is block-id string (keep) OR `buildBlockRecord` result. When mixing both, **declare array w/ request type** so TS unifies union.
-
-Two call styles, same narrowing: curried `isBlockOfType(ID)` returns predicate (use w/ `Array#filter` / `Array#find`); direct `isBlockOfType(ID, b)` checks single block inline (use inside `if`).
-
-```ts
-const page = await client.items.find<Schema.LandingPage>(id, { nested: true });
-const repo = new SchemaRepository(client);
-
-const sections: NonNullable<FieldValueInRequest<typeof page, "sections">> = [];
-
-sections.push(buildBlockRecord<Schema.HeroBlock>({ // ADD
-  item_type: Schema.HeroBlock.REF,
-  headline: "New",
-}));
-
-for (const b of page.sections) {
-  if (b.__itemTypeId === Schema.OldHero.ID) continue; // REMOVE
-  if (isBlockOfType(Schema.Cta.ID, b)) { // EDIT — fields on .attributes
-    sections.push(buildBlockRecord<Schema.Cta>({
-      id: b.id, button_url: b.attributes.button_url + "?utm=x",
-    }));
-    continue;
-  }
-  if (isBlockOfType(Schema.HeroBlock.ID, b)) { // EDIT a nested rich_text on the block
-    const ctas: NonNullable<FieldValueInRequest<typeof b, "ctas">> = [];
-    for (const cta of b.attributes.ctas) {
-      ctas.push(
-        isBlockOfType(Schema.Button.ID, cta) && cta.attributes.label === "Get started"
-          ? buildBlockRecord<Schema.Button>({ id: cta.id, url: "/start-free-trial" })
-          : cta.id, // keep others unchanged → id string
-      );
-    }
-    sections.push(buildBlockRecord<Schema.HeroBlock>({ id: b.id, ctas }));
-    continue;
-  }
-  if (isBlockOfType(Schema.Testimonial.ID, b)) { // DUPLICATE
-    sections.push(b.id);
-    sections.push(await duplicateBlockRecord<Schema.Testimonial>(b, repo));
-    continue;
-  }
-  sections.push(b.id); // KEEP → id string
-}
-
-await client.items.update<Schema.LandingPage>(page.id, { sections });
-```
-
-## Single block (`single_block`)
-
-```ts
-await client.items.update<Schema.Product>(id, {
-  hero: buildBlockRecord<Schema.Hero>({ id: currentItem.hero!.id, headline: "X" }), // edit
-});
-await client.items.update<Schema.Product>(id, { hero: null }); // remove
-await client.items.update<Schema.Product>(id, { // duplicate
-  hero: await duplicateBlockRecord<Schema.Hero>(currentItem.hero!, repo),
-});
-```
-
 ## Structured text (`structured_text`)
 
 Wrap in `if (currentItem.content) { ... }`. Pass **original response** into `mapNodes` / `parse`.
@@ -260,9 +216,10 @@ if (currentItem.content) {
   const text = serialize(currentItem.content);
   const edited = /* … LLM / regex / diff-merge on `text` … */ text;
 
-  // `content` keeps the static type of `currentItem.content` and reuses the original
-  // `item` object for every block/inlineBlock whose id survives the edit.
-  const content = parse(edited, currentItem.content);
+  // `parse` reuses the original `item` for surviving block/inlineBlock IDs.
+  // Use the writable field type when continuing through `mapNodes`.
+  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =
+    parse(edited, currentItem.content);
 
   await client.items.update<Schema.Article>(currentItem.id, { content });
 }
@@ -340,6 +297,66 @@ if (currentItem.content) {
 ### Post-walk — root-level appends
 
 Example's tail covers post-walk hook: `content.document.children.push({ type: "paragraph", ... })` for fresh top-level prose node, `push({ type: "block", item: await duplicateBlockRecord<Schema.Warn>(found.node.item, repo) })` for fresh top-level block. `mapNodes` can't splat at root, so root-level inserts always live here. For duplication, source donor via `findFirstNode` on **original** `currentItem.content` — Pass 2 may have rewritten `node.item` on mapped tree.
+
+## Modular content (`rich_text`)
+
+Each entry is block-id string (keep) OR `buildBlockRecord` result. When mixing both, **declare array w/ request type** so TS unifies union.
+
+Two call styles, same narrowing: curried `isBlockOfType(ID)` returns predicate (use w/ `Array#filter` / `Array#find`); direct `isBlockOfType(ID, b)` checks single block inline (use inside `if`).
+
+```ts
+const page = await client.items.find<Schema.LandingPage>(id, { nested: true });
+const repo = new SchemaRepository(client);
+
+const sections: NonNullable<FieldValueInRequest<typeof page, "sections">> = [];
+
+sections.push(buildBlockRecord<Schema.HeroBlock>({ // ADD
+  item_type: Schema.HeroBlock.REF,
+  headline: "New",
+}));
+
+for (const b of page.sections) {
+  if (b.__itemTypeId === Schema.OldHero.ID) continue; // REMOVE
+  if (isBlockOfType(Schema.Cta.ID, b)) { // EDIT — fields on .attributes
+    sections.push(buildBlockRecord<Schema.Cta>({
+      id: b.id, button_url: b.attributes.button_url + "?utm=x",
+    }));
+    continue;
+  }
+  if (isBlockOfType(Schema.HeroBlock.ID, b)) { // EDIT a nested rich_text on the block
+    const ctas: NonNullable<FieldValueInRequest<typeof b, "ctas">> = [];
+    for (const cta of b.attributes.ctas) {
+      ctas.push(
+        isBlockOfType(Schema.Button.ID, cta) && cta.attributes.label === "Get started"
+          ? buildBlockRecord<Schema.Button>({ id: cta.id, url: "/start-free-trial" })
+          : cta.id, // keep others unchanged → id string
+      );
+    }
+    sections.push(buildBlockRecord<Schema.HeroBlock>({ id: b.id, ctas }));
+    continue;
+  }
+  if (isBlockOfType(Schema.Testimonial.ID, b)) { // DUPLICATE
+    sections.push(b.id);
+    sections.push(await duplicateBlockRecord<Schema.Testimonial>(b, repo));
+    continue;
+  }
+  sections.push(b.id); // KEEP → id string
+}
+
+await client.items.update<Schema.LandingPage>(page.id, { sections });
+```
+
+## Single block (`single_block`)
+
+```ts
+await client.items.update<Schema.Product>(id, {
+  hero: buildBlockRecord<Schema.Hero>({ id: currentItem.hero!.id, headline: "X" }), // edit
+});
+await client.items.update<Schema.Product>(id, { hero: null }); // remove
+await client.items.update<Schema.Product>(id, { // duplicate
+  hero: await duplicateBlockRecord<Schema.Hero>(currentItem.hero!, repo),
+});
+```
 
 ## Localized fields and adding a locale
 

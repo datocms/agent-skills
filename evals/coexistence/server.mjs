@@ -111,8 +111,9 @@ function runSource(state, source, route, name, writable, tokens) {
 function readFile(state, path) {
   const absolute = resolve(state.workspace, path);
   const local = relative(state.workspace, absolute);
-  if (local.startsWith("..") || isAbsolute(local) || !existsSync(absolute)) throw Error(`No fixture file: ${path}`);
-  const text = readFileSync(absolute, "utf8");
+  if (local.startsWith("..") || isAbsolute(local)) throw Error(`No fixture file: ${path}`);
+  const text = state.artifacts?.[local] ?? (existsSync(absolute) ? readFileSync(absolute, "utf8") : undefined);
+  if (text === undefined) throw Error(`No fixture file: ${path}`);
   log({ kind: "reference", path: local, tokens: encode(text).length, sha256: createHash("sha256").update(text).digest("hex") });
   return text;
 }
@@ -132,14 +133,24 @@ function execFixture(state, command) {
   if (/^\s*(?:npx\s+)?datocms\s+projects:list\b/.test(command)) return json([{ id: TARGET.site_id, name: "Fixture project" }]);
   if (/^\s*(?:npx\s+)?datocms\s+schema:inspect\b/.test(command)) return schemaText(state);
   const methods = command.match(/^\s*(?:npx\s+)?datocms\s+cma:docs\s+(\w+)(?:\s+(\w+))?/);
-  if (methods) return methodsText({ methods: [{ resource: methods[1], method: methods[2] }] }, state);
+  if (methods) {
+    if (/--environment(?:=|\s)/.test(command)) throw Error("Nonexistent flag: --environment. cma:docs describes methods without accessing a project.");
+    if (methods[1] === "items") {
+      if (!methods[2]) return "items documentation actions: self (client.items.find), update (client.items.update).";
+      const method = { self: "find", update: "update" }[methods[2]];
+      if (!method) throw Error(`Action "${methods[2]}" not found for resource "items". Run datocms cma:docs items to see available actions.`);
+      return methodsText({ methods: [{ resource: "items", method }] }, state);
+    }
+    return methodsText({ methods: [{ resource: methods[1], method: methods[2] }] }, state);
+  }
   const call = command.match(/^\s*(?:npx\s+)?datocms\s+cma:call\s+items\s+(find|update)\s+["']?([\w-]+)["']?/);
   if (call) {
-    if (call[1] === "find") return runSource(state, `console.log(await client.items.find<Schema.Article>(${JSON.stringify(call[2])}, {nested: true}));`, "cli", "cma:call items.find", false, []);
+    const rendered = (output) => /(?:^|\s)--json(?:\s|$)/.test(command) ? "" : output;
+    if (call[1] === "find") return rendered(runSource(state, `console.log(await client.items.find<Schema.Article>(${JSON.stringify(call[2])}, {nested: true}));`, "cli", "cma:call items.find", false, []));
     const data = command.match(/--data(?:=|\s+)('([^']*)'|"((?:\\.|[^"\\])*)")/);
     if (!data) throw Error("items update requires --data with a quoted JSON/JSON5 object");
     const object = data[2] ?? data[3].replace(/\\"/g, '"');
-    return runSource(state, `console.log(await client.items.update<Schema.Article>(${JSON.stringify(call[2])}, ${object}));`, "cli", "cma:call items.update", true, []);
+    return rendered(runSource(state, `console.log(await client.items.update<Schema.Article>(${JSON.stringify(call[2])}, ${object}));`, "cli", "cma:call items.update", true, []));
   }
   if (/^\s*(?:npx\s+)?datocms\s+migrations:new\b/.test(command)) return "Migration creation is available through workspace.write_file. Use migrations/20260914-add-subtitle.ts; do not run it.";
   if (/^\s*(?:pwd|ls(?:\s+.*)?)\s*$/.test(command)) return "package.json\ndatocms.config.json\nskills/";

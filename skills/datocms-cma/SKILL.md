@@ -6,11 +6,11 @@ description: >-
   imports/exports, CSV scripts, localization, Structured Text and block edits,
   assets, roles/tokens, webhooks, scheduling, environment operations, and typed
   Node.js/TypeScript CMA scripts. Includes short follow-ups such as "publish
-  them" or "fix those slugs", authentication needed for content operations, and
+  them" or "fix those slugs", token/OAuth setup before content operations, and
   model/field changes needing a migration-versus-direct decision or embedded
   in CMA automation. Works with the CLI or an available DatoCMS MCP; neither
-  MCP installation nor local execution is assumed. Route versioned migrations
-  and standalone CLI configuration to `datocms-cli`, GraphQL reads to `datocms-cda`, and
+  MCP installation nor local execution is assumed. Route schema-inspection-only
+  requests, versioned migrations, and standalone CLI configuration to `datocms-cli`, GraphQL reads to `datocms-cda`, and
   frontend or plugin code to their dedicated skills.
 ---
 
@@ -20,21 +20,23 @@ Use this workflow for CMA operations and scripts. For advice or code explanation
 
 ## 1. Select execution before setup
 
-Use only task-relevant capabilities already exposed in the current environment. Available means usable now, not merely installable. Reuse established context; don't run startup connection checks or scan client configuration.
+**CLI is the default whenever usable, even with MCP connected.** Override this only for the user's explicit tool choice or a route already used in this task. An installed or authenticated connection is availability, not an established workflow.
+
+Inspect only task-relevant exposed capabilities. Available means usable now, not merely installable; don't run startup connection checks or scan client configuration.
 
 - **Explicit route:** honor the user's choice of current MCP or CLI, including MCP when CLI is available. A follow-up keeps its established route unless the user changes it.
-- **No preference or established route:** prefer a usable CLI. If current MCP is available and CLI execution is not usable, use MCP without package installation, CLI login, or project linking. Don't bootstrap CLI merely to displace an available MCP connection.
+- **No preference or established route:** when both CLI and current MCP are usable, select CLI. A connected MCP alone is not a request to use it. If only current MCP is usable, select MCP without package installation, CLI login, or project linking. If only CLI is usable, select CLI.
 - **Neither ready:** explain the missing prerequisite appropriate to this environment. Local CLI work may need CLI setup; a client without local execution needs a supported project connection for live operations. MCP is optional, not a prerequisite for all skills.
 - **Local deliverable:** migrations, repo configuration, and application code retain their local development workflow. Remote execution cannot substitute for a versioned migration or create the requested local artifacts. For app/server or unattended CMA code, inspect and reuse existing client configuration and generated types; add setup only when missing and required.
-- **Confirmed legacy MCP:** stop and tell the user to use the current DatoCMS MCP. Include the [current MCP setup link](https://www.datocms.com/docs/mcp-server), even when a current connection is already registered. Do not execute, repair, reinstall, or change the legacy integration. Authentication or connection failure alone is not evidence of legacy software.
+- **Confirmed legacy MCP requested or encountered:** stop execution and direct the user to the [current MCP setup](https://www.datocms.com/docs/mcp-server). Include that setup link in your reply, even when a current connection is registered. Do not execute, repair, reinstall, or change the legacy integration, or fulfill that request through another route. A registered current connection does not authorize switching. Authentication or connection failure alone is not evidence of legacy software.
 
 After choosing:
 
 | Route or deliverable | Load only as needed |
 | - | - |
-| Current MCP | `references/mcp.md`; the exposed tools supply their current runtime contract. |
 | CLI single calls or endpoint documentation | `../datocms-cli/references/direct-cma-calls.md`. |
-| CLI loops, pagination, or dependent calls | `../datocms-cli/references/cma-script.md` for stdin/file mode and runtime globals. |
+| CLI loops, pagination, dependent calls, or localized/block/Structured Text edits | `../datocms-cli/references/cma-script.md` for stdin/file mode and runtime globals. |
+| Current MCP | `references/mcp.md`; the exposed tools supply their current runtime contract. |
 | Missing prerequisites for selected CLI work | **datocms-cli** setup workflow. Always confirm the target project before linking; an inferred single candidate is not consent. |
 | Code constructing its own client (app/server, CI, cron, shared unattended script) | `references/client-setup-and-errors.md` for package choice, token/environment configuration, and error handling. |
 
@@ -82,7 +84,7 @@ Combine references only when the task spans their subjects: for example, a local
 
 - Use the selected runtime's authenticated client, helper availability, and script form. Do not transplant CLI globals, imports, or file-mode conventions into another runtime. For client construction, read credentials from environment variables, never chat or hardcoded strings; use the least privileges needed and explicitly target the sandbox when applicable.
 - Prefer the simplified API. Use raw methods only when the task needs JSON:API payloads or relationship metadata. Use `listPagedIterator()` with `for await...of` for complete collection traversal when available.
-- Inspect then mutate current values in the same script for complex edits. Fetch nested blocks when needed and use typed block helpers. Preserve unrelated fields, locales, blocks, links, and upload metadata; avoid reconstructing whole records from partial reads.
+- For localized, block, or Structured Text edits, use one script that reads then transforms the current record (`cma:script` in CLI mode). Fetch nested blocks when needed and use typed block helpers. Preserve unrelated fields, locales, blocks, links, and upload metadata; avoid reconstructing whole records from partial reads.
 - For Structured Text, follow the editing reference's text round-trip, typed node/block mutation, then root-append order. Preserve existing block identities and references unless replacement is requested.
 - Use precise project types on record calls and helpers. Prefer inference and type guards; never use `any`, `unknown`, or casts that hide a mismatch. Supplied project types need no local generation step. Only local code that needs its own type module follows type-generation guidance.
 - Handle API errors at the operation boundary using the selected runtime's facilities, including `ApiError` and `TimeoutError` when exposed. Report authentication and permission failures accurately; do not bypass them through another route. A timeout or missing write response has an uncertain outcome: inspect resulting state before any retry, and never silently replay that write through another tool.
@@ -90,7 +92,7 @@ Combine references only when the task spans their subjects: for example, a local
 
 ## 5. Verify and report
 
-Verify against the same project, environment, and authorized scope. Check the changed values and preservation of unrelated content, locale values, links, and publication state. Compare saved field values, not serialized update payloads: nested reads expand block IDs and partial block updates into full objects. Publishing is a separate operation and requires authorization. For scripts, validate applicable types, imports/helpers, pagination, and error handling against the chosen runtime contract.
+Verify against the same project, environment, and authorized scope. Compare saved field/node values with an independent snapshot of the original read, using deep equality for objects; object identity and serialized update payloads cannot establish preservation. Nested reads expand block IDs and partial updates into full objects. Check requested changes, unrelated content, locales, links, and publication state. Publishing requires separate authorization. Validate script types, helpers, pagination, and error handling against the chosen runtime contract.
 
 Report what was actually executed and verified, including partial or uncertain outcomes. For local code deliverables, distinguish validation from live execution. Missing local CLI setup is relevant only when that deliverable or selected route needs it.
 

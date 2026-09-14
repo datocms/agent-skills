@@ -16,7 +16,7 @@
     "Guidance and harness wording changed during these six diagnostic sessions; each source snapshot and prompt variant is retained. Do not interpret this as three identical repetitions of final candidate versus base.",
     "No monetary billing or isolated account-limit attribution is available. Provider token counters are recorded as returned, including cached input; they are not unique context size.",
     "A corrected first read script, rejected invalid mutation, and pre-execution type error remain quality failures, even though all final content and publication checks pass.",
-    "The primary environment model count changed from four to one during the run. Captured test commands were scoped to the fork and the two created model IDs were absent from primary; the unrelated count change is unresolved and was not reversed."
+    "The primary environment model count changed from four to one during the run. Captured test commands were scoped to the fork and the two created model IDs were absent from primary; the project owner confirmed on 2026-09-14 that concurrent tests caused the count change. No restoration was attempted."
   ],
   "aggregate": {
     "correctContent": 6,
@@ -41,7 +41,12 @@
     "primaryModelCount": {
       "before": 4,
       "after": 1,
-      "preserved": false
+      "preserved": false,
+      "resolution": {
+        "resolved": true,
+        "source": "Project owner clarification on 2026-09-14",
+        "explanation": "Other tests ran concurrently in the same project."
+      }
     },
     "checks": {
       "allRecordsStillMatch": true,

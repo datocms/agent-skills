@@ -2,8 +2,8 @@ export const BASE_REVISION = "94e4bd8128e52963829f65bce8f202fcd68ac8d6";
 export const MCP_REVISION = "beeca70bdf702461ae8e226bfd9714d8e58f33ac";
 export const TARGET = { site_id: "fixture-project", environment: "sandbox" };
 
-const simple = 'Change the title of article "article-1" to "Summer update". Leave every other field unchanged. Do not publish.';
-const structured = 'In article "article-1", make three edits to the English Structured Text: change the existing greeting span "Hello reader" to "Welcome reader", change the caption of existing image block "block-1" to "Summer portrait", and append a final paragraph containing "See you soon.". Preserve the greeting marks, existing link, block ID and image, all other nodes and fields, and the entire Italian locale. Do not publish.';
+const simple = 'Change the title of the article with record ID "article-1" to "Summer update". Leave every other field unchanged. Do not publish.';
+const structured = 'In the article with record ID "article-1", make three edits to the English Structured Text: change the existing greeting span "Hello reader" to "Welcome reader", change the caption of existing image block "block-1" to "Summer portrait", and append a final paragraph containing "See you soon.". Preserve the greeting marks, existing link, block ID and image, all other nodes and fields, and the entire Italian locale. Do not publish.';
 
 // The same prompts, tool descriptions, records and assertions are used for every arm.
 // "none" is a control with no skill text; it is not a server change.

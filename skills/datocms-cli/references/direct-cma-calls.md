@@ -65,7 +65,7 @@ npx datocms cma:call <resourceCamelCase> <methodCamelCase> [...pathArgs] [--data
 
 ### `cma:docs` — Browse full API reference
 
-Use `cma:docs` for detailed, up-to-date terminal docs. Always matches installed client — never stale.
+`cma:docs <resource>` lists documentation **action names**; `cma:call` takes SDK **method names** from the action's Client Methods section. They can differ: for `items`, docs action `self` maps to method `find`, and `instances` to `list`. Discover the action, then use its documented method for calls.
 
 ```bash
 # List all available resources
@@ -73,6 +73,10 @@ npx datocms cma:docs
 
 # Describe a resource and its actions
 npx datocms cma:docs items
+
+# Read documentation uses "self"; the corresponding SDK method is "find"
+npx datocms cma:docs items self
+npx datocms cma:call items find <ITEM_ID>
 
 # Describe a specific action — description, HTTP, client method signatures
 npx datocms cma:docs items create

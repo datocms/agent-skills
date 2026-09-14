@@ -1,5 +1,5 @@
 # synced_from_name: datocms-cma
-# synced_from_description_sha256: d08623598e7a3646806e46aeddec1687f0919f8a54e10525f889ea6921f014b2
+# synced_from_description_sha256: a84b082d548fef41460c06cacbc5f50179b5fe3be29849c7e248787c1e0dcde3
 interface:
   display_name: "DatoCMS CMA"
   short_description: "Manage DatoCMS content with typed CMA workflows"

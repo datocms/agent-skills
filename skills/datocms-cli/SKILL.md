@@ -130,7 +130,7 @@ If context missing, ask for explicit confirmation before proposing final command
 
 Based on task classification, read appropriate reference files from `references/` directory next to this skill file. Only load what's relevant.
 
-**Always load:**
+**Load only when setup or configuration is needed:**
 
 - `references/cli-setup.md` — Installation, configuration, profiles, global flags, token resolution
 
@@ -203,8 +203,8 @@ Write commands and scripts following mandatory rules:
 
 ### Direct CMA Calls
 
-- Use `npx datocms cma:docs <resource> <action>` to look up endpoint details (request body, parameters, examples) before constructing command
-- Use `npx datocms cma:call <resourceCamelCase> <methodCamelCase> [...pathArgs]` for single-method ad-hoc CMA operations
+- Discover actions with `npx datocms cma:docs <resource>`, then inspect `<action>` for endpoint details. Documentation actions (`self`, `instances`) differ from SDK methods (`find`, `list`).
+- Use `npx datocms cma:call <resourceCamelCase> <methodCamelCase> [...pathArgs]` for simple single-method operations. Use `cma:script` to transform localized/block/Structured Text values.
 - Pass request bodies with `--data '{...}'` and query parameters with `--params '{...}'`
 - Add `--environment` when call must target sandbox environment
 - `cma:call` is **positional** (`<resourceCamelCase> <methodCamelCase>` + URL placeholders as extra positional args). It is **not** REST wrapper: there is no `--endpoint`, `--method`, `--query-params`, or `--body` flag — don't invent these
@@ -214,6 +214,7 @@ Concrete shape, with JSON5 accepted in `--data` / `--params`:
 
 ```bash
 npx datocms cma:call items list --params='{filter: {type: "article"}}'
+npx datocms cma:docs items self # documents client.items.find(); "find" is not a docs action
 npx datocms cma:call items find <ITEM_ID>
 npx datocms cma:call items update <ITEM_ID> --data='{title: "Updated"}'
 npx datocms cma:call items publish <ITEM_ID>
