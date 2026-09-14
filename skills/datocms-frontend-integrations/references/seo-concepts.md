@@ -2,6 +2,8 @@
 
 Shared concepts for DatoCMS SEO metadata rendering across all frameworks. For framework-specific rendering utilities and components, see the dedicated framework reference.
 
+For missing SEO images or fallback precedence, see the CDA [computed SEO tag guidance](../../datocms-cda/references/seo-and-meta.md#_seometatags). Render the returned tags using the framework's existing helpers.
+
 ## GraphQL Query
 
 ```graphql

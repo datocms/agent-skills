@@ -136,6 +136,7 @@ Load these for mixed-feature setup work:
   - `references/web-previews-concepts.md`
   - `references/content-link-concepts.md`
   - `references/realtime-concepts.md`
+  - `references/cache-tag-adapters.md` — manual CDN collection/purge only; skip for Next.js query-ID mappings or native cache providers
 
 ### React references
 

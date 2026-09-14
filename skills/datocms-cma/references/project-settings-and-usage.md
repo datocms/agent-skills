@@ -42,6 +42,14 @@ Cheaper and clearer than catching the `LIMIT_REACHED` error after the fact. Usef
 
 `subscriptionFeatures` `enabled: false` means the API will reject calls that depend on the feature — check before scripting against SSO endpoints, workflow transitions, or locale operations on plans where they're gated.
 
+### Included allowances and paid extras
+
+A successful operation below a hard limit can still exceed the plan's included allowance. Before a batch that adds sandbox environments, collaborators, locales, or models, check the applicable allowance, current usage, and hard limit once per target project for the full planned batch. Reuse current verified information and existing cost authorization; recheck when the planned additions or relevant project state changes.
+
+Where available, `client.publicInfo.find()` exposes `extras.overage_thresholds` with `environments`, `collaborators`, `locales`, and `models` thresholds for paid extras. These describe included allowances, not hard caps or prices. The environment threshold concerns sandboxes, excluding the primary environment. Missing thresholds, unavailable `extras`, or a failed read do not establish that an operation is free; use authorized plan information when needed, and state any remaining uncertainty without escalating credentials.
+
+If the planned additions introduce a cost implication outside the user's existing authorization, explain it before proceeding and obtain authorization for that cost. Existing authorization remains valid. Preserve the chosen migration and rollback workflow; do not automatically delete resources, switch to in-place migrations, or upgrade the plan to handle an allowance issue.
+
 ## White-label is Enterprise-only
 
 `whiteLabelSettings.find()` / `update()` and the white-label fields on `publicInfo` are Enterprise-plan features. On any other plan the call returns 403 (or similar) — gate scripts with a `subscriptionFeatures` check first when they're meant to run across multiple projects of varying plans.

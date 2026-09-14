@@ -19,6 +19,7 @@ This reference provides the standard project structure and configuration files f
 - Local Development
 - Building for Production
 - After Scaffold: first release checklist
+- Version and Package Switching
 - Publishing to npm
 
 ## Recommended Directory Structure
@@ -368,11 +369,24 @@ import styles from './MyComponent.module.css';
 
 ## Local Development
 
+For ordinary development, reuse the existing local setup. Duplicating an installation, disabling or re-enabling it, and switching versions or packages are separate actions for specific needs, not routine development steps. Switch versions only when the task requires installing, testing, or rolling back a published release.
+
+### New installation
+
 1. Install dependencies: `npm install`
 2. Start dev server: `npm run dev` (starts on `http://localhost:5173/`)
 3. In DatoCMS, open the **Plugins** area and use the **private plugin** flow to add a plugin from a URL
 4. Set the entry point URL to `http://localhost:5173/`
 5. The plugin will live-reload as you make changes
+
+### Development copy
+
+When the working installation must remain available:
+
+1. Duplicate it. The independent private copy retains the original entry point, description, permissions, and global configuration. Field editor/addon assignments are not copied; assign only the test fields, preserving their existing settings.
+2. Start the local server and set the duplicate's entry point to `http://localhost:5173/`. Changing the original Marketplace installation's URL instead would convert that installation to private and detach its package/version association.
+3. Accept the offer to disable the original only when intended. Disabling stops execution but retains configuration.
+4. When returning to the original, re-enable it if necessary and restore the test-field assignments.
 
 **Note**: Safari does not properly handle localhost iframes. Use Chrome or Firefox for plugin development.
 
@@ -391,6 +405,12 @@ Once the first local build works, check the official plugin lifecycle docs that 
 - **Additional permissions** — if the plugin needs new capabilities such as `currentUserAccessToken`
 - **Publishing to Marketplace** — if the plugin will be public
 - **Releasing new plugin versions** — when preparing the first versioned release
+
+## Version and Package Switching
+
+- **Install a release:** publishing makes an update available; existing installations must be updated explicitly. Use **Switch to a different version** to select a published version, including a prerelease.
+- **Connect a private plugin:** use **Switch to a Marketplace package** for an already-published package. This retains global configuration and takes the name, description, URL, version, and permissions from the package; it does not publish local code.
+- **Return from a development copy:** plugin names must remain unique. If the original is still installed, return to it instead of converting the duplicate to the same package.
 
 ## Publishing to npm
 

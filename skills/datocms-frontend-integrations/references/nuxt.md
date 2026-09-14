@@ -834,105 +834,71 @@ CDN-first cache tag invalidation. Forwards DatoCMS cache tags to CDN; purges aff
 
 For webhook payload/CDN header table: `skills/datocms-cda/references/draft-caching-environments.md` → "Cache Tags".
 
-### Modified Query Composable
+### Server query wrapper
 
-Switch `executeQuery` → `rawExecuteQuery` to access `x-cache-tags` header. Returns data + cache tags:
+Keep requests in a server utility, preserving the existing draft cookie helper and token selection. Return the cache header alongside the result; do not put draft tokens in public configuration.
 
-**File:** `composables/useQueryWithCacheTags.ts`
+The example assumes preview mode exists. For a published-only project, omit the draft helper and draft token, use the published token, and set `includeDrafts: false`. Preserve authenticated preview handling when already configured; do not add preview mode just to enable caching.
 
-```ts
-import { rawExecuteQuery } from '@datocms/cda-client';
-import type { TadaDocumentNode } from 'gql.tada';
-
-type Options<Variables> = {
-  variables?: Variables;
-};
-
-export async function useQueryWithCacheTags<Result, Variables>(
-  query: TadaDocumentNode<Result, Variables>,
-  options?: Options<Variables>,
-) {
-  const config = useRuntimeConfig();
-
-  const [data, response] = await rawExecuteQuery(query, {
-    token: config.public.datocmsPublishedContentCdaToken,
-    excludeInvalid: true,
-    variables: options?.variables,
-    returnCacheTags: true,
-  });
-
-  const cacheTags = response.headers.get('x-cache-tags') ?? '';
-
-  return { data, cacheTags };
-}
-```
-
-Or use `rawExecuteQuery` directly in Nuxt server route/middleware:
-
-**File:** `server/middleware/cache-tags.ts` (example pattern)
+**File:** `server/utils/fetchWithCacheTags.ts`
 
 ```ts
 import { rawExecuteQuery } from '@datocms/cda-client';
 import type { TadaDocumentNode } from 'gql.tada';
+import type { H3Event } from 'h3';
+import { isDraftModeEnabled } from '~/lib/api/draftMode';
 
 export async function fetchWithCacheTags<Result, Variables>(
+  event: H3Event,
   query: TadaDocumentNode<Result, Variables>,
   variables?: Variables,
 ) {
-  const config = useRuntimeConfig();
-
+  const config = useRuntimeConfig(event);
+  const includeDrafts = isDraftModeEnabled(event);
   const [data, response] = await rawExecuteQuery(query, {
-    token: config.public.datocmsPublishedContentCdaToken,
-    excludeInvalid: true,
-    variables,
-    returnCacheTags: true,
+    variables, includeDrafts, excludeInvalid: true,
+    token: includeDrafts ? config.datocmsDraftContentCdaToken : config.public.datocmsPublishedContentCdaToken,
+    returnCacheTags: !includeDrafts,
+    requestInitOptions: includeDrafts ? { cache: 'no-store' } : undefined,
   });
-
-  const cacheTags = response.headers.get('x-cache-tags') ?? '';
-
-  return { data, cacheTags };
+  return { data, cacheTags: response.headers.get('x-cache-tags'), includeDrafts };
 }
 ```
 
 ### Setting CDN Headers
 
-Set CDN-specific header on response in server routes/pages:
+Use `createPageCacheTags` from the [manual CDN adapter reference](cache-tag-adapters.md). Collect every query contributing to the response before setting headers once:
 
 ```ts
-// In a server route (server/api/...)
+import { createPageCacheTags } from '~/lib/datocms/cache-tags';
+
 export default eventHandler(async (event) => {
-  const { data, cacheTags } = await fetchWithCacheTags(myQuery);
-
-  // Set the CDN-specific header — choose the one matching your CDN:
-  // Netlify / Cloudflare: 'Cache-Tag'
-  // Fastly:               'Surrogate-Key'
-  // Bunny:                'CDN-Tag'
-  setResponseHeader(event, 'Cache-Tag', cacheTags);
-
-  return data;
+  const collector = createPageCacheTags();
+  const results = await Promise.all([
+    fetchWithCacheTags(event, pageQuery),
+    fetchWithCacheTags(event, navigationQuery),
+  ]);
+  for (const result of results) collector.add(result.cacheTags, result.includeDrafts);
+  for (const [name, value] of Object.entries(collector.headers('cloudflare'))) {
+    setResponseHeader(event, name, value);
+  }
+  return results.map(({ data }) => data);
 });
 ```
 
-For pages with `useResponseHeaders` in Nitro:
-
-```ts
-// In a Nuxt page or layout (server-side rendering)
-const { data, cacheTags } = await fetchWithCacheTags(myQuery);
-
-// In server middleware or via useRequestEvent():
-const event = useRequestEvent();
-if (event) {
-  setResponseHeader(event, 'Cache-Tag', cacheTags);
-}
-```
+Use the selected CDN, not the example provider automatically. For SSR pages, share the collector through the request and finalize after all page/layout queries finish. Configure any Nitro/CDN cache lookup to bypass draft requests; response headers cannot undo an earlier cache hit.
 
 ### Webhook Handler
+
+Implement the [purge adapter contract](cache-tag-adapters.md#purge-adapter-contract), including its failure handling and completion requirements.
 
 **File:** `server/api/invalidate-cache.ts`
 
 Receives DatoCMS cache tag invalidation webhook, calls CDN purge API:
 
 ```ts
+import { purgeInBatches } from '~/lib/datocms/cache-tags';
+import { purgeBatch, purgeBatchSize } from '~/lib/datocms/purge-adapter';
 import { ensureHttpMethods } from '~/lib/api/utils';
 
 export default eventHandler(async (event) => {
@@ -941,29 +907,25 @@ export default eventHandler(async (event) => {
   const config = useRuntimeConfig();
 
   const authHeader = getHeader(event, 'authorization');
-  if (authHeader !== `Bearer ${config.cacheInvalidationWebhookSecret}`) {
+  if (!config.cacheInvalidationWebhookSecret || authHeader !== `Bearer ${config.cacheInvalidationWebhookSecret}`) {
     throw createError({ statusCode: 401, message: 'Unauthorized' });
   }
 
   const body = await readBody(event);
-  const tags: string[] = body?.entity?.attributes?.tags ?? [];
+  const tags: string[] = body?.entity?.attributes?.tags;
+  if (!Array.isArray(tags) || tags.some((tag) => typeof tag !== 'string' || !tag)) {
+    throw createError({ statusCode: 400, message: 'Invalid tags' });
+  }
 
   if (tags.length === 0) {
     return { purged: false };
   }
 
-  // Call your CDN's purge API. Example for Fastly:
-  //
-  // await fetch(`https://api.fastly.com/service/${config.fastlyServiceId}/purge`, {
-  //   method: 'POST',
-  //   headers: {
-  //     'Fastly-Key': config.fastlyKey,
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({ surrogate_keys: tags }),
-  // });
-  //
-  // For Netlify, Cloudflare, or Bunny, use their respective purge APIs.
+  try {
+    await purgeInBatches(tags, purgeBatchSize, purgeBatch);
+  } catch {
+    throw createError({ statusCode: 502, message: 'Cache invalidation failed' });
+  }
 
   return { purged: true, tags };
 });

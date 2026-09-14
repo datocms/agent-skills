@@ -104,9 +104,10 @@ There are two main approaches to consuming cache tags:
 
 | CDN | Header to set on your response |
 | - | - |
-| Netlify / Cloudflare | `Cache-Tag` |
-| Bunny | `CDN-Tag` |
-| Fastly | `Surrogate-Key` |
+| Netlify | `Netlify-Cache-Tag` or `Cache-Tag` (comma-separated) |
+| Cloudflare | `Cache-Tag` (comma-separated) |
+| Bunny | `CDN-Tag` (confirm serialization in the selected adapter) |
+| Fastly | `Surrogate-Key` (space-separated) |
 
 ### Cache Invalidation via Webhook
 
@@ -130,25 +131,30 @@ DatoCMS sends a webhook when cache tags need invalidation. Configure it in Proje
 
 The `tags` array contains the opaque cache tags that need purging. Your webhook handler should match these against whatever tags you stored when the content was originally fetched.
 
-**Note:** The `cda_cache_tags` / `invalidate` event type does not support webhook filters — it always fires for all tag changes. To programmatically create this webhook via the CMA, see `skills/datocms-cma/references/webhooks-and-triggers.md` → "Cache Tags Invalidation Webhook".
+**Note:** The `cda_cache_tags` / `invalidate` event type does not support webhook filters — it always fires for all tag changes. To programmatically create this webhook via the CMA, consult `datocms cma:docs webhooks create` for the current endpoint shape.
 
 ### Next.js Cache Tags
 
-Next.js limits each `fetch` call to **64 cache tags**. Since a single DatoCMS query can return hundreds of tags, you cannot directly pass DatoCMS tags to `next: { tags: [...] }`.
+Next.js limits each `fetch` call to **128 cache tags**. A DatoCMS query can return hundreds of tags, so do not assume they fit in `next: { tags: [...] }`. Preserve an existing query-ID mapping when it handles that mismatch.
 
 The solution is to assign each query a stable **Query ID**, tag the fetch with only that ID, and store the mapping from Query ID → DatoCMS tags in a database. The webhook handler then looks up which Query IDs are affected and calls `revalidateTag()` for each.
 
 For the full implementation pattern (replacement `executeQuery`, DB abstraction, webhook route handler), see `skills/datocms-frontend-integrations/references/nextjs.md` → "Cache Tags (Optional)".
 
+### Response tag collection and purge adapters
+
+Collect the union of every contributing query's opaque tags per response, then serialize them for the selected provider. Never truncate returned tags; use an existing indirection strategy or leave the response uncached if the union exceeds provider limits. Draft requests must bypass shared caches before lookup and must not emit purge tags or replace published mappings.
+
+For manual CDN integrations, load the [collector and purge adapter reference](../../datocms-frontend-integrations/references/cache-tag-adapters.md). It contains the reusable helpers, provider limits and failure handling, and deployment invalidation guidance. Next.js query-ID mappings use the framework reference linked above.
+
 ### CDN Caching Behavior
 
-- All CDA queries are cached by DatoCMS's CDN
-- Cache is selectively invalidated when content changes
-- Queries exceeding **8 KB gzip-compressed** bypass the CDN and hit the origin directly
-- Response headers indicate caching status:
-  - `X-Cacheable-On-Cdn` — whether the query is cached on CDN
+- Eligible CDA queries can be cached and selectively invalidated when content changes.
+- `X-Cacheable-On-Cdn` reports eligibility; `CF-Cache-Status: HIT` reports an actual hit.
+- `X-Cacheable-On-Cdn-Query-Length-Limit` reports the internally encoded GET URL's `length/limit`, including query and variables. It is not a gzip-body size. Requests over that limit bypass the CDN.
+- Uncached work is subject to both per-token rate limits and a project-wide concurrency cap. Bound concurrent queries across workers; retries alone do not coordinate them.
 
-**Tip:** Keep queries under the 8 KB gzip limit for best performance. Oversized queries bypass CDN and face stricter rate limits.
+See `client-and-config.md` → "Technical Limits" for diagnostics and the distinction from monthly usage allowances.
 
 ## Content Link / Visual Editing
 
