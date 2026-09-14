@@ -50,12 +50,13 @@ npx datocms cma:call <resourceCamelCase> <methodCamelCase> [...pathArgs] [--data
 
 ### Flags
 
+`cma:call` prints JSON by default. Omit `--json`: CLI 4.2.0 suppresses the result with that flag.
+
 | Flag | Description |
 | - | - |
 | `--data <value>` | JSON/JSON5 string for request body (create/update) |
 | `--params <value>` | JSON/JSON5 string for query params (filtering, pagination) |
 | `-e, --environment <value>` | Target specific environment |
-| `--json` | Machine-readable JSON output (piping) |
 | `--api-token <value>` | Override API token for this call |
 | `--profile <value>` | Use specific CLI profile |
 | `--log-level <level>` | NONE, BASIC, BODY, or BODY_AND_HEADERS |
@@ -303,11 +304,11 @@ Default page size varies by resource. Iterating all pages? Switch to **datocms-c
 
 ## Output and Scripting
 
-Default output: pretty-printed JSON. Use `--json` for piping:
+Pipe the default JSON output directly:
 
 ```bash
-npx datocms cma:call items create --json --data '{...}' | jq '.id'
-npx datocms cma:call itemTypes list --json | jq '.[].api_key'
+npx datocms cma:call items create --data '{...}' | jq '.id'
+npx datocms cma:call itemTypes list | jq '.[].api_key'
 ```
 
 ## When to Escalate

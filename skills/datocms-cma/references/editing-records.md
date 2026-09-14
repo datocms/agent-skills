@@ -8,7 +8,7 @@ This file owns workflow: peek-then-mutate ordering, typed guards, structured-tex
 
 Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.body) { ... }`. Always pass `Schema.X` as generic to typed helpers; never hand-roll JSON:API.
 
-> **Use concrete types instead of `any` / `unknown`.** Typed surface below (`Schema.X` generics, `FieldValueInRequest`, type-guard imports) makes them unnecessary. Untyped callback param → guard (`isSpan(c)`, `isBlockWithItemOfType(...)`), not `any`.
+> **Keep concrete types; don't erase them with `any`, `unknown`, casts, or JSON round-trips.** Use `Schema.X`, `FieldValueInRequest`, and guards (`isSpan(c)`, `isBlockWithItemOfType(...)`) to resolve mismatches. Record fields are top-level; `attributes` belongs to nested blocks.
 
 ## Contents
 

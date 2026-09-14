@@ -95,7 +95,7 @@ await client.items.create<Schema.Article>({
 });
 ```
 
-- `--skip-validation` disables stdin-mode pre-flight type-check. Reach for it only when debugging false positive from workspace's `tsc`.
+- `--skip-validation` is only for a confirmed workspace validation defect. Never bypass script type errors: fix field names, `Schema.X` generics, and guards first.
 - `--rebuild-workspace` wipes and rebuilds internal workspace (`node_modules`, `tsconfig`). Use after CLI upgrade if stdin-mode scripts start failing with module resolution errors.
 
 **file-mode** does not run CLI-side typecheck. Type safety comes from your own project: your editor's LSP continuously against your `tsconfig.json`, or explicit `tsc --noEmit` you invoke yourself. This matches how `migrations:run` loads single file — no CLI-side typecheck there either. Malformed `Schema.Article` or missing field will surface in editor before you run script, or at runtime if you skip validation entirely.
