@@ -20,7 +20,7 @@ DatoCMS Web Previews plugin integration reference.
 [Web Previews](https://www.datocms.com/marketplace/plugins/i/datocms-plugin-web-previews) adds three DatoCMS editor features:
 
 1. **Sidebar preview links** — Clickable record sidebar links for draft/published frontend versions
-2. **Sidebar iframe preview** — Inline record preview iframe
+2. **Sidebar iframe preview** — Inline record preview iframe, with optional Content Link click-to-edit
 3. **Visual editing tab** — Full-screen tab with frontend iframe for Content Link overlays
 
 All need a **preview-links endpoint** that maps records to URLs.
@@ -30,11 +30,21 @@ All need a **preview-links endpoint** that maps records to URLs.
 Web Previews plugin configures one or more "frontends". Each needs:
 
 - **Preview webhook URL** — Preview-links endpoint URL (e.g., `https://your-site.com/api/preview-links?token=YOUR_SECRET`)
-- **Draft mode URL** — Auto-enables draft mode when Visual editing tab loads (typically your enable endpoint, e.g., `https://your-site.com/api/draft-mode/enable?token=YOUR_SECRET`). **Required for Visual editing with Content Link** — without it, Visual tab loads without draft mode, so CDA returns text without stega encoding and Content Link overlays won't appear.
+- **Draft mode URL** — The enable endpoint (e.g., `https://your-site.com/api/draft-mode/enable?token=YOUR_SECRET`), configured as `visualEditing.enableDraftModeUrl`. Required for the Visual editing tab and sidebar click-to-edit, together with Content Link query headers and the frontend controller. Ordinary sidebar links/iframes do not require `visualEditing` configuration.
 - **Initial path** — Optional default path when Visual editing tab opens (defaults to `/`)
 - **Custom headers** — Optional HTTP headers sent to preview-links endpoint
 - **Viewport presets** — Optional iframe preview sizes (sidebar and Visual tab)
 - **Iframe `allow` attribute** — Optional iframe permissions (microphone, camera). See [MDN iframe allow](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#allow).
+
+### Sidebar click-to-edit
+
+Sidebar Edit mode is opt-in and off by default. Configure the frontend's `visualEditing.enableDraftModeUrl` and Content Link integration when click-to-edit is requested; opening the sidebar does not enable the user's Edit toggle.
+
+When both Published and Draft previews exist, select Draft to enter Edit mode; keep an explicitly selected Published preview published. When only Published exists, enabling Edit mode loads that page through the configured draft-mode route.
+
+The sidebar integration recognizes the destination in a `redirect` query parameter. For endpoints using `url` (as in the Nuxt examples), accept `redirect` when supplied and otherwise retain `url` as a compatibility fallback in both draft-mode endpoints; validate the selected value before redirecting. Emit `redirect` in the preview links used for sidebar click-to-edit so the plugin can identify draft previews and their destinations.
+
+Preserve unrelated frontends, plugin settings, and existing draft/preview endpoints when adding this capability.
 
 ## Preview-Links Endpoint Contract
 
@@ -101,7 +111,7 @@ if (url) {
 }
 ```
 
-**Note:** Nuxt uses `url` instead of `redirect`. Check framework-specific reference for exact parameter names.
+**Note:** The Nuxt examples use `url` instead of `redirect`. For sidebar click-to-edit, apply the `redirect` compatibility described above while preserving existing `url` callers.
 
 ### Endpoint Error Behavior
 
@@ -258,7 +268,7 @@ Plugin-specific, not in `cma:docs plugins create`. One entry per frontend:
 | - | - | - | - |
 | `name` | string | yes | Frontend label (`Production`, `Staging`, etc.) |
 | `previewWebhook` | string | yes | Absolute URL of preview-links endpoint, including secret token query param |
-| `visualEditing.enableDraftModeUrl` | string | only for Visual editing tab + Content Link | Absolute URL of draft-mode enable endpoint with secret token. Omit `visualEditing` entirely for sidebar-only setups |
+| `visualEditing.enableDraftModeUrl` | string | for Visual editing tab or sidebar click-to-edit | Absolute URL of draft-mode enable endpoint with secret token. Omit `visualEditing` for ordinary sidebar links/iframes when neither editing feature is requested |
 | `visualEditing.initialPath` | string | no | Default path when Visual editing tab opens (defaults to `/`) |
 
 Top-level `parameters.startOpen: true` opens sidebar preview by default.

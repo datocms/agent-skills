@@ -54,6 +54,10 @@ Use only the sections that match the work you actually performed.
 - Webhook auth is enforced.
 - Tag extraction reads the Dato payload shape correctly.
 - Invalidations target a concrete database, CDN, or purge adapter, or the missing provider choice is called out.
+- Tags include every contributing query and use the provider's delimiter.
+- Draft requests bypass shared caches and cannot replace published tag mappings.
+- Every purge batch is awaited; retries are bounded and failures do not return success.
+- Deployment invalidation covers caches that survive deploys.
 
 ## Component Integrations
 

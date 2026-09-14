@@ -179,20 +179,20 @@ When `autoRetry` is `true` (the default), the client automatically retries 429 r
 | Rate limit | 40 requests/second, 1,000 requests/minute **per API token** (applies only to non-cached requests — CDN cache hits are not rate-limited) |
 | Max records per page | 500 (use `first` argument) |
 | Default records per page | 20 |
-| CDN cache bypass threshold | 8 KB gzip-compressed query body |
+| CDN cache eligibility | Check `X-Cacheable-On-Cdn` and the reported URL size/limit pair |
 | Real-time update connections | 500 concurrent per project |
 
-**Plan-based behavior when limits are exceeded:**
+**Monthly usage allowances are separate from technical limits.** Plan-specific overages or monthly service limits do not remove request-rate or concurrency limits. Diagnose the actual response before treating an error as a billing issue.
 
-- **Paid plans:** overage charges applied; service continues uninterrupted
-- **Free plans:** service **temporarily disabled** until the next calendar month (unless a credit card is added)
+**CDN caching:** Eligible queries can be cached and selectively invalidated when content changes. Eligibility depends on the length of the internally encoded GET URL, including query and variables, not a fixed gzip-body budget. An eligible response can still be a cache miss.
 
-**CDN caching:** All queries are cached by the CDN and selectively invalidated when content changes. Queries exceeding 8 KB gzip-compressed bypass the CDN and hit the origin directly, subject to stricter rate limits. 429 responses can also occur during peak load even within rate limits — `autoRetry` handles this automatically.
+**CDN monitoring headers**, when present:
 
-**CDN monitoring headers** (in every response):
+- `X-Cacheable-On-Cdn` — whether the request fits the CDN eligibility limit, not proof of a cache hit.
+- `X-Cacheable-On-Cdn-Query-Length-Limit` — `encoded URL length/maximum URL length`; use this pair instead of estimating compressed body size.
+- `CF-Cache-Status: HIT` — an actual CDN cache hit.
 
-- `X-Cacheable-On-Cdn` — whether the query is CDN-cached
-- `X-Cacheable-On-Cdn-Query-Length-Limit` — compressed request size in bytes
+**Concurrency:** Uncached requests also share a project-wide concurrency cap across API tokens. A burst of slow queries can reach it without exceeding a token's per-second rate. Bound parallel work across build workers and processes targeting the same project; adding tokens does not increase this shared cap. SDK retries can retry an individual request but do not coordinate workers. Inspect the 429 response and rate-limit reset headers, reduce concurrency, and simplify oversized or expensive queries where needed.
 
 ## Custom Scalar Types
 
