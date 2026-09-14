@@ -4,7 +4,7 @@ Use this file to choose the right internal recipe bundle without loading the ent
 
 ## Targeted Mode
 
-If the user clearly asks for one of these outcomes, load only that recipe plus its prerequisites from `recipe-manifest.json`:
+If the user clearly asks for one or more of these outcomes, load only the matching recipes plus their prerequisites from `recipe-manifest.json`, applying shared prerequisites once:
 
 | Group | Recipe ids | Typical user intents |
 | - | - | - |
@@ -16,21 +16,22 @@ If the user clearly asks for one of these outcomes, load only that recipe plus i
 
 ## Discovery Mode
 
-Use discovery mode only when the user asks for broad setup such as “set up DatoCMS for this project” or mixes several unrelated setup goals.
+Use discovery mode only when a broad or mixed setup request leaves the desired outcome unclear, such as “set up DatoCMS for this project”. If the user already supplied a clear goal, continue in targeted mode.
 
-### Stage A — choose the lane
+### Stage A — clarify the desired outcome
 
-Ask one compact grouped clarification pass that covers:
+After inspecting the repo, ask **“What would you like to build or change?”** with 2–4 relevant choices based on the request and existing project, within the available question tool's limits. Follow `../patterns/MANDATORY_RULES.md` § Question Format. Give each choice a concrete goal label and one sentence explaining the result. Keep lane names, recipe IDs, and Stage A/B terminology internal; avoid descriptions that merely list packages or features.
 
-1. Which setup lane they want first: frontend foundation, frontend features, migrations, onboarding, or platform.
-2. Whether they need published-only reads, preview/editor workflows, or the full `visual-editing` bundle.
-3. Whether imports, schema workflows, or platform automation are in scope right now.
+Illustrative choices for an existing website — adapt to the project rather than using a fixed menu:
 
-Then select the smallest recipe bundle that satisfies the answer set.
+- **Connect this website to DatoCMS** — Set up this website to fetch and display your DatoCMS content.
+- **Add a feature to this website** — Add something specific, such as content previews or site search.
+
+Do not invent a recommended goal from the repo alone or treat a skipped question as a choice. Once the outcome is clear, ask about previews, imports, schema workflows, or automation only when relevant and still unresolved. Select only the requested features and their prerequisites, not every feature in an internal group.
 
 ### Stage B — ask only the smallest unresolved bundle-specific follow-up
 
-Only ask a second pass when repo inspection still leaves a high-impact decision unresolved:
+In either targeted or discovery mode, ask only when repo inspection still leaves a high-impact decision unresolved. Skip decisions the user already answered:
 
 - **`visual-editing`** — Ask one grouped follow-up covering:
   1. mode = website click-to-edit only / side-by-side inside DatoCMS only / both (**recommended**)

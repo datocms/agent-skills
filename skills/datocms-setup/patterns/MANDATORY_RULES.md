@@ -77,22 +77,21 @@ Only ask when a safe implementation is blocked by something the repo cannot answ
 
 - Infer first from the repo, then ask only the smallest high-impact follow-up
 - Default to one concise question unless the recipe explicitly calls for one grouped pass
-- Put the recommended/default path first
-- Explain what happens if the user skips the question
-- If the user skips, preserve the strongest existing owner or the documented default and record unresolved assumptions under `Unresolved placeholders`
+- For implementation choices within a clear goal, put the supported recommended/default path first and explain what happens if the user skips
+- If an implementation question is skipped, preserve the strongest existing owner or the documented safe default and record unresolved assumptions under `Unresolved placeholders`
+- An unanswered goal or required target has no default: keep dependent work pending and state what input is missing
 
-### Structured questions (Claude Code)
+### Structured questions
 
-When the `AskUserQuestion` tool is available, use it instead of inline prose for every user-facing question. Map each decision point to a separate question with discrete options:
+Use an available structured-question tool when permitted by the current mode, following its actual schema and limits. For example, use `AskUserQuestion` or `request_user_input` when available and allowed; do not assume identical fields or capabilities. If a tool requires a recommended/default answer when none is justified, use the plain-text fallback for that question.
 
-- Use a short `header` (max 12 chars) that names the decision, e.g. `"Edit mode"`, `"Realtime"`, `"Index shape"`
-- List 2-4 concrete options with a `label` and a one-sentence `description`
-- Put the recommended option first and append `(Recommended)` to its label
-- Use `multiSelect: true` only when choices are not mutually exclusive
-- Group related decisions into a single `AskUserQuestion` call (up to 4 questions per call) rather than asking them one at a time
-- If the recipe specifies a "skip" default, include it in the description of the recommended option so the user knows what happens if they just accept the default
+- Give each decision concrete options with a short label and one sentence explaining the result; adapt the number of options to the tool's limits
+- When supported, use a short header naming the decision, e.g. `"Edit mode"`, `"Realtime"`, `"Index shape"`
+- Label a justified recommendation `(Recommended)` and describe any safe skip default; a preselected option is not a submitted answer
+- Use multiple selection only when the tool supports it and the choices are compatible
+- Group related unresolved decisions within the tool's question limit; omit decisions already answered
 
-Example — visual-editing grouped follow-up:
+Example for `AskUserQuestion` — visual-editing follow-up when both decisions remain unresolved (adapt to other tools' schemas):
 
 ```
 questions: [
@@ -118,9 +117,9 @@ questions: [
 ]
 ```
 
-### Fallback (Codex / non-interactive)
+### Plain-text fallback
 
-When `AskUserQuestion` is not available, present the same choices as a numbered list in plain text. Keep the same structure: label the recommended default, describe what each option does, and state what happens on skip.
+When no suitable question tool is available or permitted, present the same choices as a concise numbered list in plain text. Explain each outcome and label a recommendation only when justified. If interaction is unavailable, report the missing input and continue only work that does not depend on it.
 
 ## Project Link or Create
 

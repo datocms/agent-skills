@@ -28,9 +28,9 @@ Public setup entrypoint. Keep surface small, inspect repo first, load only neede
 2. **Greenfield gate** — if no `package.json` and no `datocms.config.json`, ask link-vs-create per `patterns/MANDATORY_RULES.md` § Project link or create before any recipe selection. On "create" → wait for confirmation, queue `datocms-content-modeling` before any frontend recipe. Frontend-framework targets — surface official DatoCMS tech starter before scaffolding (see **Tech Starters**). User picks starter → guide clone + env vars only, skip all recipe scaffolding.
 3. Read `references/router.md`.
 4. Read `references/recipe-manifest.json`, pick smallest recipe/bundle for request.
-5. Use targeted mode for clear setup outcomes. Discovery mode only for broad/ambiguous:
-   - **Stage A**: pick setup lane.
-   - **Stage B**: ask smallest setup-specific follow-up only when repo inspection leaves high-impact decision unresolved.
+5. Follow `references/router.md` to clarify only what remains unresolved:
+   - **Stage A**: when the desired outcome is unclear, offer relevant, plain-language choices that explain what each would do. Clear requests use targeted mode and skip Stage A.
+   - **Stage B**: in either mode, ask the smallest setup-specific follow-up only when repo inspection leaves a high-impact decision unresolved.
 6. Queue prerequisites from manifest before dependents. Never tell user to invoke separate setup skill.
    - `visual-editing`: always apply `draft-mode` + `content-link`.
    - Add `web-previews` unless user wants website-only click-to-edit.
@@ -64,9 +64,9 @@ Official DatoCMS tech starters ship with draft mode, Web Previews, Content Link,
 
 - Don't load every recipe upfront.
 - Don't use external setup bundles. Prefer sibling DatoCMS skill references over copies.
-- Treat `draft-mode`, `web-previews`, `visual-editing`, `migration-release-workflow` as internal labels.
+- Keep lane names, recipe IDs, and Stage A/B labels internal when asking setup questions; describe user outcomes.
 - Apply shared foundation once if outcomes overlap.
-- Broad setup: ask compact Stage A, execute minimal bundle.
+- Unclear setup goal: ask compact Stage A with explained choices, then execute the minimal bundle for the selected outcome.
 - Stage B only for unresolved high-impact decisions repo can't answer.
 - Migration-heavy: ask smallest extra follow-up to separate baseline, profiles, histories, helpers, resets, diffs.
 - Report `scaffolded` when recipe depends on placeholders/provider choices/routes/ownership repo couldn't resolve.
