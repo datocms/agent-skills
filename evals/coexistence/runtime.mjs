@@ -58,11 +58,21 @@ export function inspectSource(source) {
   const errors = [];
   const methods = new Set();
   const banned = new Set(["process", "require", "fetch", "eval", "Function", "global", "globalThis", "setTimeout", "setInterval", "WebAssembly"]);
+  const isOwnPropertyCheck = (node) => {
+    // This standard value-comparison idiom stays entirely inside the VM.
+    // Permit only its invocation, not arbitrary access to prototype objects.
+    const expression = node.parent?.parent?.parent;
+    return ts.isIdentifier(node) && node.text === "prototype"
+      && expression && ts.isPropertyAccessExpression(expression)
+      && expression.getText(file) === "Object.prototype.hasOwnProperty.call"
+      && ts.isCallExpression(expression.parent) && expression.parent.expression === expression
+      && expression.parent.arguments.length === 2;
+  };
   function visit(node) {
     if (node.kind === ts.SyntaxKind.AnyKeyword || node.kind === ts.SyntaxKind.UnknownKeyword) errors.push("Explicit any/unknown is not allowed");
     if (ts.isImportDeclaration(node) || ts.isImportEqualsDeclaration(node) || (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword)) errors.push("Fixture scripts use ambient globals; imports are unavailable");
     if (ts.isIdentifier(node) && banned.has(node.text)) errors.push(`Unavailable fixture global: ${node.text}`);
-    if ((ts.isIdentifier(node) || ts.isStringLiteral(node)) && ["constructor", "prototype", "__proto__"].includes(node.text)) errors.push("Prototype access is outside the fixture runtime");
+    if ((ts.isIdentifier(node) || ts.isStringLiteral(node)) && ["constructor", "prototype", "__proto__"].includes(node.text) && !isOwnPropertyCheck(node)) errors.push("Prototype access is outside the fixture runtime");
     if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
       const text = node.expression.getText(file);
       if (text.startsWith("client.")) methods.add(text.replace(/^client\./, ""));

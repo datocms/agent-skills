@@ -109,6 +109,16 @@ test("runtime rejects forbidden I/O and unsafe type escapes before execution", (
   }
 });
 
+test("runtime allows own-property value checks while keeping general prototype access unavailable", () => {
+  const valid = execute('const value = {title: "Summer update"}; if (!Object.prototype.hasOwnProperty.call(value, "title") || Object.prototype.hasOwnProperty.call(value, "missing")) throw Error("Wrong own-property result");', initialRecord());
+  assert.deepEqual(valid.errors, []);
+  for (const source of ['const value = Object.prototype;', 'const value = Object.prototype.hasOwnProperty;', 'Object.prototype.hasOwnProperty.call(Object.prototype, "title");', 'Object.prototype.toString.call({});']) {
+    const result = execute(source, initialRecord());
+    assert.match(result.errors.join("\n"), /Prototype access/, source);
+    assert.deepEqual(result.calls, []);
+  }
+});
+
 test("complex localized edits preserve the existing block, marks, link and other locale", () => {
   const source = `
     const record = await client.items.find<Schema.Article>("article-1", { nested: true });
