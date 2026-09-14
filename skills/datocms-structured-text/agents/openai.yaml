@@ -1,0 +1,8 @@
+# synced_from_name: datocms-structured-text
+# synced_from_description_sha256: eca45819f26ab768dd00d9684b3fed12eabb58b5ffd59ed084ac709205053254
+interface:
+  display_name: "DatoCMS Structured Text"
+  short_description: "Create, edit, convert, and validate DAST documents"
+  default_prompt: "Use $datocms-structured-text to understand, create, edit, convert, or validate DatoCMS Structured Text documents, preserving embedded references. Handle DAST payloads within record changes; leave ordinary API calls, queries, schema design, framework wiring, and plugin Slate editing to their companion skills. Renderer callbacks alone do not require this skill."
+policy:
+  allow_implicit_invocation: true

@@ -2,6 +2,8 @@
 
 Use `cma:script` to run TypeScript script against Content Management API without scaffolding full repo project. Great for ad-hoc operations too complex for `cma:call` (loops, branching, multiple dependent calls, typed record payloads) but don't need to live in repo.
 
+For Structured Text script bodies, load [document model](../../datocms-structured-text/references/document-model.md), then [editing](../../datocms-structured-text/references/editing.md) for existing DAST or [conversion](../../datocms-structured-text/references/conversion.md) for Markdown/HTML. Use [CMA editing records](../../datocms-cma/references/editing-records.md) for typed requests, locales, versions, and persistence. Pure conversion uses the specialist's local helper without `cma:script` authentication; CLI ambient exports do not include the helper's conversion dependencies.
+
 ## Contents
 
 - Command

@@ -114,5 +114,21 @@
     "query": "Use datocms-frontend-integrations to write a CMA bulk import script that creates products from CSV and uploads images.",
     "should_trigger": false,
     "query_mode": "explicit"
+  },
+  {
+    "query": "Validate and normalize this supplied Structured Text JSON document. Only return DAST; there is no frontend component or rendering task.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
+  },
+  {
+    "query": "Fix the invalid DAST in our local article fixture, then wire the corrected value and its embedded CTA blocks into the existing react-datocms StructuredText renderer.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
   }
 ]

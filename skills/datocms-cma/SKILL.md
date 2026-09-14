@@ -25,6 +25,8 @@ Short imperative request in mid-conversation following earlier DatoCMS context =
 
 **CLI only — never MCP.** DatoCMS CLI for all project/schema/CMA work. Never invoke any DatoCMS MCP tool even when present in toolset — CLI's OAuth + `datocms.config.json` keeps repo as source of truth, MCP causes config drift. Load `datocms-cli` for the equivalent command. Only `npx datocms login` is user-driven (interactive browser).
 
+**Structured Text boundary.** Pure DAST construction, inspection, editing, or conversion → **datocms-structured-text** before project bootstrap. For CMA create/update/backfill involving a Structured Text field, load the [document model](../datocms-structured-text/references/document-model.md), then [editing](../datocms-structured-text/references/editing.md) for existing DAST or [conversion](../datocms-structured-text/references/conversion.md) for Markdown/HTML sources. This skill owns project access, typed record payloads, locales, version checks, and persistence. If the required companion reference is unavailable, install `datocms-structured-text` from `datocms/agent-skills` or update the full skill bundle, then continue that portion. Routine record operations do not require it.
+
 ## Step 1: Detect Context
 
 If project context already established in conversation, skip broad detection. Re-inspect only when question cannot be answered from prior context.
@@ -155,7 +157,7 @@ Each reference opens with reminder of specific `cma:docs <resource>` to consult 
 | Filtering & querying | `references/filtering-and-pagination.md` |
 | Localization | `references/localization.md` |
 | Blocks & modular content | `references/editing-records.md` |
-| Structured text & block tooling | `references/editing-records.md` |
+| Structured text & block tooling | `references/editing-records.md` for CMA adaptation; [document model](../datocms-structured-text/references/document-model.md), [editing](../datocms-structured-text/references/editing.md), or [conversion](../datocms-structured-text/references/conversion.md) for the DAST task |
 | Environment operations | `references/environments.md` |
 | Access control | `references/access-control.md` |
 | Migration & scripting | `references/migration-patterns.md` |
@@ -174,7 +176,8 @@ If task:
 
 - involves localized fields in any context → also load `references/localization.md`
 - uses `raw*()` methods, generated CMA types, advanced client behavior, or platform limits → also load `references/client-types-and-behaviors.md`
-- involves modular content, single-block fields, DAST structured text, block traversal, or any per-locale backfill → also load `references/editing-records.md`
+- involves modular content, single-block fields, block traversal, or any per-locale backfill → also load `references/editing-records.md`
+- creates, updates, imports, or backfills a Structured Text field → also load [document model](../datocms-structured-text/references/document-model.md); use [editing](../datocms-structured-text/references/editing.md) for existing DAST and [conversion](../datocms-structured-text/references/conversion.md) for source conversion
 - involves listing many records → also load `references/filtering-and-pagination.md`
 - \= migration script → also load `references/migration-patterns.md` plus whatever domain refs needed
 - involves video upload subtitles/tracks or upload tag management → also load `references/resource-gotchas.md` § Upload tracks and tags

@@ -99,8 +99,10 @@ import { slateToDast } from 'datocms-structured-text-slate-utils';
 
 const slateValue = ctx.formValues.body;
 const dast = slateToDast(slateValue);
-// Now you can walk the DAST tree to count words, extract links, etc.
+// Use the Structured Text specialist for DAST traversal and validation.
 ```
+
+DAST structure/validation → [document model](../../datocms-structured-text/references/document-model.md); analysis/traversal → [editing](../../datocms-structured-text/references/editing.md); Markdown/HTML sources or format export → [conversion](../../datocms-structured-text/references/conversion.md). Missing required reference → install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle. Editor hooks and ordinary Slate mutations remain covered here.
 
 ### Modifying Structured Text (inserting blocks, text)
 

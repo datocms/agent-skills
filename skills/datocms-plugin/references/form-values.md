@@ -113,7 +113,7 @@ await ctx.setFieldValue('social_profiles', [
 
 Modular Content blocks can themselves contain Modular Content fields, creating arbitrarily nested structures. Structured Text fields can also contain blocks. This means traversing all content in a record may require recursive logic.
 
-For simple use cases (reading/writing top-level block fields), the examples above are sufficient. For advanced scenarios involving deeply nested block traversal, recursive block manipulation, or complex Structured Text block operations, use the **datocms-cma** skill and its section on nested blocks. If the user does not have the `datocms-cma` skill installed, ask them to install it.
+For top-level form fields, use the Slate examples here. API nested-block payloads → [CMA editing records](../../datocms-cma/references/editing-records.md); DAST traversal after `slateToDast` → [Structured Text editing](../../datocms-structured-text/references/editing.md). These are different representations: keep `ctx.setFieldValue` writes Slate-shaped. Load a companion only when the task needs that representation.
 
 ## Structured Text Fields — Slate Format
 
@@ -164,6 +164,8 @@ For simple use cases (reading/writing top-level block fields), the examples abov
 | Root wrapper | No `root` node — value is directly an array | Wrapped in `{ schema, document: { type: "root", children } }` |
 | Text nodes | `{ text: "..." }` | `{ type: "span", value: "..." }` |
 | Marks | Boolean keys on node: `{ text: "bold", strong: true }` | Array: `{ marks: ["strong"], value: "bold" }` |
+
+Full DAST rules and validation live in [document model](../../datocms-structured-text/references/document-model.md); DAST content transforms in [editing](../../datocms-structured-text/references/editing.md); Markdown/HTML import and format export in [conversion](../../datocms-structured-text/references/conversion.md). Missing required reference → install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle.
 
 ### Converting Slate to DAST
 

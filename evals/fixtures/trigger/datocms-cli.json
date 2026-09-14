@@ -223,5 +223,21 @@
     "boundary_with": [
       "datocms-cma"
     ]
+  },
+  {
+    "query": "Convert this local Markdown file into DatoCMS Structured Text JSON. Only return the document; do not connect to a project, write records, or scaffold anything.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
+  },
+  {
+    "query": "Scaffold a TypeScript DatoCMS CLI migration that converts an old Markdown field into Structured Text and backfills records in a sandbox, following our existing migration workflow.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
   }
 ]

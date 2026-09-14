@@ -7,6 +7,7 @@ The root [README](../README.md#public-skills) is the short version. This page ke
 | Skill | Repo path | Scope |
 | - | - | - |
 | `datocms-plugin` | `skills/datocms-plugin` | Create, patch, extend, or restyle DatoCMS plugin projects |
+| `datocms-structured-text` | `skills/datocms-structured-text` | DAST structure, construction, validation, preservation during edits, Markdown/HTML conversion, and format export; CMA writes, queries, renderer wiring, and Slate editor integration stay with their existing skills |
 | `datocms-cma` | `skills/datocms-cma` | Content management scripts, records, schema, environments, and webhooks |
 | `datocms-cli` | `skills/datocms-cli` | CLI workflows, migrations, environments, and imports |
 | `datocms-cda` | `skills/datocms-cda` | Content delivery queries, GraphQL reads, media, SEO, and typed queries |
@@ -22,6 +23,8 @@ These are good explicit prompt shapes for the shipped public skills:
 ```text
 $datocms-cda write a GraphQL query for blog posts with title, slug, and SEO fields
 $datocms-cma write a script that publishes all records in a model
+$datocms-structured-text convert this Markdown article into DAST
+$datocms-structured-text rewrite this paragraph without changing embedded blocks
 $datocms-content-modeling should testimonials be a model or a block?
 $datocms-cli scaffold a migration workflow for this project
 $datocms-frontend-integrations show how to wire DatoCMS draft mode into this Next.js app
@@ -33,6 +36,10 @@ $datocms-feedback draft an email to support@datocms.com about this stuck MCP wor
 ```
 
 `datocms-frontend-integrations` and `datocms-setup` are especially important to call explicitly when you want deterministic routing.
+
+## Structured Text reference ownership
+
+`datocms-structured-text` owns [document structure and validation](../skills/datocms-structured-text/references/document-model.md), [editing and traversal](../skills/datocms-structured-text/references/editing.md), and [conversion and export](../skills/datocms-structured-text/references/conversion.md). Consumers load the relevant file only when their task needs DAST work. CMA retains create/update adapters, block request construction, locale/version handling, and persistence; CDA retains query envelopes; frontend skills retain rendering; plugin skills retain Slate form values. The setup recipe named `structured-text` still configures frontend rendering.
 
 ## Internal Setup Recipes
 

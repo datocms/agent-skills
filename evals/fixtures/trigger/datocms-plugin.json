@@ -89,5 +89,21 @@
   {
     "query": "Draft an email to support about a stuck project setup workflow.",
     "should_trigger": false
+  },
+  {
+    "query": "Count words and extract external links from this supplied DAST document. Return the analysis only; do not create or modify any DatoCMS plugin.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
+  },
+  {
+    "query": "Add a sidebar to our existing DatoCMS plugin that converts the current Structured Text Slate form value to DAST and analyzes its external links without changing the editor value.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
   }
 ]

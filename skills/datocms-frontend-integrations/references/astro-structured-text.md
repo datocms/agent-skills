@@ -210,7 +210,7 @@ const { block } = Astro.props;
 
 ## Override Default Rendering of Nodes
 
-Override default rendering for any node type using the `nodeOverrides` prop. Keys are DAST node type names, values are Astro components:
+Override default rendering for any node type using the `nodeOverrides` prop. Keys are DAST node type names, values are Astro components. For node properties and child rules, load [document model](../../datocms-structured-text/references/document-model.md):
 
 ```astro
 ---
@@ -358,35 +358,7 @@ import { isEmptyDocument } from 'datocms-structured-text-utils';
 
 ## Related Packages
 
-### `datocms-structured-text-to-plain-text`
-
-Extract plain text from a DAST document (strips all formatting). Useful for generating heading anchors, meta descriptions, or search indexes:
-
-```js
-import { render as toPlainText } from 'datocms-structured-text-to-plain-text';
-
-const text = toPlainText(data.blogPost.content);
-// "Hello world! This is my blog post."
-```
-
-### `datocms-structured-text-to-html-string`
-
-Render DAST to an HTML string server-side (non-framework contexts, emails, RSS feeds):
-
-```js
-import { render as toHtml } from 'datocms-structured-text-to-html-string';
-
-const html = toHtml(data.blogPost.content, {
-  renderBlock: ({ record }) => {
-    switch (record.__typename) {
-      case 'ImageBlockRecord':
-        return `<img src="${record.image.url}" alt="${record.image.alt}" />`;
-      default:
-        return null;
-    }
-  },
-});
-```
+For framework-independent plain-text, HTML-string, or DOM-node export, load [conversion](../../datocms-structured-text/references/conversion.md). For Markdown/HTML import into DAST, use the same reference; for modifying existing content, use [editing](../../datocms-structured-text/references/editing.md). If a required reference is missing, install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle. Ordinary component wiring needs no specialist dependency.
 
 ## Content Link Integration
 

@@ -21,6 +21,8 @@ description: >-
 
 Shared front-end integration bundle. Prefer `datocms-setup` for single feature end-to-end. Stay here for mixed-feature, framework comparison, partial patching, companion-reference loading.
 
+Structured Text components and renderer callbacks are covered here, including the resolved `record` passed to `renderBlock`. Load the document specialist only for a requested document inspection, transformation, conversion, or validation; ordinary renderer examples need no companion read.
+
 Report `scaffolded` when placeholders remain, `production-ready` only when implementation no longer depends on unresolved project-specific values.
 
 ## Contents
@@ -275,6 +277,8 @@ At minimum, verify:
 - any remaining placeholders or customer-specific mappings are clearly called out
 
 ## Cross-Skill Routing
+
+DAST structure/validation → [document model](../datocms-structured-text/references/document-model.md); content traversal/transforms → [editing](../datocms-structured-text/references/editing.md); Markdown/HTML import and framework-independent export → [conversion](../datocms-structured-text/references/conversion.md), all owned by **datocms-structured-text**. Load only for those tasks; component wiring and query/render adapters remain here. Missing required reference → install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle.
 
 Use companion skills when task leaves this bundle's sweet spot:
 

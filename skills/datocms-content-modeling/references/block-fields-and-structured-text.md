@@ -26,7 +26,7 @@ Once you've decided something is a block (see `models-vs-blocks.md`), the next q
 
 **`rich_text` with one block type as poor `single_block`.** "Add block" UI produces one thing. Query handles 0-or-1 array. Use `single_block`.
 
-**Blocks recreating native DAST nodes.** Structured Text already has `blockquote`, `code` (with language, highlight_lines), `list` / `listItem`, `heading`, `thematicBreak`, `link`. No need for `quote_block`, `code_block`, `list_block`, `heading_block`, `divider_block`, `link_block`. Duplicates editor toolbar, eats 500-block budget, two render paths. Use native via editor `nodes` parameter. Block models for _non-native_ shapes DAST doesn't cover — images, galleries, callouts with `tone` enum, embeds. See DAST cheatsheet below.
+**Blocks recreating native DAST nodes.** Structured Text already has `blockquote`, `code` (with language, highlight_lines), `list` / `listItem`, `heading`, `thematicBreak`, `link`. No need for `quote_block`, `code_block`, `list_block`, `heading_block`, `divider_block`, `link_block`. Duplicates editor toolbar, eats 500-block budget, two render paths. Use native via editor `nodes` parameter. Block models for _non-native_ shapes DAST doesn't cover — images, galleries, callouts with `tone` enum, embeds. See the [document model](../../datocms-structured-text/references/document-model.md) for exact node rules.
 
 **Image/gallery/video blocks with `caption` (or `image_alt` / `image_credit` / `image_label`) sibling fields.** Asset metadata already covers it through upload-level defaults and per-record File/Gallery overrides. Caption → `title` (short) or `custom_data` (rich). Image block = `file` field, optional layout enum (`tone`/`size`/`alignment`); never `file` + `caption` string. See `separation-of-concerns.md` § Don't recreate file/gallery metadata; exact metadata shapes live in `../../datocms-cma/references/uploads.md`.
 
@@ -44,7 +44,7 @@ Full validator shapes and cascade-strategy: `../../datocms-cma/references/schema
 
 ## DAST node cheatsheet
 
-Modeling-relevant subset only. Full grammar (children rules, marks list, building/editing DAST): `../../datocms-cma/references/editing-records.md` § DAST grammar.
+Modeling-relevant subset only. Full grammar, child rules, and marks: [document model](../../datocms-structured-text/references/document-model.md). Building or changing a document: [editing](../../datocms-structured-text/references/editing.md); Markdown/HTML sources: [conversion](../../datocms-structured-text/references/conversion.md).
 
 | Node | Role | Where it can live |
 | - | - | - |
@@ -53,8 +53,6 @@ Modeling-relevant subset only. Full grammar (children rules, marks list, buildin
 | `itemLink` | Hyperlink to DatoCMS record, with inner text | Inside `paragraph` and `heading` |
 | `inlineItem` | Reference to record, **no inner text** — frontend renders (chip, mention, auto-title link) | Inside `paragraph` and `heading` |
 | `link` | Plain external hyperlink with optional `meta` (`rel`, `target`, etc.) | Inside `paragraph` and `heading` |
-| `span` | Leaf text node, with optional `marks` | Inside `paragraph`, `heading`, `link`, `itemLink` |
-| `marks` on span | `strong`, `emphasis`, `code`, `underline`, `strikethrough`, `highlight` | — |
 
 ### The two pairs that get confused
 
