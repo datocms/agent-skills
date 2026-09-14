@@ -2,6 +2,8 @@
 
 Use this setup only for local scripts or application code that need a generated types file. When the execution runtime already supplies project types, use those instead.
 
+First inspect existing schema imports, `cma-types.ts` / `datocms-schema.ts` files, and generation commands in `package.json`. Reuse the existing module, output path, and environment configuration. Do not proactively suggest a new type-generation setup. Generate or refresh types only when the requested local code needs them and the current types are absent or outdated.
+
 The generated types are useful for **both** CMA API styles:
 
 - the **simplified API** via `ItemTypeDefinition` generics on methods such as `client.items.create/update/upsert/...`

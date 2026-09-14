@@ -42,6 +42,8 @@ Confirm:
 
 ## Command Shape
 
+Resource and method are positional camelCase arguments, not REST-style flags. Do not invent `--endpoint`, `--method`, `--body`, or `--query-params`; use `--data` and `--params` as shown below.
+
 ```bash
 npx datocms cma:call <resourceCamelCase> <methodCamelCase> [...pathArgs] [--data '...'] [--params '...'] [--environment <env>]
 ```

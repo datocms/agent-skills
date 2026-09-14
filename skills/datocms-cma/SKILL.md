@@ -25,7 +25,7 @@ Use only task-relevant capabilities already exposed in the current environment. 
 - **Explicit route:** honor the user's choice of current MCP or CLI, including MCP when CLI is available. A follow-up keeps its established route unless the user changes it.
 - **No preference or established route:** prefer a usable CLI. If current MCP is available and CLI execution is not usable, use MCP without package installation, CLI login, or project linking. Don't bootstrap CLI merely to displace an available MCP connection.
 - **Neither ready:** explain the missing prerequisite appropriate to this environment. Local CLI work may need CLI setup; a client without local execution needs a supported project connection for live operations. MCP is optional, not a prerequisite for all skills.
-- **Local deliverable:** migrations, repo configuration, and application code retain their local development workflow. Remote execution cannot substitute for a versioned migration or create the requested local artifacts.
+- **Local deliverable:** migrations, repo configuration, and application code retain their local development workflow. Remote execution cannot substitute for a versioned migration or create the requested local artifacts. For app/server or unattended CMA code, inspect and reuse existing client configuration and generated types; add setup only when missing and required.
 - **Confirmed legacy MCP:** stop and tell the user to use the current DatoCMS MCP. Include the [current MCP setup link](https://www.datocms.com/docs/mcp-server), even when a current connection is already registered. Do not execute, repair, reinstall, or change the legacy integration. Authentication or connection failure alone is not evidence of legacy software.
 
 After choosing:
@@ -49,7 +49,7 @@ Inspect the relevant models, fields, validators, and current record values befor
 | Task | Approach |
 | - | - |
 | Destructive schema change: drop fields/models, lossy field-type changes, or `bulk_destroy` records | **datocms-cli** migration against a forked sandbox first. Never execute against primary without explicit, repeated user confirmation. |
-| Reversible schema change: add/rename fields or models, change validators, reorder fieldsets | Ask whether the user wants a reviewable migration or direct sandbox mutation unless already decided. Prefer migrations when the repo uses them; direct mutation is valid for quick sandbox iteration. |
+| Reversible schema change: add/rename fields or models, change validators, reorder fieldsets | Ask whether the user wants a reviewable migration or direct sandbox mutation unless already decided. Prefer migrations when the repo uses them or work is on a secondary branch; direct mutation is valid for quick sandbox iteration. |
 | Explicit one-off or migration opt-out | Honor direct mutation unless the change is destructive. Do not repeatedly suggest migrations. |
 | Content operation: publish/unpublish, individual record deletion, field edits, bulk value updates, upload metadata | Use the selected route; no migration needed. Preserve the authorized records, fields, locales, and publication state. |
 | Change requested as versioned and replayable across environments | Use **datocms-cli** migration guidance and local artifacts. |
@@ -66,7 +66,7 @@ Method documentation supplies API shapes; these references supply DatoCMS editin
 | Uploads and asset metadata | `references/uploads.md` |
 | Direct schema changes | `references/schema.md` |
 | Filtering, querying, collection pagination | `references/filtering-and-pagination.md` |
-| Localized fields and locale backfills | `references/localization.md` |
+| Localized fields and locale backfills | `references/localization.md`; also `references/editing-records.md` when adding or backfilling a locale. |
 | Modular Content, Single Block, Structured Text, block traversal | `references/editing-records.md` |
 | Environment operations | `references/environments.md` |
 | Roles, tokens, collaborators | `references/access-control.md` |
@@ -85,7 +85,8 @@ Combine references only when the task spans their subjects: for example, a local
 - Inspect then mutate current values in the same script for complex edits. Fetch nested blocks when needed and use typed block helpers. Preserve unrelated fields, locales, blocks, links, and upload metadata; avoid reconstructing whole records from partial reads.
 - For Structured Text, follow the editing reference's text round-trip, typed node/block mutation, then root-append order. Preserve existing block identities and references unless replacement is requested.
 - Use precise project types on record calls and helpers. Prefer inference and type guards; never use `any`, `unknown`, or casts that hide a mismatch. Supplied project types need no local generation step. Only local code that needs its own type module follows type-generation guidance.
-- Handle API errors at the operation boundary using the selected runtime's facilities. Report authentication and permission failures accurately; do not bypass them through another route. A timeout or missing write response has an uncertain outcome: inspect resulting state before any retry, and never silently replay that write through another tool.
+- Handle API errors at the operation boundary using the selected runtime's facilities, including `ApiError` and `TimeoutError` when exposed. Report authentication and permission failures accurately; do not bypass them through another route. A timeout or missing write response has an uncertain outcome: inspect resulting state before any retry, and never silently replay that write through another tool.
+- For long-running scripts, report progress and final totals using the selected runtime's output facilities.
 
 ## 5. Verify and report
 

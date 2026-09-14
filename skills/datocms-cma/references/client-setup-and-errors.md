@@ -6,10 +6,19 @@ Load for code that constructs its own client, or for the error-handling details 
 
 ## Contents
 
+- Existing Project Setup
 - Package Selection
 - Building the Client
 - Common Resources
 - Error Handling
+
+## Existing Project Setup
+
+Before constructing a client in local app/server code or unattended automation:
+
+1. Inspect `package.json` for the installed CMA package and runtime. Search existing `buildClient()` calls and client wrappers; reuse the package, client configuration, token source, and environment targeting already used by the project.
+2. Check existing credential variable names/configuration, including `.env` or `.env.local` when applicable, without printing secret values. An unattended runtime needs a token with `can_access_cma: true` and the role permissions the task requires. A read-only CDA token (`DATOCMS_READONLY_API_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`) is insufficient; request a separate CMA-capable credential only for that runtime. Full access is not required: scope it to the needed models, actions, and environments.
+3. Look for existing generated CMA types and generation scripts before adding files or commands. Reuse the current module and output path. Do not proactively introduce type generation; consult `type-generation.md` only when the requested local code needs missing or updated types.
 
 ## Package Selection
 
@@ -20,6 +29,8 @@ Load for code that constructs its own client, or for the error-handling details 
 | `@datocms/cma-client-browser` | Browser | Use when you need browser upload helpers such as `createFromFileOrBlob()`. |
 
 All three packages expose the same core CMA resources. The main differences are the environment-specific upload convenience methods.
+
+Import `buildBlockRecord`, `ApiError`, and `TimeoutError` from the same client package as `buildClient`. Use `import type` for type-only imports. A runtime-provided client or helper needs no duplicate construction or import.
 
 Install with:
 
