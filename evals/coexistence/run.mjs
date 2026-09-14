@@ -200,6 +200,12 @@ export async function runOne({ testCase, arm, repetition, settings, output, base
   mkdirSync(directory, { recursive: true });
   const workspace = mkdtempSync(join(tmpdir(), "datocms-coexistence-"));
   snapshot(workspace, arm, baseline, testCase.distribution);
+  for (const [path, contents] of Object.entries(testCase.files ?? {})) {
+    const target = resolve(workspace, path);
+    if (!target.startsWith(`${workspace}/`)) throw Error(`Fixture path escapes workspace: ${path}`);
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, contents);
+  }
   const auditPath = join(directory, "tools.jsonl");
   const transcriptPath = join(directory, "native.jsonl");
   const statePath = join(directory, "state.json");

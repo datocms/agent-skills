@@ -20,6 +20,9 @@ npm run eval:coexistence -- --cases explicit-mcp --arms base,candidate,none --re
 
 # Full comparison and context gates
 node evals/coexistence/report.mjs local/coexistence/<run>/results.json local/coexistence/<run>/report.json
+
+# Paid local-code regression: existing client + generated type reuse, three runs per arm
+EVAL_MODEL=your-recorded-model EVAL_EFFORT=ultra node evals/coexistence/authoring.mjs local/coexistence/authoring-run
 ```
 
 The runner reads only the configured model and reasoning effort from the user's top-level configuration, then passes the same values to every arm. An explicit `--model` and optional `--effort` override is available. It does not substitute a cheaper model. Authentication remains with the installed native agent; no authentication files or secrets are copied into fixtures.
@@ -43,5 +46,7 @@ Success comes from the observed final record and execution log, never from an ag
 Each session writes `native.jsonl`, `tools.jsonl`, `result.json`, prompt files, and stderr under `local/coexistence/<run>/<case>/<arm>/<repetition>/`. Aggregate `results.json` is updated as sessions finish. Each run retains a frozen fixture source snapshot; existing output directories cannot be reused. Results include reference reads and tool-supplied guidance with source hashes and event order, output-token estimates, provider-reported usage summed across turns, source code, final content, and failures. Token estimates use `gpt-tokenizer`; they are not a claim of exact billing for every provider. Missing provider metrics remain unavailable. Read failures, repeated failed reads, and whether the agent followed the `whoami` advisory are diagnostics. A first zero-effect permission rejection is legitimate discovery; bypassing an observed restriction is a critical failure.
 
 The full report requires every expected three-repetition comparison. `requiredGatesPassed` combines the context/completeness checks with candidate route, scope, and duplicate-write assertions; content/script quality is reported separately. The stricter `gatesPassed` also requires every content/script assertion, and the report command exits 1 when that combined gate fails, including a recovered script exception. It checks that ordinary CLI runs do not load the MCP reference or exceed baseline loaded guidance, and that MCP tasks avoid unrelated CLI/bootstrap/migration/client setup references. Repeated logical sources and byte-identical repeated content are measured separately. Baseline failures remain visible and do not become candidate passes.
+
+The separate `authoring.mjs` fixture adds synthetic project files with an existing configured client and generated model type. It asks for application code only, checks actual file reads and absence of setup/type-generation commands, compiles the returned module against a small fixture contract, and executes it against the existing-client test double. It rejects fabricated results and unexpected runtime dependencies. This checks local-code reuse; it does not run a real SDK request or type generator. The underlying workspace provider and original coexistence cases remain the same.
 
 These results do not replace the existing real-CLI E2E tests or manual authenticated client smoke tests. Hosted OAuth, actual CMA behavior, native skill installation, Claude Desktop/Claude.ai compatibility, and other clients remain separate verification work.

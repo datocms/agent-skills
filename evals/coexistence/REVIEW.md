@@ -1,6 +1,8 @@
 # Optional MCP coexistence review
 
-Skills baseline: [`94e4bd8`](https://github.com/datocms/agent-skills/commit/94e4bd8128e52963829f65bce8f202fcd68ac8d6). Candidate skill sources: [`a715084`](https://github.com/datocms/agent-skills/commit/a71508405bb0cb5e10a228965927d3f704eb1d1c). The comparison uses the existing server contract at [`beeca70`](https://github.com/datocms/remote-mcp/blob/beeca70bdf702461ae8e226bfd9714d8e58f33ac/src/tools/getApiMethods/index.ts#L69-L74); it does not change the server.
+Skills baseline: [`94e4bd8`](https://github.com/datocms/agent-skills/commit/94e4bd8128e52963829f65bce8f202fcd68ac8d6). Corrected candidate skill sources: [`994f1f1`](https://github.com/datocms/agent-skills/commit/994f1f1ba7d7bf521f105e8c877768c7210c01f7). The comparison uses the existing server contract at [`beeca70`](https://github.com/datocms/remote-mcp/blob/beeca70bdf702461ae8e226bfd9714d8e58f33ac/src/tools/getApiMethods/index.ts#L69-L74); it does not change the server.
+
+The initial rewrite omitted useful instructions for existing projects. The correction restores client/configuration and generated-type reuse, credential scope, import consistency, and several CLI/editing details. The [retention audit](RETENTION.md) maps every original entrypoint section to its current destination and distinguishes preserved guidance from intentional routing changes. Token reduction alone did not establish that useful guidance survived.
 
 The implementation follows concise discovery metadata, conditional reference loading, and execution-trace review from [OpenAI's skill guidance](https://learn.chatgpt.com/docs/build-skills) and [Agent Skills best practices](https://agentskills.io/skill-creation/best-practices), consulted on 2026-09-14. The numeric gates below are specific to this PR.
 
@@ -10,7 +12,7 @@ Measured with the repository's `gpt-tokenizer`, against the PR base. Entrypoint 
 
 | Measurement | Base tokens | Candidate tokens | Result |
 | - | - | - | - |
-| CMA entrypoint | 5,988 | 2,026 | 66.17% reduction; exceeds 30% requirement |
+| CMA entrypoint | 5,988 | 2,109 | 64.78% reduction; exceeds 30% requirement |
 | Optional MCP reference | — | 356 | Below 600-token ceiling |
 | All discovery metadata | 1,539 | 1,482 | 57 fewer tokens |
 | Other touched entrypoints, combined | 6,275 | 6,169 | 106 fewer tokens |
@@ -25,25 +27,33 @@ The additional `--require-fresh-results-sync` check still fails on historical Cl
 
 The 12 static compatibility checks pass. They validate the original and exact MCP-filtered Markdown, closed fences, syntax of applicable TypeScript examples, and preservation of 14 substantive workflow sections against the base. The preserved record files stay at their existing paths; the server's nonrecursive import remains supported.
 
-All 27 deterministic evaluator/report tests pass. A final review strengthened migration scoring to reject wrong filenames, comment-only stubs, invalid syntax, and incorrect field payloads. The six retained migration outputs pass the stronger check with no changed outcomes. This is static syntax/structure verification, not live migration execution or SDK typechecking. Original observations and scorer hashes are retained separately from post-run scoring.
+All 29 deterministic evaluator/report tests pass, including two tests of the additional local-authoring evaluator. Migration scoring rejects wrong filenames, comment-only stubs, invalid syntax, and incorrect field payloads. All retained migration outputs pass this check. It is static syntax/structure verification, not live migration execution or SDK typechecking. Original observations and scorer hashes are retained separately from post-run scoring.
 
 Normal precommit processing regenerated the CLI, CMA, content-modeling, and setup ZIPs. All 81 archive files match the corresponding skill sources byte for byte, with interface metadata excluded by the existing packaging rule. No evaluation code or test dependencies are included. Existing E2E files, commands, and precommit behavior remain unchanged.
 
-## Behavioral evaluation
+## Existing-project regression evaluation
 
-The complete comparison ran on 2026-09-14 with `gpt-6-astra`, reasoning effort `ultra`, and native binary version `0.154.0-alpha.6.2`. It contains 126 sessions: three repetitions of 16 cases for base and candidate, plus ten applicable cases for MCP without installed skills. Per-session reference reads, repeated deliveries, tool-output token estimates, usage, provenance hashes, and outcomes are in [review-results.json](review-results.json).
+Six additional native sessions use the same recorded model, effort, and binary as the routing comparison: three for the PR base and three for the corrected candidate. The task asks for a server-side article-title helper in an existing application, without CMS execution or file/configuration changes. The synthetic project already has a configured client and a generated model module. All six sessions inspect and reuse both modules, avoid setup/type-generation detours, and return a helper that compiles and reads exactly the requested records with correct title and null results. The checks use bounded TypeScript declarations and a synthetic client, not live SDK calls or schema generation.
+
+Both arms pass 3/3. This checks the restored workflow in one controlled fixture; it does not prove that the correction is universally lossless or establish a comparative quality advantage. Actual file/reference reads, returned modules, assertions, tool-output tokens, usage, and provenance are in [retention-results.json](retention-results.json).
+
+## Behavioral evaluation after the correction
+
+The comparison uses `gpt-6-astra`, reasoning effort `ultra`, and native binary version `0.154.0-alpha.6.2`. On 2026-09-14, all 48 candidate sessions were rerun at the corrected revision: three repetitions of 16 cases. They are compared with the 48 base and 30 applicable no-skill controls retained from the earlier run on the same date. Task prompts, tool descriptions, record data, runtime, dependency lockfile, and pinned server guidance are unchanged; prompt identity is checked by the report. The runner adds only optional local-file seeding, unused by these 16 cases. The new [retention-results.json](retention-results.json) records control reuse and per-session reference reads, repeated deliveries, tool-output token estimates, usage, provenance hashes, and outcomes.
+
+The initial 126-session comparison at `a715084` remains unchanged in [review-results.json](review-results.json). That earlier candidate passed 48/48 required assertions and 47/48 script-quality checks. Those observations apply to the earlier revision and are not relabeled as current results.
 
 **All required candidate route, scope, duplicate-write, and context gates pass.** Every candidate final record matches the requested result, including preserved content and publication state. Script quality remains a separate result:
 
 | Arm | Route, scope, duplicate-write assertions | Correct final record state | Content and script quality | All assertions, including script quality |
 | - | - | - | - | - |
 | PR base | 42/48 | 48/48 | 47/48 | 41/48 |
-| Candidate | 48/48 | 48/48 | 47/48 | 47/48 |
+| Corrected candidate | 48/48 | 48/48 | 46/48 | 46/48 |
 | MCP without installed skills | 30/30 | 30/30 | 29/30 | 29/30 |
 
 The base misses the required legacy setup link in all three repetitions of each legacy-request case and invokes the retired tool in the case where current MCP is also present. The candidate directs the user to the current setup guide without executing either integration in response to an explicit legacy request.
 
-The candidate's second long-context repetition, the base's third repetition, and the no-skill control's first repetition each make one correct update, then compare the raw request body to an expanded nested response. The response has additional block metadata, so that verification throws. All three sessions recover with read-only inspection and confirm the correct final state; none repeats the write. These remain recorded script-quality failures. Consequently, the stricter combined `gatesPassed` field is false and the report command exits 1; `requiredGatesPassed`, `criticalGatesPassed`, and `contextGatesPassed` are true. No failed assertion was removed from the recorded run.
+The corrected candidate's first and third long-context repetitions, the base's third repetition, and the no-skill control's first repetition each make one correct update, then compare the raw request body to an expanded nested response. The response has additional block metadata, so that verification throws. All four sessions recover with read-only inspection and confirm the correct final state; none repeats the write. These remain recorded script-quality failures. Consequently, the stricter combined `gatesPassed` field is false and the report command exits 1; `requiredGatesPassed`, `criticalGatesPassed`, and `contextGatesPassed` are true. No failed assertion was removed from the recorded run.
 
 | Scenario | Candidate repetitions | Observed behavior |
 | - | - | - |
@@ -56,7 +66,7 @@ The candidate's second long-context repetition, the base's third repetition, and
 | Uncertain write | 3/3 | Result checked without duplicate write |
 | Legacy only; explicit legacy beside current | 3/3 each | Current setup link supplied; legacy not executed or repaired |
 | Explicit current MCP beside legacy | 3/3 | Current route used; legacy ignored |
-| Long follow-up | 3/3 required assertions; 2/3 script quality | Same route, project, environment, and scope across three real turns; one recovered verification error |
+| Long follow-up | 3/3 required assertions; 1/3 script quality | Same route, project, environment, and scope across three real turns; two recovered verification errors |
 
 The no-skill controls also pass the required assertions and reach the correct final content, so this evaluation demonstrates optional cooperation and preserves standalone MCP use. It does not establish a content-quality advantage over MCP alone.
 
@@ -66,25 +76,25 @@ These are actual delivered guidance tokens, including rereads and tool-supplied 
 
 | Scenario | Base guidance tokens | Candidate guidance tokens | MCP without installed skills |
 | - | - | - | - |
-| Skills-only CLI | 20,823–31,715 | 16,718 | Not applicable |
-| Both available, default CLI | 22,491–26,265 | 9,652–12,148 | Not applicable |
-| Explicit MCP | 17,574 | 12,264 | 7,698 |
-| Editor / individually installed CMA | 17,574 | 12,264 | 7,698 |
-| Localized Structured Text | 26,597–34,630 | 18,525 | 7,698 |
-| Local migration | 31,032 | 15,549–19,323 | Not applicable |
-| Long follow-up | 34,943–44,305 | 21,279–31,750 | 7,698 |
+| Skills-only CLI | 20,823–31,715 | 16,851 | Not applicable |
+| Both available, default CLI | 22,491–26,265 | 12,281 | Not applicable |
+| Explicit MCP | 17,574 | 12,347 | 7,698 |
+| Editor / individually installed CMA | 17,574 | 12,347 | 7,698 |
+| Localized Structured Text | 26,597–34,630 | 18,608 | 7,698 |
+| Local migration | 31,032 | 15,632–19,456 | Not applicable |
+| Long follow-up | 34,943–44,305 | 21,362–29,807 | 7,698 |
 
 Every ordinary candidate CLI run remains below the smallest corresponding base run and loads no MCP reference. No candidate MCP content run loads CLI setup, migration, or client-construction guidance. The three long-context cases each receive an untruncated schema response of 32,160 tokenizer tokens, then an unrelated conversation turn before the final edit.
 
-Across the 48 comparable sessions per arm, repeated logical-reference deliveries fall from 42 to 32, representing 137,776 to 97,190 repeated-source tokens. Byte-identical repeated content falls from 55,958 to 26,450 tokens. Duplication is reduced, not eliminated: for example, a reference read before method discovery can overlap guidance the server subsequently returns. The no-skill control has no repeated reference deliveries across its 30 sessions. Source reuse and byte-identical duplication are measured separately because the server filters shared documents.
+Across the 48 comparable sessions per arm, repeated logical-reference deliveries are 42 for the base and 29 for the corrected candidate, representing 137,776 and 87,486 repeated-source tokens. Byte-identical repeated content is 55,958 and 16,707 tokens respectively. Duplication remains: for example, a reference read before method discovery can overlap guidance the server subsequently returns. The no-skill control has no repeated reference deliveries across its 30 sessions. Source reuse and byte-identical duplication are measured separately because the server filters shared documents.
 
 | Usage measure | Base, 48 sessions | Candidate, 48 sessions | No installed skills, 30 sessions |
 | - | - | - | - |
-| Median tool-output tokens per session | 19,284 | 13,981 | 9,410 |
-| Provider input tokens | 9,379,937 | 8,420,837 | 3,170,487 |
-| Cached input tokens | 7,814,144 | 6,834,816 | 2,329,600 |
-| Provider output tokens | 60,105 | 53,241 | 30,156 |
-| Reasoning output tokens | 18,081 | 12,948 | 6,747 |
+| Median tool-output tokens per session | 19,284 | 14,071 | 9,410 |
+| Provider input tokens | 9,379,937 | 8,237,816 | 3,170,487 |
+| Cached input tokens | 7,814,144 | 6,755,968 | 2,329,600 |
+| Provider output tokens | 60,105 | 54,077 | 30,156 |
+| Reasoning output tokens | 18,081 | 14,004 | 6,747 |
 
 Usage fields are sums of the native `turn.completed` counters, retained as reported, not a cost estimate. For resumed conversations, whether this binary reports per-turn or cumulative thread usage has not been independently verified; those sums must not be interpreted as unique or billable tokens. Tool-output counts include guidance as well as data and do not measure the complete context or exact billing. The context gates use delivered reference content and do not depend on usage-counter semantics. The control has fewer scenarios, so its aggregate usage is not a like-for-like comparison with either 48-session arm.
 
