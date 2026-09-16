@@ -33,7 +33,7 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 
 3. **Existing executeQuery wrapper** — Search for an existing `executeQuery` function that wraps `@datocms/cda-client`
 
-4. **Installed deps** — Check `package.json` for: `@datocms/cda-client`, `serialize-error`, `jose`
+4. **Installed deps** — Check `package.json` against the selected framework reference's Core Dependencies before installing missing packages
 
 5. **Env files** — Check `.env`, `.env.local`, `.env.example` for existing DatoCMS tokens
 
@@ -106,7 +106,7 @@ Create all files following the patterns in the loaded references. Generate:
   - SvelteKit: `$env/dynamic/private`
   - Astro: `astro:env/server`
 - Use the framework's native redirect and response mechanisms
-- Non-Next.js frameworks: use `jose` for JWT signing/verification of the draft mode cookie
+- Non-Next.js frameworks: follow the selected framework reference's JWT cookie helper and its signing/verification library
 
 #### TypeScript
 
@@ -116,12 +116,7 @@ Follow the TypeScript rules in `../../../patterns/MANDATORY_RULES.md`.
 
 Follow the env conventions in `../../../patterns/MANDATORY_RULES.md`.
 
-Recipe-specific env var names:
-
-- Next.js: `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`, `DATOCMS_DRAFT_CONTENT_CDA_TOKEN`, `SECRET_API_TOKEN`, `DRAFT_MODE_SECRET`
-- Nuxt: `NUXT_DATOCMS_DRAFT_CONTENT_CDA_TOKEN`, `NUXT_SECRET_API_TOKEN`
-- SvelteKit: `PRIVATE_DATOCMS_DRAFT_CONTENT_CDA_TOKEN`, `PRIVATE_SECRET_API_TOKEN`
-- Astro: `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`, `DATOCMS_DRAFT_CONTENT_CDA_TOKEN`, `SECRET_API_TOKEN`, `DRAFT_MODE_SECRET`
+Use the exact names in Step 6 and the selected framework reference's runtime configuration. Next.js uses built-in draft mode and does not need a JWT signing secret. Keep draft-token configuration, signing secrets, and endpoint authentication secrets out of public runtime configuration; Nuxt exposes only the published CDA token there.
 
 #### File conflicts
 
@@ -129,13 +124,15 @@ Follow the file conflict rules in `../../../patterns/MANDATORY_RULES.md`.
 
 ## Step 5: Install Dependencies
 
-Install missing packages:
+Install missing packages from the selected framework reference's Core Dependencies:
 
 | Package | When |
 | - | - |
 | `@datocms/cda-client` | Always (if not already installed) |
 | `serialize-error` | Always (if not already installed) |
-| `jose` | Non-Next.js frameworks only (for JWT signing) |
+| `jsonwebtoken` | Non-Next.js reference cookie helpers (for JWT signing/verification) |
+| `@types/jsonwebtoken` | Non-Next.js reference cookie helpers (dev dependency) |
+| `jwt-decode` | Nuxt's client-side `useDraftMode` composable |
 
 Use the project's package manager (see `../../../patterns/MANDATORY_RULES.md`).
 
@@ -149,16 +146,16 @@ Add placeholder values to `.env.example` (create if it doesn't exist) and `.env.
 DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN=your_published_token_here
 DATOCMS_DRAFT_CONTENT_CDA_TOKEN=your_draft_token_here
 SECRET_API_TOKEN=your_secret_webhook_token_here
-DRAFT_MODE_SECRET=run_openssl_rand_hex_32
 ```
 
 ### Nuxt
 
 ```
-NUXT_DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN=your_published_token_here
+NUXT_PUBLIC_DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN=your_published_token_here
 NUXT_DATOCMS_DRAFT_CONTENT_CDA_TOKEN=your_draft_token_here
 NUXT_SECRET_API_TOKEN=your_secret_webhook_token_here
-NUXT_DRAFT_MODE_SECRET=run_openssl_rand_hex_32
+NUXT_SIGNED_COOKIE_JWT_SECRET=run_openssl_rand_hex_32
+NUXT_PUBLIC_DRAFT_MODE_COOKIE_NAME=datocms-draft-mode
 ```
 
 ### SvelteKit
@@ -167,7 +164,8 @@ NUXT_DRAFT_MODE_SECRET=run_openssl_rand_hex_32
 PRIVATE_DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN=your_published_token_here
 PRIVATE_DATOCMS_DRAFT_CONTENT_CDA_TOKEN=your_draft_token_here
 PRIVATE_SECRET_API_TOKEN=your_secret_webhook_token_here
-PRIVATE_DRAFT_MODE_SECRET=run_openssl_rand_hex_32
+PRIVATE_SIGNED_COOKIE_JWT_SECRET=run_openssl_rand_hex_32
+PUBLIC_DRAFT_MODE_COOKIE_NAME=datocms-draft-mode
 ```
 
 ### Astro
@@ -176,7 +174,8 @@ PRIVATE_DRAFT_MODE_SECRET=run_openssl_rand_hex_32
 DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN=your_published_token_here
 DATOCMS_DRAFT_CONTENT_CDA_TOKEN=your_draft_token_here
 SECRET_API_TOKEN=your_secret_webhook_token_here
-DRAFT_MODE_SECRET=run_openssl_rand_hex_32
+SIGNED_COOKIE_JWT_SECRET=run_openssl_rand_hex_32
+DRAFT_MODE_COOKIE_NAME=datocms-draft-mode
 ```
 
 Only add variables that don't already exist. Preserve any existing values.

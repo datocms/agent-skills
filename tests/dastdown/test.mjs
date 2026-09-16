@@ -218,6 +218,36 @@ try {
     'nested block contents stay opaque when serialized',
   );
 
+  const codeNewlineInput = structuredClone(roundTripInput);
+  codeNewlineInput.document.children.push({
+    type: 'paragraph',
+    children: [{ type: 'span', value: 'x\ny', marks: ['code'] }],
+  });
+  const unsafeRoundTrip = parse(serialize(codeNewlineInput), codeNewlineInput);
+  assert.equal(
+    unsafeRoundTrip.document.children.at(-1).children[0].value,
+    'x<br/>y',
+    'Dastdown 6.0.0 reproduces the untouched inline-code corruption',
+  );
+  const codeNewlineSnapshot = structuredClone(codeNewlineInput);
+  assert.throws(
+    () => replaceWording(codeNewlineInput),
+    /Dastdown changes existing text; use mapNodes on the original document/,
+    'the shipped preflight rejects lossy text round-trips before returning content',
+  );
+  assert.deepEqual(codeNewlineInput, codeNewlineSnapshot);
+
+  const normalizedInput = parse('Old wording');
+  normalizedInput.document.children[0].children = [
+    { type: 'span', value: 'Old ', marks: [] },
+    { type: 'span', value: 'wording' },
+  ];
+  assert.deepEqual(
+    replaceWording(normalizedInput),
+    parse('Clear wording'),
+    'the preflight accepts harmless span merging and omitted versus empty marks',
+  );
+
   const untouchedBlock = {
     id: 'NESTED_BLOCK',
     attributes: {

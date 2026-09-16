@@ -433,22 +433,21 @@ export const POST: APIRoute = async ({ url, request }) => {
 
     if (recordUrl) {
       if (item.meta.status !== 'published') {
+        const draftUrl = new URL('/api/draft-mode/enable', request.url);
+        draftUrl.searchParams.set('redirect', recordUrl);
+        draftUrl.searchParams.set('token', token);
         response.previewLinks.push({
           label: 'Draft version',
-          url: new URL(
-            `/api/draft-mode/enable?redirect=${recordUrl}&token=${token}`,
-            request.url,
-          ).toString(),
+          url: draftUrl.toString(),
         });
       }
 
       if (item.meta.status !== 'draft') {
+        const publishedUrl = new URL('/api/draft-mode/disable', request.url);
+        publishedUrl.searchParams.set('redirect', recordUrl);
         response.previewLinks.push({
           label: 'Published version',
-          url: new URL(
-            `/api/draft-mode/disable?redirect=${recordUrl}`,
-            request.url,
-          ).toString(),
+          url: publishedUrl.toString(),
         });
       }
     }

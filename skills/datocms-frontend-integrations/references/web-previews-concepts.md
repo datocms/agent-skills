@@ -90,22 +90,21 @@ const response: WebPreviewsResponse = { previewLinks: [] };
 
 if (url) {
   if (item.meta.status !== 'published') {
+    const draftUrl = new URL('/api/draft-mode/enable', requestUrl);
+    draftUrl.searchParams.set('redirect', url);
+    draftUrl.searchParams.set('token', token);
     response.previewLinks.push({
       label: 'Draft version',
-      url: new URL(
-        `/api/draft-mode/enable?redirect=${url}&token=${token}`,
-        requestUrl,
-      ).toString(),
+      url: draftUrl.toString(),
     });
   }
 
   if (item.meta.status !== 'draft') {
+    const publishedUrl = new URL('/api/draft-mode/disable', requestUrl);
+    publishedUrl.searchParams.set('redirect', url);
     response.previewLinks.push({
       label: 'Published version',
-      url: new URL(
-        `/api/draft-mode/disable?redirect=${url}`,
-        requestUrl,
-      ).toString(),
+      url: publishedUrl.toString(),
     });
   }
 }

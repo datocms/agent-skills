@@ -61,7 +61,12 @@ Same input shapes as `create` / `update` respectively, but no commit. Throw the 
 
 ## Versions and restore
 
-`itemVersions.listPagedIterator(recordId)` walks history. `itemVersions.restore(versionId)` creates a **new version** whose content matches the restored one — it does not delete history, and it does not re-publish: the record's publication state stays where it was. If the record was published before the restore and you want the restored content live, call `publish` explicitly afterward.
+`itemVersions.listPagedIterator(recordId)` walks history. `itemVersions.restore(versionId)` creates a **new current version** from the selected version without deleting history. Publication depends on the model's `draft_mode_active` setting:
+
+- **Draft mode enabled:** the restored version is unpublished; any previously published version stays live. Publish the restored content only when authorized.
+- **Draft mode disabled:** restoring automatically publishes the restored content. A request to restore without changing live content cannot use this operation on that model; explain the constraint before writing, and do not change the model's draft-mode setting without authorization.
+
+Check the model setting before restoring and verify the current and published content afterward. Do not promise that restoration leaves publication unchanged.
 
 ## Field value formats — beyond the simple types
 

@@ -121,11 +121,13 @@ for (const name of referenceNames) {
   });
 }
 
-function loadPreviewEndpoint(framework, kind, secretApiToken, token) {
+function loadPreviewEndpoint(framework, kind, secretApiToken, token, options = {}) {
   const path = resolve(repoRoot, 'skills/datocms-frontend-integrations/references', framework + '.md');
-  const marker = kind === 'draft enable'
-    ? /enableDraftMode\(event\)|draft\.enable\(\)/
-    : /WebPreviewsResponse/;
+  const marker = {
+    'draft enable': /enableDraftMode\(event\)|draft\.enable\(\)/,
+    'draft disable': /disableDraftMode\(event\)|draft\.disable\(\)/,
+    'preview links': /WebPreviewsResponse/,
+  }[kind];
   const snippets = [...readFileSync(path, 'utf8').matchAll(/^```ts\s*\n([\s\S]*?)^```/gm)]
     .map((match) => match[1])
     .filter((source) => marker.test(source));
@@ -138,16 +140,17 @@ function loadPreviewEndpoint(framework, kind, secretApiToken, token) {
 
   const effects = [];
   const exports = {};
-  const url = new URL('https://app.example.test/api/preview');
+  const url = new URL(options.requestUrl ?? 'https://app.example.test/api/preview');
   if (token !== undefined) url.searchParams.set('token', token);
   const enableDraftMode = () => effects.push('enableDraftMode');
+  const disableDraftMode = () => effects.push('disableDraftMode');
   const redirect = (location) => {
     effects.push('redirect:' + location);
     return new Response(null, { status: 307, headers: { location } });
   };
   const readBody = async () => {
     effects.push('readBody');
-    return { item: { meta: { status: 'draft' } }, locale: 'en' };
+    return { item: { meta: { status: options.recordStatus ?? 'draft' } }, locale: 'en' };
   };
   const utils = {
     ensureHttpMethods: () => {},
@@ -159,13 +162,13 @@ function loadPreviewEndpoint(framework, kind, secretApiToken, token) {
     json: Response.json.bind(Response),
   };
   const recordInfo = {
-    recordToWebsiteRoute: async () => { effects.push('recordToWebsiteRoute'); return '/article'; },
+    recordToWebsiteRoute: async () => { effects.push('recordToWebsiteRoute'); return options.recordUrl ?? '/article'; },
   };
   const imports = {
-    '~/lib/api/draftMode': { enableDraftMode },
-    '~/lib/draftMode': { enableDraftMode },
-    '$lib/draftMode.server': { enableDraftMode },
-    'next/headers': { draftMode: async () => ({ enable: enableDraftMode }) },
+    '~/lib/api/draftMode': { enableDraftMode, disableDraftMode },
+    '~/lib/draftMode': { enableDraftMode, disableDraftMode },
+    '$lib/draftMode.server': { enableDraftMode, disableDraftMode },
+    'next/headers': { draftMode: async () => ({ enable: enableDraftMode, disable: disableDraftMode }) },
     'next/navigation': { redirect },
     'next/server': { NextResponse: { json: Response.json.bind(Response) } },
     '@sveltejs/kit': { json: Response.json.bind(Response), redirect: (_status, location) => redirect(location) },
@@ -187,7 +190,7 @@ function loadPreviewEndpoint(framework, kind, secretApiToken, token) {
     process: { env: { SECRET_API_TOKEN: secretApiToken } },
     eventHandler: (handler) => handler,
     useRuntimeConfig: () => secretApiToken === undefined ? {} : { secretApiToken },
-    getQuery: () => token === undefined ? {} : { token },
+    getQuery: () => Object.fromEntries(url.searchParams),
     createError: ({ message, status, statusCode }) => Object.assign(new Error(message), { status: status ?? statusCode }),
     sendRedirect: async (_event, location) => redirect(location),
     readBody,
@@ -212,7 +215,70 @@ function loadPreviewEndpoint(framework, kind, secretApiToken, token) {
   };
 }
 
+const previewSecret = 'preview+a&b=c?d#e%f/ü';
+const previewDestinations = [
+  '/article',
+  '/articles/caff%C3%A8?view=full&locale=it&next=%2Fother%3Fx%3D1#details',
+  '/article#section',
+];
+
+function assertPreviewLinks(previewLinks, recordUrl, secret, parameter = 'redirect') {
+  assert.deepEqual(Array.from(previewLinks, link => link.label), ['Draft version', 'Published version']);
+  return Array.from(previewLinks, (link, index) => {
+    const action = index === 0 ? 'enable' : 'disable';
+    const previewUrl = new URL(link.url);
+    assert.equal(previewUrl.origin, 'https://app.example.test');
+    assert.equal(previewUrl.pathname, '/api/draft-mode/' + action);
+    assert.equal(previewUrl.hash, '', 'the destination fragment belongs inside the query parameter');
+    assert.equal(previewUrl.searchParams.get(parameter), recordUrl);
+    assert.equal(previewUrl.searchParams.get('token'), action === 'enable' ? secret : null);
+    assert.equal([...previewUrl.searchParams].length, action === 'enable' ? 2 : 1);
+    return previewUrl;
+  });
+}
+
+test('shared preview-links example preserves complete destinations and special-character secrets', () => {
+  const markdown = readFileSync(resolve(repoRoot,
+    'skills/datocms-frontend-integrations/references/web-previews-concepts.md'), 'utf8');
+  const snippets = [...markdown.matchAll(/^```ts\s*\n([\s\S]*?)^```/gm)]
+    .map(match => match[1])
+    .filter(source => source.includes('const response: WebPreviewsResponse'));
+  assert.equal(snippets.length, 1, 'expected one shared preview-link builder');
+  const { outputText, diagnostics } = ts.transpileModule(snippets[0] + '\nresponse;', {
+    compilerOptions: { target: ts.ScriptTarget.ES2022 }, reportDiagnostics: true,
+  });
+  assert.equal(diagnostics?.length ?? 0, 0);
+  for (const recordUrl of previewDestinations) {
+    const response = runInNewContext(outputText, {
+      URL, url: recordUrl, token: previewSecret,
+      requestUrl: 'https://app.example.test/api/preview', item: { meta: { status: 'updated' } },
+    }, { timeout: 1000 });
+    assertPreviewLinks(response.previewLinks, recordUrl, previewSecret);
+  }
+});
+
 for (const framework of ['nuxt', 'nextjs', 'sveltekit', 'astro']) {
+  test(framework + ': generated preview links preserve complete destinations and special-character secrets', async () => {
+    const secret = previewSecret;
+    for (const recordUrl of previewDestinations) {
+      const previews = loadPreviewEndpoint(framework, 'preview links', secret, secret, {
+        recordUrl, recordStatus: 'updated',
+      });
+      const response = await previews.invoke('POST');
+      assert.equal(response.status, 200);
+      const { previewLinks } = await response.json();
+      const urls = assertPreviewLinks(previewLinks, recordUrl, secret, framework === 'nuxt' ? 'url' : 'redirect');
+      for (const [index, action] of ['enable', 'disable'].entries()) {
+        const endpoint = loadPreviewEndpoint(framework, 'draft ' + action, secret, undefined, {
+          requestUrl: urls[index].toString(),
+        });
+        const result = await endpoint.invoke('GET');
+        assert.notEqual(result.status, 401, 'the generated link must retain its authentication token');
+        assert.deepEqual(endpoint.effects, [action + 'DraftMode', 'redirect:' + recordUrl]);
+      }
+    }
+  });
+
   for (const [name, method, expectedEffects] of [
     ['draft enable', 'GET', ['enableDraftMode', 'redirect:/']],
     ['preview links', 'POST', ['readBody', 'recordToWebsiteRoute']],

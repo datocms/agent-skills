@@ -439,22 +439,21 @@ export default eventHandler(async (event) => {
 
     if (url) {
       if (item.meta.status !== 'published') {
+        const draftUrl = new URL('/api/draft-mode/enable', getRequestURL(event));
+        draftUrl.searchParams.set('url', url);
+        draftUrl.searchParams.set('token', token);
         response.previewLinks.push({
           label: 'Draft version',
-          url: new URL(
-            `/api/draft-mode/enable?url=${url}&token=${token}`,
-            getRequestURL(event),
-          ).toString(),
+          url: draftUrl.toString(),
         });
       }
 
       if (item.meta.status !== 'draft') {
+        const publishedUrl = new URL('/api/draft-mode/disable', getRequestURL(event));
+        publishedUrl.searchParams.set('url', url);
         response.previewLinks.push({
           label: 'Published version',
-          url: new URL(
-            `/api/draft-mode/disable?url=${url}`,
-            getRequestURL(event),
-          ).toString(),
+          url: publishedUrl.toString(),
         });
       }
     }

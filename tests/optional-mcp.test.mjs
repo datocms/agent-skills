@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
@@ -106,6 +107,46 @@ const preservedWorkflows = {
   ],
 };
 
+function withReviewedDastdownPreflight(source) {
+  const corrections = [
+    [
+      '**Prefer dastdown over AST building/manipulation when possible!** Much less chance of logic/typing errors.',
+      'Prefer dastdown for text-shaped edits after the unedited round-trip check below. If it throws or changes existing text, apply the requested edit with `mapNodes` on the original document before making any write.',
+    ],
+    [
+      'import { parse, serialize } from "datocms-structured-text-dastdown";\n\nconst currentItem',
+      'import { parse, serialize } from "datocms-structured-text-dastdown";\nimport { isSpan, reduceNodes } from "datocms-structured-text-utils";\n\nconst currentItem',
+    ],
+    [
+      '  const text = serialize(currentItem.content);\n  const edited',
+      '  const text = serialize(currentItem.content);\n  const unedited = parse(text, currentItem.content);\n  const originalText = reduceNodes(currentItem.content, (text, node) => text + (isSpan(node) ? node.value : ""), "");\n  const roundTripText = reduceNodes(unedited, (text, node) => text + (isSpan(node) ? node.value : ""), "");\n  if (originalText !== roundTripText) {\n    throw new Error("Dastdown changes existing text; use mapNodes on the original document.");\n  }\n  const edited',
+    ],
+    [
+      'Creating brand new structured text content,',
+      'Dastdown 6.0.0 changes newlines inside code-marked spans into literal `<br/>` text. This pre-write check catches that while tolerating span merging and mark normalization; it supplements the structure, marks, links, and reference checks, not the saved-content verification. If it fails, transform the original AST instead. Omit the imports when the selected runtime already supplies these helpers.\n\nCreating brand new structured text content,',
+    ],
+  ];
+  for (const [before, after] of corrections) {
+    assert.equal(source.split(before).length, 2, 'apply each reviewed Dastdown correction exactly once');
+    source = source.replace(before, after);
+  }
+  return source;
+}
+
+function withReviewedRestoreGuidance(source) {
+  const before = '`itemVersions.listPagedIterator(recordId)` walks history. `itemVersions.restore(versionId)` creates a **new version** whose content matches the restored one — it does not delete history, and it does not re-publish: the record\'s publication state stays where it was. If the record was published before the restore and you want the restored content live, call `publish` explicitly afterward.';
+  const after = [
+    '`itemVersions.listPagedIterator(recordId)` walks history. `itemVersions.restore(versionId)` creates a **new current version** from the selected version without deleting history. Publication depends on the model\'s `draft_mode_active` setting:',
+    '',
+    '- **Draft mode enabled:** the restored version is unpublished; any previously published version stays live. Publish the restored content only when authorized.',
+    '- **Draft mode disabled:** restoring automatically publishes the restored content. A request to restore without changing live content cannot use this operation on that model; explain the constraint before writing, and do not change the model\'s draft-mode setting without authorization.',
+    '',
+    'Check the model setting before restoring and verify the current and published content afterward. Do not promise that restoration leaves publication unchanged.',
+  ].join('\n');
+  assert.equal(source.split(before).length, 2, 'apply the reviewed restore correction exactly once');
+  return source.replace(before, after);
+}
+
 test('optional MCP keeps the agreed discovery and entrypoint context budgets', () => {
   const report = measureContext(process.cwd(), contextBase);
   assert.equal(report.passed, true, JSON.stringify(report, null, 2));
@@ -114,7 +155,10 @@ test('optional MCP keeps the agreed discovery and entrypoint context budgets', (
 for (const [name, workflows] of Object.entries(preservedWorkflows)) {
   const path = `skills/datocms-cma/references/${name}.md`;
   const source = readFileSync(path, 'utf8');
-  const previous = markdown.parse(execFileSync('git', ['show', `${retentionBase}:${path}`], { encoding: 'utf8' }));
+  const baseline = execFileSync('git', ['show', `${retentionBase}:${path}`], { encoding: 'utf8' });
+  const previous = markdown.parse(name === 'editing-records'
+    ? withReviewedDastdownPreflight(baseline)
+    : withReviewedRestoreGuidance(baseline));
 
   test(`${name}: exact MCP filter preserves the full Markdown structure and shared content`, () => {
     const raw = parseMarkdown(source, `${name} raw`);
@@ -156,5 +200,49 @@ test('record version semantics and runtime guidance survive the server projectio
   assert.match(editing, /helpers already supplied by the selected runtime/);
   for (const source of [records, editing]) {
     assert.doesNotMatch(source, /npx datocms|Two runtime classes/);
+  }
+});
+
+test('shipped CMA round-trip preflight prevents lossy writes in imported and ambient runtimes', async () => {
+  const require = createRequire(import.meta.url);
+  const { parse, serialize } = require('datocms-structured-text-dastdown');
+  const { isSpan, reduceNodes } = require('datocms-structured-text-utils');
+  const source = readFileSync('skills/datocms-cma/references/editing-records.md', 'utf8');
+  for (const [mode, markdownSource] of [['imported', source], ['ambient', project(source)]]) {
+    const examples = [];
+    visit(markdown.parse(markdownSource), (node) => {
+      if (node.type === 'code' && node.value.includes('const text = serialize(currentItem.content);')) examples.push(node.value);
+    });
+    assert.equal(examples.length, 1);
+    const script = mode === 'ambient'
+      ? examples[0].replace(/^import .*;\n/gm, '')
+      : examples[0];
+    const { outputText } = ts.transpileModule(script, {
+      compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS },
+    });
+    const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
+    const run = new AsyncFunction('exports', 'require', 'client', 'id', 'parse', 'serialize', 'isSpan', 'reduceNodes', outputText);
+    const writes = [];
+    let content = parse('Ordinary prose');
+    content.document.children.push({
+      type: 'paragraph', children: [{ type: 'span', value: 'x\ny', marks: ['code'] }],
+    });
+    const snapshot = structuredClone(content);
+    const client = { items: {
+      find: async () => ({ id: 'record', content }),
+      update: async (id, payload) => { writes.push({ id, payload }); },
+    } };
+    const execute = () => run({}, require, client, 'record', parse, serialize, isSpan, reduceNodes);
+    await assert.rejects(execute(), /Dastdown changes existing text/, `${mode}: lossy round-trip rejected`);
+    assert.equal(writes.length, 0, `${mode}: no mutation before successful preflight`);
+    assert.deepEqual(content, snapshot, `${mode}: original remains available for AST fallback`);
+
+    content = parse('Faithful content');
+    content.document.children[0].children = [
+      { type: 'span', value: 'Faithful ', marks: [] },
+      { type: 'span', value: 'content' },
+    ];
+    await execute();
+    assert.deepEqual(writes, [{ id: 'record', payload: { content: parse('Faithful content') } }], `${mode}: harmless normalization may be saved`);
   }
 });

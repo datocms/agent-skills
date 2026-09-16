@@ -1,5 +1,14 @@
 # Creating and editing Structured Text
 
+## Contents
+
+- Choose the smallest operation
+- Dastdown round-trip
+- Dastdown syntax
+- Tree transformations
+- Combining prose and block edits
+- Verification
+
 ## Choose the smallest operation
 
 - Controlled prose authoring or text-shaped edits: Dastdown `parse` / `serialize`.
@@ -13,15 +22,24 @@ Read only the target field/document. Preserve unaffected nodes and reference pay
 
 ```js
 import { parse, serialize } from 'datocms-structured-text-dastdown';
+import { isSpan, reduceNodes } from 'datocms-structured-text-utils';
 
 export function replaceWording(original) {
   const serialized = serialize(original);
+  const unedited = parse(serialized, original);
+  const originalText = reduceNodes(original, (text, node) => text + (isSpan(node) ? node.value : ''), '');
+  const roundTripText = reduceNodes(unedited, (text, node) => text + (isSpan(node) ? node.value : ''), '');
+  if (originalText !== roundTripText) {
+    throw new Error('Dastdown changes existing text; use mapNodes on the original document.');
+  }
   const edited = serialized.replace('Old wording', 'Clear wording');
   return parse(edited, original);
 }
 ```
 
 Use a targeted edit on known prose; avoid replacements that unintentionally modify URLs, IDs, code, or markup. For edits spanning marks/links, inspect the relevant nodes before deciding whether text or AST editing is simpler.
+
+Run this unedited round-trip before changing or saving content. Dastdown 6.0.0 turns newlines inside code-marked spans into literal `<br/>` text; the span-text check catches that without rejecting harmless span merging or mark normalization. If parsing throws or the check fails, apply the requested edit directly with `mapNodes` on the original document. This text check supplements the structure, marks, links, and reference checks below; it is not a complete preservation comparison. Use helpers supplied by the selected runtime, omitting imports when they are already available.
 
 `parse(edited, original)` restores original `block` / `inlineBlock` objects by ID. Surviving block objects retain identity; unknown block placeholders throw. Keep the original lookup unchanged. `serialize` emits IDs for blocks even after a nested CMA read; block internals stay opaque.
 

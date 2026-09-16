@@ -71,7 +71,7 @@ Use these instead of local `const FOO_ID = "…" as const;` literals — guards 
 
 ## Chaining Structured Text helpers
 
-Before chaining `parse` → `mapNodes`, explicitly type the writable document with `FieldValueInRequest`. An inferred response type can select the wrong mapper overload with mixed helper versions. For a localized field, after checking the locale exists:
+Before chaining `parse` → `mapNodes`, explicitly type the writable document with `FieldValueInRequest`. An inferred response type can select the wrong mapper overload with mixed helper versions. For a localized field, after checking the locale exists and passing the unedited round-trip check below:
 
 ```ts
 let content: NonNullable<FieldValueInRequest<typeof currentItem, "body">>["en"] =
@@ -193,7 +193,7 @@ Canonical order: **Pass 1 → Pass 2 → root-level appends**. Apply only steps 
    - **Block edits, replacements, creations at existing slots** — return `{ ...node, item: buildBlockRecord<Schema.B>({ id, ...diff }) }` to edit, `buildBlockRecord<Schema.B>({ item_type, ...attrs })` (no `id`) to swap in new block at existing slot, `duplicateBlockRecord<Schema.B>(source, repo)` to clone. Source duplicate from **original** tree via `findFirstNode` — `mapNodes` may have rewritten `node.item`, so post-walk tree not safe to clone from.
 3. **Post-walk — root-level appends.** `mapNodes` can't splat at root, so push fresh top-level entries (new paragraph, `{ type: "block", item: buildBlockRecord(...) }`, duplicated block) directly into `content.document.children` after walk.
 
-**Prefer dastdown over AST building/manipulation when possible!** Much less chance of logic/typing errors.
+Prefer dastdown for text-shaped edits after the unedited round-trip check below. If it throws or changes existing text, apply the requested edit with `mapNodes` on the original document before making any write.
 
 **Why Pass 1 must come first:** `parse` uses `currentItem.content` as lookup table for `<block id="…"/>` placeholders — block created or rewritten by Pass 2 first would either be missing from lookup (and `parse` would throw) or get its mutation silently overwritten by rehydration.
 
@@ -209,11 +209,18 @@ Do NOT add generic keep-as-id catch-all (`"item" in node`, `node.type === "block
 
 ```ts
 import { parse, serialize } from "datocms-structured-text-dastdown";
+import { isSpan, reduceNodes } from "datocms-structured-text-utils";
 
 const currentItem = await client.items.find<Schema.Article>(id, { nested: true });
 
 if (currentItem.content) {
   const text = serialize(currentItem.content);
+  const unedited = parse(text, currentItem.content);
+  const originalText = reduceNodes(currentItem.content, (text, node) => text + (isSpan(node) ? node.value : ""), "");
+  const roundTripText = reduceNodes(unedited, (text, node) => text + (isSpan(node) ? node.value : ""), "");
+  if (originalText !== roundTripText) {
+    throw new Error("Dastdown changes existing text; use mapNodes on the original document.");
+  }
   const edited = /* … LLM / regex / diff-merge on `text` … */ text;
 
   // `parse` reuses the original `item` for surviving block/inlineBlock IDs.
@@ -224,6 +231,8 @@ if (currentItem.content) {
   await client.items.update<Schema.Article>(currentItem.id, { content });
 }
 ```
+
+Dastdown 6.0.0 changes newlines inside code-marked spans into literal `<br/>` text. This pre-write check catches that while tolerating span merging and mark normalization; it supplements the structure, marks, links, and reference checks, not the saved-content verification. If it fails, transform the original AST instead. Omit the imports when the selected runtime already supplies these helpers.
 
 Creating brand new structured text content, use `parse("Your **content**")` instead of building DAST manually: much faster.
 
