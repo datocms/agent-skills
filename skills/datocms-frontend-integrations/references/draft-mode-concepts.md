@@ -31,7 +31,7 @@ Enable endpoint validates requests via shared secret:
 const token = request.searchParams.get('token');
 
 // Ensure that the request is coming from a trusted source
-if (token !== SECRET_API_TOKEN) {
+if (!SECRET_API_TOKEN || token !== SECRET_API_TOKEN) {
   // Return 401 unauthorized
 }
 ```

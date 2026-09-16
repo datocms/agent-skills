@@ -242,7 +242,7 @@ const repo = new SchemaRepository(client);
 if (currentItem.content) {
   let content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =
     currentItem.content;
-  content = mapNodes(content, (node) => {
+  content = mapNodes(content, (node, parent) => {
     if (isInlineBlockWithItemOfType(Schema.Mention.ID, node)) { // EDIT inline
       return { ...node, item: buildBlockRecord<Schema.Mention>({
         id: node.item.id, url: node.item.attributes.url + "?utm=x",
@@ -268,10 +268,11 @@ if (currentItem.content) {
     if (isItemLink(node)) return { ...node, item: "NEW_RECORD_ID" }; // itemLink/inlineItem: item is a record id string
     if (
       isParagraph(node) &&
+      parent?.type === "root" &&
       !node.children.some((child) => child.type === "inlineItem" || child.type === "inlineBlock") &&
       reduceNodes(node, (acc, n) => isSpan(n) ? acc + n.value.trim() : acc, "").length === 0
     ) {
-      return null; // 1:0 — reduceNodes descends into links/itemLinks; bottom-up: drop the paragraph
+      return null; // Drop empty root paragraphs; lists and blockquotes need their paragraphs.
     }
     return node; // untouched nodes pass through unchanged
   });
@@ -366,8 +367,10 @@ Site update + per-item backfill in ONE script. Spread existing per-locale object
 ```ts
 await client.site.update({ locales: ["en", "it", "es"] });
 
-const items = await client.items.list<Schema.FaqEntry>({ filter: { type: "faq_entry" }, version: "current" });
-for (const it of items) {
+for await (const it of client.items.listPagedIterator<Schema.FaqEntry>({
+  filter: { type: "faq_entry" }, version: "current",
+  order_by: "id_ASC", // Keep pagination order stable while updating translations.
+})) {
   await client.items.update<Schema.FaqEntry>(it.id, {
     question: { ...it.question, es: "..." },
     answer:   { ...it.answer,   es: "..." },

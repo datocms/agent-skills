@@ -47,7 +47,7 @@ export const GET: RequestHandler = (event) => {
   const redirectUrl = url.searchParams.get('redirect') || '/';
 
   try {
-    if (token !== env.PRIVATE_SECRET_API_TOKEN) {
+    if (!env.PRIVATE_SECRET_API_TOKEN || token !== env.PRIVATE_SECRET_API_TOKEN) {
       return invalidRequestResponse('Invalid token', 401);
     }
 
@@ -372,7 +372,7 @@ export const POST: RequestHandler = async ({ url, request }) => {
   try {
     const token = url.searchParams.get('token');
 
-    if (token !== privateEnv.PRIVATE_SECRET_API_TOKEN) {
+    if (!privateEnv.PRIVATE_SECRET_API_TOKEN || token !== privateEnv.PRIVATE_SECRET_API_TOKEN) {
       return invalidRequestResponse('Invalid token', 401);
     }
 

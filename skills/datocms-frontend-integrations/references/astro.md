@@ -47,7 +47,7 @@ export const GET: APIRoute = (event) => {
   const redirectUrl = url.searchParams.get('redirect') || '/';
 
   try {
-    if (token !== SECRET_API_TOKEN) {
+    if (!SECRET_API_TOKEN || token !== SECRET_API_TOKEN) {
       return invalidRequestResponse('Invalid token', 401);
     }
 
@@ -421,7 +421,7 @@ export const POST: APIRoute = async ({ url, request }) => {
   try {
     const token = url.searchParams.get('token');
 
-    if (token !== SECRET_API_TOKEN) {
+    if (!SECRET_API_TOKEN || token !== SECRET_API_TOKEN) {
       return invalidRequestResponse('Invalid token', 401);
     }
 

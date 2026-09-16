@@ -51,7 +51,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const redirectTo = request.nextUrl.searchParams.get('redirect') || '/';
 
   try {
-    if (token !== process.env.SECRET_API_TOKEN) {
+    if (!process.env.SECRET_API_TOKEN || token !== process.env.SECRET_API_TOKEN) {
       return invalidRequestResponse('Invalid token', 401);
     }
 
@@ -299,7 +299,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const token = request.nextUrl.searchParams.get('token');
 
-    if (token !== process.env.SECRET_API_TOKEN) {
+    if (!process.env.SECRET_API_TOKEN || token !== process.env.SECRET_API_TOKEN) {
       return invalidRequestResponse('Invalid token', 401);
     }
 

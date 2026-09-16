@@ -59,7 +59,7 @@ function section(tree, title) {
   while (end < tree.children.length && !(tree.children[end].type === 'heading' && tree.children[end].depth <= heading.depth)) end++;
   return tree.children.slice(start, end).map(semanticTree).map((node) => {
     if (node.type !== 'code') return node;
-    // Allow only the reviewed request-type correction and inline-content guard.
+    // Allow only the reviewed request-type, content-preservation and pagination fixes.
     // All other code and prose must still match the base exactly.
     return { ...node, value: node.value.replace(
       '  // `parse` reuses the original `item` for surviving block/inlineBlock IDs.\n  // Use the writable field type when continuing through `mapNodes`.\n  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    parse(edited, currentItem.content);',
@@ -67,11 +67,23 @@ function section(tree, title) {
     ).replace(
       '      !node.children.some((child) => child.type === "inlineItem" || child.type === "inlineBlock") &&\n',
       '',
+    ).replace(
+      '  content = mapNodes(content, (node, parent) => {',
+      '  content = mapNodes(content, (node) => {',
+    ).replace(
+      '      parent?.type === "root" &&\n',
+      '',
+    ).replace(
+      '      return null; // Drop empty root paragraphs; lists and blockquotes need their paragraphs.',
+      '      return null; // 1:0 — reduceNodes descends into links/itemLinks; bottom-up: drop the paragraph',
+    ).replace(
+      'for await (const it of client.items.listPagedIterator<Schema.FaqEntry>({\n  filter: { type: "faq_entry" }, version: "current",\n  order_by: "id_ASC", // Keep pagination order stable while updating translations.\n})) {',
+      'const items = await client.items.list<Schema.FaqEntry>({ filter: { type: "faq_entry" }, version: "current" });\nfor (const it of items) {',
     ) };
   });
 }
 
-// Preserve domain workflows, allowing only the two explicit corrections above.
+// Preserve domain workflows, allowing only the explicit corrections above.
 // Compare their full prose, lists, tables and remaining code with the reviewed base.
 const preservedWorkflows = {
   records: [

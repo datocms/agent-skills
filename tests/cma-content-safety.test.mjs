@@ -70,7 +70,7 @@ test('shipped draft publication example finishes pagination before mutating the 
   ]);
 });
 
-test('shipped node transformation preserves inline content while removing empty paragraphs', async () => {
+test('shipped node transformation preserves inline and nested content while removing empty root paragraphs', async () => {
   const source = shippedExample(
     'skills/datocms-cma/references/editing-records.md',
     'content = mapNodes(content,',
@@ -82,10 +82,24 @@ test('shipped node transformation preserves inline content while removing empty 
       relationships: { item_type: { data: { type: 'item_type', id: 'image' } } },
     } }] },
   ];
+  const nestedContent = [
+    { type: 'list', style: 'numbered', children: [
+      { type: 'listItem', children: [
+        { type: 'paragraph', children: [{ type: 'span', value: '', marks: ['strong'] }] },
+      ] },
+      { type: 'listItem', children: [
+        { type: 'paragraph', children: [{ type: 'span', value: 'Second item', marks: ['strong'] }] },
+      ] },
+    ] },
+    { type: 'blockquote', children: [
+      { type: 'paragraph', children: [{ type: 'span', value: '', marks: ['strong'] }] },
+    ] },
+  ];
   const content = {
     schema: 'dast',
     document: { type: 'root', children: [
       ...structuredClone(inlineParagraphs),
+      ...structuredClone(nestedContent),
       { type: 'paragraph', children: [{ type: 'span', value: ' \n ' }] },
       { type: 'paragraph', children: [{ type: 'link', url: 'https://example.com', children: [
         { type: 'span', value: '' },
@@ -112,7 +126,63 @@ test('shipped node transformation preserves inline content while removing empty 
 
   assert.equal(structuredText.validate(saved).valid, true);
   assert.deepEqual(saved.document.children.slice(0, 2), inlineParagraphs);
-  assert.equal(saved.document.children.length, 4, 'two inline paragraphs, prose, and the appended paragraph');
-  assert.equal(saved.document.children[2].children[0].value, 'Keep this prose');
-  assert.equal(saved.document.children[3].children[0].value, 'Updated');
+  assert.deepEqual(saved.document.children.slice(2, 4), nestedContent);
+  assert.equal(saved.document.children.length, 6, 'inline paragraphs, nested containers, prose, and appended paragraph');
+  assert.equal(saved.document.children[4].children[0].value, 'Keep this prose');
+  assert.equal(saved.document.children[5].children[0].value, 'Updated');
+});
+
+test('shipped locale backfill updates every page and preserves existing translations', async () => {
+  const source = shippedExample(
+    'skills/datocms-cma/references/editing-records.md',
+    'await client.site.update({ locales:',
+  );
+  const client = cma.buildClient({ apiToken: 'synthetic-test-token' });
+  const records = Array.from({ length: 35 }, (_, index) => ({
+    id: `faq-${String(index).padStart(2, '0')}`,
+    type: 'item',
+    attributes: {
+      question: { en: `Question ${index}`, it: `Domanda ${index}` },
+      answer: { en: `Answer ${index}`, it: `Risposta ${index}` },
+    },
+    relationships: { item_type: { data: { type: 'item_type', id: 'faq' } } },
+  }));
+  const updatedIds = [];
+  const pages = [];
+  const orderings = [];
+  let localesUpdated = false;
+  client.site.update = async ({ locales }) => {
+    assert.deepEqual(locales, ['en', 'it', 'es']);
+    localesUpdated = true;
+  };
+  client.items.rawList = async ({ filter, version, order_by, page = { limit: 30, offset: 0 } }) => {
+    assert.equal(localesUpdated, true, 'enable the locale before backfilling it');
+    assert.equal(filter.type, 'faq_entry');
+    assert.equal(version, 'current');
+    pages.push({ ...page });
+    orderings.push(order_by);
+    const orderedRecords = order_by === 'id_ASC'
+      ? [...records].sort((a, b) => a.id.localeCompare(b.id))
+      : records;
+    return {
+      data: orderedRecords.slice(page.offset, page.offset + page.limit),
+      meta: { total_count: records.length },
+    };
+  };
+  client.items.update = async (id, payload) => {
+    const record = records.find((record) => record.id === id);
+    assert.ok(record, 'only selected records are updated');
+    assert.ok(!updatedIds.includes(id), 'update each record once');
+    assert.deepEqual(payload, {
+      question: { ...record.attributes.question, es: '...' },
+      answer: { ...record.attributes.answer, es: '...' },
+    });
+    updatedIds.push(id);
+  };
+
+  await new AsyncFunction('client', source)(client);
+
+  assert.deepEqual(updatedIds, records.map((record) => record.id));
+  assert.deepEqual(pages, [{ limit: 30, offset: 0 }, { limit: 30, offset: 30 }]);
+  assert.deepEqual(orderings, ['id_ASC', 'id_ASC'], 'pagination order remains stable when translations change');
 });
