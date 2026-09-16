@@ -152,6 +152,26 @@ function normalizeDeletedMark(tree) {
   tree.children?.forEach(normalizeDeletedMark);
 }
 
+function preserveMarkdownCode(tree) {
+  const inlineCode = new Map();
+  function protect(node) {
+    if (node.tagName === 'pre') return;
+    if (node.tagName === 'code') {
+      inlineCode.set(node, node.children);
+      // The converter minifies before preprocessing. A non-whitespace placeholder
+      // also keeps whitespace-only code and its surrounding spaces from disappearing.
+      node.children = [{ type: 'text', value: 'code' }];
+      return;
+    }
+    node.children?.forEach(protect);
+  }
+  protect(tree);
+  return (tree) => {
+    for (const [node, children] of inlineCode) node.children = children;
+    normalizeDeletedMark(tree);
+  };
+}
+
 function parseArgs(argv) {
   const options = {};
   const errors = [];
@@ -254,7 +274,7 @@ try {
       if (!report.diagnostics.length) {
         const hast = toHast(tree);
         auditHtml(asParse5(hast), report.diagnostics);
-        if (!report.diagnostics.length) document = await hastToStructuredText(hast, { preprocess: normalizeDeletedMark });
+        if (!report.diagnostics.length) document = await hastToStructuredText(hast, { preprocess: preserveMarkdownCode(hast) });
       }
     } else {
       const tree = parseHtml(source, {

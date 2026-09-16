@@ -31,7 +31,7 @@ The helper recognizes supported prose, not every document accepted by its parser
 | HTML | Semantic paragraphs/headings/lists, compatible blockquotes, links, code, supported marks and basic inline font-weight/font-style/underline | Images/media/embeds, tables, unknown attributes/CSS, layout semantics, unsupported tags or nesting |
 | Google Docs export | Supported prose in an exported Markdown file; supported semantic HTML after inspection | Comments/suggestions, document layout, arbitrary export CSS, inaccessible images, and other features without an explicit mapping |
 
-Root-level inline HTML needs a paragraph. Ordered lists start at one. Empty list items require explicit content or a custom mapping to preserve list positions; the helper reports `EMPTY_LIST_ITEM`. DAST blockquotes contain paragraphs; list items contain paragraphs or nested lists. Metadata, comments, document wrappers, whitespace, and final code newlines have documented normalizations in the report. Review those alongside the output.
+Root-level inline HTML needs a paragraph. Ordered lists start at one. Empty list items require explicit content or a custom mapping to preserve list positions; the helper reports `EMPTY_LIST_ITEM`. DAST blockquotes contain paragraphs; list items contain paragraphs or nested lists. Markdown inline code preserves its whitespace after CommonMark parsing, including repeated spaces and tabs. Metadata, comments, document wrappers, HTML whitespace, and final code newlines have documented normalizations in the report. Review those alongside the output.
 
 ## Fidelity and unsupported features
 

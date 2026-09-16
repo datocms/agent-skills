@@ -87,6 +87,58 @@ test('plain prose output has the expected DAST envelope and structure', async ()
   ] } });
 });
 
+test('markdown: inline code preserves executable string literals', async () => {
+  const command = 'node -e \'console.log("a  b".length)\'';
+  const { document } = await convert(`Run \`${command}\` and expect 4.`);
+  assert.deepEqual(document.document.children[0].children, [
+    { type: 'span', value: 'Run ' },
+    { type: 'span', value: command, marks: ['code'] },
+    { type: 'span', value: ' and expect 4.' },
+  ]);
+});
+
+for (const [name, source, expectedCode, expectedText] of [
+  ['repeated spaces', 'Before `a  b` after.', 'a  b', 'Before a  b after.'],
+  ['tabs', 'Before `a\t\tb` after.', 'a\t\tb', 'Before a\t\tb after.'],
+  ['padded delimiters', 'Before `  a  ` after.', ' a ', 'Before  a  after.'],
+  ['leading spaces', 'Before `  a` after.', '  a', 'Before   a after.'],
+  ['trailing spaces', 'Before `a  ` after.', 'a  ', 'Before a   after.'],
+  ['single delimiter padding', 'Before ` a ` after.', 'a', 'Before a after.'],
+  ['line endings', 'Before `a\nb` after.', 'a b', 'Before a b after.'],
+  ['standalone all-space content', '`   `', '   ', '   '],
+  ['all-space content in prose', 'Before `   ` after.', '   ', 'Before     after.'],
+]) {
+  test(`markdown: inline code preserves ${name} with CommonMark normalization`, async () => {
+    const { document } = await convert(source);
+    const code = nodes(document.document).filter((node) => node.type === 'span' && node.marks?.includes('code'));
+    assert.deepEqual(code.map((node) => node.value), [expectedCode]);
+    assert.equal(text(document.document), expectedText, 'surrounding prose keeps its spacing');
+  });
+}
+
+test('markdown: inline code preserves whitespace within marks and links', async () => {
+  const { document } = await convert('**Before ` a  b ` after** and [` x\t y `](https://example.com "Code") then `  z  `.');
+  const all = nodes(document.document);
+  const code = all.filter((node) => node.type === 'span' && node.marks?.includes('code'));
+  assert.deepEqual(code.map((node) => node.value), ['a  b', 'x\t y', ' z ']);
+  assert.deepEqual(code[0].marks, ['strong', 'code']);
+  const link = all.find((node) => node.type === 'link');
+  assert.equal(link.url, 'https://example.com');
+  assert.deepEqual(link.meta, [{ id: 'title', value: 'Code' }]);
+  assert.deepEqual(link.children, [{ type: 'span', value: 'x\t y', marks: ['code'] }]);
+  assert.equal(text(document.document), 'Before a  b after and x\t y then  z .');
+});
+
+test('markdown: inline code preservation keeps fenced code normalization', async () => {
+  const { document } = await convert('`a  b`\n\n```js\n  const value = "a  b";\n\tconsole.log(value);\n\n```');
+  assert.equal(document.document.children[0].children[0].value, 'a  b');
+  assert.deepEqual(document.document.children[1], {
+    type: 'code',
+    language: 'js',
+    code: '  const value = "a  b";\n\tconsole.log(value);',
+  });
+});
+
 test('synthetic Google Docs Markdown export preserves document order and text', async () => {
   const { document } = await convert(await readFile(join(here, 'fixtures/google-docs-export.md'), 'utf8'));
   assert.deepEqual(document.document.children.map((node) => node.type), ['heading', 'paragraph', 'heading', 'paragraph', 'list', 'heading', 'list']);
