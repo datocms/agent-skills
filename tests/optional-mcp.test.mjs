@@ -59,16 +59,19 @@ function section(tree, title) {
   while (end < tree.children.length && !(tree.children[end].type === 'heading' && tree.children[end].depth <= heading.depth)) end++;
   return tree.children.slice(start, end).map(semanticTree).map((node) => {
     if (node.type !== 'code') return node;
-    // One reviewed type correction leaves the parsing/update workflow unchanged.
+    // Allow only the reviewed request-type correction and inline-content guard.
     // All other code and prose must still match the base exactly.
     return { ...node, value: node.value.replace(
       '  // `parse` reuses the original `item` for surviving block/inlineBlock IDs.\n  // Use the writable field type when continuing through `mapNodes`.\n  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    parse(edited, currentItem.content);',
       '  // `content` keeps the static type of `currentItem.content` and reuses the original\n  // `item` object for every block/inlineBlock whose id survives the edit.\n  const content = parse(edited, currentItem.content);',
+    ).replace(
+      '      !node.children.some((child) => child.type === "inlineItem" || child.type === "inlineBlock") &&\n',
+      '',
     ) };
   });
 }
 
-// Preserve domain workflows, allowing only the explicit request-type correction above.
+// Preserve domain workflows, allowing only the two explicit corrections above.
 // Compare their full prose, lists, tables and remaining code with the reviewed base.
 const preservedWorkflows = {
   records: [

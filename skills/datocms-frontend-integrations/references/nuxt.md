@@ -49,7 +49,7 @@ export default eventHandler(async (event) => {
   const query = getQuery<{ url?: string; token?: string }>(event);
   const url = query.url || '/';
 
-  if (query.token !== config.secretApiToken) {
+  if (!config.secretApiToken || query.token !== config.secretApiToken) {
     throw createError({
       statusCode: 401,
       message: 'Invalid token',
@@ -425,7 +425,7 @@ export default eventHandler(async (event) => {
 
     const { token } = getQuery(event);
 
-    if (token !== config.secretApiToken) {
+    if (!config.secretApiToken || token !== config.secretApiToken) {
       throw createError({ message: 'Invalid token', status: 401 });
     }
 

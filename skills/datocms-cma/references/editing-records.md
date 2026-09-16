@@ -268,6 +268,7 @@ if (currentItem.content) {
     if (isItemLink(node)) return { ...node, item: "NEW_RECORD_ID" }; // itemLink/inlineItem: item is a record id string
     if (
       isParagraph(node) &&
+      !node.children.some((child) => child.type === "inlineItem" || child.type === "inlineBlock") &&
       reduceNodes(node, (acc, n) => isSpan(n) ? acc + n.value.trim() : acc, "").length === 0
     ) {
       return null; // 1:0 — reduceNodes descends into links/itemLinks; bottom-up: drop the paragraph

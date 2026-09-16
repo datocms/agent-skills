@@ -120,3 +120,72 @@ for (const name of referenceNames) {
     }
   });
 }
+
+function loadNuxtEndpoint(marker, secretApiToken, token) {
+  const path = resolve(repoRoot, 'skills/datocms-frontend-integrations/references/nuxt.md');
+  const snippets = [...readFileSync(path, 'utf8').matchAll(/^```ts\s*\n([\s\S]*?)^```/gm)]
+    .map((match) => match[1])
+    .filter((source) => source.includes('export default eventHandler(') && source.includes(marker));
+  assert.equal(snippets.length, 1, marker + ': expected one shipped endpoint');
+  const { outputText, diagnostics } = ts.transpileModule(snippets[0], {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+    reportDiagnostics: true,
+  });
+  assert.equal(diagnostics?.length ?? 0, 0, marker + ': endpoint must transpile');
+
+  const effects = [];
+  const exports = {};
+  const imports = {
+    '~/lib/api/draftMode': { enableDraftMode: () => effects.push('enableDraftMode') },
+    '~/lib/api/utils': {
+      ensureHttpMethods: () => {},
+      isRelativeUrl: loadShippedHelper('nuxt'),
+      handleUnexpectedError: (error) => { throw error; },
+    },
+    '@datocms/rest-client-utils': { deserializeRawItem: (item) => item },
+    '~/lib/datocms/recordInfo': {
+      recordToWebsiteRoute: async () => { effects.push('recordToWebsiteRoute'); return '/article'; },
+    },
+  };
+  runInNewContext(outputText, {
+    exports,
+    require: (name) => { assert(name in imports, 'Unexpected import: ' + name); return imports[name]; },
+    URL,
+    eventHandler: (handler) => handler,
+    useRuntimeConfig: () => secretApiToken === undefined ? {} : { secretApiToken },
+    getQuery: () => token === undefined ? {} : { token },
+    createError: ({ message }) => new Error(message),
+    sendRedirect: async (_event, url) => effects.push('redirect:' + url),
+    readBody: async () => { effects.push('readBody'); return { item: { meta: { status: 'draft' } }, locale: 'en' }; },
+    getRequestURL: () => new URL('https://app.example.test/api/preview-links'),
+  }, { timeout: 1000 });
+  return { handler: exports.default, effects };
+}
+
+for (const [name, marker, method, expectedEffects] of [
+  ['draft enable', 'enableDraftMode(event)', 'GET', ['enableDraftMode', 'redirect:/']],
+  ['preview links', 'WebPreviewsRequestBody', 'POST', ['readBody', 'recordToWebsiteRoute']],
+]) {
+  test('Nuxt ' + name + ': rejects missing secrets and invalid tokens before performing work', async () => {
+    for (const secret of [undefined, '', 'preview-secret']) {
+      for (const token of [undefined, '', 'wrong-token', 'preview-secret']) {
+        const { handler, effects } = loadNuxtEndpoint(marker, secret, token);
+        const label = JSON.stringify({ secret, token });
+        if (secret === 'preview-secret' && token === secret) {
+          const result = await handler({ method });
+          assert.deepEqual(effects, expectedEffects, label);
+          if (name === 'preview links') assert.equal(result.previewLinks.length, 1);
+        } else {
+          await assert.rejects(handler({ method }), /Invalid token/, label);
+          assert.deepEqual(effects, [], label + ': authorization must precede draft access and body reads');
+        }
+      }
+    }
+    if (name === 'preview links') {
+      const { handler, effects } = loadNuxtEndpoint(marker);
+      const result = await handler({ method: 'OPTIONS' });
+      assert.equal(Object.keys(result).length, 0, 'preflight remains available without authentication');
+      assert.deepEqual(effects, []);
+    }
+  });
+}

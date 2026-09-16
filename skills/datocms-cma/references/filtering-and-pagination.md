@@ -4,9 +4,9 @@ Covers querying patterns for listing records: pagination, filtering, sorting, co
 
 > In CLI mode, endpoint shapes / payloads / TS signatures: `npx datocms cma:docs {items|uploads|webhookCalls|buildEvents|itemVersions} instances` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
-## Always use `listPagedIterator`
+## Use `listPagedIterator` for paginated reads
 
-Every paginated resource (`items`, `uploads`, `webhookCalls`, `buildEvents`, `itemVersions`) exposes `listPagedIterator()` alongside `list()`. Reach for the iterator unconditionally — manual offset/limit loops are an anti-pattern: they are easy to get wrong (off-by-one, infinite loop on empty pages, no resilience to mid-iteration deletions) and you do not need them.
+Every paginated resource (`items`, `uploads`, `webhookCalls`, `buildEvents`, `itemVersions`) exposes `listPagedIterator()` alongside `list()`. Prefer the iterator to hand-written offset/limit loops. It still uses offset pagination: changes to the matching records or their order during traversal can skip or repeat records.
 
 ```ts
 for await (const record of client.items.listPagedIterator<Schema.BlogPost>(
@@ -14,6 +14,8 @@ for await (const record of client.items.listPagedIterator<Schema.BlogPost>(
   { perPage: 100, concurrency: 5 },
 )) { /* ... */ }
 ```
+
+When writes change the query's filters or sort order — for example, publishing filtered drafts, deleting records, or changing the sort field — finish collecting the authorized record IDs before starting those writes. Then process that fixed selection, reading current values again when a transformation needs them. `concurrency: 1` does not prevent offset shifts; concurrent changes by other clients can also affect selection.
 
 ### `concurrency` — the one rule that matters
 

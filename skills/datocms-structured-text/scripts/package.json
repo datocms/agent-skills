@@ -9,7 +9,7 @@
   "dependencies": {
     "datocms-html-to-structured-text": "6.0.0",
     "datocms-structured-text-utils": "6.0.0",
-    "mdast-util-to-hast": "13.2.0",
+    "mdast-util-to-hast": "13.2.1",
     "parse5": "8.0.1",
     "remark-gfm": "4.0.1",
     "remark-parse": "11.0.0",
