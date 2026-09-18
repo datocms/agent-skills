@@ -542,6 +542,23 @@ test("MCP supports pure Node value comparison without host callbacks or order-se
   assert.equal(result.calls.length, 1);
 });
 
+test("published reads reject never-published drafts and retain a separate published snapshot after updates", () => {
+  const draftRead = execute('await client.items.find<Schema.Article>("article-1", {version: "published"});', initialRecord(), {runtime: "mcp"});
+  assert.match(draftRead.errors.join('\n'), /NOT_FOUND/);
+  const original = initialRecord({variant: 'rich'});
+  const published = structuredClone(original); published.title = 'Previously published title';
+  const result = execute(`
+    await client.items.update<Schema.Article>('article-1', {title: 'New draft title'});
+    const current = await client.items.find<Schema.Article>('article-1');
+    const published = await client.items.find<Schema.Article>('article-1', {version: 'published'});
+    if (current.title !== 'New draft title' || published.title !== 'Previously published title') throw Error('Versions conflated');
+  `, original, {runtime: 'mcp', writable: true, publishedRecord: published});
+  assert.deepEqual(result.errors, []);
+  const later = execute(`console.log((await client.items.find<Schema.Article>('article-1', {version: 'published'})).title);`, result.record, {runtime: 'mcp', publishedRecord: published});
+  assert.deepEqual(later.errors, []);
+  assert.equal(later.output[0], 'Previously published title');
+});
+
 test("known read-only access stops before a mutation while an unknown restriction may be discovered once", () => {
   const scenario = caseById('permission-known-read-only');
   assert.equal(score(scenario, [], initialRecord(), 'This connection is read-only; no content was changed.', 0).passed, true);

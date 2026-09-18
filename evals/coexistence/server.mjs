@@ -98,7 +98,7 @@ function runSource(state, source, route, name, writable, tokens) {
     const missing = inspection.methods.filter((method) => !tokens.includes(`fixture-token-${method}`));
     if (missing.length) throw Error(`Missing method verification tokens: ${missing.join(", ")}`);
   }
-  const result = execute(source, state.record, { writable, runtime: route });
+  const result = execute(source, state.record, { writable, runtime: route, publishedRecord: state.publishedRecord });
   log({ kind: "execution", route, name, source, errors: result.errors, calls: result.calls, output: result.output });
   state.record = result.record;
   const writes = result.calls.filter((call) => call.method === "items.update" && call.applied).length;

@@ -31,6 +31,8 @@ Two consequences:
 
 For ordinary `find`, `list`, and paged reads, `version: "current"` (the default) returns the latest edits, including drafts; `version: "published"` reads the published versions. Use `current` when inspecting preview content. A record with unpublished edits can have different current and published values.
 
+Check `meta.published_at` before fetching the published version for preservation checks. A never-published draft has no published version: `find(id, { version: "published" })` returns `NOT_FOUND`, not a fallback to current content. Verify that such a record remains unpublished through its metadata.
+
 Reference-discovery endpoints have a separate `version` contract: `published-or-current` searches links in either version. It does not mean "prefer published content, otherwise return the draft" and is not an ordinary record-read preview option. Consult the reference-discovery method documentation for its options.
 
 ## Selective publish / unpublish

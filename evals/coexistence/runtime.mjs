@@ -328,7 +328,7 @@ function isBlockGuardSource() {
 export function execute(
   source,
   record,
-  { writable = false, runtime = "cli" } = {},
+  { writable = false, runtime = "cli", publishedRecord = record.meta?.published_at ? record : null } = {},
 ) {
   const result = compile(source, { runtime });
   if (result.errors.length) return { ...result, record, calls: [], output: [] };
@@ -342,6 +342,7 @@ export function execute(
   const bootstrap = `
     ${helperBundle}
     const record = ${JSON.stringify(record)};
+    const publishedRecord = ${JSON.stringify(publishedRecord)};
     const calls = [], output = [];
     const copy = (value) => JSON.parse(JSON.stringify(value));
     // CMS fixtures are JSON values; keep cloning inside the VM, without host callbacks.
@@ -358,6 +359,10 @@ export function execute(
       async find(id, options) {
         calls.push({ method: 'items.find', id, options });
         if (id !== record.id) throw Error('Unknown fixture record');
+        if (options?.version === 'published') {
+          if (!publishedRecord) throw Error('NOT_FOUND: record has no published version');
+          return copy(publishedRecord);
+        }
         return copy(record);
       },
       async update(id, values) {
