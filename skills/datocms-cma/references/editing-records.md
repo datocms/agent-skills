@@ -36,7 +36,7 @@ Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.
 
 Resolve target nodes with typed guards before transforming them, then capture snapshots with `const` and inferred types. Avoid nullable callback accumulators and indexing `item` on a generic node union. Derive preservation checks from the original values, including `null` and empty values. Preserving an optional asset means keeping its original value, not requiring a populated asset.
 
-An update changes `meta.current_version` and `meta.updated_at` without publishing. Exclude those bookkeeping values from publication-preservation checks; compare publication timestamps, schedules, and the published content when a published version exists.
+On a draft-enabled model, “do not publish” permits editing the current version of an already-published record: preserve its published version rather than requiring `meta.status === "draft"`. An update changes `meta.current_version` and `meta.updated_at` without publishing. Exclude those bookkeeping values from publication-preservation checks; compare publication timestamps, schedules, and the published content when a published version exists.
 
 Keep an independent snapshot of the original read. After updating, read back the same record/version with `nested: true`. Compare relevant field/node semantics in matching response shapes: optional arrays or metadata can normalize, while `===`/`!==` only compares object identity across API reads. Do not use `serialize()` or whole-tree JSON equality as the post-write oracle. Check requested field values against the intended changes and unchanged content against that snapshot. Check block identity, type, attributes, node order, marks, links, other locales, and publication state where relevant.
 
