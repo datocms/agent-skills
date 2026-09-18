@@ -14,7 +14,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 
 export const MODEL = "gpt-5.6-luna";
 export const EFFORT = "medium";
@@ -72,6 +72,10 @@ export function sourceHashes(
   if (existsSync(join(root, directory))) walk(join(root, directory), directory);
   return hashes;
 }
+
+// Capture the code loaded by this process, even if repository files change
+// during a long suite. Skill hashes below come from the actual workspace copy.
+const harnessHashesAtLoad = sourceHashes(resolve(import.meta.dirname, "../.."), "e2e");
 
 export type NativeOptions = {
   workspace: string;
@@ -198,8 +202,11 @@ export async function nativeSession(options: NativeOptions) {
       cwd: repoRoot,
       encoding: "utf8",
     }).stdout.trim(),
-    skillHashes: sourceHashes(repoRoot),
-    harnessHashes: sourceHashes(repoRoot, "e2e"),
+    skillHashes: Object.fromEntries(
+      Object.entries(sourceHashes(workspace, ".agents/skills")).map(([path, digest]) => [path.replace(/^\.agents\//, ""), digest]),
+    ),
+    harnessHashes: harnessHashesAtLoad,
+    runtimeFeatures: Object.fromEntries(Object.entries(config).filter(([key]) => key.startsWith("features."))),
     dependencyLockHash: existsSync(join(repoRoot, "package-lock.json"))
       ? createHash("sha256")
           .update(readFileSync(join(repoRoot, "package-lock.json")))

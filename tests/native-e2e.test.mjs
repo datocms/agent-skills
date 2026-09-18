@@ -75,6 +75,10 @@ test("native runner pins model and effort, redacts credentials, and removes auth
     assert.ok(args.includes('features.shell_snapshot=false'));
     assert.ok(args.includes('features.shell_snapshot_v2=false'));
     assert.equal(args.some(arg => arg.includes('synthetic-secret')), false);
+    const provenance = JSON.parse(readFileSync(join(options.output, "provenance.json"), "utf8"));
+    assert.ok(provenance.harnessHashes["e2e/lib/nativeSession.ts"]);
+    assert.ok(provenance.skillHashes["skills/example/SKILL.md"]);
+    assert.equal(provenance.runtimeFeatures["features.shell_snapshot"], false);
     assert.equal(existsSync(join(options.output, "native-home")), false);
     await assert.rejects(
       nativeSession(options),
