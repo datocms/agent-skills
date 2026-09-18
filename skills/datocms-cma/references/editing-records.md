@@ -40,6 +40,20 @@ Keep an independent snapshot of the original read. After updating, read back the
 
 Do not serialize an update payload to compare it with a saved response. Structured Text request types also allow new blocks without IDs, so they are not valid `serialize()` inputs. Block ID references and partial `buildBlockRecord` payloads expand into full objects on read, including unchanged attributes and response metadata; object-key order is also irrelevant. Compare the relevant values in matching response shapes. Do not strip block attributes or identity just to make equality pass. If post-write verification throws, inspect the saved state before deciding whether any further write is needed; never replay the mutation merely because its verification failed.
 
+In Node runtimes, use the standard value comparator for unchanged response fields. Keep this snapshot and comparison in the same execution as the authorized update and fresh read; do not hand-write a generic deep-equality function:
+
+```ts
+import { isDeepStrictEqual } from "node:util";
+
+const originalItalian = structuredClone(before.body.it);
+// Apply the authorized update, then fetch saved with nested: true.
+if (!isDeepStrictEqual(saved.body.it, originalItalian)) {
+  throw new Error("Italian content changed");
+}
+```
+
+This compares values independently of object identity and key order. Use it for unchanged field values in the same response shape, not partial update payloads against hydrated responses. Normalize only documented representational differences when needed; never drop meaningful attributes to pass verification.
+
 ## Imports
 
 > Examples assume an authenticated `client` and project-specific `Schema`. Use helpers already supplied by the selected runtime; otherwise import them from the packages shown below.

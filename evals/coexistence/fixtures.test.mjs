@@ -542,6 +542,23 @@ test("MCP supports pure Node value comparison without host callbacks or order-se
   assert.equal(result.calls.length, 1);
 });
 
+test("shipped snapshot comparison accepts independent equal values and catches changed content", () => {
+  const reference = readFileSync(new URL("../../skills/datocms-cma/references/editing-records.md", import.meta.url), "utf8");
+  const example = reference.split('In Node runtimes, use the standard value comparator')[1].split('```ts\n')[1].split('```')[0];
+  for (const change of [false, true]) {
+    const source = `
+      const before = await client.items.find<Schema.Article>('article-1', {nested: true});
+      const saved = await client.items.find<Schema.Article>('article-1', {nested: true});
+      ${change ? "saved.body.it = null;" : ""}
+      ${example}
+    `;
+    const result = execute(source, initialRecord({variant: 'rich'}), {runtime: 'mcp'});
+    if (change) assert.match(result.errors.join('\n'), /Italian content changed/);
+    else assert.deepEqual(result.errors, []);
+    assert.equal(result.calls.length, 2);
+  }
+});
+
 test("published reads reject never-published drafts and retain a separate published snapshot after updates", () => {
   const draftRead = execute('await client.items.find<Schema.Article>("article-1", {version: "published"});', initialRecord(), {runtime: "mcp"});
   assert.match(draftRead.errors.join('\n'), /NOT_FOUND/);
