@@ -1,5 +1,7 @@
 # Release-candidate validation with Luna medium
 
+The later [hosted MCP follow-up](2026-09-18-hosted-mcp.md) resolves the connection gate recorded here. This report preserves the results and release decision from its original validation round.
+
 This follow-up covers the same 26 first-parent commits after `353c06a` through `4c01e875325a19c50658dbcbc4ad34767bb08a98`. The [original coverage map and 209-session report](2026-09-18-luna-medium.md) remain historical evidence. Every new evaluated session also uses `gpt-5.6-luna` with medium reasoning. Other model/provider results are excluded.
 
 This follow-up contains **333 additional native sessions across 66 distinct scenarios**, including intermediate candidates, held-out tasks, and failed attempts. It supplements the earlier 209 sessions.

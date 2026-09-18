@@ -18,6 +18,7 @@
     "prepare": "husky",
     "test:e2e:harness": "node --test tests/native-e2e.test.mjs",
     "e2e:frontend": "node e2e/frontend/run.mjs",
+    "e2e:hosted": "node e2e/hosted/run.mjs",
     "e2e:code": "node e2e/workflows/code.mjs",
     "e2e:workflows": "node e2e/workflows/run.mjs"
   },

@@ -88,6 +88,8 @@ export type NativeOptions = {
   timeoutMs?: number;
   maxCommands?: number;
   maxScriptAttempts?: number;
+  hostedMcp?: { name: string; url: string };
+  maxMcpCalls?: number;
 };
 
 export async function nativeSession(options: NativeOptions) {
@@ -149,6 +151,17 @@ export async function nativeSession(options: NativeOptions) {
     "shell_environment_policy.experimental_use_profile": false,
     developer_instructions: instructions,
   };
+  if (options.hostedMcp) {
+    const { name, url } = options.hostedMcp;
+    if (!/^[A-Za-z][A-Za-z0-9_-]*$/.test(name) || new URL(url).protocol !== "https:")
+      throw Error("Hosted MCP requires a simple server name and HTTPS URL");
+    config[`mcp_servers.${name}`] = {
+      url,
+      startup_timeout_sec: 60,
+      tool_timeout_sec: 120,
+      default_tools_approval_mode: "approve",
+    };
+  }
   const binary = process.env.CODEX_BIN ?? "codex";
   const version = spawnSync(binary, ["--version"], { encoding: "utf8" });
   if (version.status !== 0)
@@ -207,6 +220,7 @@ export async function nativeSession(options: NativeOptions) {
     ),
     harnessHashes: harnessHashesAtLoad,
     runtimeFeatures: Object.fromEntries(Object.entries(config).filter(([key]) => key.startsWith("features."))),
+    hostedMcp: options.hostedMcp ?? null,
     dependencyLockHash: existsSync(join(repoRoot, "package-lock.json"))
       ? createHash("sha256")
           .update(readFileSync(join(repoRoot, "package-lock.json")))
@@ -216,6 +230,7 @@ export async function nativeSession(options: NativeOptions) {
       timeoutMs: options.timeoutMs ?? 420_000,
       maxCommands: options.maxCommands ?? 100,
       maxScriptAttempts: options.maxScriptAttempts ?? null,
+      maxMcpCalls: options.maxMcpCalls ?? null,
     },
     startedAt: new Date().toISOString(),
     prompt: options.prompt,
@@ -234,6 +249,7 @@ export async function nativeSession(options: NativeOptions) {
   });
   child.stdin.end(options.prompt);
   const events: Record<string, any>[] = [];
+  const mcpCallIds = new Set<string>();
   let buffer = "",
     stderr = "",
     timedOut = false,
@@ -268,6 +284,13 @@ export async function nativeSession(options: NativeOptions) {
       return;
     }
     events.push(event);
+    if (event.item?.type === "mcp_tool_call") {
+      mcpCallIds.add(event.item.id);
+      if (mcpCallIds.size > (options.maxMcpCalls ?? Infinity)) {
+        capped = true;
+        stop();
+      }
+    }
     if (event.item?.type === "command_execution") {
       commands.set(event.item.id, event.item);
       if (commands.size > (options.maxCommands ?? 100)) {
@@ -320,6 +343,7 @@ export async function nativeSession(options: NativeOptions) {
     credentialLeak,
     transcriptPath,
     commands: [...commands.values()],
+    mcpCalls: events.filter((e) => e.type === "item.completed" && e.item?.type === "mcp_tool_call").map((e) => e.item),
     usage: events.filter((e) => e.usage).map((e) => e.usage),
     finalText:
       events

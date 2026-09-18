@@ -125,3 +125,24 @@ test("credentials cannot be inserted into agent prompts", async () =>
       /Credentials must not appear/,
     );
   }));
+
+test("hosted MCP configuration is explicit and completed calls remain observable", async () =>
+  fixture(async ({ root, options, writeBinary }) => {
+    writeBinary(`require('node:fs').writeFileSync(process.env.ARGUMENTS_PATH,JSON.stringify(process.argv));
+      for(const type of ['item.started','item.completed'])console.log(JSON.stringify({type,item:{id:'m1',type:'mcp_tool_call',server:'FixtureHost',tool:'whoami',status:'completed',result:{content:[]}}}));
+      console.log(JSON.stringify({type:'turn.completed'}));`);
+    const result = await nativeSession({ ...options, hostedMcp: { name: 'FixtureHost', url: 'https://mcp.example.test' }, maxMcpCalls: 1, environment: { ARGUMENTS_PATH: join(root, 'arguments.json') } });
+    const args = JSON.parse(readFileSync(join(root, 'arguments.json'), 'utf8'));
+    assert.ok(args.some(arg => arg.startsWith('mcp_servers.FixtureHost=') && arg.includes('https://mcp.example.test')));
+    assert.equal(result.mcpCalls.length, 1);
+    assert.equal(result.mcpCalls[0].tool, 'whoami');
+    assert.equal(result.capped, false);
+  }));
+
+test("MCP call budget counts distinct calls and stops excessive execution", async () =>
+  fixture(async ({ options, writeBinary }) => {
+    writeBinary(`for(const id of ['one','one','two'])console.log(JSON.stringify({type:'item.started',item:{id,type:'mcp_tool_call',server:'FixtureHost',tool:'whoami'}}));setInterval(()=>{},1000);`);
+    const result = await nativeSession({ ...options, maxMcpCalls: 1 });
+    assert.equal(result.capped, true);
+    assert.equal(result.timedOut, false);
+  }));

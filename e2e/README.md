@@ -44,6 +44,25 @@ node evals/coexistence/run.mjs \
 
 This suite runs native sessions with controlled CLI/MCP tools, including permission failures, uncertain writes, legacy routing, and resumed conversations. The server contract and content are simulated. It does not prove hosted MCP OAuth connectivity or production-server parity. `long-followup-unseen` varies original fields and locale content to expose verification based on guessed values. The rich-values and multiple-block variants add custom marks, complete asset values, publication history, code whitespace, and an untargeted block. Reports distinguish final content, applied writes, rejected write attempts, and compilation/recovery quality. Server guidance defaults to the baseline references. Add `--server-guidance candidate` to model a fresh server fetch after release, or select an explicit commit for cached-guidance compatibility. Candidate skills and the chosen server documents are frozen at run start; report those modes separately.
 
+## Hosted MCP smoke
+
+Authenticate the native client against the real hosted server, using only a dedicated empty throwaway project with an English-only `main` environment. Grant the test connection access to that project and the permission to create and clean up its sandbox fixtures:
+
+```bash
+codex mcp add DatoCMSReleaseCheck --url https://mcp.datocms.com
+npm run e2e:hosted -- --site <authorized-site-id> --output local/hosted/run-01
+```
+
+The native client manages OAuth credentials. No API token is supplied to this runner. Its isolated sessions use the same server name and URL to reuse the authorized connection, with Luna medium and shell snapshots disabled. When the temporary test connection is no longer needed, `codex mcp logout DatoCMSReleaseCheck` clears its local authorization. If registration used a separate `CODEX_HOME`, use that same home for logout.
+
+`hosted/run.mjs` forks one uniquely named environment and seeds typed models, a real uploaded image, localized documents, and a record with published history. Three fresh actors perform a title edit, a localized document edit, and an edit preserving published content and a second block. All CMS work goes through the hosted MCP; there is no API-token or CLI fallback.
+
+Fixture setup, independent reads, and cleanup use exact maintained scripts from `hosted/fixtures.mjs`. Luna transports those scripts after method discovery, but their source must match byte-for-byte after trimming, execute exactly once through the prescribed safe/unsafe tool, and return an actual execution receipt. These infrastructure sessions are counted separately from the three evaluated tasks. The local oracle compares fresh returned records against pre-edit snapshots, requires exactly one new parent version, and checks publication, locales, links, marks, asset values and untargeted content. It does not grade an actor's own success claim.
+
+Cleanup runs after failures and deletes only the named sandbox, then checks the primary project's models, uploads and locales. Failed runs remain in their original directories. A fixture/compiler failure is distinct from an actor failure; fix and typecheck the fixture before using a new output directory. Strict execution results remain diagnostic alongside independent outcome assertions.
+
+The [hosted validation report](reports/2026-09-18-hosted-mcp.md) records the initial fixture correction, three independently verified actor outcomes, and cleanup evidence.
+
 ## Evidence and iteration
 
 Live runs default to `local/e2e/<timestamp>/<case>/`; set a fresh `E2E_RUN_ID` or `E2E_OUTPUT` to organize runs. Other suites require fresh output directories. Existing transcripts are never overwritten. Evidence includes prompts, skill hashes, revision, exact model/effort, runtime version, command events, errors, usage, independent assertions, and final answers. A source hash identifies uncommitted candidates more precisely than HEAD alone. Raw artifacts are ignored by Git; commit a sanitized report and coverage map instead.
@@ -58,5 +77,5 @@ Deterministic harness and shipped-example checks complement these paid sessions:
 npm run test:e2e:harness
 npm run typecheck
 npm run test:coexistence:fixtures
-node --test tests/cma-content-safety.test.mjs tests/redirect-validation.test.mjs tests/optional-mcp.test.mjs
+node --test tests/cma-content-safety.test.mjs tests/redirect-validation.test.mjs tests/optional-mcp.test.mjs tests/hosted-mcp.test.mjs
 ```
