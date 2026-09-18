@@ -15,7 +15,7 @@ npm run test:e2e -- e2e/cases/recent-content-regressions.e2e.test.ts
 
 Each case verifies the project ID, forks a uniquely named sandbox, seeds fixtures, runs the agent, independently asserts final state, and destroys only its sandbox. Cleanup runs after failures and verifies deletion. Token mode does not perform organization-wide cleanup. The default is one worker; increase workers only when the disposable project's sandbox capacity allows it. `E2E_KEEP_PROJECT=1` retains environments for deliberate debugging.
 
-The agent receives the confirmed environment and CLI authentication context. Credentials are supplied only through environment variables. The runner installs this checkout's skills in an isolated workspace, disables host configuration/plugins/memory, uses temporary authentication links, and removes its workspace and authentication directory afterward. Transcripts are redacted; observed credential output fails the run.
+The agent receives the confirmed environment and CLI authentication context. Credentials are supplied only through environment variables. The runner installs this checkout's skills in an isolated workspace, disables host configuration/plugins/memory, uses temporary authentication links, and removes its workspace and authentication directory afterward. Shell environment snapshots are disabled so credentials are not copied into runtime snapshot files. Transcripts are redacted; observed credential output fails the run.
 
 The original dashboard-account provisioning route and other agent adapters remain available for compatibility, but are outside this track's validation claims.
 
@@ -42,7 +42,7 @@ node evals/coexistence/run.mjs \
   --repetitions 3 --jobs 2 --output local/coexistence/run-01
 ```
 
-This suite runs native sessions with controlled CLI/MCP tools, including permission failures, uncertain writes, legacy routing, and resumed conversations. The server contract and content are simulated. It does not prove hosted MCP OAuth connectivity or production-server parity. `long-followup-unseen` varies original fields and locale content to expose verification based on guessed values. Reports distinguish final content, applied writes, rejected write attempts, and compilation/recovery quality.
+This suite runs native sessions with controlled CLI/MCP tools, including permission failures, uncertain writes, legacy routing, and resumed conversations. The server contract and content are simulated. It does not prove hosted MCP OAuth connectivity or production-server parity. `long-followup-unseen` varies original fields and locale content to expose verification based on guessed values. Reports distinguish final content, applied writes, rejected write attempts, and compilation/recovery quality. Server guidance defaults to the baseline references. Add `--server-guidance candidate` to model a fresh server fetch after release, or select an explicit commit for cached-guidance compatibility. Candidate skills and the chosen server documents are frozen at run start; report those modes separately.
 
 ## Evidence and iteration
 

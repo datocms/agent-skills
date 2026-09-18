@@ -72,6 +72,9 @@ test("native runner pins model and effort, redacts credentials, and removes auth
     const args = JSON.parse(readFileSync(join(root, "arguments.json"), "utf8"));
     assert.ok(args.includes('model="gpt-5.6-luna"'));
     assert.ok(args.includes('model_reasoning_effort="medium"'));
+    assert.ok(args.includes('features.shell_snapshot=false'));
+    assert.ok(args.includes('features.shell_snapshot_v2=false'));
+    assert.equal(args.some(arg => arg.includes('synthetic-secret')), false);
     assert.equal(existsSync(join(options.output, "native-home")), false);
     await assert.rejects(
       nativeSession(options),

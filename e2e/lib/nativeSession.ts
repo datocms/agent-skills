@@ -128,6 +128,8 @@ export async function nativeSession(options: NativeOptions) {
     "memories.use_memories": false,
     "memories.generate_memories": false,
     "features.chronicle": false,
+    "features.shell_snapshot": false,
+    "features.shell_snapshot_v2": false,
     "features.multi_agent": false,
     "features.skill_search": false,
     "features.skill_mcp_dependency_install": false,
