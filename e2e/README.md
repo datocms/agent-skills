@@ -1,8 +1,8 @@
-# Luna medium end-to-end evaluation
+# End-to-end evaluation
 
-The maintained evaluation track runs `gpt-5.6-luna` with `model_reasoning_effort=medium`. It exercises the repository's actual skills through a native agent session, then checks the resulting CMS state or application independently. It does not force a skill load, suppress the agent's verification, substitute another model, or treat a completed answer as a passing result.
+The maintained evaluation track exercises the repository's actual skills through a native agent session, then checks the resulting CMS state or application independently. It does not force a skill load, suppress the agent's verification, substitute another model, or treat a completed answer as a passing result.
 
-Use Node 24+, `npm ci`, and an authenticated native CLI. Set `CODEX_BIN` to its executable if it is not on PATH. Model and reasoning effort are pinned in `lib/nativeSession.ts`; a conflicting per-case model is rejected.
+Use Node 24+, `npm ci`, and an authenticated native CLI. Set `CODEX_BIN` to its executable if it is not on PATH. The current validation baseline is `gpt-5.6-luna` with `model_reasoning_effort=medium`. Model and reasoning effort are pinned in `lib/nativeSession.ts`; a conflicting per-case model is rejected. Reports retain those settings so results can be reproduced and attributed to the tested configuration.
 
 ## Live CMS cases
 
@@ -27,7 +27,7 @@ npm run e2e:code -- --repetitions 3 --output local/code/run-01
 npm run e2e:workflows -- --repetitions 3 --output local/workflows/run-01
 ```
 
-- `frontend/run.mjs` scaffolds minimal Next.js, Nuxt, Astro, and SvelteKit applications. Luna implements preview routes; the evaluator rebuilds and starts them, then tests authentication, missing configuration, hostile redirects, valid query/fragment preservation, and embedded-preview cookies over HTTP. Astro's explicit missing-secret schema failure is accepted as fail-closed; arbitrary server failures are not. Exact direct dependencies are pinned and generated lockfiles remain in the evidence.
+- `frontend/run.mjs` scaffolds minimal Next.js, Nuxt, Astro, and SvelteKit applications. The agent implements preview routes; the evaluator rebuilds and starts them, then tests authentication, missing configuration, hostile redirects, valid query/fragment preservation, and embedded-preview cookies over HTTP. Astro's explicit missing-secret schema failure is accepted as fail-closed; arbitrary server failures are not. Exact direct dependencies are pinned and generated lockfiles remain in the evidence.
 - `workflows/code.mjs` executes generated TypeScript and converted DAST against independent semantic assertions. Creator audits use the actual SDK pagination implementation with a mocked API boundary. These are local integration cases, not live CMS evidence.
 - `workflows/run.mjs` records complete advisory tasks and evaluator-only rubrics. Every result starts as `review: pending`; a reviewer must assess both the answer and trace against the cited skill/API contract. No keyword grader or model-completion flag turns advice into a quality pass.
 
@@ -53,11 +53,11 @@ codex mcp add DatoCMSReleaseCheck --url https://mcp.datocms.com
 npm run e2e:hosted -- --site <authorized-site-id> --output local/hosted/run-01
 ```
 
-The native client manages OAuth credentials. No API token is supplied to this runner. Its isolated sessions use the same server name and URL to reuse the authorized connection, with Luna medium and shell snapshots disabled. When the temporary test connection is no longer needed, `codex mcp logout DatoCMSReleaseCheck` clears its local authorization. If registration used a separate `CODEX_HOME`, use that same home for logout.
+The native client manages OAuth credentials. No API token is supplied to this runner. Its isolated sessions use the same server name and URL to reuse the authorized connection, with the pinned validation settings and shell snapshots disabled. When the temporary test connection is no longer needed, `codex mcp logout DatoCMSReleaseCheck` clears its local authorization. If registration used a separate `CODEX_HOME`, use that same home for logout.
 
 `hosted/run.mjs` forks one uniquely named environment and seeds typed models, a real uploaded image, localized documents, and a record with published history. Three fresh actors perform a title edit, a localized document edit, and an edit preserving published content and a second block. All CMS work goes through the hosted MCP; there is no API-token or CLI fallback.
 
-Fixture setup, independent reads, and cleanup use exact maintained scripts from `hosted/fixtures.mjs`. Luna transports those scripts after method discovery, but their source must match byte-for-byte after trimming, execute exactly once through the prescribed safe/unsafe tool, and return an actual execution receipt. These infrastructure sessions are counted separately from the three evaluated tasks. The local oracle compares fresh returned records against pre-edit snapshots, requires exactly one new parent version, and checks publication, locales, links, marks, asset values and untargeted content. It does not grade an actor's own success claim.
+Fixture setup, independent reads, and cleanup use exact maintained scripts from `hosted/fixtures.mjs`. The agent transports those scripts after method discovery, but their source must match byte-for-byte after trimming, execute exactly once through the prescribed safe/unsafe tool, and return an actual execution receipt. These infrastructure sessions are counted separately from the three evaluated tasks. The local oracle compares fresh returned records against pre-edit snapshots, requires exactly one new parent version, and checks publication, locales, links, marks, asset values and untargeted content. It does not grade an actor's own success claim.
 
 Cleanup runs after failures and deletes only the named sandbox, then checks the primary project's models, uploads and locales. Failed runs remain in their original directories. A fixture/compiler failure is distinct from an actor failure; fix and typecheck the fixture before using a new output directory. Strict execution results remain diagnostic alongside independent outcome assertions.
 

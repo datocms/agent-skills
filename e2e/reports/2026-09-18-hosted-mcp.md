@@ -1,4 +1,4 @@
-# Hosted MCP validation with Luna medium
+# Hosted MCP validation
 
 The hosted MCP release gate recorded in the [preceding validation report](2026-09-18-production-readiness.md) now passes through a direct native OAuth connection to `https://mcp.datocms.com`. All evaluated tasks and infrastructure sessions used **`gpt-5.6-luna` with medium reasoning**. No other model or provider contributes to these results.
 

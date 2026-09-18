@@ -1,4 +1,4 @@
-# Release-candidate validation with Luna medium
+# Release-candidate validation
 
 The later [hosted MCP follow-up](2026-09-18-hosted-mcp.md) resolves the connection gate recorded here. This report preserves the results and release decision from its original validation round.
 

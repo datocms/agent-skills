@@ -1,4 +1,4 @@
-# September 14–16 coverage: Luna medium
+# September 14–16 regression coverage
 
 Scope: all 26 first-parent commits after `353c06a` through release `4c01e875325a19c50658dbcbc4ad34767bb08a98`. The remote default branch still matched this release during the review on September 18. Every evaluated agent session used `gpt-5.6-luna` with medium reasoning; other provider/model results are excluded. Deterministic checks are reported separately.
 
