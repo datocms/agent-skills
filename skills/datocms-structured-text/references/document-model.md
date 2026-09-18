@@ -74,6 +74,8 @@ export function assertDocument(document) {
 }
 ```
 
+`validate()` in utils 6.0.1 is typed for plain DAST with ID references. Hydrated CMA blocks and partial/new block request payloads are different types: validate raw DAST before hydration, and leave typed request/preflight and saved-state checks to `datocms-cma`. Do not cast nested payloads to `Document` or strip their block data to satisfy the validator.
+
 Validation layers answer different questions:
 
 1. **Document structure:** node types, attributes, children, wrapper. Use library types/guards as well as runtime validation; the validator is not a complete schema or semantic checker.
