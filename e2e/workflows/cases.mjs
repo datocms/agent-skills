@@ -98,6 +98,7 @@ export const cases = [
       "For this DatoCMS release, current verified usage is 2 sandboxes plus main, the included allowance is 2, and the hard limit is 10. I already approved the extra charge for one more sandbox and want to keep our fork-and-promote workflow. Give me the next steps without executing them.",
     rubric: [
       "Reuses explicit cost authorization rather than asking again",
+      "Does not invent a separate paid-extra activation step on the verified plan",
       "Preserves fork-and-promote and rollback workflow",
       "Does not count main as sandbox or claim remaining hard capacity means free",
     ],
