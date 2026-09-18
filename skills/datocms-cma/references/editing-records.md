@@ -71,14 +71,24 @@ Use these instead of local `const FOO_ID = "…" as const;` literals — guards 
 
 ## Chaining Structured Text helpers
 
-Before chaining `parse` → `mapNodes`, explicitly type the writable document with `FieldValueInRequest`. An inferred response type can select the wrong mapper overload with mixed helper versions. For a localized field, after checking the locale exists and passing the unedited round-trip check below:
+Keep the nested response type on the input to `mapNodes`; annotate its **result** with `FieldValueInRequest`. Widening the input first allows block IDs and partial request objects, so typed guards can no longer promise nested attributes. For a localized field, bind and check the locale before callbacks (`if (!english)` handles both null and undefined):
 
 ```ts
-let content: NonNullable<FieldValueInRequest<typeof currentItem, "body">>["en"] =
-  parse(editedText, currentItem.body.en);
+const english = currentItem.body.en;
+if (!english) throw new Error("Missing English content");
+// If text edits need parse(), pass its checked result instead of english.
+const content: NonNullable<FieldValueInRequest<typeof currentItem, "body">>["en"] =
+  mapNodes(english, (node) => {
+    if (isBlockWithItemOfType(Schema.ImageBlock.ID, node)) {
+      return { ...node, item: buildBlockRecord<Schema.ImageBlock>({
+        id: node.item.id, caption: node.item.attributes.caption + " (reviewed)",
+      }) };
+    }
+    return node;
+  });
 ```
 
-Pass this typed variable to `mapNodes` and assign its result back. Keep the original response for inspecting nested attributes; request values also allow block IDs and partial objects. Apply the existing text → typed block edits → root append workflow below.
+Keep the original response for inspection and verification. Run typed block edits in one walk over that response (or `parse(editedText, english)`), then append to the writable result. Do not inspect a rewritten block as if it still contained the full response. Preserve values with inferred constants or `JSON.stringify(originalValue)`; do not introduce broad `unknown`/`any` types for snapshots.
 
 Compound predicates such as `(node) => isSpan(node) && node.value === text` can return only `boolean` and lose narrowing. Reapply the corresponding guard before every node-specific access, including verification or logging after re-indexing. Guard paragraph children too: they may be links or inline records; `isParagraph(node)` does not make every child a span.
 
@@ -224,9 +234,8 @@ if (currentItem.content) {
   const edited = /* … LLM / regex / diff-merge on `text` … */ text;
 
   // `parse` reuses the original `item` for surviving block/inlineBlock IDs.
-  // Use the writable field type when continuing through `mapNodes`.
-  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =
-    parse(edited, currentItem.content);
+  // Keep the nested response type if continuing through mapNodes.
+  const content = parse(edited, currentItem.content);
 
   await client.items.update<Schema.Article>(currentItem.id, { content });
 }
@@ -249,9 +258,8 @@ const currentItem = await client.items.find<Schema.Article>(id, { nested: true }
 const repo = new SchemaRepository(client);
 
 if (currentItem.content) {
-  let content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =
-    currentItem.content;
-  content = mapNodes(content, (node, parent) => {
+  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =
+    mapNodes(currentItem.content, (node, parent) => {
     if (isInlineBlockWithItemOfType(Schema.Mention.ID, node)) { // EDIT inline
       return { ...node, item: buildBlockRecord<Schema.Mention>({
         id: node.item.id, url: node.item.attributes.url + "?utm=x",

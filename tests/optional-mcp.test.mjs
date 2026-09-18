@@ -63,6 +63,12 @@ function section(tree, title) {
     // Allow only the reviewed request-type, content-preservation and pagination fixes.
     // All other code and prose must still match the base exactly.
     return { ...node, value: node.value.replace(
+      '  // Keep the nested response type if continuing through mapNodes.\n  const content = parse(edited, currentItem.content);',
+      '  // Use the writable field type when continuing through `mapNodes`.\n  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    parse(edited, currentItem.content);',
+    ).replace(
+      '  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    mapNodes(currentItem.content, (node, parent) => {',
+      '  let content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    currentItem.content;\n  content = mapNodes(content, (node, parent) => {',
+    ).replace(
       '  // `parse` reuses the original `item` for surviving block/inlineBlock IDs.\n  // Use the writable field type when continuing through `mapNodes`.\n  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    parse(edited, currentItem.content);',
       '  // `content` keeps the static type of `currentItem.content` and reuses the original\n  // `item` object for every block/inlineBlock whose id survives the edit.\n  const content = parse(edited, currentItem.content);',
     ).replace(

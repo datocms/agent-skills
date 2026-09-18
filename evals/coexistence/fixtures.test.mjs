@@ -19,6 +19,34 @@ const caseById = (id) => {
 const toolEvent = (name, extra = {}) => ({ kind: "tool", role: "datocms", name, args: {}, isError: false, output: "", ...extra });
 const writeEvent = (route = "mcp") => ({ kind: "execution", route, name: "script://edit.ts", errors: [], calls: [{ method: "items.update", id: "article-1", values: { title: "Summer update" }, applied: true }] });
 
+test("shipped localized mapper keeps response narrowing and creates a valid partial block update", () => {
+  const reference = readFileSync(new URL("../../skills/datocms-cma/references/editing-records.md", import.meta.url), "utf8");
+  const example = reference.split("## Chaining Structured Text helpers")[1].split("```ts\n")[1].split("```")[0];
+  const source = `
+    import { buildBlockRecord, type FieldValueInRequest } from '@datocms/cma-client-node';
+    import { mapNodes, isBlockWithItemOfType } from 'datocms-structured-text-utils';
+    const currentItem = await client.items.find<Schema.Article>('article-1', {nested: true});
+    ${example}
+    await client.items.update<Schema.Article>(currentItem.id, {body: {...currentItem.body, en: content}});
+  `;
+  for (const variant of [undefined, "unseen", "rich"]) {
+    const original = initialRecord({variant});
+    const result = execute(source, original, {runtime: "mcp", writable: true});
+    assert.deepEqual(result.errors, []);
+    const expected = structuredClone(original);
+    expected.body.en.document.children[1].item.attributes.caption += " (reviewed)";
+    expected.meta.current_version = "2";
+    expected.meta.updated_at = "2026-09-18T12:00:00Z";
+    assert.deepEqual(result.record, expected);
+  }
+  for (const missing of [null, undefined]) {
+    const original = initialRecord(); original.body.en = missing;
+    const result = execute(source, original, {runtime: "mcp", writable: true});
+    assert.match(result.errors.join("\n"), /Missing English content/);
+    assert.equal(result.calls.filter(call => call.method === "items.update").length, 0);
+  }
+});
+
 test("host-skill isolation disables actual entrypoint files, including symlinks", () => {
   const root = mkdtempSync(join(tmpdir(), "coexistence-skills-"));
   try {
