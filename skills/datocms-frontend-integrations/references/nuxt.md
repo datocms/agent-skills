@@ -740,7 +740,7 @@ Content Link embeds invisible chars in text fields. Use `stripStega()` from `@da
 ### Content Link Environment Variables
 
 ```
-NUXT_PUBLIC_DATOCMS_BASE_EDITING_URL=   # For Content Link, e.g. https://your-project.admin.datocms.com/environments/main
+NUXT_PUBLIC_DATOCMS_BASE_EDITING_URL=   # For Content Link, e.g. https://your-project.admin.datocms.com
 ```
 
 ### Content Link Dependencies

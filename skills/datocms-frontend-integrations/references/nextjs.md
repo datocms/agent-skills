@@ -337,7 +337,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 }
 ```
 
-Uses `deserializeRawItem` from `@datocms/rest-client-utils`. Request body contains `item` and `locale`. Next.js doesn't receive `itemType` — uses `item.__itemTypeId`.
+Web Previews sends a raw JSON:API `item`, plus `itemType` and `locale`. The incoming item has `relationships.item_type.data.id`; `__itemTypeId` is added by `deserializeRawItem` from `@datocms/rest-client-utils` and is not present in the wire payload. Deserialize before using that discriminator, or read the raw relationship directly. This example only consumes `item` and `locale`.
 
 ### `recordToWebsiteRoute`
 
@@ -575,7 +575,7 @@ Content Link embeds invisible characters in text fields. Use `stripStega()` from
 ### Content Link Environment Variables
 
 ```
-DATOCMS_BASE_EDITING_URL=              # For Content Link, e.g. https://your-project.admin.datocms.com/environments/main
+DATOCMS_BASE_EDITING_URL=              # For Content Link, e.g. https://your-project.admin.datocms.com
 ```
 
 ### Content Link Dependencies
@@ -585,6 +585,8 @@ Required: `@datocms/content-link`
 ## Real-Time Updates (Optional)
 
 Create two helper components for real-time updates in draft mode.
+
+Keep the draft token inside the server's enabled-draft branch. Passing it to a client component with a disabled subscription still serializes it into the public HTML/RSC payload; published renders must receive neither draft credentials nor draft subscription options.
 
 ### `generatePageComponent`
 
@@ -628,6 +630,7 @@ export function generatePageComponent<PageProps, Result, Variables>(
     return isDraftModeEnabled ? (
       <RealTimeComponent
         token={process.env.DATOCMS_DRAFT_CONTENT_CDA_TOKEN!}
+        environment={process.env.DATOCMS_ENVIRONMENT}
         query={options.query}
         variables={variables}
         initialData={data}
@@ -716,7 +719,9 @@ export type RealtimeComponentType<PageProps, Result, Variables> = ComponentType<
 
 ### Usage Pattern
 
-In page file (e.g., `src/app/blog/[slug]/page.tsx`):
+Keep shared GraphQL queries in a plain module without `'use client'`, imported by both the server page and the subscription component. A server page cannot read a query value exported from a client module: that import is a client reference, not the query string or document.
+
+In a dedicated client component (e.g., `src/app/blog/[slug]/RealtimeComponent.tsx`; keep `page.tsx` server-side):
 
 ```tsx
 'use client'; // The realtime component file must be a client component
@@ -749,6 +754,8 @@ export default generatePageComponent({
   },
 });
 ```
+
+A production build does not exercise server-side CDA requests. Start the built app and request an actual configured page in published and draft modes before reporting the integration as runtime-verified; if credentials or execution are unavailable, report that check as outstanding.
 
 ### Real-Time Dependencies
 

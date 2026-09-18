@@ -1,0 +1,117 @@
+import assert from "node:assert/strict";
+import { createServer } from "node:http";
+import { join } from "node:path";
+import { build } from "esbuild";
+
+// Exercise the public Web Previews iframe protocol with the actual Content
+// Link controller. This does not claim a run inside the hosted CMS editor.
+export async function checkEmbeddedPreview({
+  context,
+  state,
+  destination,
+  save,
+}) {
+  const escape = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const fieldPath = new URLSearchParams(new URL(destination).hash.slice(1)).get(
+    "fieldPath",
+  );
+  assert.equal(fieldPath, "title.en");
+  let source = escape(destination);
+  for (const [value, name] of [
+    [state.environment.DATOCMS_ENVIRONMENT, "environment"],
+    [state.records[0].item_type.id, "item_type_id"],
+    [state.records[0].id, "item_id"],
+    [fieldPath, "field_path"],
+  ])
+    source = source.replace(
+      escape(value),
+      `(?<${name}>${name === "field_path" ? "[A-Za-z0-9_.-]+" : "[A-Za-z0-9_-]+"})`,
+    );
+  assert.ok(new RegExp(source).exec(destination)?.groups?.item_id);
+  const bundle = await build({
+    stdin: {
+      contents: `import connectToChild from 'penpal/lib/connectToChild';
+        window.states=[];window.opened=[];
+        const iframe=document.createElement('iframe');
+        iframe.title='Website preview';iframe.style='width:900px;height:600px';
+        iframe.src=${JSON.stringify(state.origin + "/articles/article-0")};
+        const connection=connectToChild({iframe,timeout:20000,methods:{
+          onInit:()=>({editUrlRegExp:{source:${JSON.stringify(source)},flags:''}}),
+          onPing:()=>{},
+          onStateChange:state=>{window.states.push(state);},
+          openItem:item=>{window.opened.push(item);}
+        }});
+        window.ready=connection.promise.then(website=>{window.website=website;});
+        document.body.append(iframe);`,
+      resolveDir: join(import.meta.dirname, "plugin"),
+      loader: "js",
+    },
+    bundle: true,
+    write: false,
+    platform: "browser",
+    format: "iife",
+  });
+  const host = createServer((request, response) => {
+    response.setHeader(
+      "content-type",
+      request.url === "/host.js" ? "text/javascript" : "text/html",
+    );
+    response.end(
+      request.url === "/host.js"
+        ? bundle.outputFiles[0].text
+        : '<!doctype html><html><body><script src="/host.js"></script></body></html>',
+    );
+  });
+  await new Promise((resolve) => host.listen(0, "127.0.0.1", resolve));
+  const page = await context.newPage();
+  try {
+    await page.goto(`http://localhost:${host.address().port}`);
+    await page.evaluate(() => window.ready);
+    await page.evaluate(() =>
+      window.website.navigateTo({ path: "/articles/article-1" }),
+    );
+    const frame = page.frameLocator("iframe");
+    await frame
+      .getByRole("heading", { level: 1 })
+      .filter({ hasText: `English 1 ${state.marker}` })
+      .waitFor({ timeout: 20000 });
+    await page.waitForFunction(
+      ({ environment, id }) =>
+        window.states.some(
+          (state) =>
+            state.path === "/articles/article-1" &&
+            state.itemIdsPerEnvironment[environment]?.includes(id),
+        ),
+      {
+        environment: state.environment.DATOCMS_ENVIRONMENT,
+        id: state.records[1].id,
+      },
+      { timeout: 20000 },
+    );
+    await page.evaluate(() =>
+      window.website.setClickToEditEnabled({
+        enabled: true,
+        flash: { scrollToNearestTarget: false },
+      }),
+    );
+    await frame.locator("h1").click();
+    await page.waitForFunction(
+      () => window.opened.length > 0,
+      {},
+      { timeout: 10000 },
+    );
+    const observation = await page.evaluate(() => ({
+      states: window.states,
+      opened: window.opened,
+    }));
+    const opened = observation.opened.at(-1);
+    assert.equal(opened.itemId, state.records[1].id);
+    assert.equal(opened.environment, state.environment.DATOCMS_ENVIRONMENT);
+    assert.equal(opened.fieldPath, "title.en");
+    save("embedded-preview.json", observation);
+    return "embedded host navigation, selected-record state and click-to-edit use the real iframe protocol";
+  } finally {
+    await page.close();
+    await new Promise((resolve) => host.close(resolve));
+  }
+}

@@ -19,6 +19,14 @@ import { join, resolve } from "node:path";
 export const MODEL = "gpt-5.6-luna";
 export const EFFORT = "medium";
 
+// Only inspect runtime errors, never command output: an application API's 429
+// is not evidence that the account's model usage allowance was exhausted.
+export function isUsageLimitError(event: Record<string, any>): boolean {
+  if (!["error", "turn.failed"].includes(event.type) && event.item?.type !== "error")
+    return false;
+  return /usage_limit_reached|insufficient_quota|(?:weekly|account|codex) usage limit|you(?:'|’)ve hit your usage limit/i.test(JSON.stringify(event));
+}
+
 function toml(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(toml).join(",")}]`;
   if (value && typeof value === "object")
@@ -254,6 +262,7 @@ export async function nativeSession(options: NativeOptions) {
     stderr = "",
     timedOut = false,
     capped = false,
+    usageLimitReached = false,
     credentialLeak = false;
   const commands = new Map<
     string,
@@ -284,6 +293,10 @@ export async function nativeSession(options: NativeOptions) {
       return;
     }
     events.push(event);
+    if (isUsageLimitError(event)) {
+      usageLimitReached = true;
+      stop();
+    }
     if (event.item?.type === "mcp_tool_call") {
       mcpCallIds.add(event.item.id);
       if (mcpCallIds.size > (options.maxMcpCalls ?? Infinity)) {
@@ -340,6 +353,7 @@ export async function nativeSession(options: NativeOptions) {
     exitCode,
     timedOut,
     capped,
+    usageLimitReached,
     credentialLeak,
     transcriptPath,
     commands: [...commands.values()],

@@ -25,6 +25,8 @@ Structured text fields return an object with up to four sub-fields:
 
 **Critical:** Always query all sub-fields that the structured text field uses. If you query only `value` but the content contains embedded blocks or links, those references will be unresolvable and content will be silently missing during rendering.
 
+Check the generated GraphQL type before adding record fragments: an empty model allowlist can expose a sub-field such as `inlineBlocks` as a scalar `String`, which rejects nested selections. Omit unused reference sub-fields; for populated allowlists, select fragments only for the permitted record types. Inline records belong in `links`, while inline blocks belong in `inlineBlocks`.
+
 ```graphql
 query {
   blogPost(filter: { slug: { eq: "hello-world" } }) {

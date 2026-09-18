@@ -716,7 +716,7 @@ Content Link embeds invisible characters in text fields. Use `stripStega()` from
 ### Content Link Environment Variables
 
 ```
-DATOCMS_BASE_EDITING_URL=             # For Content Link, e.g. https://your-project.admin.datocms.com/environments/main
+DATOCMS_BASE_EDITING_URL=             # For Content Link, e.g. https://your-project.admin.datocms.com
 ```
 
 ### Content Link Dependencies

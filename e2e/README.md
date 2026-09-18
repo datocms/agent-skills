@@ -33,6 +33,10 @@ npm run e2e:workflows -- --repetitions 3 --output local/workflows/run-01
 
 Use `--cases` to select workflow/code cases, or `--frameworks` for applications. `--recheck <original-output>` on code/application runners regrades the same generated artifacts without another model call; choose a new `--output` so original evidence remains intact. Rechecks rebuild applications and use their saved dependency lockfiles.
 
+## Catalog workflow coverage
+
+The [catalog scenarios](catalog/README.md) add real CDA reads and rendering, migration execution and recovery, duplicate-free content and asset imports, SDK plugin behavior in Chrome, and a Next.js visual-editing flow with live CMS updates. They use independent outcome checks, disposable sandboxes, and model-free rechecks for saved applications. The [catalog report](reports/2026-09-19-catalog-workflows.md) preserves the successful outcomes, implementation failures, and separate harness corrections.
+
 ## Controlled CLI/MCP coexistence
 
 ```bash

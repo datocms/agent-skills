@@ -135,7 +135,7 @@ With options:
 
 ### Via Keyboard Shortcut (Temporary)
 
-Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily show click-to-edit overlays. Releasing the key hides them.
+Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily invert click-to-edit: enable it when off, or disable it when already on. Releasing the key restores the previous state.
 
 ## `<ContentLink />` Props
 

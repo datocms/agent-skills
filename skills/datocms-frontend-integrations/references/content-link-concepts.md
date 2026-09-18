@@ -45,7 +45,7 @@ const result = await executeQuery(query, {
 
 ## `baseEditingUrl`
 
-Your DatoCMS project editor URL: **DatoCMS → Settings → Environment settings**. Format: `https://{project-slug}.admin.datocms.com/environments/{environment-name}`. Store as env var (e.g., `DATOCMS_BASE_EDITING_URL`).
+Use the project editor origin, `https://{project-slug}.admin.datocms.com`, as an env var (e.g., `DATOCMS_BASE_EDITING_URL`). The CDA adds the environment and record paths; including `/environments/...` in this base duplicates that path. Select the content environment with the separate `environment` query/subscription option.
 
 ## `createController()` API
 

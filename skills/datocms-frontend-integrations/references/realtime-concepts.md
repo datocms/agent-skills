@@ -59,10 +59,12 @@ Standard pattern:
 
 Ensures fast initial page loads (server-rendered) with seamless live updates after hydration.
 
+Pass the same `environment` to the initial query and the subscription when targeting a sandbox. A subscription does not inherit the server query wrapper's options; omitting its environment reads the primary environment instead.
+
 ```
-Server: executeQuery(query, { token, includeDrafts: true })
+Server: executeQuery(query, { token, environment, includeDrafts: true })
          ↓ initialData
-Client: useQuerySubscription({ query, token, initialData, includeDrafts: true })
+Client: useQuerySubscription({ query, token, environment, initialData, includeDrafts: true })
          ↓ live data
 Render: display data (auto-updates on changes)
 ```

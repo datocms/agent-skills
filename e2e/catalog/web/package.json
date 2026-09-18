@@ -1,0 +1,18 @@
+{
+  "name": "catalog-web-fixture",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@datocms/cda-client": "0.3.2",
+    "react-datocms": "8.1.2",
+    "next": "16.3.5",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@types/node": "22.19.17",
+    "typescript": "6.0.3"
+  }
+}
