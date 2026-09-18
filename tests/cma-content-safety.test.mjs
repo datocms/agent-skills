@@ -73,7 +73,7 @@ test('shipped draft publication example finishes pagination before mutating the 
 test('shipped node transformation preserves inline and nested content while removing empty root paragraphs', async () => {
   const source = shippedExample(
     'skills/datocms-cma/references/editing-records.md',
-    'content = mapNodes(content,',
+    'mapNodes(currentItem.content,',
   );
   const inlineParagraphs = [
     { type: 'paragraph', children: [{ type: 'inlineItem', item: 'inline-record' }] },
