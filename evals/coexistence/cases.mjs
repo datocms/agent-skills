@@ -58,7 +58,7 @@ export function initialRecord(testCase) {
     record.meta.published_at = "2026-09-01T10:00:00Z";
     record.meta.first_published_at = record.meta.published_at;
     record.meta.is_published_version_valid = true;
-    record.body.en.document.children[0].children[0].marks = ["strong", "emphasis"];
+    record.body.en.document.children[0].children[0].marks = ["strong", "emphasis", "brand-accent"];
     record.body.en.document.children[0].children[2].meta = [{ id: "rel", value: "nofollow" }];
     record.body.en.document.children[1].item.attributes.image = {
       upload_id: "existing-upload", alt: "Original alt", title: null,

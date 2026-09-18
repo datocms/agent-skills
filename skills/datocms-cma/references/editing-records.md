@@ -205,7 +205,7 @@ Top-level value is `{ schema: "dast", document: { type: "root", children: [...] 
 | `link`, `itemLink` | `span` only — no nested links or inline embeds |
 | `span`, `code`, `thematicBreak`, `block`, `inlineBlock`, `inlineItem` | leaf — no children |
 
-`block` may only sit at root depth; inside text flow use `inlineBlock`. Line breaks live as literal `\n` inside `span.value` — no dedicated break node. Marks: `'strong' | 'emphasis' | 'code' | 'underline' | 'strikethrough' | 'highlight'`.
+`block` may only sit at root depth; inside text flow use `inlineBlock`. Line breaks live as literal `\n` inside `span.value` — no dedicated break node. Default marks include `strong`, `emphasis`, `code`, `underline`, `strikethrough`, and `highlight`. Custom marks are possible: preserve the fetched `string[]` instead of narrowing snapshots to a union of defaults.
 
 ## Structured text (`structured_text`)
 
@@ -289,7 +289,7 @@ if (currentItem.content) {
     if (isHeading(node) && node.level === 1) return { ...node, level: 2 as const };
     if (isSpan(node)) { // marks: add/remove decorators
       const marks = new Set(node.marks ?? []);
-      marks.add("strong"); // 'strong'|'emphasis'|'code'|'underline'|'strikethrough'|'highlight'
+      marks.add("strong"); // Preserve existing custom marks too.
       return { ...node, marks: [...marks], value: node.value.replace(/x/g, "y") };
     }
     if (isLink(node)) { // link: { url, meta?, children: Span[] }

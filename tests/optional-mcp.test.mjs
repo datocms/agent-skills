@@ -63,6 +63,9 @@ function section(tree, title) {
     // Allow only the reviewed request-type, content-preservation and pagination fixes.
     // All other code and prose must still match the base exactly.
     return { ...node, value: node.value.replace(
+      'marks.add("strong"); // Preserve existing custom marks too.',
+      "marks.add(\"strong\"); // 'strong'|'emphasis'|'code'|'underline'|'strikethrough'|'highlight'",
+    ).replace(
       '  // Keep the nested response type if continuing through mapNodes.\n  const content = parse(edited, currentItem.content);',
       '  // Use the writable field type when continuing through `mapNodes`.\n  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    parse(edited, currentItem.content);',
     ).replace(
