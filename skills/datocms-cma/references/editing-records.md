@@ -42,6 +42,22 @@ Keep an independent snapshot of the original read. After updating, read back the
 
 Do not serialize an update payload to compare it with a saved response. Structured Text request types also allow new blocks without IDs, so they are not valid `serialize()` inputs. Block ID references and partial `buildBlockRecord` payloads expand into full objects on read, including unchanged attributes and response metadata; object-key order is also irrelevant. Compare the relevant values in matching response shapes. Do not strip block attributes or identity just to make equality pass. If post-write verification throws, inspect the saved state before deciding whether any further write is needed; never replay the mutation merely because its verification failed.
 
+For typed inspection, bind and guard the locale first, then use `collectNodes` with a type guard and `.map()` to infer snapshot types. Root children exclude nested spans; do not use their union as a visitor type. Untyped `[]` seeds in `reduceNodes` infer `never[]`. For example, with a checked `english` locale:
+
+```ts
+const spans = collectNodes(english, isSpan).map(({ node }) => ({
+  text: node.value,
+  marks: [...(node.marks ?? [])],
+}));
+const images = collectNodes(english, isBlockWithItemOfType(Schema.ImageBlock.ID))
+  .map(({ node }) => ({
+    id: node.item.id,
+    image: structuredClone(node.item.attributes.image),
+  }));
+```
+
+Capture these values before transforming content. Apply the same projections to a checked saved locale, comparing the values relevant to the requested edit; an authorized added span or changed caption is not a preservation failure.
+
 In Node runtimes, use the standard value comparator for unchanged response fields. Keep this snapshot and comparison in the same execution as the authorized update and fresh read; do not hand-write a generic deep-equality function:
 
 ```ts
@@ -72,7 +88,7 @@ import {
 // Structured Text helpers come from their own package.
 
 import {
-  mapNodes, findFirstNode, reduceNodes,
+  mapNodes, findFirstNode, collectNodes, reduceNodes,
   isBlockWithItemOfType, isInlineBlockWithItemOfType,
   isHeading, isParagraph, isSpan, isLink, isItemLink, isInlineItem,
 } from "datocms-structured-text-utils";

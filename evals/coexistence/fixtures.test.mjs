@@ -641,3 +641,26 @@ test("MCP rejects never casts used to escape request types", () => {
   assert.match(result.errors.join("\n"), /Casts to never/);
   assert.equal(result.calls.length, 0);
 });
+
+
+test("shipped typed inspection captures nested spans, custom marks and nullable asset values", () => {
+  const reference = readFileSync(new URL("../../skills/datocms-cma/references/editing-records.md", import.meta.url), "utf8");
+  const example = reference.split("For typed inspection,")[1].split("```ts\n")[1].split("```")[0];
+  for (const variant of [undefined, "rich"]) {
+    const original = initialRecord({variant});
+    const result = execute(`
+      import {collectNodes, isSpan, isBlockWithItemOfType} from 'datocms-structured-text-utils';
+      const record = await client.items.find<Schema.Article>('article-1', {nested:true});
+      const english = record.body.en;
+      if (!english) throw new Error('Missing English content');
+      ${example}
+      console.log({spans, images});
+    `, original, {runtime:"mcp", writable:false});
+    assert.deepEqual(result.errors, []);
+    const snapshot = JSON.parse(result.output[0]);
+    assert.deepEqual(snapshot.spans.map(span => span.text), ["Hello reader", " — ", "Help"]);
+    assert.deepEqual(snapshot.spans[0].marks, original.body.en.document.children[0].children[0].marks);
+    assert.deepEqual(snapshot.images, [{id:"block-1", image:original.body.en.document.children[1].item.attributes.image}]);
+    assert.deepEqual(result.record, original);
+  }
+});
