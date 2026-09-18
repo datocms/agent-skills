@@ -116,6 +116,10 @@ const preservedWorkflows = {
 function withReviewedDastdownPreflight(source) {
   const corrections = [
     [
+      'Forgetting `nested: true` is #1 cause of broken update payloads — mapping over array of strings produces garbage. Block fields are only field type that change shape between two modes; asset fields + record-link fields always return IDs.',
+      'Forgetting `nested: true` is #1 cause of broken update payloads — mapping over array of strings produces garbage. Block fields are the field type that changes shape between these modes. Asset fields retain file-value objects (`upload_id`, alt/title, custom data, focal point, poster time), or `null`; record-link fields retain record IDs. Infer asset snapshot types from the fetched value instead of declaring them as strings.',
+    ],
+    [
       '**Prefer dastdown over AST building/manipulation when possible!** Much less chance of logic/typing errors.',
       'Prefer dastdown for text-shaped edits after the unedited round-trip check below. If it throws or changes existing text, apply the requested edit with `mapNodes` on the original document before making any write.',
     ],

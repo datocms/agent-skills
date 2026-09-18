@@ -36,6 +36,8 @@ Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.
 
 Derive preservation checks from the original values, including `null` and empty values. Preserving an optional asset means keeping its original value, not requiring a populated asset.
 
+An update changes `meta.current_version` and `meta.updated_at` without publishing. Exclude those bookkeeping values from publication-preservation checks; compare publication timestamps, schedules, and the published content when a published version exists.
+
 Keep an independent snapshot of the original read. After updating, read back the same record/version with `nested: true`. Compare relevant field/node semantics in matching response shapes: optional arrays or metadata can normalize, while `===`/`!==` only compares object identity across API reads. Do not use `serialize()` or whole-tree JSON equality as the post-write oracle. Check requested field values against the intended changes and unchanged content against that snapshot. Check block identity, type, attributes, node order, marks, links, other locales, and publication state where relevant.
 
 Do not serialize an update payload to compare it with a saved response. Structured Text request types also allow new blocks without IDs, so they are not valid `serialize()` inputs. Block ID references and partial `buildBlockRecord` payloads expand into full objects on read, including unchanged attributes and response metadata; object-key order is also irrelevant. Compare the relevant values in matching response shapes. Do not strip block attributes or identity just to make equality pass. If post-write verification throws, inspect the saved state before deciding whether any further write is needed; never replay the mutation merely because its verification failed.
@@ -165,7 +167,7 @@ Every read endpoint returning records accepts `nested: true` (`items.find`, `ite
 | Max page size 500 | Max page size 30 (iterators auto-adjust → \~16× more page fetches) |
 | Counting, listing, "do these exist?" | Any read you intend to mutate or display |
 
-Forgetting `nested: true` is #1 cause of broken update payloads — mapping over array of strings produces garbage. Block fields are only field type that change shape between two modes; asset fields + record-link fields always return IDs.
+Forgetting `nested: true` is #1 cause of broken update payloads — mapping over array of strings produces garbage. Block fields are the field type that changes shape between these modes. Asset fields retain file-value objects (`upload_id`, alt/title, custom data, focal point, poster time), or `null`; record-link fields retain record IDs. Infer asset snapshot types from the fetched value instead of declaring them as strings.
 
 ### ID / object duality
 

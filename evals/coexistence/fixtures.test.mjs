@@ -559,6 +559,19 @@ test("shipped snapshot comparison accepts independent equal values and catches c
   }
 });
 
+test("asset snapshots preserve typed file objects and reject string-ID annotations", () => {
+  const prefix = `import {findFirstNode, isBlockWithItemOfType} from 'datocms-structured-text-utils';
+    const record = await client.items.find<Schema.Article>('article-1', {nested: true});
+    if (!record.body.en) throw Error('Missing English');
+    const block = findFirstNode(record.body.en, isBlockWithItemOfType(Schema.ImageBlock.ID));
+    if (!block) throw Error('Missing block');`;
+  const invalid = execute(prefix + 'const image: string | null = block.node.item.attributes.image;', initialRecord({variant: 'rich'}), {runtime: 'mcp'});
+  assert.ok(invalid.errors.some(message => message.includes('FileFieldValue')));
+  const valid = execute(prefix + 'const image = structuredClone(block.node.item.attributes.image); console.log(image);', initialRecord({variant: 'rich'}), {runtime: 'mcp'});
+  assert.deepEqual(valid.errors, []);
+  assert.deepEqual(JSON.parse(valid.output[0]), initialRecord({variant: 'rich'}).body.en.document.children[1].item.attributes.image);
+});
+
 test("published reads reject never-published drafts and retain a separate published snapshot after updates", () => {
   const draftRead = execute('await client.items.find<Schema.Article>("article-1", {version: "published"});', initialRecord(), {runtime: "mcp"});
   assert.match(draftRead.errors.join('\n'), /NOT_FOUND/);

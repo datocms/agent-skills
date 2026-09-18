@@ -62,7 +62,7 @@ export function initialRecord(testCase) {
     record.body.en.document.children[0].children[2].meta = [{ id: "rel", value: "nofollow" }];
     record.body.en.document.children[1].item.attributes.image = {
       upload_id: "existing-upload", alt: "Original alt", title: null,
-      custom_data: { source: "archive" }, focal_point: { x: 0.25, y: 0.75 },
+      custom_data: { source: "archive" }, focal_point: { x: 0.25, y: 0.75 }, poster_time: null,
     };
     record.body.it.document.children.push({ type: "code", language: "js", code: "  keep()\n\nnext();  " });
   }
