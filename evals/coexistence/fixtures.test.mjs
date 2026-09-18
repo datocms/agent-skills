@@ -515,3 +515,16 @@ test("held-out MCP data keeps publication status, image metadata and code whites
   assert.equal(after.body.it.document.children[1].code, '  keep()\n\nnext();  ');
   assert.notDeepEqual(before, initialRecord());
 });
+
+test("MCP can keep an independent JSON content snapshot using the Node runtime clone function", () => {
+  const source = `
+    const before = await client.items.find<Schema.Article>('article-1', {nested: true});
+    const snapshot = structuredClone(before);
+    before.title = 'Only the local object changed';
+    if (snapshot.title !== 'Original title') throw Error('Snapshot alias');
+    console.log(snapshot.body.it);
+  `;
+  const result = execute(source, initialRecord(), {runtime: 'mcp'});
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.record, initialRecord());
+});

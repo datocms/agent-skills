@@ -62,6 +62,7 @@ declare function parse(text: string, original: Dast): Dast;
 declare function parse(text: string): Dast;
 declare function buildBlockRecord<T>(attributes: Partial<T> & {id?: string; item_type?: {type: 'item_type'; id: string}}): BlockInNestedResponse<T>;
 declare const console: { log(...values: (object | string | number | boolean | null | undefined)[]): void };
+declare function structuredClone<T>(value: T): T;
 `;
 
 // Match the currently exposed MCP contract: only client and Schema are implicit.
@@ -83,6 +84,7 @@ declare global {
   }
   const client: Pick<Client, 'items'>;
   const console: { log(...values: (object | string | number | boolean | null | undefined)[]): void };
+  function structuredClone<T>(value: T): T;
 }
 `;
 const resolvePackage = createRequire(import.meta.url);
@@ -338,6 +340,8 @@ export function execute(
     const record = ${JSON.stringify(record)};
     const calls = [], output = [];
     const copy = (value) => JSON.parse(JSON.stringify(value));
+    // CMS fixtures are JSON values; keep cloning inside the VM, without host callbacks.
+    const structuredClone = copy;
     const client = { items: {
       async find(id, options) {
         calls.push({ method: 'items.find', id, options });

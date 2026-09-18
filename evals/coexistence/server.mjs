@@ -41,7 +41,7 @@ function assertTarget(args) {
   if (args.site_id !== TARGET.site_id || args.environment !== TARGET.environment) throw Error("Select fixture-project and environment sandbox explicitly; no primary-environment writes are allowed");
 }
 function schemaText(state) {
-  let text = `Project: ${TARGET.site_id}; environment: ${TARGET.environment}. Model article, API key article, generated type Schema.Article. Fields: title string (nonlocalized), untouched string, body localized structured_text (en and it). Blocks: image-block with caption and nullable image. Records start as drafts.\n${role === "datocms" ? mcpDeclarations : declarations}`;
+  let text = `Project: ${TARGET.site_id}; environment: ${TARGET.environment}. Model article, API key article, generated type Schema.Article. Fields: title string (nonlocalized), untouched string, body localized structured_text (en and it). Blocks: image-block with caption and nullable image. \n${role === "datocms" ? mcpDeclarations : declarations}`;
   if (state.testCase.long) {
     let index = 0;
     while (encode(text).length < 32000) {
