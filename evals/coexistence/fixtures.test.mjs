@@ -501,7 +501,7 @@ test("MCP scripts import real SDK and document-helper types, including aliased a
   assert.deepEqual(result.record, expectedRecord(caseById('localized-structured-text')));
 });
 
-test("MCP rejects missing imports, nonexistent exports and packages outside its contract", () => {
+test("MCP rejects missing imports, nonexistent exports and modules outside the bounded fixture", () => {
   for (const source of [
     'console.log(isSpan({type:"span",value:"text"}));',
     'import {notAnExport} from "datocms-structured-text-utils"; console.log(notAnExport);',
@@ -525,6 +525,21 @@ test("MCP checks narrowing against real node unions instead of permissive fixtur
   const valid = prefix + `function assert(condition: boolean): asserts condition { if (!condition) throw Error('Bad node'); }
     assert(isParagraph(first)); console.log(first.children);`;
   assert.deepEqual(execute(valid, initialRecord(), {runtime: 'mcp'}).errors, []);
+});
+
+test("MCP supports pure Node value comparison without host callbacks or order-sensitive JSON equality", () => {
+  const source = `import {isDeepStrictEqual} from 'node:util';
+    if (!isDeepStrictEqual({image: {alt: null, ids: ['one']}}, {image: {ids: ['one'], alt: null}})) throw Error('Object key order');
+    if (isDeepStrictEqual({image: null}, {image: {alt: null}})) throw Error('Lost image');
+    if (isDeepStrictEqual(['one', 'two'], ['two', 'one'])) throw Error('Array order');
+    const before = await client.items.find<Schema.Article>('article-1', {nested: true});
+    const snapshot = structuredClone(before.body.it);
+    if (!isDeepStrictEqual(snapshot, before.body.it)) throw Error('Snapshot equality');
+    console.log('compared independent JSON values');`;
+  const result = execute(source, initialRecord({variant: 'rich'}), {runtime: 'mcp'});
+  assert.deepEqual(result.errors, []);
+  assert.match(result.output.join('\n'), /compared independent JSON values/);
+  assert.equal(result.calls.length, 1);
 });
 
 test("known read-only access stops before a mutation while an unknown restriction may be discovered once", () => {

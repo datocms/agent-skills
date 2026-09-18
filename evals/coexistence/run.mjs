@@ -193,14 +193,14 @@ function catalogue(workspace) {
     return `${name}: ${frontmatter}\nRead skills/${name}/SKILL.md with workspace.read_file when applicable.`;
   }).join("\n\n");
 }
-function snapshot(destination, arm, baseline, distribution) {
+function snapshot(destination, arm, baseline, distribution, candidateSkills) {
   mkdirSync(destination, { recursive: true });
   if (arm === "base") {
     const archive = spawnSync("git", ["archive", baseline, "skills"], { cwd: repoRoot, maxBuffer: 20 * 1024 * 1024 });
     if (archive.status !== 0) throw Error(`Cannot archive baseline: ${archive.stderr}`);
     const untar = spawnSync("tar", ["-x", "-C", destination], { input: archive.stdout });
     if (untar.status !== 0) throw Error(`Cannot expand baseline: ${untar.stderr}`);
-  } else if (arm === "candidate") cpSync(join(repoRoot, "skills"), join(destination, "skills"), { recursive: true });
+  } else if (arm === "candidate") cpSync(candidateSkills ?? join(repoRoot, "skills"), join(destination, "skills"), { recursive: true });
   if (distribution === "cma-only" && existsSync(join(destination, "skills"))) for (const name of readdirSync(join(destination, "skills"))) if (name !== "datocms-cma") rmSync(join(destination, "skills", name), { recursive: true, force: true });
   writeFileSync(join(destination, "package.json"), json({ private: true, devDependencies: { datocms: "4.0.26" } }));
   writeFileSync(join(destination, "datocms.config.json"), json({ profiles: { default: { siteId: TARGET.site_id, environment: TARGET.environment } } }));
@@ -210,7 +210,7 @@ export async function runOne({ testCase, arm, repetition, settings, output, base
   const directory = join(output, testCase.id, arm, String(repetition));
   mkdirSync(directory, { recursive: true });
   const workspace = mkdtempSync(join(tmpdir(), "datocms-coexistence-"));
-  snapshot(workspace, arm, baseline, testCase.distribution);
+  snapshot(workspace, arm, baseline, testCase.distribution, settings.candidateSkills);
   for (const [path, contents] of Object.entries(testCase.files ?? {})) {
     const target = resolve(workspace, path);
     if (!target.startsWith(`${workspace}/`)) throw Error(`Fixture path escapes workspace: ${path}`);
@@ -354,6 +354,8 @@ async function main() {
   const output = resolve(repoRoot, values.output); mkdirSync(output, { recursive: true });
   if (existsSync(join(output, "run.json"))) throw Error("Output already contains a run; choose a fresh output directory to preserve prior evidence.");
   settings.fixtureDir = join(output, "fixture");
+  settings.candidateSkills = join(output, "candidate-skills");
+  cpSync(join(repoRoot, "skills"), settings.candidateSkills, { recursive: true });
   mkdirSync(settings.fixtureDir, { recursive: true });
   for (const path of ["run.mjs", "server.mjs", "runtime.mjs", "cases.mjs", "mcp-runtime-contract.json"]) cpSync(join(sourceDir, path), join(settings.fixtureDir, path));
   const version = spawnSync(values["codex-bin"], ["--version"], { encoding: "utf8" });

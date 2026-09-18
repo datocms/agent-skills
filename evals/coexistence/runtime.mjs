@@ -100,6 +100,10 @@ const typePaths = Object.fromEntries(
     return [name, [resolve(dirname(metadata), info.types ?? info.typings)]];
   }),
 );
+// The hosted sandbox is Node.js, so pure built-ins are also valid. Keep this
+// test double restricted to the JSON-value comparator needed by these tasks.
+typePaths["node:util"] = [resolve(dirname(resolvePackage.resolve("@types/node/package.json")), "util.d.ts")];
+const importablePackages = [...packages, "node:util"];
 const sdkRoot = dirname(
   resolvePackage.resolve("@datocms/cma-client/package.json"),
 );
@@ -203,9 +207,9 @@ export function inspectSource(source, { runtime = "cli" } = {}) {
         );
       else if (
         !ts.isStringLiteral(node.moduleSpecifier) ||
-        !packages.includes(node.moduleSpecifier.text)
+        !importablePackages.includes(node.moduleSpecifier.text)
       )
-        errors.push("Import outside the MCP package allowlist");
+        errors.push("Import outside the bounded fixture's supported modules");
       else if (node.importClause?.name)
         errors.push(
           "The supported packages expose named exports, not default imports",
@@ -342,6 +346,14 @@ export function execute(
     const copy = (value) => JSON.parse(JSON.stringify(value));
     // CMS fixtures are JSON values; keep cloning inside the VM, without host callbacks.
     const structuredClone = copy;
+    const isDeepStrictEqual = (a, b) => {
+      if (Object.is(a, b)) return true;
+      if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return false;
+      if (Array.isArray(a) !== Array.isArray(b)) return false;
+      const keys = Object.keys(a);
+      return keys.length === Object.keys(b).length && keys.every(key =>
+        Object.prototype.hasOwnProperty.call(b, key) && isDeepStrictEqual(a[key], b[key]));
+    };
     const client = { items: {
       async find(id, options) {
         calls.push({ method: 'items.find', id, options });
@@ -393,6 +405,7 @@ export function execute(
     (async () => {
       ${runtime === "mcp" ? "const isSpan=undefined, isParagraph=undefined, isLink=undefined, isBlock=undefined, mapNodes=undefined, findFirstNode=undefined, parse=undefined, serialize=undefined, isBlockWithItemOfType=undefined, buildBlockRecord=undefined;" : ""}
       const packageExports = {
+        'node:util': {isDeepStrictEqual},
         'datocms-structured-text-utils': {...fixtureUtilities, isBlockWithItemOfType: (${isBlockGuardSource()})},
         'datocms-structured-text-dastdown': {parse: fixtureUtilities.parse, serialize: fixtureUtilities.serialize},
         '@datocms/cma-client-node': {buildBlockRecord: fixtureUtilities.buildBlockRecord, ApiError: fixtureUtilities.ApiError, TimeoutError: fixtureUtilities.TimeoutError}
