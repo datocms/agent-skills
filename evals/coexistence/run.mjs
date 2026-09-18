@@ -206,6 +206,20 @@ function snapshot(destination, arm, baseline, distribution, candidateSkills) {
   writeFileSync(join(destination, "datocms.config.json"), json({ profiles: { default: { siteId: TARGET.site_id, environment: TARGET.environment } } }));
 }
 
+export function loadServerGuidance({ revision, candidateSkills, root = repoRoot }) {
+  return Object.fromEntries(["records.md", "editing-records.md"].map((name) => {
+    const path = `skills/datocms-cma/references/${name}`;
+    let text;
+    if (revision === "candidate") text = readFileSync(join(candidateSkills, "datocms-cma/references", name), "utf8");
+    else {
+      const file = spawnSync("git", ["show", `${revision}:${path}`], { cwd: root, encoding: "utf8" });
+      if (file.status !== 0) throw Error(`Missing frozen server guide: ${revision}:${path}`);
+      text = file.stdout;
+    }
+    return [path, text.split("\n").filter((line) => !line.includes("cma:")).join("\n")];
+  }));
+}
+
 export async function runOne({ testCase, arm, repetition, settings, output, baseline, binary, timeout }) {
   const directory = join(output, testCase.id, arm, String(repetition));
   mkdirSync(directory, { recursive: true });
@@ -222,14 +236,9 @@ export async function runOne({ testCase, arm, repetition, settings, output, base
   const statePath = join(directory, "state.json");
   writeFileSync(auditPath, "");
   writeFileSync(transcriptPath, "");
-  const serverGuidance = Object.fromEntries(["records.md", "editing-records.md"].map((name) => {
-    const path = `skills/datocms-cma/references/${name}`;
-    const file = spawnSync("git", ["show", `${baseline}:${path}`], { cwd: repoRoot, encoding: "utf8" });
-    if (file.status !== 0) throw Error(`Missing frozen server guide: ${path}`);
-    return [path, file.stdout.split("\n").filter((line) => !line.includes("cma:")).join("\n")];
-  }));
+  const serverGuidance = settings.serverGuidance ?? loadServerGuidance({ revision: baseline });
   const original = initialRecord(testCase);
-  writeFileSync(statePath, json({ workspace, auditPath, testCase, baseline, serverGuidance, record: original, publishedRecord: original.meta.published_at ? original : null, scripts: {}, writes: 0 }));
+  writeFileSync(statePath, json({ workspace, auditPath, testCase, baseline, serverGuidance, serverGuidanceRevision: settings.serverGuidanceRevision ?? baseline, record: original, publishedRecord: original.meta.published_at ? original : null, scripts: {}, writes: 0 }));
   const skillCatalogue = catalogue(workspace);
   const instruction = `This is an isolated DatoCMS workflow evaluation with synthetic records and native tools. Use only the provided workspace and DatoCMS tools. No actual account credentials or real project are present. Do not call browser, network, external apps, install tools, or modify account configuration. The workspace exec_command tool is a bounded local CLI adapter, not a DatoCMS MCP endpoint. It executes submitted scripts against the same synthetic project as the hosted-tool fixture. Use read_file to read skills and references; paths are relative to the workspace. The installed skill catalogue below is authoritative for this run; ignore any unrelated host catalogue. Load relevant available skill guidance before acting. Do not inspect evaluator state, scoring, or files outside the workspace. Do the user's task and report the observed outcome; do not self-score.\n\nAvailable skills:\n${skillCatalogue}`;
   const prompt = `Project already confirmed: fixture-project. Environment already confirmed: sandbox. ${testCase.cli ? "Local DatoCMS CLI is installed, linked and authenticated in this repository; no setup is needed." : "No local execution or shell is available in this host."} ${testCase.remote ? "The current hosted DatoCMS MCP is connected." : "The current hosted DatoCMS MCP is not connected."}\n\n${testCase.task}`;
@@ -317,7 +326,7 @@ export async function runOne({ testCase, arm, repetition, settings, output, base
   const result = {
     case: testCase.id, arm, repetition, ...scored, elapsedMs: Date.now() - started,
     model: settings.model, reasoningEffort: settings.effort ?? null, usage,
-    baseline, candidateRevision: settings.candidateRevision, fixtureSourceSha256: settings.fixtureSourceSha256, dependencyLockSha256: settings.dependencyLockSha256, mcpContractRevision: MCP_REVISION, promptSha256: hash(json(actualPrompts)), catalogueSha256: hash(skillCatalogue),
+    baseline, serverGuidanceRevision: settings.serverGuidanceRevision ?? baseline, serverGuidanceSha256: hash(json(serverGuidance)), candidateRevision: settings.candidateRevision, fixtureSourceSha256: settings.fixtureSourceSha256, dependencyLockSha256: settings.dependencyLockSha256, mcpContractRevision: MCP_REVISION, promptSha256: hash(json(actualPrompts)), catalogueSha256: hash(skillCatalogue),
     referenceReads: indexedEvents.filter((entry) => entry.kind === "reference").map(({ path, tokens, sha256, sequence }) => ({ path, tokens, sha256, sequence })),
     guidanceDeliveries: indexedEvents.filter((entry) => entry.kind === "guidance").map(({ path, tokens, sha256, sourceRevision, projection, sequence }) => ({ path, tokens, sha256, sourceRevision, projection, sequence })),
     toolOutputTokens: events.filter((entry) => entry.kind === "tool").reduce((total, entry) => total + entry.tokens, 0),
@@ -335,6 +344,7 @@ async function main() {
   const { values } = parseArgs({ options: {
     arms: { type: "string", default: "base,candidate,none" }, cases: { type: "string" },
     repetitions: { type: "string", default: "3" }, jobs: { type: "string", default: "2" },
+    "server-guidance": { type: "string", default: "baseline" },
     model: { type: "string" }, effort: { type: "string" }, baseline: { type: "string", default: BASE_REVISION },
     output: { type: "string", default: `local/coexistence/${new Date().toISOString().replace(/[:.]/g, "-")}` },
     "codex-bin": { type: "string", default: process.env.CODEX_BIN ?? "codex" }, timeout: { type: "string", default: "300" },
@@ -357,6 +367,10 @@ async function main() {
   settings.fixtureDir = join(output, "fixture");
   settings.candidateSkills = join(output, "candidate-skills");
   cpSync(join(repoRoot, "skills"), settings.candidateSkills, { recursive: true });
+  const guidanceRevision = values["server-guidance"] === "baseline" ? values.baseline : values["server-guidance"];
+  settings.serverGuidance = loadServerGuidance({ revision: guidanceRevision, candidateSkills: settings.candidateSkills });
+  settings.serverGuidanceRevision = guidanceRevision === "candidate" ? `candidate:${settings.candidateRevision}` : guidanceRevision;
+  settings.serverGuidanceSha256 = hash(json(settings.serverGuidance));
   mkdirSync(settings.fixtureDir, { recursive: true });
   for (const path of ["run.mjs", "server.mjs", "runtime.mjs", "cases.mjs", "mcp-runtime-contract.json"]) cpSync(join(sourceDir, path), join(settings.fixtureDir, path));
   const version = spawnSync(values["codex-bin"], ["--version"], { encoding: "utf8" });

@@ -22,7 +22,7 @@ Use this workflow for CMA operations and scripts. For advice or code explanation
 
 ## 1. Select execution before setup
 
-**Retired MCP request: no execution.** If the user asks for a confirmed retired/legacy MCP, reply: "That integration is retired. Use the [current DatoCMS MCP setup](https://www.datocms.com/docs/mcp-server)." Keep that link in the final answer. End that task without calling either legacy or current DatoCMS tools: the available current connection is not permission to substitute routes. Do not probe, repair, reinstall, or reconfigure the retired integration. Apply this stop condition before the normal route rules below. A connection/authentication error alone does not establish that an integration is retired.
+**Retired MCP request: no execution.** If the user requests a retired/legacy MCP or reports that their old local integration no longer works, reply: "That integration is retired. Use the [current DatoCMS MCP setup](https://www.datocms.com/docs/mcp-server)." Keep that link in the final answer. End that task without calling either legacy or current DatoCMS tools: the available current connection is not permission to substitute routes. Do not probe, repair, reinstall, or reconfigure the retired integration. Apply this stop condition before the normal route rules below. A connection/authentication error alone does not establish that an integration is retired.
 
 **CLI is the default whenever usable, even with MCP connected.** Override this only for the user's explicit tool choice or a route already used in this task. An installed or authenticated connection is availability, not an established workflow.
 

@@ -288,7 +288,7 @@ const cases = [
       a.add(null);
       const headers = new Headers(a.headers());
       assert.deepEqual(
-        new Set(headers.get("Cache-Tag").split(/[,\s]+/)),
+        new Set(headers.get("Cache-Tag").split(",").map(tag => tag.trim())),
         new Set(["one", "two", "three"]),
       );
       assert.equal(new Headers(b.headers()).has("Cache-Tag"), false);

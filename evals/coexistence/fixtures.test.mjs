@@ -8,7 +8,7 @@ import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
 import { cases, expectedRecord, initialRecord, TARGET } from "./cases.mjs";
 import { execute } from "./runtime.mjs";
-import { externalSkillOverrides, score } from "./run.mjs";
+import { externalSkillOverrides, loadServerGuidance, score } from "./run.mjs";
 
 const sourceDir = dirname(fileURLToPath(import.meta.url));
 const caseById = (id) => {
@@ -617,4 +617,27 @@ test("MCP can keep an independent JSON content snapshot using the Node runtime c
   const result = execute(source, initialRecord(), {runtime: 'mcp'});
   assert.deepEqual(result.errors, []);
   assert.deepEqual(result.record, initialRecord());
+});
+
+
+test("release server guidance is frozen separately from the skill comparison baseline", () => {
+  const directory = mkdtempSync(join(tmpdir(), "coexistence-guidance-"));
+  try {
+    const referenceDirectory = join(directory, "datocms-cma/references");
+    mkdirSync(referenceDirectory, {recursive: true});
+    for (const name of ["records.md", "editing-records.md"]) writeFileSync(join(referenceDirectory, name), `${name} candidate\nCLI cma:script removed\nShared guidance`);
+    const guidance = loadServerGuidance({revision: "candidate", candidateSkills: directory});
+    writeFileSync(join(referenceDirectory, "records.md"), "later working-tree edit");
+    assert.equal(guidance["skills/datocms-cma/references/records.md"], "records.md candidate\nShared guidance");
+    const baseline = loadServerGuidance({revision: "4c01e875325a19c50658dbcbc4ad34767bb08a98"});
+    assert.notDeepEqual(baseline, guidance);
+    assert.ok(Object.values(baseline).every(text => !text.includes("cma:")));
+    assert.throws(() => loadServerGuidance({revision: "missing-evaluation-revision"}), /Missing frozen server guide/);
+  } finally { rmSync(directory, {recursive: true, force: true}); }
+});
+
+test("MCP rejects never casts used to escape request types", () => {
+  const result = execute('await client.items.update("article-1", {title: 42 as never});', initialRecord(), {runtime: "mcp", writable: true});
+  assert.match(result.errors.join("\n"), /Casts to never/);
+  assert.equal(result.calls.length, 0);
 });

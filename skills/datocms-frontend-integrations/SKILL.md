@@ -109,7 +109,9 @@ Otherwise proceed and call out unresolved values instead of stalling.
 
 ## Step 3: Load References
 
-Read only what is needed from `references/` next to this skill. Long files include contents section at top; preview that first, then load relevant section.
+Read relevant sections from `references/`; preview long files' contents first.
+
+For manual CDN collection/purge, load `references/cache-tag-adapters.md`; draft pages emit no cache tags. Skip it for Next.js query-ID mappings or native cache providers.
 
 ### Component concept references
 
@@ -138,7 +140,6 @@ Load these for mixed-feature setup work:
   - `references/web-previews-concepts.md`
   - `references/content-link-concepts.md`
   - `references/realtime-concepts.md`
-  - `references/cache-tag-adapters.md` — manual CDN collection/purge only; skip for Next.js query-ID mappings or native cache providers
 
 ### React references
 

@@ -61,7 +61,7 @@ function methodsText(args, state, includeGuidance = false) {
     const text = state.serverGuidance?.[path];
     if (!text) return "";
     const sha256 = createHash("sha256").update(text).digest("hex");
-    log({ kind: "guidance", path, tokens: encode(text).length, sha256, source: "mcp", sourceRevision: state.baseline, projection: "remove-lines-containing-cma-colon" });
+    log({ kind: "guidance", path, tokens: encode(text).length, sha256, source: "mcp", sourceRevision: state.serverGuidanceRevision ?? state.baseline, projection: "remove-lines-containing-cma-colon" });
     return text;
   }
   for (const resource of [...new Set(args.methods.map((entry) => entry.resource))]) {

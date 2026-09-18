@@ -200,6 +200,8 @@ export function inspectSource(source, { runtime = "cli" } = {}) {
       node.kind === ts.SyntaxKind.UnknownKeyword
     )
       errors.push("Explicit any/unknown is not allowed");
+    if ((ts.isAsExpression(node) || ts.isTypeAssertionExpression(node)) && node.type.kind === ts.SyntaxKind.NeverKeyword)
+      errors.push("Casts to never are not allowed");
     if (ts.isImportDeclaration(node)) {
       if (runtime !== "mcp")
         errors.push(
