@@ -8,6 +8,7 @@ import {
 import { tmpdir } from "node:os";
 import { join, delimiter, resolve, dirname } from "node:path";
 import { nativeSession, MODEL } from "./nativeSession.js";
+import { cliLauncherSource } from "./cliLauncher.js";
 import {
   E2E_TRANSCRIPTS_ROOT,
   PROJECT_BIN,
@@ -45,7 +46,7 @@ export async function runCodex(
   // The launcher fixes the sandbox scope without storing the credential value.
   writeFileSync(
     join(workspace, "bin/datocms"),
-    `#!${process.execPath}\nconst {spawnSync}=require('node:child_process');\nconst args=process.argv.slice(2);\nif(['cma:call','cma:script','schema:inspect','schema:generate'].includes(args[0])) {\n const i=args.indexOf('--environment');\n if(i>=0 && args[i+1]!==process.env.DATOCMS_ENVIRONMENT) throw Error('Wrong evaluation environment');\n const inline=args.find(a=>a.startsWith('--environment='));\n if(inline && inline!==('--environment='+process.env.DATOCMS_ENVIRONMENT)) throw Error('Wrong evaluation environment');\n if(i<0&&!inline) args.push('--environment',process.env.DATOCMS_ENVIRONMENT);\n}\nconst result=spawnSync(${JSON.stringify(process.execPath)},[${JSON.stringify(join(PROJECT_BIN, "datocms"))},...args],{stdio:'inherit',env:process.env});\nprocess.exit(result.status??1);\n`,
+    cliLauncherSource(join(PROJECT_BIN, "datocms")),
     { mode: 0o700 },
   );
   try {
