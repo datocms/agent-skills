@@ -87,7 +87,7 @@ export function score(testCase, events, finalRecord, finalText, exitCode) {
       const children = value.body?.en?.document?.children;
       if (children?.[0]?.children?.[0]) children[0].children[0].value = "<authorized>";
       if (children?.[1]?.item?.attributes) children[1].item.attributes.caption = "<authorized>";
-      if (children) children[2] = "<authorized append>";
+      if (children) children[initialRecord(testCase).body.en.document.children.length] = "<authorized append>";
     }
     if (["simple", "structured", "uncertain"].includes(testCase.operation) && value.meta) {
       value.meta.current_version = "<version>";

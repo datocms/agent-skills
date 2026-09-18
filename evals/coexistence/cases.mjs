@@ -26,6 +26,7 @@ export const cases = [
   { id: "legacy-beside-current", cli: false, remote: true, legacy: true, route: "mcp", operation: "simple", task: `Use the current hosted DatoCMS MCP already selected for this project. The old local MCP is also registered. ${simple}`, arms: ["base", "candidate", "none"] },
   { id: "long-followup-unseen", cli: true, remote: true, route: "mcp", operation: "structured", long: true, variant: "unseen", task: structured, arms: ["base", "candidate"] },
   { id: "long-followup-rich-values", cli: true, remote: true, route: "mcp", operation: "structured", long: true, variant: "rich", task: structured, arms: ["base", "candidate"] },
+  { id: "long-followup-multiple-blocks", cli: true, remote: true, route: "mcp", operation: "structured", long: true, variant: "multiple", task: structured, arms: ["candidate"] },
   // The runner establishes the route/schema in a separate turn, then resumes with this task.
   { id: "long-followup", cli: true, remote: true, route: "mcp", operation: "structured", long: true, task: structured, arms: ["base", "candidate", "none"] },
 ];
@@ -51,7 +52,7 @@ export function initialRecord(testCase) {
     },
   };
   if(testCase?.variant === "unseen") {record.title="Release notes: café";record.untouched="";record.body.it.document.children[0].children[0].value="Contenuto invariato\nSeconda riga";}
-  if (testCase?.variant === "rich") {
+  if (["rich", "multiple"].includes(testCase?.variant)) {
     record.title = "Autumn notes: ‘keep’";
     record.untouched = "0 — preserve this exact value";
     record.meta.status = "updated";
@@ -65,6 +66,13 @@ export function initialRecord(testCase) {
       custom_data: { source: "archive" }, focal_point: { x: 0.25, y: 0.75 }, poster_time: null,
     };
     record.body.it.document.children.push({ type: "code", language: "js", code: "  keep()\n\nnext();  " });
+  }
+  if (testCase?.variant === "multiple") {
+    const otherBlock = structuredClone(record.body.en.document.children[1]);
+    otherBlock.item.id = "block-2";
+    otherBlock.item.attributes.caption = "Keep the second caption";
+    otherBlock.item.attributes.image.upload_id = "second-upload";
+    record.body.en.document.children.push(otherBlock);
   }
   return record;
 }

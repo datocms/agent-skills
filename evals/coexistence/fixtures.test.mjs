@@ -29,12 +29,14 @@ test("shipped localized mapper keeps response narrowing and creates a valid part
     ${example}
     await client.items.update<Schema.Article>(currentItem.id, {body: {...currentItem.body, en: content}});
   `;
-  for (const variant of [undefined, "unseen", "rich"]) {
+  for (const variant of [undefined, "unseen", "rich", "multiple"]) {
     const original = initialRecord({variant});
     const result = execute(source, original, {runtime: "mcp", writable: true});
     assert.deepEqual(result.errors, []);
     const expected = structuredClone(original);
-    expected.body.en.document.children[1].item.attributes.caption += " (reviewed)";
+    for (const node of expected.body.en.document.children) {
+      if (node.type === "block") node.item.attributes.caption += " (reviewed)";
+    }
     expected.meta.current_version = "2";
     expected.meta.updated_at = "2026-09-18T12:00:00Z";
     assert.deepEqual(result.record, expected);
@@ -663,4 +665,15 @@ test("shipped typed inspection captures nested spans, custom marks and nullable 
     assert.deepEqual(snapshot.images, [{id:"block-1", image:original.body.en.document.children[1].item.attributes.image}]);
     assert.deepEqual(result.record, original);
   }
+});
+
+
+test("multiple-block holdout preserves the non-target block and masks only the appended slot", () => {
+  const testCase = caseById("long-followup-multiple-blocks");
+  const original = initialRecord(testCase), final = expectedRecord(testCase);
+  assert.deepEqual(final.body.en.document.children[2], original.body.en.document.children[2]);
+  const events = [{kind:"turn-start",turn:1}, {kind:"tool", role:"datocms",name:"get_schema",args:TARGET,tokens:32000}, {kind:"turn-start",turn:3}, writeEvent()];
+  assert.deepEqual(score(testCase,events,final,"Updated",0).failures, []);
+  final.body.en.document.children[2].item.attributes.caption = "Unauthorized change";
+  assert.ok(score(testCase,events,final,"Updated",0).failures.some(f => /unrelated content/.test(f)));
 });
