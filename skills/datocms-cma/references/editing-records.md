@@ -34,7 +34,7 @@ Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.
 
 ## Verify saved content
 
-Derive preservation checks from the original values, including `null` and empty values. Preserving an optional asset means keeping its original value, not requiring a populated asset.
+Resolve target nodes with typed guards before transforming them, then capture snapshots with `const` and inferred types. Avoid nullable callback accumulators and indexing `item` on a generic node union. Derive preservation checks from the original values, including `null` and empty values. Preserving an optional asset means keeping its original value, not requiring a populated asset.
 
 An update changes `meta.current_version` and `meta.updated_at` without publishing. Exclude those bookkeeping values from publication-preservation checks; compare publication timestamps, schedules, and the published content when a published version exists.
 
