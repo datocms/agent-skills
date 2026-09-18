@@ -298,6 +298,15 @@ const cases = [
       assert.match(draft.get("Cache-Control"), /private/);
       assert.match(draft.get("Cache-Control"), /no-store/);
       assert.equal(draft.has("Cache-Tag"), false);
+      // A draft query can return no tag header; privacy still applies to the page.
+      const missingDraftHeader = createPageCacheTags();
+      missingDraftHeader.add("public-before");
+      missingDraftHeader.add(null, true);
+      missingDraftHeader.add("public-after");
+      const privateHeaders = new Headers(missingDraftHeader.headers());
+      assert.match(privateHeaders.get("Cache-Control"), /private/);
+      assert.match(privateHeaders.get("Cache-Control"), /no-store/);
+      assert.equal(privateHeaders.has("Cache-Tag"), false);
     },
   },
 ];

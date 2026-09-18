@@ -13,7 +13,7 @@ description: >-
 
 # DatoCMS Plugin
 
-For installation updates (`package_name`, `enabled`, parameters), use `datocms-cma` and [plugin operations](../datocms-cma/references/resource-gotchas.md#plugins-plugins). Otherwise patch plugin code in place; scaffold only when requested or absent.
+For package changes, installation settings, or development copies, use `datocms-cma` and [plugin operations](../datocms-cma/references/resource-gotchas.md#plugins-plugins). Patch plugin code in place; scaffold only when requested or absent.
 
 ## Workflow
 
