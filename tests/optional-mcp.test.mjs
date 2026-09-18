@@ -118,6 +118,7 @@ const preservedWorkflows = {
 
 function withReviewedDastdownPreflight(source) {
   const corrections = [
+    ["Marks: `'strong' | 'emphasis' | 'code' | 'underline' | 'strikethrough' | 'highlight'`.", "Default marks include `strong`, `emphasis`, `code`, `underline`, `strikethrough`, and `highlight`. Custom marks are possible: preserve the fetched `string[]` instead of narrowing snapshots to a union of defaults."],
     [
       'Forgetting `nested: true` is #1 cause of broken update payloads — mapping over array of strings produces garbage. Block fields are only field type that change shape between two modes; asset fields + record-link fields always return IDs.',
       'Forgetting `nested: true` is #1 cause of broken update payloads — mapping over array of strings produces garbage. Block fields are the field type that changes shape between these modes. Asset fields retain file-value objects (`upload_id`, alt/title, custom data, focal point, poster time), or `null`; record-link fields retain record IDs. Infer asset snapshot types from the fetched value instead of declaring them as strings.',
