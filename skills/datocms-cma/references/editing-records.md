@@ -278,7 +278,7 @@ if (currentItem.content) {
     if (
       isParagraph(node) &&
       parent?.type === "root" &&
-      !node.children.some((child) => child.type === "inlineItem" || child.type === "inlineBlock") &&
+      !node.children.some((child) => child.type === "inlineItem" || child.type === "inlineBlock" || child.type === "itemLink") &&
       reduceNodes(node, (acc, n) => isSpan(n) ? acc + n.value.trim() : acc, "").length === 0
     ) {
       return null; // Drop empty root paragraphs; lists and blockquotes need their paragraphs.

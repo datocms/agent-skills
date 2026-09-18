@@ -434,3 +434,18 @@ test("long conversation requires all three turns and defers the write until the 
   const missing = events.filter((entry) => entry.turn !== 3);
   assert.match(score(testCase, missing, expectedRecord(testCase), "Done.", 0).failures.join("\n"), /Three native conversation turns/);
 });
+
+
+test('fixture accepts optional link metadata exposed by the real DAST types', () => {
+  const record=initialRecord();
+  const source='const item=await client.items.find<Schema.Article>("article-1"); if(item.body.en) mapNodes(item.body.en,node=>{if(isLink(node)) console.log(node.meta?.length ?? 0);return node;});';
+  assert.deepEqual(execute(source,record).errors,[]);
+  record.body.en.document.children[0].children[2].meta=[{id:'rel',value:'nofollow'}];
+  assert.deepEqual(execute(source,record).errors,[]);
+});
+
+
+test('fixture status uses the real CMA status union rather than narrowing every read to draft', () => {
+  const result=execute('const item=await client.items.find<Schema.Article>("article-1"); console.log(item.meta.status === "published");',initialRecord());
+  assert.deepEqual(result.errors,[]);
+});

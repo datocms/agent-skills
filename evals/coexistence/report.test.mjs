@@ -66,5 +66,5 @@ test('recovered script errors remain quality failures independently of required 
   assert.equal(report.requiredGatesPassed, true);
   assert.equal(report.contentAndScriptGatesPassed, false);
   assert.equal(report.gatesPassed, false);
-  assert.equal(report.arms.candidate.passed, 47);
+  assert.equal(report.arms.candidate.passed, rows.filter(row=>row.arm==='candidate').length - 1);
 });

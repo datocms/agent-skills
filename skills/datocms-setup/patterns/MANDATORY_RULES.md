@@ -123,7 +123,7 @@ When no suitable question tool is available or permitted, present the same choic
 
 ## Project Link or Create
 
-Triggered by SKILL.md greenfield gate (no `package.json` and no `datocms.config.json`). Ask one structured question with `header: "Project"` before any recipe selection:
+Triggered during implementation by the SKILL.md greenfield gate: no `package.json`, no `datocms.config.json`, and project existence is still unknown. Reuse an existing project established by the user. Planning or choosing a preview outcome does not require linking, creating, or accessing a repository. Ask one structured question with `header: "Project"` only when this gate applies:
 
 > "Do you already have a DatoCMS project, or should we create a new one?"
 

@@ -66,7 +66,7 @@ function section(tree, title) {
       '  // `parse` reuses the original `item` for surviving block/inlineBlock IDs.\n  // Use the writable field type when continuing through `mapNodes`.\n  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    parse(edited, currentItem.content);',
       '  // `content` keeps the static type of `currentItem.content` and reuses the original\n  // `item` object for every block/inlineBlock whose id survives the edit.\n  const content = parse(edited, currentItem.content);',
     ).replace(
-      '      !node.children.some((child) => child.type === "inlineItem" || child.type === "inlineBlock") &&\n',
+      '      !node.children.some((child) => child.type === "inlineItem" || child.type === "inlineBlock" || child.type === "itemLink") &&\n',
       '',
     ).replace(
       '  content = mapNodes(content, (node, parent) => {',

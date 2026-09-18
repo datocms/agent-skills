@@ -82,6 +82,7 @@ test('shipped node transformation preserves inline and nested content while remo
       relationships: { item_type: { data: { type: 'item_type', id: 'image' } } },
     } }] },
   ];
+  const emptyRecordLink = { type: 'paragraph', children: [{ type: 'itemLink', item: 'original-record', children: [{ type: 'span', value: '' }] }] };
   const nestedContent = [
     { type: 'list', style: 'numbered', children: [
       { type: 'listItem', children: [
@@ -100,6 +101,7 @@ test('shipped node transformation preserves inline and nested content while remo
     document: { type: 'root', children: [
       ...structuredClone(inlineParagraphs),
       ...structuredClone(nestedContent),
+      structuredClone(emptyRecordLink),
       { type: 'paragraph', children: [{ type: 'span', value: ' \n ' }] },
       { type: 'paragraph', children: [{ type: 'link', url: 'https://example.com', children: [
         { type: 'span', value: '' },
@@ -127,9 +129,10 @@ test('shipped node transformation preserves inline and nested content while remo
   assert.equal(structuredText.validate(saved).valid, true);
   assert.deepEqual(saved.document.children.slice(0, 2), inlineParagraphs);
   assert.deepEqual(saved.document.children.slice(2, 4), nestedContent);
-  assert.equal(saved.document.children.length, 6, 'inline paragraphs, nested containers, prose, and appended paragraph');
-  assert.equal(saved.document.children[4].children[0].value, 'Keep this prose');
-  assert.equal(saved.document.children[5].children[0].value, 'Updated');
+  assert.deepEqual(saved.document.children[4], {type:'paragraph',children:[{type:'itemLink',item:'NEW_RECORD_ID',children:[{type:'span',value:'',marks:['strong']}]}]}, 'the example retargets the link but must not delete its paragraph');
+  assert.equal(saved.document.children.length, 7, 'inline paragraphs, nested containers, record link, prose, and appended paragraph');
+  assert.equal(saved.document.children[5].children[0].value, 'Keep this prose');
+  assert.equal(saved.document.children[6].children[0].value, 'Updated');
 });
 
 test('shipped locale backfill updates every page and preserves existing translations', async () => {

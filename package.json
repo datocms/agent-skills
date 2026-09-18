@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Dev-only npm package powering the e2e harness for the DatoCMS agent skills repo. Not shipped — the plugin itself is declared in .claude-plugin/plugin.json.",
+  "description": "Dev-only npm package powering the e2e harness for the DatoCMS agent skills repo. Not shipped \u2014 the plugin itself is declared in .claude-plugin/plugin.json.",
   "scripts": {
     "test:e2e": "vitest run --config vitest.e2e.config.ts",
     "test:coexistence:fixtures": "node --test evals/coexistence/*.test.mjs",
@@ -15,7 +15,11 @@
     "bump:patch": "tsx scripts/bump-version.ts patch",
     "bump:minor": "tsx scripts/bump-version.ts minor",
     "bump:major": "tsx scripts/bump-version.ts major",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:e2e:harness": "node --test tests/native-e2e.test.mjs",
+    "e2e:frontend": "node e2e/frontend/run.mjs",
+    "e2e:code": "node e2e/workflows/code.mjs",
+    "e2e:workflows": "node e2e/workflows/run.mjs"
   },
   "devDependencies": {
     "@datocms/cma-client-node": "^6.1.0",

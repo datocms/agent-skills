@@ -22,6 +22,8 @@ Use this workflow for CMA operations and scripts. For advice or code explanation
 
 ## 1. Select execution before setup
 
+**Retired MCP request: no execution.** If the user asks for a confirmed retired/legacy MCP, the response is the [current MCP setup link](https://www.datocms.com/docs/mcp-server) and an explanation that the requested integration is unsupported. End that task without calling either legacy or current DatoCMS tools: the available current connection is not permission to substitute routes. Do not probe, repair, reinstall, or reconfigure the retired integration. Apply this stop condition before the normal route rules below. A connection/authentication error alone does not establish that an integration is retired.
+
 **CLI is the default whenever usable, even with MCP connected.** Override this only for the user's explicit tool choice or a route already used in this task. An installed or authenticated connection is availability, not an established workflow.
 
 Inspect only task-relevant exposed capabilities. Available means usable now, not merely installable; don't run startup connection checks or scan client configuration.
@@ -30,7 +32,6 @@ Inspect only task-relevant exposed capabilities. Available means usable now, not
 - **No preference or established route:** when both CLI and current MCP are usable, select CLI. A connected MCP alone is not a request to use it. If only current MCP is usable, select MCP without package installation, CLI login, or project linking. If only CLI is usable, select CLI.
 - **Neither ready:** explain the missing prerequisite appropriate to this environment. Local CLI work may need CLI setup; a client without local execution needs a supported project connection for live operations. MCP is optional, not a prerequisite for all skills.
 - **Local deliverable:** migrations, repo configuration, and application code retain their local development workflow. Remote execution cannot substitute for a versioned migration or create the requested local artifacts. For app/server or unattended CMA code, inspect and reuse existing client configuration and generated types; add setup only when missing and required.
-- **Confirmed legacy MCP requested or encountered:** stop execution and direct the user to the [current MCP setup](https://www.datocms.com/docs/mcp-server). Include that setup link in your reply, even when a current connection is registered. Do not execute, repair, reinstall, or change the legacy integration, or fulfill that request through another route. A registered current connection does not authorize switching. Authentication or connection failure alone is not evidence of legacy software.
 
 After choosing:
 
@@ -69,7 +70,7 @@ Method documentation supplies API shapes; these references supply DatoCMS editin
 | Record lifecycle, publication, references | `references/records.md` |
 | Uploads and asset metadata | `references/uploads.md` |
 | Direct schema changes | `references/schema.md` |
-| Filtering, querying, collection pagination | `references/filtering-and-pagination.md` |
+| Filtering (including creator audits), querying, collection pagination | `references/filtering-and-pagination.md`; check filter operators here even when the installed SDK accepts a broad object. |
 | Localized fields and locale backfills | `references/localization.md`; also `references/editing-records.md` when adding or backfilling a locale. |
 | Modular Content, Single Block, block traversal | `references/editing-records.md` |
 | Structured Text record create/update/backfill | `references/editing-records.md` for CMA adaptation; `../datocms-structured-text/references/document-model.md` plus its editing or conversion reference for the DAST operation. |

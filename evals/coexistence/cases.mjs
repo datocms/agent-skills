@@ -23,12 +23,13 @@ export const cases = [
   { id: "legacy-only", cli: false, remote: false, legacy: true, route: "none", operation: "legacy", task: `The old local DatoCMS MCP is installed but no longer works. ${simple}`, arms: ["base", "candidate"] },
   { id: "explicit-legacy-beside-current", cli: false, remote: true, legacy: true, route: "none", operation: "legacy", task: `Use the old local DatoCMS MCP for this task, even though the current hosted connection is also registered. The old local server is retired. ${simple}`, arms: ["base", "candidate"] },
   { id: "legacy-beside-current", cli: false, remote: true, legacy: true, route: "mcp", operation: "simple", task: `Use the current hosted DatoCMS MCP already selected for this project. The old local MCP is also registered. ${simple}`, arms: ["base", "candidate", "none"] },
+  { id: "long-followup-unseen", cli: true, remote: true, route: "mcp", operation: "structured", long: true, variant: "unseen", task: structured, arms: ["base", "candidate"] },
   // The runner establishes the route/schema in a separate turn, then resumes with this task.
   { id: "long-followup", cli: true, remote: true, route: "mcp", operation: "structured", long: true, task: structured, arms: ["base", "candidate", "none"] },
 ];
 
-export function initialRecord() {
-  return {
+export function initialRecord(testCase) {
+  const record = {
     id: "article-1", title: "Original title", untouched: "Keep this value",
     body: {
       en: { schema: "dast", document: { type: "root", children: [
@@ -43,10 +44,12 @@ export function initialRecord() {
     },
     meta: { current_version: "1", status: "draft" },
   };
+  if(testCase?.variant === "unseen") {record.title="Release notes: café";record.untouched="";record.body.it.document.children[0].children[0].value="Contenuto invariato\nSeconda riga";}
+  return record;
 }
 
 export function expectedRecord(testCase) {
-  const record = initialRecord();
+  const record = initialRecord(testCase);
   if (["simple", "uncertain"].includes(testCase.operation)) record.title = "Summer update";
   if (testCase.operation === "structured") {
     record.body.en.document.children[0].children[0].value = "Welcome reader";

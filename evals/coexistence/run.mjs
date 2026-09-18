@@ -92,7 +92,7 @@ export function score(testCase, events, finalRecord, finalText, exitCode) {
     if (["simple", "structured", "uncertain"].includes(testCase.operation) && value.meta) value.meta.current_version = "<version>";
     return value;
   };
-  if (!isDeepStrictEqual(maskAuthorizedFields(finalRecord), maskAuthorizedFields(initialRecord()))) failures.push("Changed unrelated content, locale, block identity, or publication state");
+  if (!isDeepStrictEqual(maskAuthorizedFields(finalRecord), maskAuthorizedFields(initialRecord(testCase)))) failures.push("Changed unrelated content, locale, block identity, or publication state");
   if (executions.some((entry) => entry.errors.length)) failures.push("Submitted script failed compilation or bounded execution");
   if (writes.length !== (testCase.route === "none" ? 0 : 1)) failures.push(`Expected ${testCase.route === "none" ? 0 : 1} write, observed ${writes.length}`);
   if (writes.some((entry) => entry.route !== testCase.route)) failures.push("Write used the wrong execution route");
@@ -221,7 +221,7 @@ export async function runOne({ testCase, arm, repetition, settings, output, base
     if (file.status !== 0) throw Error(`Missing frozen server guide: ${path}`);
     return [path, file.stdout.split("\n").filter((line) => !line.includes("cma:")).join("\n")];
   }));
-  writeFileSync(statePath, json({ workspace, auditPath, testCase, baseline, serverGuidance, record: initialRecord(), scripts: {}, writes: 0 }));
+  writeFileSync(statePath, json({ workspace, auditPath, testCase, baseline, serverGuidance, record: initialRecord(testCase), scripts: {}, writes: 0 }));
   const skillCatalogue = catalogue(workspace);
   const instruction = `This is an isolated DatoCMS workflow evaluation with synthetic records and native tools. Use only the provided workspace and DatoCMS tools. No actual account credentials or real project are present. Do not call browser, network, external apps, install tools, or modify account configuration. The workspace exec_command tool is a bounded local CLI adapter, not a DatoCMS MCP endpoint. It executes submitted scripts against the same synthetic project as the hosted-tool fixture. Use read_file to read skills and references; paths are relative to the workspace. The installed skill catalogue below is authoritative for this run; ignore any unrelated host catalogue. Load relevant available skill guidance before acting. Do not inspect evaluator state, scoring, or files outside the workspace. Do the user's task and report the observed outcome; do not self-score.\n\nAvailable skills:\n${skillCatalogue}`;
   const prompt = `Project already confirmed: fixture-project. Environment already confirmed: sandbox. ${testCase.cli ? "Local DatoCMS CLI is installed, linked and authenticated in this repository; no setup is needed." : "No local execution or shell is available in this host."} ${testCase.remote ? "The current hosted DatoCMS MCP is connected." : "The current hosted DatoCMS MCP is not connected."}\n\n${testCase.task}`;

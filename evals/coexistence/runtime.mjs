@@ -16,7 +16,7 @@ const helperBundle = buildSync({
 export const declarations = `
 interface Span { type: 'span'; value: string; marks?: string[] }
 interface Paragraph { type: 'paragraph'; children: Inline[] }
-interface Link { type: 'link'; url: string; children: Span[] }
+interface Link { type: 'link'; url: string; meta?: { id: string; value: string }[]; children: Span[] }
 interface Block { type: 'block'; item: { id: string; type: 'item'; __itemTypeId: string; attributes: { caption: string; image: null } } }
 type Inline = Span | Link;
 type Node = Paragraph | Block;
@@ -29,7 +29,7 @@ declare namespace Schema {
   const Article: { ID: 'article'; REF: { type: 'item_type'; id: 'article' } };
   const ImageBlock: { ID: 'image-block'; REF: { type: 'item_type'; id: 'image-block' } };
 }
-interface ItemMeta { current_version: string; status: 'draft' }
+interface ItemMeta { current_version: string; status: 'draft' | 'updated' | 'published' }
 type Item<T> = T & { id: string; meta: ItemMeta };
 type FieldValueInRequest<T, K extends keyof T> = T[K];
 type BlockInNestedResponse<T> = { id: string; type: 'item'; __itemTypeId: string; attributes: T };

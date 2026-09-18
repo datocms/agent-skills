@@ -44,7 +44,7 @@ Default to a model-scoped `filter.type`. Omit it deliberately for a cross-model 
 
 ## Filter by creator (CMA only)
 
-`filter.fields._creator` accepts `eq`, `neq`, `in`, and `notIn`. References contain both `type` and `id`; copy the record's `creator` value rather than assuming every creator is a user. Types are `user`, `account`, `organization`, `sso_user`, or `access_token`. `in` / `notIn` accept arrays and may mix creator types. This filter is not available in CDA GraphQL.
+`filter.fields._creator` accepts `eq`, `neq`, `in`, and `notIn`. References contain both `type` and `id`; copy the record's `creator` value rather than assuming every creator is a user. If the input is a record ID, fetch that record first and use its `creator`; the record ID string itself is not a creator reference. Types are `user`, `account`, `organization`, `sso_user`, or `access_token`. `in` / `notIn` accept arrays and may mix creator types. This filter is not available in CDA GraphQL.
 
 For equality, send `{ filter: { fields: { _creator: { eq: creatorReference } } } }`. Use `Schema.AnyModel` for a cross-model result and narrow by model before reading model-specific fields. For a scoped query, retain the matching model generic and `filter.type`.
 
