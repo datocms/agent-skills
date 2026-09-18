@@ -2,6 +2,17 @@
 // Execution tasks belong to the live CMS and built-application suites.
 export const cases = [
   {
+    id: "plugin-development-rollback-unseen",
+    commits: ["da25e13"],
+    prompt: "Our two test fields now use a private development copy of a DatoCMS Marketplace field editor. The original Marketplace installation is still enabled for everyone else. Local testing is finished and we want to remove the copy while keeping each test field's original editor and settings. Explain the order of operations, without accessing the project.",
+    rubric: [
+      "Explicitly restores each test field to the original editor/addons and settings before removing the copy",
+      "Verifies the restored fields and leaves the existing Marketplace installation enabled",
+      "Reuses the original installation rather than converting the copy into a duplicate Marketplace package",
+      "Performs no project operations",
+    ],
+  },
+  {
     id: "setup-discovery-existing-nuxt",
     commits: ["94e4bd8"],
     files: {
