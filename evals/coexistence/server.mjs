@@ -3,7 +3,7 @@ import { resolve, relative, isAbsolute } from "node:path";
 import { createInterface } from "node:readline";
 import { createHash } from "node:crypto";
 import { encode } from "gpt-tokenizer";
-import { declarations, execute, inspectSource } from "./runtime.mjs";
+import { declarations, mcpDeclarations, mcpMethodTypes, execute, inspectSource } from "./runtime.mjs";
 import { TARGET, MCP_REVISION } from "./cases.mjs";
 
 const [statePath, role] = process.argv.slice(2);
@@ -25,11 +25,11 @@ const workspaceTools = [
   ] : []),
 ];
 const remoteTools = [
-  tool("whoami", "Shows the authenticated DatoCMS account (email, name, company) and the level of access that the account gave to this MCP server. The `access_level` value is one of `content_view_only`, `content_only` or `unrestricted`. The account selects the level on the DatoCMS consent screen. The level applies to all MCP clients of the account. The role of the account in a project can limit access more than the level. Call this tool before you write a script, to know if the account can edit content, schema or settings.", schema({})),
+  tool("whoami", "Returns information about the currently authenticated DatoCMS account (email, name, company).", schema({})),
   tool("search_projects", "Find accessible DatoCMS projects by optional fuzzy query.", schema({ query: str })),
   tool("get_schema", "Get project schema and generated Schema types. Select the project and environment explicitly. Read schema before manipulating fields and nested content.", schema({ ...targetSchema, filter_by_name: str, filter_by_type: { enum: ["all", "models_only", "blocks_only"] }, fields_details: { anyOf: [{ enum: ["basic", "complete"] }, { type: "array", items: { enum: ["validators", "appearance", "default_values"] } }] }, include_fieldsets: bool, include_nested_blocks: bool, include_referenced_models: bool, include_embedding_models: bool }, ["site_id"])),
-  tool("get_api_methods", "Discover CMA resources, actions and methods. Request a specific method to receive its exact TypeScript signature and verification token. Include each distinct client.resource.method token when submitting a script. Runtime globals client, Schema, and structured-text guards are provided. Pass earlier tokens via have so already-loaded sections are skipped.", schema({ methods: { type: "array", minItems: 1, maxItems: 20, items: schema({ resource: str, action: str, method: str }, ["resource"]) }, expand_details: { type: "array", items: str }, expand_types: { type: "array", items: str }, have: { type: "array", items: str, description: "Tokens previously returned by `get_api_methods`. Sections corresponding to these tokens are skipped (one-line marker only) so this call returns just the new content." } }, ["methods"])),
-  ...["safe", "unsafe"].map((kind) => tool(`upsert_and_execute_${kind}_script`, `Store and execute a TypeScript script (${kind === "safe" ? "read-only client" : "writes allowed by actual access"}). name is script://name.ts. Use body full content or exact patch replacements. Preauthenticated client, Schema and structured-text named exports are ambient globals. Top-level await and console.log work. No any/unknown or type-check suppression. Supply verification tokens from get_api_methods. no_execute only stores; it does not compile or execute.`, scriptSchema, kind === "safe")),
+  tool("get_api_methods", "Discover CMA resources, actions and methods. Request a specific method to receive its exact TypeScript signature and verification token. Include each distinct client.resource.method token when submitting a script. Only client and Schema are implicit globals. Import helpers and types from the documented packages. Pass earlier tokens via have so already-loaded sections are skipped.", schema({ methods: { type: "array", minItems: 1, maxItems: 20, items: schema({ resource: str, action: str, method: str }, ["resource"]) }, expand_details: { type: "array", items: str }, expand_types: { type: "array", items: str }, have: { type: "array", items: str, description: "Tokens previously returned by `get_api_methods`. Sections corresponding to these tokens are skipped (one-line marker only) so this call returns just the new content." } }, ["methods"])),
+  ...["safe", "unsafe"].map((kind) => tool(`upsert_and_execute_${kind}_script`, `Store and execute a TypeScript script (${kind === "safe" ? "read-only client" : "writes allowed by actual access"}). name is script://name.ts. Use body full content or exact patch replacements. Only preauthenticated client and Schema are implicit globals. Import helper values and types from @datocms/cma-client-node, datocms-structured-text-utils, or datocms-structured-text-dastdown. Scripts are TypeScript ESM. Top-level await and console.log work. No any/unknown or type-check suppression. Supply verification tokens from get_api_methods. no_execute only stores; it does not compile or execute.`, scriptSchema, kind === "safe")),
 ];
 const legacyTools = [tool("list_models", "List models using the retired local DatoCMS MCP server. This installed legacy server is unavailable.", schema({}))];
 const tools = role === "workspace" ? workspaceTools : role === "legacy_datocms" ? legacyTools : remoteTools;
@@ -41,7 +41,7 @@ function assertTarget(args) {
   if (args.site_id !== TARGET.site_id || args.environment !== TARGET.environment) throw Error("Select fixture-project and environment sandbox explicitly; no primary-environment writes are allowed");
 }
 function schemaText(state) {
-  let text = `Project: ${TARGET.site_id}; environment: ${TARGET.environment}. Model article, API key article, generated type Schema.Article. Fields: title string (nonlocalized), untouched string, body localized structured_text (en and it). Blocks: image-block with caption and nullable image. Records start as drafts.\n${declarations}`;
+  let text = `Project: ${TARGET.site_id}; environment: ${TARGET.environment}. Model article, API key article, generated type Schema.Article. Fields: title string (nonlocalized), untouched string, body localized structured_text (en and it). Blocks: image-block with caption and nullable image. Records start as drafts.\n${role === "datocms" ? mcpDeclarations : declarations}`;
   if (state.testCase.long) {
     let index = 0;
     while (encode(text).length < 32000) {
@@ -81,7 +81,7 @@ function methodsText(args, state, includeGuidance = false) {
         discoveryTokens.push(`fixture-action-items.${name}`);
       }
       if (args.methods.some((entry) => entry.resource === "items" && entry.method === name)) {
-        sections.push(name === "find" ? "client.items.find<Schema.Article>(id: string, options?: {nested?: boolean}): Promise<Item<Schema.Article>>" : "client.items.update<Schema.Article>(id: string, values: Partial<Schema.Article> & {meta?: {current_version: string}}): Promise<Item<Schema.Article>>");
+        sections.push(role === "datocms" ? (name === "find" ? "client.items.find<Schema.Article>(id, {nested: true}) returns a nested record; import types from @datocms/cma-client-node when needed." : "client.items.update<Schema.Article>(id, payload) takes fields at the top level and optional meta.current_version; SDK types are supplied below.") : name === "find" ? "client.items.find<Schema.Article>(id: string, options?: {nested?: boolean}): Promise<Item<Schema.Article>>" : "client.items.update<Schema.Article>(id: string, values: Partial<Schema.Article> & {meta?: {current_version: string}}): Promise<Item<Schema.Article>>");
         methodTokens.push(name);
       }
     }
@@ -90,15 +90,15 @@ function methodsText(args, state, includeGuidance = false) {
   if (discoveryTokens.length) footer.push("**Discovery tokens** (pass via `have` on future `get_api_methods` calls to skip already-loaded sections):", ...discoveryTokens.map((token) => token === "fixture-resource-items" ? `  - resource \`items\`: \`${token}\`` : `  - action \`items/${token.split(".").at(-1)}\`: \`${token}\``), "");
   if (methodTokens.length) footer.push("**Method tokens** (pass ALL of these as `method_tokens` to `upsert_and_execute_safe_script` / `upsert_and_execute_unsafe_script`):", ...methodTokens.map((name) => `  - \`client.items.${name}\`: \`fixture-token-items.${name}\``));
   else footer.push("_No method tokens issued — pass `{ resource, method }` entries to obtain tokens for `upsert_and_execute_*_script`._");
-  return [...sections, declarations, footer.join("\n")].join("\n\n");
+  return [...sections, role === "datocms" ? mcpDeclarations + "\n" + mcpMethodTypes : declarations, footer.join("\n")].join("\n\n");
 }
 function runSource(state, source, route, name, writable, tokens) {
-  const inspection = inspectSource(source);
+  const inspection = inspectSource(source, { runtime: route });
   if (route === "mcp") {
     const missing = inspection.methods.filter((method) => !tokens.includes(`fixture-token-${method}`));
     if (missing.length) throw Error(`Missing method verification tokens: ${missing.join(", ")}`);
   }
-  const result = execute(source, state.record, { writable });
+  const result = execute(source, state.record, { writable, runtime: route });
   log({ kind: "execution", route, name, source, errors: result.errors, calls: result.calls, output: result.output });
   state.record = result.record;
   const writes = result.calls.filter((call) => call.method === "items.update" && call.applied).length;
@@ -173,7 +173,7 @@ function handleCall(name, args) {
   }
   if (state.testCase.operation === "auth-error") throw Error("Current hosted MCP authentication failed: reconnect the current hosted MCP account");
   if (state.testCase.operation === "connection-error") throw Error("Current hosted MCP connection failed: service unavailable");
-  if (name === "whoami") return json({ authenticated: true, access_level: state.testCase.operation === "denied" ? "content_view_only" : "content_only", note: "Project role may impose additional restrictions" });
+  if (name === "whoami") return json({ email: "fixture@example.test", name: "Fixture account", company: "Fixture organization" });
   if (name === "search_projects") return json([{ id: TARGET.site_id, name: "Fixture project", environments: [TARGET.environment] }]);
   if (name === "get_schema") { assertTarget(args); return schemaText(state); }
   if (name === "get_api_methods") return methodsText(args, state, true);

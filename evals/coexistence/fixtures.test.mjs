@@ -449,3 +449,69 @@ test('fixture status uses the real CMA status union rather than narrowing every 
   const result=execute('const item=await client.items.find<Schema.Article>("article-1"); console.log(item.meta.status === "published");',initialRecord());
   assert.deepEqual(result.errors,[]);
 });
+
+test("MCP scripts import real SDK and document-helper types, including aliased and namespace imports", () => {
+  const source = `
+    import { buildBlockRecord, type FieldValueInRequest } from '@datocms/cma-client-node';
+    import { isSpan as span, isBlockWithItemOfType, mapNodes } from 'datocms-structured-text-utils';
+    import * as markdown from 'datocms-structured-text-dastdown';
+    const before = await client.items.find<Schema.Article>('article-1', {nested: true});
+    const original = before.body.en;
+    if (!original) throw Error('Missing locale');
+    let body: NonNullable<FieldValueInRequest<typeof before, 'body'>>['en'] = original;
+    body = mapNodes(body, node => {
+      if (span(node) && node.value === 'Hello reader') return {...node, value: 'Welcome reader'};
+      if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === 'block-1')
+        return {...node, item: buildBlockRecord<Schema.ImageBlock>({id: node.item.id, caption: 'Summer portrait'})};
+      return node;
+    });
+    body.document.children.push(...markdown.parse('See you soon.').document.children);
+    await client.items.update<Schema.Article>(before.id, {body: {...before.body, en: body}});
+  `;
+  const result = execute(source, initialRecord(), { writable: true, runtime: 'mcp' });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.record, expectedRecord(caseById('localized-structured-text')));
+});
+
+test("MCP rejects missing imports, nonexistent exports and packages outside its contract", () => {
+  for (const source of [
+    'console.log(isSpan({type:"span",value:"text"}));',
+    'import {notAnExport} from "datocms-structured-text-utils"; console.log(notAnExport);',
+    'import {readFileSync} from "node:fs"; console.log(readFileSync("secret"));',
+  ]) {
+    const result = execute(source, initialRecord(), {runtime: 'mcp'});
+    assert.ok(result.errors.length, source);
+    assert.deepEqual(result.calls, []);
+  }
+});
+
+test("MCP checks narrowing against real node unions instead of permissive fixture types", () => {
+  const prefix = `import {isParagraph} from 'datocms-structured-text-utils';
+    const item = await client.items.find<Schema.Article>('article-1', {nested: true});
+    if (!item.body.en) throw Error('Missing locale');
+    const first = item.body.en.document.children[0];
+  `;
+  const invalid = prefix + `function assert(condition: boolean): void { if (!condition) throw Error('Bad node'); }
+    assert(isParagraph(first)); console.log(first.children);`;
+  assert.ok(execute(invalid, initialRecord(), {runtime: 'mcp'}).errors.length);
+  const valid = prefix + `function assert(condition: boolean): asserts condition { if (!condition) throw Error('Bad node'); }
+    assert(isParagraph(first)); console.log(first.children);`;
+  assert.deepEqual(execute(valid, initialRecord(), {runtime: 'mcp'}).errors, []);
+});
+
+test("known read-only access stops before a mutation while an unknown restriction may be discovered once", () => {
+  const scenario = caseById('permission-known-read-only');
+  assert.equal(score(scenario, [], initialRecord(), 'This connection is read-only; no content was changed.', 0).passed, true);
+  const attempt = toolEvent('upsert_and_execute_unsafe_script', {args: TARGET, isError: true, output: 'Permission denied'});
+  assert.equal(score(scenario, [attempt], initialRecord(), 'Permission denied.', 0).passed, false);
+});
+
+test("held-out MCP data keeps publication status, image metadata and code whitespace observable", () => {
+  const scenario = caseById('long-followup-rich-values');
+  const before = initialRecord(scenario), after = expectedRecord(scenario);
+  assert.equal(after.meta.status, 'updated');
+  assert.deepEqual(after.body.en.document.children[1].item.attributes.image, before.body.en.document.children[1].item.attributes.image);
+  assert.deepEqual(after.body.it, before.body.it);
+  assert.equal(after.body.it.document.children[1].code, '  keep()\n\nnext();  ');
+  assert.notDeepEqual(before, initialRecord());
+});

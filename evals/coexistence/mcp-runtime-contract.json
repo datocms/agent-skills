@@ -1,0 +1,16 @@
+{
+  "observedDate": "2026-09-18",
+  "source": "Descriptions of the connected DatoCMS get_api_methods, whoami, and upsert_and_execute_safe_script tools",
+  "implicitProjectGlobals": ["client", "Schema"],
+  "scriptFormat": "TypeScript ESM with top-level await and console.log",
+  "importablePackages": [
+    "@datocms/cma-client-node",
+    "datocms-structured-text-utils",
+    "datocms-structured-text-dastdown"
+  ],
+  "whoami": "Authenticated account email, name and company; it does not promise project write permissions.",
+  "verification": "A method token from get_api_methods is required for every distinct client resource/method call.",
+  "readOnly": "The safe execution tool uses a read-only token and blocks mutations.",
+  "noExecute": "Stores the script without executing it.",
+  "limitations": "The fixture runs real installed SDK/helper type declarations and pure helper code, but simulates authentication, records, transport and verification tokens. It is not a hosted OAuth test. Historical fixture results used a different runtime contract."
+}
