@@ -1,0 +1,1508 @@
+{
+  "recordedAt": "2026-09-18T19:30:37.616Z",
+  "model": "gpt-5.6-luna",
+  "reasoningEffort": "medium",
+  "endpoint": "https://mcp.datocms.com",
+  "target": "Authorized empty throwaway project; uniquely owned sandbox",
+  "scope": "Hosted OAuth, identity, documentation and verification tokens, generated schema, sandbox compilation/execution, natural content-edit tasks, independent saved-state assertions, and cleanup",
+  "priorEvidence": [
+    "2026-09-18-luna-medium.json",
+    "2026-09-18-production-readiness.json"
+  ],
+  "nativeSessions": 14,
+  "evaluatedTasks": 3,
+  "infrastructureSessions": 11,
+  "cases": [
+    {
+      "kind": "simple",
+      "correctOutcome": true,
+      "strictExecutionPassed": true,
+      "scriptErrorCount": 0,
+      "mcpCalls": 4,
+      "beforeVersions": 1,
+      "afterVersions": 2,
+      "publishedBeforeSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "publishedAfterSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "localCommandsReviewed": true,
+      "cliFallbackObserved": false
+    },
+    {
+      "kind": "localized",
+      "correctOutcome": true,
+      "strictExecutionPassed": true,
+      "scriptErrorCount": 0,
+      "mcpCalls": 4,
+      "beforeVersions": 1,
+      "afterVersions": 2,
+      "publishedBeforeSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "publishedAfterSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "localCommandsReviewed": true,
+      "cliFallbackObserved": false
+    },
+    {
+      "kind": "published",
+      "correctOutcome": true,
+      "strictExecutionPassed": true,
+      "scriptErrorCount": 0,
+      "mcpCalls": 4,
+      "beforeVersions": 2,
+      "afterVersions": 3,
+      "publishedBeforeSha256": "9fbc6b17ff999c96a73e1c89ea432f8225e57c219f802ceb78096ebd9e5f6124",
+      "publishedAfterSha256": "9fbc6b17ff999c96a73e1c89ea432f8225e57c219f802ceb78096ebd9e5f6124",
+      "localCommandsReviewed": true,
+      "cliFallbackObserved": false
+    }
+  ],
+  "hostedReleaseGatePassed": true,
+  "cleanup": {
+    "clean": true,
+    "locales": [
+      "en"
+    ],
+    "modelCount": 0,
+    "uploadCount": 0,
+    "environments": [
+      {
+        "id": "main",
+        "primary": true
+      }
+    ]
+  },
+  "credentialCleanup": {
+    "oauthManagedByNativeClient": true,
+    "plainCredentialFilesObserved": 0,
+    "testLoginCleared": true,
+    "temporaryRegistrationHomeRemoved": true,
+    "retainedNativeHomes": 0,
+    "shellSnapshotsDisabled": true
+  },
+  "postRunChecks": {
+    "fixtureScopeReceiptsChecked": 7,
+    "passed": true,
+    "additionalNativeSessions": 0,
+    "reason": "Added an explicit fixture/oracle project and environment guard, then checked every successful saved receipt and its original source hash."
+  },
+  "deterministicChecks": {
+    "passed": 100,
+    "total": 100,
+    "logSha256": "82a920347e77553516bfba9933a7f3aa8c29e371c33f88941794ac04f60085b9"
+  },
+  "fixtureIterations": [
+    {
+      "cohort": "smoke-01",
+      "passed": false,
+      "evaluatedTasks": 0,
+      "cause": "Authored schema fixture omitted structured_text_links, which the hosted compiler requires. Compilation rejected the script before schema writes. The exact failed source and response remain in local evidence.",
+      "cleanup": {
+        "clean": true,
+        "locales": [
+          "en"
+        ],
+        "modelCount": 0,
+        "uploadCount": 0,
+        "environments": [
+          {
+            "id": "main",
+            "primary": true
+          }
+        ]
+      }
+    },
+    {
+      "cohort": "smoke-02",
+      "passed": true,
+      "evaluatedTasks": 3,
+      "correction": "Added the explicit empty record-link allowlist and typechecked every fixed fixture script against the installed SDK with project-shaped types."
+    }
+  ],
+  "notes": [
+    "Actors receive natural edit requests; maintained fixture/oracle scripts are supplied only to separate infrastructure sessions.",
+    "Exact fixture/oracle source and actual execution receipts are verified before parsing returned JSON. Outcome assertions execute locally on fresh before/after CMS data.",
+    "Publication, image values, locale content and untargeted blocks are independently compared. Parent history requires one new version per evaluated record.",
+    "Strict execution is diagnostic, not a perfection or release requirement. This three-case smoke is not a reliable estimate of a general success rate.",
+    "The previously connected app route returned internal errors. A new direct native OAuth connection worked; this does not establish that the old connector was repaired.",
+    "The live server supplies its own guidance from the current release. Candidate skills were installed locally; raw guidance responses and installed skill hashes are retained.",
+    "No skill guidance was added in response to this smoke; the only observed setup failure was in the authored fixture.",
+    "No merge, package publication, release tag or version bump was performed."
+  ],
+  "skillSnapshots": {
+    "44bf4bb4a60659fe7cee1f6044a86824e4064716180f2b3d955df5031b06a7c6": {
+      "skills/datocms-cda/SKILL.md": "52b77427aa8708156571470efc5655264f974949d14f74256a23fc0388d51b36",
+      "skills/datocms-cda/agents/openai.yaml": "d70c5e161aa58c9758c849033acbb8c4a14c6cb8e49ff0453ed4f442ec86a25e",
+      "skills/datocms-cda/references/client-and-config.md": "55004e032b2d3d8872e85b9f5fe42e2c25697f89f09262567340f2b0ad684e17",
+      "skills/datocms-cda/references/draft-caching-environments.md": "a07e894e2f5fc80f73e22503adcc6a68204c3cd7677be60bd6a04e90d30120eb",
+      "skills/datocms-cda/references/filtering.md": "05fa398691e3d8178c2657188481e7457057c6ddb591637133b67c7c834d2579",
+      "skills/datocms-cda/references/fragment-patterns.md": "6dbda7de1f207e0079f21b88970441ecd39d74dd9f2f2f7c5493a5cfbfb7d189",
+      "skills/datocms-cda/references/images-and-videos.md": "906663210018e3b509392d78b3fe729c41f199f1a3e1a744007e1d9f436820b5",
+      "skills/datocms-cda/references/localization.md": "97614d2cffb5d28303055cc171e986a437db42f9d4ea3c873e75618c7ab0c7a7",
+      "skills/datocms-cda/references/modular-content.md": "cc496f5004718364500bc1695c2f547c4c1d23bd1ecb8ccb59aa3cb45f8dfc36",
+      "skills/datocms-cda/references/pagination-and-ordering.md": "e20fc42b4bcd84e1273d9c7a5267f158f37513f888200420b1d9afc762292895",
+      "skills/datocms-cda/references/querying-basics.md": "ded5a23712c9264659d672c0ff3b16e72ca63a485c42fb17d95f48b31345a761",
+      "skills/datocms-cda/references/seo-and-meta.md": "7437bafea6ee0de981d1ba90965fd52d792c1e962cc724d8ade13a5a6e84b241",
+      "skills/datocms-cda/references/structured-text.md": "8d01b701618512f785ef638f9696d7dd55f1cba5a284cf1a306df8f502297bbe",
+      "skills/datocms-cda/references/type-generation.md": "d16039ae6dc1102af33c059e0afd330fa9f363e2513bc9cb332c5439c8e8dcf2",
+      "skills/datocms-cli/SKILL.md": "35f453ea496cfdb87583d441f6a11d9b4e3ebe5d0294c5326775318e80fdb146",
+      "skills/datocms-cli/agents/openai.yaml": "8cd471a5363a7bc30c97541c45eaff73837003fc5a8026a4e67ef75a0f58ff0e",
+      "skills/datocms-cli/references/blueprint-sync.md": "550130b7bfbdc3e6d7e82f1c636cabd954fcbc686a13636e3a00bf177c8d78a3",
+      "skills/datocms-cli/references/cli-plugin-management.md": "0f98684115dd16a87cee1a1e57ab635a6cdcd543b25043201f9bd87e0cf68aea",
+      "skills/datocms-cli/references/cli-setup.md": "1a1bb46712cdd820aa94104410bdcf2642596eec21a3e4c4759be41bbb241a1c",
+      "skills/datocms-cli/references/cma-script.md": "4fde97c76482de1b7622448e6eef9271da3a7f26695f1a83baa6d6d2a3368933",
+      "skills/datocms-cli/references/creating-migrations.md": "af192565e47598bcb6a4c60a7ea1be428720aa009560040243a234fc00fd96c4",
+      "skills/datocms-cli/references/deployment-workflow.md": "e763006f69042e33295f58a74f33bfc7296ac717e86ffa55e6014e70f6dfcdf4",
+      "skills/datocms-cli/references/direct-cma-calls.md": "ebbc990234b0a1adf3d144ded426a6d459cc1f95095bcc4eb0eb618a3f51e24c",
+      "skills/datocms-cli/references/environment-commands.md": "76dfa85df108d999abde976251cb90c2b5b44cf6a149aa06d24fc4a29040df57",
+      "skills/datocms-cli/references/importing-content.md": "394356ff6fcce4db442ef111c6a9d7dd6bf3952804a0616735eac4309fecebc5",
+      "skills/datocms-cli/references/running-migrations.md": "83deb0ef077c908bad79cfec153d32280b2c5d7bb1795f79632a55909abd3ab0",
+      "skills/datocms-cli/references/schema-generate.md": "8106cea5406f1036e4beeae118ea8e2466eadbca430e24b97ba75223e2348acd",
+      "skills/datocms-cli/references/schema-inspect.md": "0959606b17100bbc96e94fa242133489fed965c499cfdef378552c08d1774717",
+      "skills/datocms-cma/SKILL.md": "7670e08b38d873d1b8c3e3bb0d5a448f14b761066549dad03a51097276eb8e13",
+      "skills/datocms-cma/agents/openai.yaml": "15151fa650643a988eb3b257580dcd9ba4da0f4817e92039b16d85435c6bfe8b",
+      "skills/datocms-cma/references/access-control.md": "d653a35806d2733e3dcfd9f074b112755f603d8a217ae0748660050b97a4b14b",
+      "skills/datocms-cma/references/client-setup-and-errors.md": "8ca6ad925a2871fe3c1d8a7314b94ec27b96f749c58af646ed1e4de8808b6b59",
+      "skills/datocms-cma/references/client-types-and-behaviors.md": "86984ce04eaecc3fac58395f25b43e121928920efed1ea7789f660c62eb90c24",
+      "skills/datocms-cma/references/editing-records.md": "6528dc00aadefedcbfa7543ef3cbe6d7db5f7498e1ba431310cc0782d02cbad5",
+      "skills/datocms-cma/references/environments.md": "54f0575b3a7001e147230c3ab7d09c6687e5bdb7dc807b511e51a6ec9f73e468",
+      "skills/datocms-cma/references/filtering-and-pagination.md": "42321155100e72c5e429b57f46c75315c98a9b6bc49bbcfbe2f7fbc11e7597e6",
+      "skills/datocms-cma/references/localization.md": "5b90ba80ea02d129044493117e97f31b7df208c2e7edb83e9b830d3d73caedcb",
+      "skills/datocms-cma/references/mcp.md": "dabf96f7286d47d95b8cf62de4cb7ad19126ea65a72cb804d018746116e5172e",
+      "skills/datocms-cma/references/migration-patterns.md": "919176d22a4aa81cc691445f6d27eb9196f9e2a8930039f98ac965fdb96b7e89",
+      "skills/datocms-cma/references/project-settings-and-usage.md": "f8990f06f6f3a7241c2424e28e9fa662c140f1c51be8ed1e2396f6c37d9032e1",
+      "skills/datocms-cma/references/records.md": "6e3a14c5e8f49c2cededb5019e2e8cab6de6a3b65be8c7922a35831994eecfbb",
+      "skills/datocms-cma/references/resource-gotchas.md": "b84418a0fca82ed278706696b423beb7315a09fe39cc3e2c1dcffcbfccc7f20f",
+      "skills/datocms-cma/references/schema.md": "c07841063b00c445d976ca374338070714b7dd5f4038f29b47740264e3549d55",
+      "skills/datocms-cma/references/type-generation.md": "5c00e5e4191d31f2c5be1680706738ce8db9f7f47948a995039cf3d3b18123c1",
+      "skills/datocms-cma/references/uploads.md": "7d15bff6daa78718f8a1bdb4a4f3675576461c87894be77421f2852e9fecbb67",
+      "skills/datocms-content-modeling/SKILL.md": "08c7f82a1abfaeff78b84538cd4cd84afb7f880490c4359095ac053a2c4c562c",
+      "skills/datocms-content-modeling/agents/openai.yaml": "6309fb9f2d0025189202c3252b540f801d8f56efe79ce96ef61c48836b89779a",
+      "skills/datocms-content-modeling/references/block-fields-and-structured-text.md": "218a3ca9c0bea5f82673c2cea3d44809c2790ba9c630ef0a227540f3f7cf7bc2",
+      "skills/datocms-content-modeling/references/content-reuse.md": "9a1743b843bc75ccf7b8a87a257a469a3d6bf1996e7f5b322eb84039575d00e6",
+      "skills/datocms-content-modeling/references/field-configuration.md": "ccc1473ee84e375374c8c37f588f21cf5101a5014c8bf20707fbbc6de2dbb720",
+      "skills/datocms-content-modeling/references/model-configuration.md": "b597fbc6a70d0269e22465526ba8a18906ec7f27307c7f68e88f96ae7f5efa97",
+      "skills/datocms-content-modeling/references/models-vs-blocks.md": "754afe48db45fe424d4e615e06d0fdc6a07cf20a6c1e39cbdcdfca2d2b7d0195",
+      "skills/datocms-content-modeling/references/separation-of-concerns.md": "7d9c835338fc4cc42bc339eb00b9823ef94972813cd9147a47fae46bc31c93e8",
+      "skills/datocms-content-modeling/references/taxonomy-classification.md": "bdf721ced2b86042fe4acb2f166811dcec606541cebb07706fbb75905b6d93e3",
+      "skills/datocms-content-modeling/references/ui-organization.md": "f517f52fb86e7eccf99b78b8b731744707a1c7e62b4d18c6d421de986064c0a9",
+      "skills/datocms-feedback/SKILL.md": "c3342ced883f121ac0f81e4b00ed9f2da20cfafffe3c233cff9f410507fcbfb7",
+      "skills/datocms-feedback/agents/openai.yaml": "6ac27f458c10c041910b15ef83c097caa190f701afb20ba558950d984aa01a4c",
+      "skills/datocms-frontend-integrations/SKILL.md": "f83c9308c6cc992ccc4bb5773c5eb399b62f3b37208be43162ca74dff5ea259c",
+      "skills/datocms-frontend-integrations/agents/openai.yaml": "a937f74cd898089bfd69facb8f5e8558f9499cef42c17970c1205128b46959a4",
+      "skills/datocms-frontend-integrations/references/astro-content-link.md": "fc92e34550404f14cb78cf8e16690df75a714fb8ea5d6f7c4e2c962743f798ef",
+      "skills/datocms-frontend-integrations/references/astro-image.md": "6c3828f274eb46cd3e6634048bbf14936d9c3e843f8be485b68285e62619b23b",
+      "skills/datocms-frontend-integrations/references/astro-realtime.md": "b2de1adaadad6a31efe1e3d090a35650f1b0be4afb01bc6a97359281869771a5",
+      "skills/datocms-frontend-integrations/references/astro-seo.md": "c33f8d4d6b2861893e7ed1e1ce7fb79e3546c6106b153ea878544b41c42b0dbe",
+      "skills/datocms-frontend-integrations/references/astro-structured-text.md": "b14dac33eaa962db6551a7220824db4bdc2e5c802f80f5d5e67e1ed767d7d0f2",
+      "skills/datocms-frontend-integrations/references/astro.md": "2aebf30c366b2f032a4ea522f3618b9f62bfec130f187c54d966b71f18d005d1",
+      "skills/datocms-frontend-integrations/references/cache-tag-adapters.md": "0569331510880bed93c8b58079e7d0a1e54353b7c1b2f5d7ceddc12cd33fa6d5",
+      "skills/datocms-frontend-integrations/references/content-link-concepts.md": "561a3db1684de2271dc7135779f27cd7abe657c0269b4e8f7b325d1793242d4e",
+      "skills/datocms-frontend-integrations/references/draft-mode-concepts.md": "dbf13db86030d4be4ffb119176176d28b53f0515869e0e1a7b2175d3e43f4f2e",
+      "skills/datocms-frontend-integrations/references/image-concepts.md": "2a392091f0e6b1fa1f49023cdc6a844e8f78c96c587f4763aaa1ae4b380ff7e8",
+      "skills/datocms-frontend-integrations/references/nextjs.md": "f0683481a20f39cb02d86920fb0b19cc9dc72de278cc413ce51e109e2670c730",
+      "skills/datocms-frontend-integrations/references/nuxt.md": "a26ff1689455edbdcc943099c6769e4d85a82b9369fd00b05040be3386bbcd96",
+      "skills/datocms-frontend-integrations/references/react-content-link.md": "81885bd28f97337a1656670a970dcdb512f7ae894cc147d8fac99921cce9561f",
+      "skills/datocms-frontend-integrations/references/react-image.md": "0355da9d2c8c7bdaa90d353d3894483b95f05522184191b50eb255caf3029558",
+      "skills/datocms-frontend-integrations/references/react-realtime.md": "9ebf9aa237759dbe8049fcad626688a2ed0bed358dba0f07e0ce7661a09e00a8",
+      "skills/datocms-frontend-integrations/references/react-seo.md": "07c62682f54513870a805b61f2ecae7385a1a678344a70c00347dcf0a6893d12",
+      "skills/datocms-frontend-integrations/references/react-site-search.md": "95ae03a12d8ec9a2b6aaa38e925b23f51ff486df9913bec69d1546d30ec55f1a",
+      "skills/datocms-frontend-integrations/references/react-structured-text.md": "0c30a562a224e2e2a6bf943912626e0a0f703c193faf087d93bf9929f8db5bb4",
+      "skills/datocms-frontend-integrations/references/react-video-player.md": "c759cb9b1342746e405f6a056b87f37a2e6b6cf5dcce696212fffa8512975480",
+      "skills/datocms-frontend-integrations/references/realtime-concepts.md": "a5e9c775eaaa2dc914fc0d651aea1c9a80aaf6ad9153271524cb5a36c59bdb86",
+      "skills/datocms-frontend-integrations/references/remix.md": "8e71c6d1fe082e9d55d24a2a330ee6dc3d65e5de96b9b1b66b8354dec441f16a",
+      "skills/datocms-frontend-integrations/references/robots-and-sitemaps.md": "a79b5a178715899c334a926036a4d8e23e031da8143814b7a7d9339f1a7202a4",
+      "skills/datocms-frontend-integrations/references/seo-concepts.md": "f4bb46ab632b1bedf0f535fab33e61c2be7a248395bc69f6c3c2a6254b008333",
+      "skills/datocms-frontend-integrations/references/site-search-api.md": "7de2cff805df5496c454e21b9e9842542e824fc5aa660d1714e35c2601f1ddfb",
+      "skills/datocms-frontend-integrations/references/site-search-concepts.md": "4669f7c96b2f6a39ec03aa284d17ffab9acf938357970dcea2e8194f710ad8b9",
+      "skills/datocms-frontend-integrations/references/svelte-content-link.md": "0300db48a6f4eba11fb5978c0792244fff68ad7a17c040dab074c9f5f43aa50c",
+      "skills/datocms-frontend-integrations/references/svelte-image.md": "cd4883c43ca8af2b78c5d906f1256479336ab75f8dcb9a43dd9d680b2089d5bd",
+      "skills/datocms-frontend-integrations/references/svelte-realtime.md": "b7fffefb150c5b6931ba9f6f99b4cafdf5524e08c0afbf105c4b6337aa3c3893",
+      "skills/datocms-frontend-integrations/references/svelte-seo.md": "1dbdc584e1ea9b06a0a612d96c8019773682cc409220afddaf7a0ac32bb68de2",
+      "skills/datocms-frontend-integrations/references/svelte-structured-text.md": "78effe717557029487683bda9ecb6a4c4448cdb718c21423b4ad378a24704984",
+      "skills/datocms-frontend-integrations/references/svelte-video-player.md": "688bfe90965f0c5dcf964cf42fe46ba339af0a2c7ac3e8e2fff6e1112ed6bee3",
+      "skills/datocms-frontend-integrations/references/sveltekit.md": "11736a7e56a5e6fa7f72690a4fda50b5a5b0fc8ca5aad564f01c9475460832b9",
+      "skills/datocms-frontend-integrations/references/url-builders.md": "a3c29ada393bee18271b0bab11ea76f484c3ce80cbd094e84209ab13a99f4789",
+      "skills/datocms-frontend-integrations/references/verification-checklists.md": "0a4d9c5190a3f30e3cb8f22ff068597ec5de0c75c2d2f2f567d76a57e704ebfe",
+      "skills/datocms-frontend-integrations/references/video-player-concepts.md": "6a884f24ca592b8f43952c6f8c94e09736d671a3947dee24c456dbb7c542355c",
+      "skills/datocms-frontend-integrations/references/visual-editing-concepts.md": "8e4e635f606e31ac6b705c20211a9b6263a3480e0e129235bf3cff1aca300a88",
+      "skills/datocms-frontend-integrations/references/vue-content-link.md": "34945523d1ab4864ae5db1f7e7685bfbd1e7cb3ee3537b416281d636ca6e0fca",
+      "skills/datocms-frontend-integrations/references/vue-image.md": "031ff141a7be1510c455723aa3acd5d170a14d166912db689b997a5064dd6b48",
+      "skills/datocms-frontend-integrations/references/vue-realtime.md": "7915b6847ef03993bdc81a2fd413f5af503bb97adeb940f456261e7e3c878b17",
+      "skills/datocms-frontend-integrations/references/vue-seo.md": "de4a8fd844061e378918e3994f3c3681d909af1930830009296a7a373d8187b7",
+      "skills/datocms-frontend-integrations/references/vue-site-search.md": "d68e41621e4bc71b0d9c80955bd5631f0392822e2a757b03d298d80083dd2bb0",
+      "skills/datocms-frontend-integrations/references/vue-structured-text.md": "3c1aa6fea61530a9c7f8bbcd0516b915ae9af41227206a56862b1bb338bc7b16",
+      "skills/datocms-frontend-integrations/references/vue-video-player.md": "375ef70dc39c83c2f6355a8beab28e98a8112a7b71a80f5ed79b0cd38c8b9edf",
+      "skills/datocms-frontend-integrations/references/web-previews-concepts.md": "7bfc391f509ebd8d203b6b458da7b166b6415bf7d800624d48a3fd56ad099e00",
+      "skills/datocms-plugin/SKILL.md": "97058ae40256ad16b24172de0c5c934faac029d76cc199f326d0298492616db5",
+      "skills/datocms-plugin/agents/openai.yaml": "0d6fcbc48291ea16ec70d2f052f38867002808d10254568869651f159a35c178",
+      "skills/datocms-plugin/references/asset-sources.md": "af4d0302f7b3423e5112ea6e89dbdcfbeb31375ba9fb97b0d38c20ac4d547574",
+      "skills/datocms-plugin/references/config-screen.md": "889bb8988b9d3c6857d07da445da8db16000eadaaf7c32998a26b76a416a11d9",
+      "skills/datocms-plugin/references/connect-conventions.md": "9c80bb7971bb2fd547ac080f44d98412bc65ba583bf432a4b9ff3f4b0366300a",
+      "skills/datocms-plugin/references/current-plugin-patterns.md": "d57e0aaa17ca0179597d5498994d79c977d0df3452c80ceaf9c9f4db82630c67",
+      "skills/datocms-plugin/references/custom-pages.md": "6fd3e6dd6bd21d1e1e031d0fb2b4f228bf7a4429a21c35d2cb83d169d6d3c9da",
+      "skills/datocms-plugin/references/dark-mode-upgrade.md": "6a50e21ce9c6adedf7acad4975950c221669a00ebb53cb838988600101e884ae",
+      "skills/datocms-plugin/references/design-datocms-react-ui-bridge.md": "09a0d6713348d9477e79ae9d1ab07bf9706dec323d75b6dbd7e8a0e29ca59cd5",
+      "skills/datocms-plugin/references/design-forms-and-controls.md": "9b4d50e07e4b6979f3277f2ac33a78766d1217a3b553ead8c6764c58d3ebd8a1",
+      "skills/datocms-plugin/references/design-foundations.md": "bfbb93a3e74398275797d3bebc24ea8c5987a57af6b60406881ac79cc10c535f",
+      "skills/datocms-plugin/references/design-layouts.md": "37ef847cb033803e4ccaecbef64b8efbb6854ef5ff29c8c1d4b6de3a73841945",
+      "skills/datocms-plugin/references/design-navigation-feedback-and-data-display.md": "a2e62c38d93bac418ac400c8c5011ae883f1f3a35d652fe87e555d8abdfd9ce0",
+      "skills/datocms-plugin/references/design-plugin-surfaces.md": "5169e33406feec8f9b47b64c77834abd04f1a0bb46860b94d365e2dbf647fcb7",
+      "skills/datocms-plugin/references/design-raw-css-fallbacks.md": "e3b91408a19c9876096bf870760cc6fe6aee29631c22c921b0d8e5488d8c373f",
+      "skills/datocms-plugin/references/design-tokens.md": "08b7430b530e2d36165a9d552d299b79bbc4b57b6cb40eca4304e6fc5a7f9665",
+      "skills/datocms-plugin/references/dropdown-actions.md": "924a206cca7438ace1347ee61872992a4656ca08aa7e7ba82e724b531cdcc6cf",
+      "skills/datocms-plugin/references/field-extensions.md": "7e136e02ae00e73168392c21a2e8818e21ee48e58e9821d107b2492dc107cb4e",
+      "skills/datocms-plugin/references/form-values.md": "6aa67ac0140da0a2230e7e1e32d9346e90304ad63f04f2acce8cb7c3b520d795",
+      "skills/datocms-plugin/references/inspectors.md": "1d371197141d5103bbe6f077332aeedc667481c73707273d05ac5467ef6c6d90",
+      "skills/datocms-plugin/references/lifecycle-hooks.md": "d878beb7add71d7db9b02a6da3677362e3c8622c3dd376559b52d67e5a35f057",
+      "skills/datocms-plugin/references/modals.md": "28189bdfab88fe1f05773b5d2eae03e13bc06119079c5d4e063319643ac00a22",
+      "skills/datocms-plugin/references/outlets.md": "bb811ebc1ec46f570b696ab67f96fd48f6f8a8674c042b1baffe4aa6e4363327",
+      "skills/datocms-plugin/references/permissions.md": "839bb2f3241440b2b47c8bfef711b6613eba4e4f4e2c0c17d5d82f987f5054af",
+      "skills/datocms-plugin/references/project-scaffold.md": "902effe991bf3768bd9d647fa219d984fab7c25ac290b7a5ff129bce4f263bfc",
+      "skills/datocms-plugin/references/rapid-patterns.md": "6a2929da223e40f5b93ab709a7a563e3922556fcc6617cb863e577b49abd8d6e",
+      "skills/datocms-plugin/references/record-presentation.md": "e2d1bb99a9a7bd5c7fba6423913fce605dca91f34f33a184a7b35d9a71458dea",
+      "skills/datocms-plugin/references/sdk-connect-and-frames.md": "bab032f9b3f69df859d5f1bb966dec704c73df6870143af7637be5c94514d4d3",
+      "skills/datocms-plugin/references/sdk-context-and-cma.md": "aee432ee6feb0ab3c2aa803823b6cd1ed453d4ffca476c4304742344a77c0a92",
+      "skills/datocms-plugin/references/sidebar-panels.md": "c9d5abb80da526e03384a69765f1b651df653f8b7b36c9b298ca5a6f940ac40c",
+      "skills/datocms-plugin/references/structured-text.md": "48cb76ee9e320c6b3379a1f5310c62270b82aae3c093a900d6bd852715344d4a",
+      "skills/datocms-plugin/references/surface-starters.md": "e8baae871d1ab946a2301124f77cb5fcd8ed0d5dca98f645e9a8eeb196315dc0",
+      "skills/datocms-plugin/references/upload-sidebars.md": "cbf7c78c6e71f76d34a8690d4daa338632b4d37e7fd2f60a8968d39afbdb8bbd",
+      "skills/datocms-setup/SKILL.md": "ed05acc3e57aba51d9e126d02be64d0d08e9ee8b30ebbee6c2129cb82ccf1a3e",
+      "skills/datocms-setup/agents/openai.yaml": "f9530646e2c3adcc150348670ef8e5f6a58f67c7d2898627cf8156db8b150b1a",
+      "skills/datocms-setup/patterns/MANDATORY_RULES.md": "3fe2ebd2bbbef8f2fc225512401a353e11b24721a1f3f4e33ef90370c96f053e",
+      "skills/datocms-setup/patterns/OUTPUT_STATUS.md": "a9b4202e45f6712596d1d9dd73e4af96580aad7513b6f7debc4f16383fc4f4cc",
+      "skills/datocms-setup/recipes/frontend-features/responsive-images/recipe.md": "e3fe3cb2ea8491c982635473cd5e4ec2d5d191d7fcc0174934d9ca3887ba2c48",
+      "skills/datocms-setup/recipes/frontend-features/robots-sitemaps/recipe.md": "abe2b3dc9b94d0082d685e6eef5375a9d05c8ed95a9f7494950e02a4a2170eef",
+      "skills/datocms-setup/recipes/frontend-features/seo/recipe.md": "16f9d2c383de6856426cdf236b5a5738821410ae31b1e69bfbd7795d66ddb70f",
+      "skills/datocms-setup/recipes/frontend-features/site-search/recipe.md": "02939c8b5e7c6fd6aebdb37aedc608f9e8a262bce1ef3e5d087995a99cff4f3a",
+      "skills/datocms-setup/recipes/frontend-features/structured-text/recipe.md": "766ee04589e6418b0359ab0de0fbdd0e8e6b916de5121481e7bfa3d3117f0292",
+      "skills/datocms-setup/recipes/frontend-features/video-player/recipe.md": "d188d76008cf3e8597ed8de0edad4a6c5795a59555efc2a5df8c9be0d03920c5",
+      "skills/datocms-setup/recipes/frontend-foundation/cache-tags/recipe.md": "ce5f21d7d53d384fc8082a68ba2271d5bf3d85718752c93669404e37046af9bd",
+      "skills/datocms-setup/recipes/frontend-foundation/cda-client/recipe.md": "a1f3eb4aad3f6e0a133e6aa31101eb0c804c5f5ba29f909f44ea4f6a3280d969",
+      "skills/datocms-setup/recipes/frontend-foundation/content-link/recipe.md": "c9b959667cfaec2d2f5e4725b802882920793888143e3523660990c57ce0fd30",
+      "skills/datocms-setup/recipes/frontend-foundation/draft-mode/recipe.md": "4442c67b8775782878504e73fde20b5fd14fad86e6b8c9829ceeff8f44ff9c36",
+      "skills/datocms-setup/recipes/frontend-foundation/graphql-types/recipe.md": "a21cca936c96405b7641081fd52e8de3fb81cb65a0d15c1fbcfad2edc26c65d9",
+      "skills/datocms-setup/recipes/frontend-foundation/realtime/recipe.md": "a961a2d6abb72a046bf568d1bbe0989fb308025c83d24d535039fd34cd73dd53",
+      "skills/datocms-setup/recipes/frontend-foundation/visual-editing/recipe.md": "a8d4a84e8440b80925a281fef7cc46e9509771760a6d87b610c7eb7aebacb96c",
+      "skills/datocms-setup/recipes/frontend-foundation/web-previews/recipe.md": "babdc40c3bca4e5429ac056381f7c1f40bc4a2cdc077d7ece765ec396e14c1b9",
+      "skills/datocms-setup/recipes/migrations/blueprint-sync/assets/datocms-sync.github-actions.yml": "0f9d7893f6ffd89b25223e3bf485214e616ddfb59db35420f1caa37d0e4d5cba",
+      "skills/datocms-setup/recipes/migrations/blueprint-sync/recipe.md": "daaf37b435a2229bbe5167c4531aefb89b079ddd6ba7a9067210112b8b714c35",
+      "skills/datocms-setup/recipes/migrations/blueprint-sync/scripts/datocms-sync-projects.mjs": "440f4c955ed113cdc8895032913f7c683239494da975a79b18ee949e7591b9b7",
+      "skills/datocms-setup/recipes/migrations/cli-profiles/recipe.md": "e4e952c5e93fd1375747e87322b8319a3f829c4cc4b4cf7eb1a2bf509557a8ab",
+      "skills/datocms-setup/recipes/migrations/migration-autogenerate/recipe.md": "b30ab0a01cdd6de6cded292646f26603ebf70d7741c45ab64a3e342583de8393",
+      "skills/datocms-setup/recipes/migrations/migration-autogenerate/scripts/datocms-autogenerate-migration.mjs": "e4ae67a3489ae59cc434b3efde9d51489f8000545a5718ef42985cbc533f398a",
+      "skills/datocms-setup/recipes/migrations/migration-release-workflow/assets/datocms-release.github-actions.yml": "f2f32719b1725cd8a225e5a071ace49cb0333bc078b48ba36a5d477c3dd1f229",
+      "skills/datocms-setup/recipes/migrations/migration-release-workflow/recipe.md": "bd9ee17c93ae20363267f6b94023ed4b3ae0c24cb30ca499e60d21144724a890",
+      "skills/datocms-setup/recipes/migrations/migration-release-workflow/scripts/datocms-release.mjs": "9b414a9560c7065347dea95460ea55c36a5a3b8b08237b654938d7f53d3d53f1",
+      "skills/datocms-setup/recipes/migrations/migrations/recipe.md": "53cb5c43194b33bc9f2ba578ab3d4f654eb5d390e5451d57c0b38bb2ad753220",
+      "skills/datocms-setup/recipes/migrations/sandbox-iteration/recipe.md": "4867e0c3302e1a83807fad2c2cd58b7ddf6a9dceb02cf7b5f2d615fa5541785d",
+      "skills/datocms-setup/recipes/migrations/sandbox-iteration/scripts/datocms-reset-sandbox.mjs": "3316d613087c43b64cb5dbade65daab91065eb789a8e059025f475722fd39472",
+      "skills/datocms-setup/recipes/onboarding/contentful-import/recipe.md": "52b749a62a585affc71f78598c7185a7900982c4607de15e62295a84cf090411",
+      "skills/datocms-setup/recipes/onboarding/contentful-import/scripts/datocms-import-contentful.mjs": "4ec7e89b9ab467a9ed4effd84779bf081c606050aef40862d964823f017cfbbb",
+      "skills/datocms-setup/recipes/onboarding/wordpress-import/recipe.md": "79908fc94635be8b33e65985b59ab6062eac5ee220b12733ba5478bed370dc58",
+      "skills/datocms-setup/recipes/onboarding/wordpress-import/scripts/datocms-import-wordpress.mjs": "114def45fc3fa6bdac79dddc8713ea55e8678f962cf65aeebe0b19b9a1c919af",
+      "skills/datocms-setup/recipes/platform/build-triggers/recipe.md": "e01b66ac5af2a2345052a41c8e368bd52b79f18fb0f153439fa7fe68e93f61e4",
+      "skills/datocms-setup/recipes/platform/build-triggers/scripts/datocms-build-triggers-smoke.mjs": "78e313f011867569c2e127e345c399954352585c63ee945a0d42a7fc68a5542d",
+      "skills/datocms-setup/recipes/platform/build-triggers/scripts/datocms-sync-build-triggers.mjs": "75f10874733015940828363fd032e5674a7f5390ee0d3ef7b07d88da4b6a4c75",
+      "skills/datocms-setup/recipes/platform/cli-bootstrap/recipe.md": "67de54769ad46c4ddea596cd43fa47a7c414958c215173c455274c01d3f7082e",
+      "skills/datocms-setup/recipes/platform/cma-types/recipe.md": "95f78e00e7602fd1a069e68cc828e648aa5372e204db61b1408f34faf0f78263",
+      "skills/datocms-setup/recipes/platform/webhooks/recipe.md": "2f5b637ae0b5b9beb3725fb7bedbaa1ebe848620a02c882cebd48808082b5ddc",
+      "skills/datocms-setup/recipes/platform/webhooks/scripts/datocms-sync-webhooks.mjs": "4584e54ebe195451752124d20fb2aa85a8bb4be4ffbdbd393417785b81856232",
+      "skills/datocms-setup/references/recipe-manifest.json": "b8ca04aaaf287ccc0877540429a2f539cb550b487998a9d1902dcb6b21c449fb",
+      "skills/datocms-setup/references/repo-conventions.md": "d285066377f56b731d30421dcfc6c77ec0dcc6461814907582c70e04f520ba86",
+      "skills/datocms-setup/references/router.md": "55a690bc569dec898ce71e1bae973fab1a47c20d61b42eb950e28198bcace736",
+      "skills/datocms-structured-text/SKILL.md": "3ef1441d4e4bd5a487fad28097b57bb8eb697db508c4f3ec00449a835907f48a",
+      "skills/datocms-structured-text/agents/openai.yaml": "d739516351526da2139ce855128d6269fc4dd4d206322108795b1859cfd9b034",
+      "skills/datocms-structured-text/references/conversion.md": "67d81427865c60d804b27087590176885f5d1519477d254113ef006d958ad39e",
+      "skills/datocms-structured-text/references/document-model.md": "bcbe73ed963eb9c2f24c97a84e84f845e4aadf896446ad8d19a5d8d3d7780e93",
+      "skills/datocms-structured-text/references/editing.md": "ec9896dd1ced3766717fc3a9ac122bc054a93dbc0c0e4d7b1767cf34ccd9e313",
+      "skills/datocms-structured-text/scripts/convert.mjs": "3b3b90795dcc193f1234e105db56cba7cb9d2094e52b99fb9edea5ec7c86271e",
+      "skills/datocms-structured-text/scripts/package-lock.json": "0361f971a283a1a81175bb85b3e9b0871c07ebf320ff722dc7e1120eb437c63b",
+      "skills/datocms-structured-text/scripts/package.json": "12a612a037d9f91051f0469c1bfb99213407f95baf07935c01afe8d0f4b14596"
+    }
+  },
+  "harnessSnapshots": {
+    "fa46b90cc50a5a125c71816e9940024c45972c132992eeeb6e9c23a9f1408bd5": {
+      "e2e/README.md": "b8c0d39b087aed9589444c5989eca0de2222aec010fddee81fb9774e69e95825",
+      "e2e/cases/add-locale.e2e.test.ts": "761793779e31084cf6afa666f642d3ecbcc1baa6041384e83a1930c47ee7ece5",
+      "e2e/cases/create-simple-model.e2e.test.ts": "43d195a560160e7a3d23aea59fa41907d711c2a6f4776909ad699c279e1ee057",
+      "e2e/cases/custom-block-id.e2e.test.ts": "de444d66f1119c961a6a17c57c8148a4c8c96219fb8c3fbc7ac6abee4d4d82ac",
+      "e2e/cases/modular-content-blocks.e2e.test.ts": "ece23d5466b15dbb330d4d8397270ee227f7313bf018a517a71c8d18c9239e87",
+      "e2e/cases/modular-content-reorder.e2e.test.ts": "dcb7eeff76c8662245e8dbf5c1c332191cfb2484bdb2dbdde64abad1c752dee5",
+      "e2e/cases/recent-content-regressions.e2e.test.ts": "089164c0297a5dcca67c05077ced3a92b9fbf2b59150d8b34b289d7df510f41d",
+      "e2e/cases/recent-platform-regressions.e2e.test.ts": "6f81de96450f7d6c243fd31321c79beb59ef740b16e7372dedfef0459438bf58",
+      "e2e/cases/recursive-nav-deep-edit.e2e.test.ts": "3db4c21804bb016aac36618ed21cff576661ef30044582675362c8db7006e682",
+      "e2e/cases/structured-text-blocks-to-list.e2e.test.ts": "7e1aca7716b7844d65ae67770a637b36f9d6e5877f07c8ec5670337cfdad4250",
+      "e2e/cases/structured-text-content-aware-insert.e2e.test.ts": "abf9636ea5a2494e7dc6425c9178e4c8e32d4523f4791fe721563d537141e923",
+      "e2e/cases/structured-text-import-html.e2e.test.ts": "1e25e1f3ed2ebd26f8cd3405df6dc5420ed49ca075f29f0af2317b1201ea191d",
+      "e2e/cases/structured-text-import-markdown.e2e.test.ts": "32d7155220f68e5976c99ec77cae81d6d04d915168d67f84be147fe47e310eee",
+      "e2e/cases/structured-text-marks-and-links.e2e.test.ts": "4d7df096b9a00eaf5a0acd4df7f8ec55889a86faf30d93cc5603547d922118d4",
+      "e2e/cases/structured-text-nested-block-edit.e2e.test.ts": "68f70fee0f4064ffbae44b00675ffc35b1d47b1e87c092752e62ebd3545d1c64",
+      "e2e/cases/structured-text-nested-blocks.e2e.test.ts": "9353461d33c8eeef177eb37e6e5824a31ed175d92525596a800ca96ca38c3103",
+      "e2e/cases/structured-text-prose-rewrite.e2e.test.ts": "13650f50aa338780c9bd3460b35f36a9170f456b7ea58af6ccc1034550f07eeb",
+      "e2e/cases/structured-text-transform.e2e.test.ts": "25588ed5f7de5aeadd49c6263f113ca405dc9d05dd5eb2c36ae582f824126639",
+      "e2e/frontend/run.mjs": "d99004c627d3b72981c15c42354945976e723baf472f7d278ef6aefb37699235",
+      "e2e/globalSetup.ts": "febe72505f88c94bc9ec492cdf68e14b7847e08fde37a3322c6a9a4c46c328c1",
+      "e2e/lib/cleanupOldProjects.ts": "fe671c3b213458f28fbfb8b3eaac06fe64749eb9e0c6d6bc72f3e17beca2e382",
+      "e2e/lib/cliLauncher.ts": "04bbe7739057cf5b506d1254695cd8681addcbc372c7f782e9048bdc720dbcea",
+      "e2e/lib/createTestProject.ts": "e7fb3ab7493f12056f05039c6ca95057077075202fd1d5281732d5dc20aafb73",
+      "e2e/lib/dashboardSession.ts": "531ea04436a4a4373482bed78a02f0e0bac84a4353cfb7781619b9d764473deb",
+      "e2e/lib/nativeSession.ts": "c5a090c79151dcd8d39ff5dd35db6a5aa54df13df2eb5c1d2b51aa5feff856d2",
+      "e2e/lib/runAgent.ts": "fa6b693510e6c98266bd1e8c09a45b898048734937c27509a68512bebd6dc498",
+      "e2e/lib/runClaude.ts": "914806ca27a055cfe8b14ea73c3446f42bb209efbc636f4d5767a9b2ece7ede6",
+      "e2e/lib/runCodex.ts": "cbbe9abb2d1d4787fe524b25daa1d4c28e33205abde44f6b542c47cb2788ef7d",
+      "e2e/lib/runE2ETest.ts": "064d29fb8d9a2397b384df5128e46c7a33ca4421fff41a56ddc1f99eee01b585",
+      "e2e/lib/runOpencode.ts": "f35c593af52959f48c0e75bd47c53a293e9601ca003fe4e0c7e7c3cb4a151105",
+      "e2e/lib/simplifyOpencodeTranscript.ts": "61840c5c221c36ad92d60dd6a81917857d82b95e802d7a88f965611c806ad09c",
+      "e2e/lib/simplifyTranscript.ts": "f1b0d70ec90472e93ca62212841d48900d60007004ce214e96447c14d0c2700f",
+      "e2e/reports/2026-09-18-luna-medium.json": "78e40a1c5708aa50567f54e0a16259669c153e6f05f34b45b05daa722b7b2696",
+      "e2e/reports/2026-09-18-luna-medium.md": "48a810d5546164a6978ef20723dad0b64f5b472f12df7daa115aa0dc443ba188",
+      "e2e/reports/2026-09-18-production-readiness.json": "1521f0d84226f9da5ccf33bcba2b353a88c0a7ab74570d455da54f73c4d54668",
+      "e2e/reports/2026-09-18-production-readiness.md": "8a33156c634eb82bdfb923e01b94f5eb1630e246cde48f5050dc9a87592f0a42",
+      "e2e/workflows/cases.mjs": "f6fa2cce9af3242658e1fc40fc511c3dfe08bf6f776fc98ebe115b563bc9aa44",
+      "e2e/workflows/code.mjs": "7746314d47c1b17cd3a8c5657a6b385ae90c408425ba0c90b90c8753cad56df6",
+      "e2e/workflows/run.mjs": "ccfb2078a873c65be236f1eeb5ff4c935031de0084464f0ebb02f67f336da726"
+    },
+    "3497beb2565f922d7afd5b97c972ea4a422b5827b8363279cbdb9beb27f17bde": {
+      "e2e/README.md": "b8c0d39b087aed9589444c5989eca0de2222aec010fddee81fb9774e69e95825",
+      "e2e/cases/add-locale.e2e.test.ts": "761793779e31084cf6afa666f642d3ecbcc1baa6041384e83a1930c47ee7ece5",
+      "e2e/cases/create-simple-model.e2e.test.ts": "43d195a560160e7a3d23aea59fa41907d711c2a6f4776909ad699c279e1ee057",
+      "e2e/cases/custom-block-id.e2e.test.ts": "de444d66f1119c961a6a17c57c8148a4c8c96219fb8c3fbc7ac6abee4d4d82ac",
+      "e2e/cases/modular-content-blocks.e2e.test.ts": "ece23d5466b15dbb330d4d8397270ee227f7313bf018a517a71c8d18c9239e87",
+      "e2e/cases/modular-content-reorder.e2e.test.ts": "dcb7eeff76c8662245e8dbf5c1c332191cfb2484bdb2dbdde64abad1c752dee5",
+      "e2e/cases/recent-content-regressions.e2e.test.ts": "089164c0297a5dcca67c05077ced3a92b9fbf2b59150d8b34b289d7df510f41d",
+      "e2e/cases/recent-platform-regressions.e2e.test.ts": "6f81de96450f7d6c243fd31321c79beb59ef740b16e7372dedfef0459438bf58",
+      "e2e/cases/recursive-nav-deep-edit.e2e.test.ts": "3db4c21804bb016aac36618ed21cff576661ef30044582675362c8db7006e682",
+      "e2e/cases/structured-text-blocks-to-list.e2e.test.ts": "7e1aca7716b7844d65ae67770a637b36f9d6e5877f07c8ec5670337cfdad4250",
+      "e2e/cases/structured-text-content-aware-insert.e2e.test.ts": "abf9636ea5a2494e7dc6425c9178e4c8e32d4523f4791fe721563d537141e923",
+      "e2e/cases/structured-text-import-html.e2e.test.ts": "1e25e1f3ed2ebd26f8cd3405df6dc5420ed49ca075f29f0af2317b1201ea191d",
+      "e2e/cases/structured-text-import-markdown.e2e.test.ts": "32d7155220f68e5976c99ec77cae81d6d04d915168d67f84be147fe47e310eee",
+      "e2e/cases/structured-text-marks-and-links.e2e.test.ts": "4d7df096b9a00eaf5a0acd4df7f8ec55889a86faf30d93cc5603547d922118d4",
+      "e2e/cases/structured-text-nested-block-edit.e2e.test.ts": "68f70fee0f4064ffbae44b00675ffc35b1d47b1e87c092752e62ebd3545d1c64",
+      "e2e/cases/structured-text-nested-blocks.e2e.test.ts": "9353461d33c8eeef177eb37e6e5824a31ed175d92525596a800ca96ca38c3103",
+      "e2e/cases/structured-text-prose-rewrite.e2e.test.ts": "13650f50aa338780c9bd3460b35f36a9170f456b7ea58af6ccc1034550f07eeb",
+      "e2e/cases/structured-text-transform.e2e.test.ts": "25588ed5f7de5aeadd49c6263f113ca405dc9d05dd5eb2c36ae582f824126639",
+      "e2e/frontend/run.mjs": "d99004c627d3b72981c15c42354945976e723baf472f7d278ef6aefb37699235",
+      "e2e/globalSetup.ts": "febe72505f88c94bc9ec492cdf68e14b7847e08fde37a3322c6a9a4c46c328c1",
+      "e2e/hosted/run.mjs": "632ce3ca9224d7b78b2b0418e7cacdd5b5829958897fd1a17c3bedfadd5d9281",
+      "e2e/lib/cleanupOldProjects.ts": "fe671c3b213458f28fbfb8b3eaac06fe64749eb9e0c6d6bc72f3e17beca2e382",
+      "e2e/lib/cliLauncher.ts": "04bbe7739057cf5b506d1254695cd8681addcbc372c7f782e9048bdc720dbcea",
+      "e2e/lib/createTestProject.ts": "e7fb3ab7493f12056f05039c6ca95057077075202fd1d5281732d5dc20aafb73",
+      "e2e/lib/dashboardSession.ts": "531ea04436a4a4373482bed78a02f0e0bac84a4353cfb7781619b9d764473deb",
+      "e2e/lib/nativeSession.ts": "c5a090c79151dcd8d39ff5dd35db6a5aa54df13df2eb5c1d2b51aa5feff856d2",
+      "e2e/lib/runAgent.ts": "fa6b693510e6c98266bd1e8c09a45b898048734937c27509a68512bebd6dc498",
+      "e2e/lib/runClaude.ts": "914806ca27a055cfe8b14ea73c3446f42bb209efbc636f4d5767a9b2ece7ede6",
+      "e2e/lib/runCodex.ts": "cbbe9abb2d1d4787fe524b25daa1d4c28e33205abde44f6b542c47cb2788ef7d",
+      "e2e/lib/runE2ETest.ts": "064d29fb8d9a2397b384df5128e46c7a33ca4421fff41a56ddc1f99eee01b585",
+      "e2e/lib/runOpencode.ts": "f35c593af52959f48c0e75bd47c53a293e9601ca003fe4e0c7e7c3cb4a151105",
+      "e2e/lib/simplifyOpencodeTranscript.ts": "61840c5c221c36ad92d60dd6a81917857d82b95e802d7a88f965611c806ad09c",
+      "e2e/lib/simplifyTranscript.ts": "f1b0d70ec90472e93ca62212841d48900d60007004ce214e96447c14d0c2700f",
+      "e2e/reports/2026-09-18-luna-medium.json": "78e40a1c5708aa50567f54e0a16259669c153e6f05f34b45b05daa722b7b2696",
+      "e2e/reports/2026-09-18-luna-medium.md": "48a810d5546164a6978ef20723dad0b64f5b472f12df7daa115aa0dc443ba188",
+      "e2e/reports/2026-09-18-production-readiness.json": "1521f0d84226f9da5ccf33bcba2b353a88c0a7ab74570d455da54f73c4d54668",
+      "e2e/reports/2026-09-18-production-readiness.md": "8a33156c634eb82bdfb923e01b94f5eb1630e246cde48f5050dc9a87592f0a42",
+      "e2e/workflows/cases.mjs": "f6fa2cce9af3242658e1fc40fc511c3dfe08bf6f776fc98ebe115b563bc9aa44",
+      "e2e/workflows/code.mjs": "7746314d47c1b17cd3a8c5657a6b385ae90c408425ba0c90b90c8753cad56df6",
+      "e2e/workflows/run.mjs": "ccfb2078a873c65be236f1eeb5ff4c935031de0084464f0ebb02f67f336da726"
+    },
+    "32e36997076904e54e33f66f96375d8269c56c08ae9274faac5deab48365c5c7": {
+      "e2e/README.md": "b8c0d39b087aed9589444c5989eca0de2222aec010fddee81fb9774e69e95825",
+      "e2e/cases/add-locale.e2e.test.ts": "761793779e31084cf6afa666f642d3ecbcc1baa6041384e83a1930c47ee7ece5",
+      "e2e/cases/create-simple-model.e2e.test.ts": "43d195a560160e7a3d23aea59fa41907d711c2a6f4776909ad699c279e1ee057",
+      "e2e/cases/custom-block-id.e2e.test.ts": "de444d66f1119c961a6a17c57c8148a4c8c96219fb8c3fbc7ac6abee4d4d82ac",
+      "e2e/cases/modular-content-blocks.e2e.test.ts": "ece23d5466b15dbb330d4d8397270ee227f7313bf018a517a71c8d18c9239e87",
+      "e2e/cases/modular-content-reorder.e2e.test.ts": "dcb7eeff76c8662245e8dbf5c1c332191cfb2484bdb2dbdde64abad1c752dee5",
+      "e2e/cases/recent-content-regressions.e2e.test.ts": "089164c0297a5dcca67c05077ced3a92b9fbf2b59150d8b34b289d7df510f41d",
+      "e2e/cases/recent-platform-regressions.e2e.test.ts": "6f81de96450f7d6c243fd31321c79beb59ef740b16e7372dedfef0459438bf58",
+      "e2e/cases/recursive-nav-deep-edit.e2e.test.ts": "3db4c21804bb016aac36618ed21cff576661ef30044582675362c8db7006e682",
+      "e2e/cases/structured-text-blocks-to-list.e2e.test.ts": "7e1aca7716b7844d65ae67770a637b36f9d6e5877f07c8ec5670337cfdad4250",
+      "e2e/cases/structured-text-content-aware-insert.e2e.test.ts": "abf9636ea5a2494e7dc6425c9178e4c8e32d4523f4791fe721563d537141e923",
+      "e2e/cases/structured-text-import-html.e2e.test.ts": "1e25e1f3ed2ebd26f8cd3405df6dc5420ed49ca075f29f0af2317b1201ea191d",
+      "e2e/cases/structured-text-import-markdown.e2e.test.ts": "32d7155220f68e5976c99ec77cae81d6d04d915168d67f84be147fe47e310eee",
+      "e2e/cases/structured-text-marks-and-links.e2e.test.ts": "4d7df096b9a00eaf5a0acd4df7f8ec55889a86faf30d93cc5603547d922118d4",
+      "e2e/cases/structured-text-nested-block-edit.e2e.test.ts": "68f70fee0f4064ffbae44b00675ffc35b1d47b1e87c092752e62ebd3545d1c64",
+      "e2e/cases/structured-text-nested-blocks.e2e.test.ts": "9353461d33c8eeef177eb37e6e5824a31ed175d92525596a800ca96ca38c3103",
+      "e2e/cases/structured-text-prose-rewrite.e2e.test.ts": "13650f50aa338780c9bd3460b35f36a9170f456b7ea58af6ccc1034550f07eeb",
+      "e2e/cases/structured-text-transform.e2e.test.ts": "25588ed5f7de5aeadd49c6263f113ca405dc9d05dd5eb2c36ae582f824126639",
+      "e2e/frontend/run.mjs": "d99004c627d3b72981c15c42354945976e723baf472f7d278ef6aefb37699235",
+      "e2e/globalSetup.ts": "febe72505f88c94bc9ec492cdf68e14b7847e08fde37a3322c6a9a4c46c328c1",
+      "e2e/hosted/fixtures.mjs": "affb72672c2241beeecc328a9e92bcaca427e1da2955ddd74a4e216e7bf47ec2",
+      "e2e/hosted/run.mjs": "b0cb0723386e65fbe314854c738a4e347d8da07e3b9884d38f05ee2ee41d8f82",
+      "e2e/lib/cleanupOldProjects.ts": "fe671c3b213458f28fbfb8b3eaac06fe64749eb9e0c6d6bc72f3e17beca2e382",
+      "e2e/lib/cliLauncher.ts": "04bbe7739057cf5b506d1254695cd8681addcbc372c7f782e9048bdc720dbcea",
+      "e2e/lib/createTestProject.ts": "e7fb3ab7493f12056f05039c6ca95057077075202fd1d5281732d5dc20aafb73",
+      "e2e/lib/dashboardSession.ts": "531ea04436a4a4373482bed78a02f0e0bac84a4353cfb7781619b9d764473deb",
+      "e2e/lib/nativeSession.ts": "c5a090c79151dcd8d39ff5dd35db6a5aa54df13df2eb5c1d2b51aa5feff856d2",
+      "e2e/lib/runAgent.ts": "fa6b693510e6c98266bd1e8c09a45b898048734937c27509a68512bebd6dc498",
+      "e2e/lib/runClaude.ts": "914806ca27a055cfe8b14ea73c3446f42bb209efbc636f4d5767a9b2ece7ede6",
+      "e2e/lib/runCodex.ts": "cbbe9abb2d1d4787fe524b25daa1d4c28e33205abde44f6b542c47cb2788ef7d",
+      "e2e/lib/runE2ETest.ts": "064d29fb8d9a2397b384df5128e46c7a33ca4421fff41a56ddc1f99eee01b585",
+      "e2e/lib/runOpencode.ts": "f35c593af52959f48c0e75bd47c53a293e9601ca003fe4e0c7e7c3cb4a151105",
+      "e2e/lib/simplifyOpencodeTranscript.ts": "61840c5c221c36ad92d60dd6a81917857d82b95e802d7a88f965611c806ad09c",
+      "e2e/lib/simplifyTranscript.ts": "f1b0d70ec90472e93ca62212841d48900d60007004ce214e96447c14d0c2700f",
+      "e2e/reports/2026-09-18-luna-medium.json": "78e40a1c5708aa50567f54e0a16259669c153e6f05f34b45b05daa722b7b2696",
+      "e2e/reports/2026-09-18-luna-medium.md": "48a810d5546164a6978ef20723dad0b64f5b472f12df7daa115aa0dc443ba188",
+      "e2e/reports/2026-09-18-production-readiness.json": "1521f0d84226f9da5ccf33bcba2b353a88c0a7ab74570d455da54f73c4d54668",
+      "e2e/reports/2026-09-18-production-readiness.md": "8a33156c634eb82bdfb923e01b94f5eb1630e246cde48f5050dc9a87592f0a42",
+      "e2e/workflows/cases.mjs": "f6fa2cce9af3242658e1fc40fc511c3dfe08bf6f776fc98ebe115b563bc9aa44",
+      "e2e/workflows/code.mjs": "7746314d47c1b17cd3a8c5657a6b385ae90c408425ba0c90b90c8753cad56df6",
+      "e2e/workflows/run.mjs": "ccfb2078a873c65be236f1eeb5ff4c935031de0084464f0ebb02f67f336da726"
+    }
+  },
+  "sessions": [
+    {
+      "cohort": "preflight",
+      "name": "preflight",
+      "kind": "fixture-or-oracle",
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "capped": false,
+      "credentialLeak": false,
+      "revision": "ee7f68751e52f7479b217b57d491c2ec696cf75e",
+      "skillSnapshot": "44bf4bb4a60659fe7cee1f6044a86824e4064716180f2b3d955df5031b06a7c6",
+      "harnessSnapshot": "fa46b90cc50a5a125c71816e9940024c45972c132992eeeb6e9c23a9f1408bd5",
+      "runtimeVersion": "codex-cli 0.155.0-alpha.9",
+      "startedAt": "2026-09-18T19:03:47.954Z",
+      "runtimeFeatures": {
+        "features.apps": false,
+        "features.plugins": false,
+        "features.memories": false,
+        "features.chronicle": false,
+        "features.shell_snapshot": false,
+        "features.shell_snapshot_v2": false,
+        "features.multi_agent": false,
+        "features.skill_search": false,
+        "features.skill_mcp_dependency_install": false,
+        "features.browser_use": false,
+        "features.computer_use": false,
+        "features.image_generation": false,
+        "features.workspace_dependencies": false,
+        "features.tool_suggest": false,
+        "features.code_mode": false,
+        "features.code_mode_host": true
+      },
+      "hostedMcp": {
+        "name": "DatoCMSReleaseCheck",
+        "url": "https://mcp.datocms.com"
+      },
+      "usage": [
+        {
+          "input_tokens": 125961,
+          "cached_input_tokens": 81664,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1598,
+          "reasoning_output_tokens": 757
+        }
+      ],
+      "rawEvidence": "local/hosted-mcp-20260918/preflight",
+      "nativeTranscriptSha256": "20589ab30ba036399430829e162d7e4d6d8106907645a0c9432d868f6e9a3206",
+      "scriptCalls": [
+        {
+          "tool": "upsert_and_execute_safe_script",
+          "status": "completed",
+          "bodyMode": "full",
+          "sourceSha256": "426d01b15850f720ef16de3b6eb3c85ec09f5c37520d72716bb50c98cd5f5185",
+          "responseSha256": "69d77b1307901c445417b1eef22e4f94c0bef21d341c2e777d1623011e480239"
+        }
+      ],
+      "toolSequence": [
+        {
+          "tool": "whoami",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "get_api_methods",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "upsert_and_execute_safe_script",
+          "status": "completed",
+          "error": false
+        }
+      ],
+      "localCommandCount": 1
+    },
+    {
+      "cohort": "smoke-01",
+      "name": "cleanup",
+      "kind": "fixture-or-oracle",
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "capped": false,
+      "credentialLeak": false,
+      "revision": "ee7f68751e52f7479b217b57d491c2ec696cf75e",
+      "skillSnapshot": "44bf4bb4a60659fe7cee1f6044a86824e4064716180f2b3d955df5031b06a7c6",
+      "harnessSnapshot": "3497beb2565f922d7afd5b97c972ea4a422b5827b8363279cbdb9beb27f17bde",
+      "runtimeVersion": "codex-cli 0.155.0-alpha.9",
+      "startedAt": "2026-09-18T19:11:22.097Z",
+      "runtimeFeatures": {
+        "features.apps": false,
+        "features.plugins": false,
+        "features.memories": false,
+        "features.chronicle": false,
+        "features.shell_snapshot": false,
+        "features.shell_snapshot_v2": false,
+        "features.multi_agent": false,
+        "features.skill_search": false,
+        "features.skill_mcp_dependency_install": false,
+        "features.browser_use": false,
+        "features.computer_use": false,
+        "features.image_generation": false,
+        "features.workspace_dependencies": false,
+        "features.tool_suggest": false,
+        "features.code_mode": false,
+        "features.code_mode_host": true
+      },
+      "hostedMcp": {
+        "name": "DatoCMSReleaseCheck",
+        "url": "https://mcp.datocms.com"
+      },
+      "usage": [
+        {
+          "input_tokens": 130425,
+          "cached_input_tokens": 91648,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1372,
+          "reasoning_output_tokens": 228
+        }
+      ],
+      "rawEvidence": "local/hosted-mcp-20260918/smoke-01/cleanup",
+      "nativeTranscriptSha256": "46d680aaf90d863d889394fd5c6f163c4cab3ad166818c73353ede1be8e2a272",
+      "scriptCalls": [
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "bodyMode": "full",
+          "sourceSha256": "89d27ad1f5663eaacc51fd8a73d5188ad661d0a3aac047b874b9cc99ccf614e1",
+          "responseSha256": "5169b8a1d6eed26d6cfaab47c3f4f826d6c9ca227f1a2b83e98e7f1fa27401ec"
+        }
+      ],
+      "toolSequence": [
+        {
+          "tool": "whoami",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "get_api_methods",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "error": false
+        }
+      ],
+      "localCommandCount": 3
+    },
+    {
+      "cohort": "smoke-01",
+      "name": "prepare",
+      "kind": "fixture-or-oracle",
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "capped": false,
+      "credentialLeak": false,
+      "revision": "ee7f68751e52f7479b217b57d491c2ec696cf75e",
+      "skillSnapshot": "44bf4bb4a60659fe7cee1f6044a86824e4064716180f2b3d955df5031b06a7c6",
+      "harnessSnapshot": "3497beb2565f922d7afd5b97c972ea4a422b5827b8363279cbdb9beb27f17bde",
+      "runtimeVersion": "codex-cli 0.155.0-alpha.9",
+      "startedAt": "2026-09-18T19:09:54.256Z",
+      "runtimeFeatures": {
+        "features.apps": false,
+        "features.plugins": false,
+        "features.memories": false,
+        "features.chronicle": false,
+        "features.shell_snapshot": false,
+        "features.shell_snapshot_v2": false,
+        "features.multi_agent": false,
+        "features.skill_search": false,
+        "features.skill_mcp_dependency_install": false,
+        "features.browser_use": false,
+        "features.computer_use": false,
+        "features.image_generation": false,
+        "features.workspace_dependencies": false,
+        "features.tool_suggest": false,
+        "features.code_mode": false,
+        "features.code_mode_host": true
+      },
+      "hostedMcp": {
+        "name": "DatoCMSReleaseCheck",
+        "url": "https://mcp.datocms.com"
+      },
+      "usage": [
+        {
+          "input_tokens": 109086,
+          "cached_input_tokens": 81664,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1034,
+          "reasoning_output_tokens": 167
+        }
+      ],
+      "rawEvidence": "local/hosted-mcp-20260918/smoke-01/prepare",
+      "nativeTranscriptSha256": "f5a8f52eaedca7eaef5c7334f2c2805b2949ec856c9344ce2dd08498de8a4bf3",
+      "scriptCalls": [
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "bodyMode": "full",
+          "sourceSha256": "e2e52f85c57971e0d605447620adb4f190cc0b822038256c6185e070358f802c",
+          "responseSha256": "946771f7ff11b4e0bcb648bf9bd362919bdc95e137a7a733b5963b8d61db1edd"
+        }
+      ],
+      "toolSequence": [
+        {
+          "tool": "get_api_methods",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "error": false
+        }
+      ],
+      "localCommandCount": 2
+    },
+    {
+      "cohort": "smoke-01",
+      "name": "schema",
+      "kind": "fixture-or-oracle",
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "capped": false,
+      "credentialLeak": false,
+      "revision": "ee7f68751e52f7479b217b57d491c2ec696cf75e",
+      "skillSnapshot": "44bf4bb4a60659fe7cee1f6044a86824e4064716180f2b3d955df5031b06a7c6",
+      "harnessSnapshot": "3497beb2565f922d7afd5b97c972ea4a422b5827b8363279cbdb9beb27f17bde",
+      "runtimeVersion": "codex-cli 0.155.0-alpha.9",
+      "startedAt": "2026-09-18T19:10:36.541Z",
+      "runtimeFeatures": {
+        "features.apps": false,
+        "features.plugins": false,
+        "features.memories": false,
+        "features.chronicle": false,
+        "features.shell_snapshot": false,
+        "features.shell_snapshot_v2": false,
+        "features.multi_agent": false,
+        "features.skill_search": false,
+        "features.skill_mcp_dependency_install": false,
+        "features.browser_use": false,
+        "features.computer_use": false,
+        "features.image_generation": false,
+        "features.workspace_dependencies": false,
+        "features.tool_suggest": false,
+        "features.code_mode": false,
+        "features.code_mode_host": true
+      },
+      "hostedMcp": {
+        "name": "DatoCMSReleaseCheck",
+        "url": "https://mcp.datocms.com"
+      },
+      "usage": [
+        {
+          "input_tokens": 94179,
+          "cached_input_tokens": 60160,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1201,
+          "reasoning_output_tokens": 229
+        }
+      ],
+      "rawEvidence": "local/hosted-mcp-20260918/smoke-01/schema",
+      "nativeTranscriptSha256": "2e13727135ff85e769ab40e799ff16843ff9b5f5414692657a4562277ce6a4d1",
+      "scriptCalls": [
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "bodyMode": "full",
+          "sourceSha256": "d05a76e8d2954361fd3709dfe7b402f4dad44aa5390ca6ca4c8004c096365119",
+          "responseSha256": "0b0cbd6e6b2135546ae1e3d29d1ef2bee47ca2a78957ae684fb74d141ab8ba53"
+        }
+      ],
+      "toolSequence": [
+        {
+          "tool": "get_api_methods",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "error": false
+        }
+      ],
+      "localCommandCount": 2
+    },
+    {
+      "cohort": "smoke-02",
+      "name": "after",
+      "kind": "fixture-or-oracle",
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "capped": false,
+      "credentialLeak": false,
+      "revision": "ee7f68751e52f7479b217b57d491c2ec696cf75e",
+      "skillSnapshot": "44bf4bb4a60659fe7cee1f6044a86824e4064716180f2b3d955df5031b06a7c6",
+      "harnessSnapshot": "32e36997076904e54e33f66f96375d8269c56c08ae9274faac5deab48365c5c7",
+      "runtimeVersion": "codex-cli 0.155.0-alpha.9",
+      "startedAt": "2026-09-18T19:22:16.140Z",
+      "runtimeFeatures": {
+        "features.apps": false,
+        "features.plugins": false,
+        "features.memories": false,
+        "features.chronicle": false,
+        "features.shell_snapshot": false,
+        "features.shell_snapshot_v2": false,
+        "features.multi_agent": false,
+        "features.skill_search": false,
+        "features.skill_mcp_dependency_install": false,
+        "features.browser_use": false,
+        "features.computer_use": false,
+        "features.image_generation": false,
+        "features.workspace_dependencies": false,
+        "features.tool_suggest": false,
+        "features.code_mode": false,
+        "features.code_mode_host": true
+      },
+      "hostedMcp": {
+        "name": "DatoCMSReleaseCheck",
+        "url": "https://mcp.datocms.com"
+      },
+      "usage": [
+        {
+          "input_tokens": 89808,
+          "cached_input_tokens": 69376,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3423,
+          "reasoning_output_tokens": 301
+        }
+      ],
+      "rawEvidence": "local/hosted-mcp-20260918/smoke-02/after",
+      "nativeTranscriptSha256": "2a432a7d3890a92025434935ba76a11b85ce6615c635983e48ced0e93ba6ec6b",
+      "scriptCalls": [
+        {
+          "tool": "upsert_and_execute_safe_script",
+          "status": "completed",
+          "bodyMode": "full",
+          "sourceSha256": "9cd412f01bfe510867f4bb691d8c108e8c648b357f5c5f7f037ef5fd606ba361",
+          "responseSha256": "c8811d1ad2a9b655e94c41713eaefdfe1461b528724c392230239a1ae35b20eb"
+        }
+      ],
+      "toolSequence": [
+        {
+          "tool": "get_api_methods",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "upsert_and_execute_safe_script",
+          "status": "completed",
+          "error": false
+        }
+      ],
+      "localCommandCount": 1
+    },
+    {
+      "cohort": "smoke-02",
+      "name": "before",
+      "kind": "fixture-or-oracle",
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "capped": false,
+      "credentialLeak": false,
+      "revision": "ee7f68751e52f7479b217b57d491c2ec696cf75e",
+      "skillSnapshot": "44bf4bb4a60659fe7cee1f6044a86824e4064716180f2b3d955df5031b06a7c6",
+      "harnessSnapshot": "32e36997076904e54e33f66f96375d8269c56c08ae9274faac5deab48365c5c7",
+      "runtimeVersion": "codex-cli 0.155.0-alpha.9",
+      "startedAt": "2026-09-18T19:16:36.852Z",
+      "runtimeFeatures": {
+        "features.apps": false,
+        "features.plugins": false,
+        "features.memories": false,
+        "features.chronicle": false,
+        "features.shell_snapshot": false,
+        "features.shell_snapshot_v2": false,
+        "features.multi_agent": false,
+        "features.skill_search": false,
+        "features.skill_mcp_dependency_install": false,
+        "features.browser_use": false,
+        "features.computer_use": false,
+        "features.image_generation": false,
+        "features.workspace_dependencies": false,
+        "features.tool_suggest": false,
+        "features.code_mode": false,
+        "features.code_mode_host": true
+      },
+      "hostedMcp": {
+        "name": "DatoCMSReleaseCheck",
+        "url": "https://mcp.datocms.com"
+      },
+      "usage": [
+        {
+          "input_tokens": 100733,
+          "cached_input_tokens": 73472,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3397,
+          "reasoning_output_tokens": 253
+        }
+      ],
+      "rawEvidence": "local/hosted-mcp-20260918/smoke-02/before",
+      "nativeTranscriptSha256": "1b2daaa6e8576b01df2cc106b6d7a48ba0c503c34c9eb5bbdf71207bb1f365af",
+      "scriptCalls": [
+        {
+          "tool": "upsert_and_execute_safe_script",
+          "status": "completed",
+          "bodyMode": "full",
+          "sourceSha256": "9cd412f01bfe510867f4bb691d8c108e8c648b357f5c5f7f037ef5fd606ba361",
+          "responseSha256": "5fa009641bf5b6105747e486d5de26efd614bc0d5eaf5f0d7315227f3e7389cf"
+        }
+      ],
+      "toolSequence": [
+        {
+          "tool": "get_api_methods",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "upsert_and_execute_safe_script",
+          "status": "completed",
+          "error": false
+        }
+      ],
+      "localCommandCount": 2
+    },
+    {
+      "cohort": "smoke-02",
+      "name": "case-localized",
+      "kind": "evaluated-task",
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "capped": false,
+      "credentialLeak": false,
+      "revision": "ee7f68751e52f7479b217b57d491c2ec696cf75e",
+      "skillSnapshot": "44bf4bb4a60659fe7cee1f6044a86824e4064716180f2b3d955df5031b06a7c6",
+      "harnessSnapshot": "32e36997076904e54e33f66f96375d8269c56c08ae9274faac5deab48365c5c7",
+      "runtimeVersion": "codex-cli 0.155.0-alpha.9",
+      "startedAt": "2026-09-18T19:18:58.206Z",
+      "runtimeFeatures": {
+        "features.apps": false,
+        "features.plugins": false,
+        "features.memories": false,
+        "features.chronicle": false,
+        "features.shell_snapshot": false,
+        "features.shell_snapshot_v2": false,
+        "features.multi_agent": false,
+        "features.skill_search": false,
+        "features.skill_mcp_dependency_install": false,
+        "features.browser_use": false,
+        "features.computer_use": false,
+        "features.image_generation": false,
+        "features.workspace_dependencies": false,
+        "features.tool_suggest": false,
+        "features.code_mode": false,
+        "features.code_mode_host": true
+      },
+      "hostedMcp": {
+        "name": "DatoCMSReleaseCheck",
+        "url": "https://mcp.datocms.com"
+      },
+      "usage": [
+        {
+          "input_tokens": 171834,
+          "cached_input_tokens": 111104,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3495,
+          "reasoning_output_tokens": 1068
+        }
+      ],
+      "rawEvidence": "local/hosted-mcp-20260918/smoke-02/case-localized",
+      "nativeTranscriptSha256": "7d05bf0f6e24e9decf00cb1c05d0efb9f518c1eeaaab03cc90f69f0d80d16be0",
+      "scriptCalls": [
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "bodyMode": "full",
+          "sourceSha256": "d5c6b59431ebcf61a14caf6bb6f85f0df435318b76718ec8dd47ca073933874c",
+          "responseSha256": "aeb3ed67eabfd84c5aa3d872993c7d56f569f393788ce83474211efd3ff8f53e"
+        }
+      ],
+      "toolSequence": [
+        {
+          "tool": "get_schema",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "whoami",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "get_api_methods",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "error": false
+        }
+      ],
+      "localCommandCount": 2
+    },
+    {
+      "cohort": "smoke-02",
+      "name": "case-published",
+      "kind": "evaluated-task",
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "capped": false,
+      "credentialLeak": false,
+      "revision": "ee7f68751e52f7479b217b57d491c2ec696cf75e",
+      "skillSnapshot": "44bf4bb4a60659fe7cee1f6044a86824e4064716180f2b3d955df5031b06a7c6",
+      "harnessSnapshot": "32e36997076904e54e33f66f96375d8269c56c08ae9274faac5deab48365c5c7",
+      "runtimeVersion": "codex-cli 0.155.0-alpha.9",
+      "startedAt": "2026-09-18T19:20:24.742Z",
+      "runtimeFeatures": {
+        "features.apps": false,
+        "features.plugins": false,
+        "features.memories": false,
+        "features.chronicle": false,
+        "features.shell_snapshot": false,
+        "features.shell_snapshot_v2": false,
+        "features.multi_agent": false,
+        "features.skill_search": false,
+        "features.skill_mcp_dependency_install": false,
+        "features.browser_use": false,
+        "features.computer_use": false,
+        "features.image_generation": false,
+        "features.workspace_dependencies": false,
+        "features.tool_suggest": false,
+        "features.code_mode": false,
+        "features.code_mode_host": true
+      },
+      "hostedMcp": {
+        "name": "DatoCMSReleaseCheck",
+        "url": "https://mcp.datocms.com"
+      },
+      "usage": [
+        {
+          "input_tokens": 194487,
+          "cached_input_tokens": 148736,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 4933,
+          "reasoning_output_tokens": 2315
+        }
+      ],
+      "rawEvidence": "local/hosted-mcp-20260918/smoke-02/case-published",
+      "nativeTranscriptSha256": "5709233932598b12a3cb21b9bb5bcad9ec0a542e5eeb796d01e49b65d45e19a9",
+      "scriptCalls": [
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "bodyMode": "full",
+          "sourceSha256": "de95926a92082014efd6dac9c69c94d89ab378de72a7647b337d1e10be4c5777",
+          "responseSha256": "b526f9dc8dc7fa59ced7d7673416e808d36ef3a2384ffccde7720388b623b1db"
+        }
+      ],
+      "toolSequence": [
+        {
+          "tool": "whoami",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "get_api_methods",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "get_schema",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "error": false
+        }
+      ],
+      "localCommandCount": 3
+    },
+    {
+      "cohort": "smoke-02",
+      "name": "case-simple",
+      "kind": "evaluated-task",
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "capped": false,
+      "credentialLeak": false,
+      "revision": "ee7f68751e52f7479b217b57d491c2ec696cf75e",
+      "skillSnapshot": "44bf4bb4a60659fe7cee1f6044a86824e4064716180f2b3d955df5031b06a7c6",
+      "harnessSnapshot": "32e36997076904e54e33f66f96375d8269c56c08ae9274faac5deab48365c5c7",
+      "runtimeVersion": "codex-cli 0.155.0-alpha.9",
+      "startedAt": "2026-09-18T19:18:00.548Z",
+      "runtimeFeatures": {
+        "features.apps": false,
+        "features.plugins": false,
+        "features.memories": false,
+        "features.chronicle": false,
+        "features.shell_snapshot": false,
+        "features.shell_snapshot_v2": false,
+        "features.multi_agent": false,
+        "features.skill_search": false,
+        "features.skill_mcp_dependency_install": false,
+        "features.browser_use": false,
+        "features.computer_use": false,
+        "features.image_generation": false,
+        "features.workspace_dependencies": false,
+        "features.tool_suggest": false,
+        "features.code_mode": false,
+        "features.code_mode_host": true
+      },
+      "hostedMcp": {
+        "name": "DatoCMSReleaseCheck",
+        "url": "https://mcp.datocms.com"
+      },
+      "usage": [
+        {
+          "input_tokens": 145245,
+          "cached_input_tokens": 111872,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1867,
+          "reasoning_output_tokens": 679
+        }
+      ],
+      "rawEvidence": "local/hosted-mcp-20260918/smoke-02/case-simple",
+      "nativeTranscriptSha256": "5e120306034aed9e0608bfcded315a9aa4db9e5cbbf8cdc48b78ee0ddbc3999e",
+      "scriptCalls": [
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "bodyMode": "full",
+          "sourceSha256": "83ef6405af353f18a255bae0719080bd273306f949d7df7ef3ede60ed6328e2d",
+          "responseSha256": "65f67669a53194d10156604e078317f4fc7541b05b94d479f07cad55c4c6a078"
+        }
+      ],
+      "toolSequence": [
+        {
+          "tool": "whoami",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "get_api_methods",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "get_schema",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "error": false
+        }
+      ],
+      "localCommandCount": 2
+    },
+    {
+      "cohort": "smoke-02",
+      "name": "cleanup",
+      "kind": "fixture-or-oracle",
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "capped": false,
+      "credentialLeak": false,
+      "revision": "ee7f68751e52f7479b217b57d491c2ec696cf75e",
+      "skillSnapshot": "44bf4bb4a60659fe7cee1f6044a86824e4064716180f2b3d955df5031b06a7c6",
+      "harnessSnapshot": "32e36997076904e54e33f66f96375d8269c56c08ae9274faac5deab48365c5c7",
+      "runtimeVersion": "codex-cli 0.155.0-alpha.9",
+      "startedAt": "2026-09-18T19:23:35.550Z",
+      "runtimeFeatures": {
+        "features.apps": false,
+        "features.plugins": false,
+        "features.memories": false,
+        "features.chronicle": false,
+        "features.shell_snapshot": false,
+        "features.shell_snapshot_v2": false,
+        "features.multi_agent": false,
+        "features.skill_search": false,
+        "features.skill_mcp_dependency_install": false,
+        "features.browser_use": false,
+        "features.computer_use": false,
+        "features.image_generation": false,
+        "features.workspace_dependencies": false,
+        "features.tool_suggest": false,
+        "features.code_mode": false,
+        "features.code_mode_host": true
+      },
+      "hostedMcp": {
+        "name": "DatoCMSReleaseCheck",
+        "url": "https://mcp.datocms.com"
+      },
+      "usage": [
+        {
+          "input_tokens": 88394,
+          "cached_input_tokens": 60416,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 877,
+          "reasoning_output_tokens": 229
+        }
+      ],
+      "rawEvidence": "local/hosted-mcp-20260918/smoke-02/cleanup",
+      "nativeTranscriptSha256": "58937a31b5b726ceb07be13cc905362d42e0662c25e6ce8b5fe39d104dd91c6f",
+      "scriptCalls": [
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "bodyMode": "full",
+          "sourceSha256": "4f441243b296b04054f85a0fec751004c7da8e473172ddb28d3430263c231f82",
+          "responseSha256": "4d8f05f86c247682aabe9f1561a576946ca60901a73568af08ef299caddcbe7c"
+        }
+      ],
+      "toolSequence": [
+        {
+          "tool": "whoami",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "get_api_methods",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "error": false
+        }
+      ],
+      "localCommandCount": 2
+    },
+    {
+      "cohort": "smoke-02",
+      "name": "prepare",
+      "kind": "fixture-or-oracle",
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "capped": false,
+      "credentialLeak": false,
+      "revision": "ee7f68751e52f7479b217b57d491c2ec696cf75e",
+      "skillSnapshot": "44bf4bb4a60659fe7cee1f6044a86824e4064716180f2b3d955df5031b06a7c6",
+      "harnessSnapshot": "32e36997076904e54e33f66f96375d8269c56c08ae9274faac5deab48365c5c7",
+      "runtimeVersion": "codex-cli 0.155.0-alpha.9",
+      "startedAt": "2026-09-18T19:13:28.714Z",
+      "runtimeFeatures": {
+        "features.apps": false,
+        "features.plugins": false,
+        "features.memories": false,
+        "features.chronicle": false,
+        "features.shell_snapshot": false,
+        "features.shell_snapshot_v2": false,
+        "features.multi_agent": false,
+        "features.skill_search": false,
+        "features.skill_mcp_dependency_install": false,
+        "features.browser_use": false,
+        "features.computer_use": false,
+        "features.image_generation": false,
+        "features.workspace_dependencies": false,
+        "features.tool_suggest": false,
+        "features.code_mode": false,
+        "features.code_mode_host": true
+      },
+      "hostedMcp": {
+        "name": "DatoCMSReleaseCheck",
+        "url": "https://mcp.datocms.com"
+      },
+      "usage": [
+        {
+          "input_tokens": 135114,
+          "cached_input_tokens": 86528,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1492,
+          "reasoning_output_tokens": 276
+        }
+      ],
+      "rawEvidence": "local/hosted-mcp-20260918/smoke-02/prepare",
+      "nativeTranscriptSha256": "6fa18c66829d521ec66ba0edd0907421144d14b8a944600d10228dae01785246",
+      "scriptCalls": [
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "bodyMode": "full",
+          "sourceSha256": "46efc816de53cb3a5c2fc72830bc1fa6019871b0eeb46fb6ba2538723316c52a",
+          "responseSha256": "232a2915b364871845c395b6456c7abb60204b6bb1736aefe09f9aa79d08d09b"
+        }
+      ],
+      "toolSequence": [
+        {
+          "tool": "get_api_methods",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "error": false
+        }
+      ],
+      "localCommandCount": 4
+    },
+    {
+      "cohort": "smoke-02",
+      "name": "schema",
+      "kind": "fixture-or-oracle",
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "capped": false,
+      "credentialLeak": false,
+      "revision": "ee7f68751e52f7479b217b57d491c2ec696cf75e",
+      "skillSnapshot": "44bf4bb4a60659fe7cee1f6044a86824e4064716180f2b3d955df5031b06a7c6",
+      "harnessSnapshot": "32e36997076904e54e33f66f96375d8269c56c08ae9274faac5deab48365c5c7",
+      "runtimeVersion": "codex-cli 0.155.0-alpha.9",
+      "startedAt": "2026-09-18T19:14:20.890Z",
+      "runtimeFeatures": {
+        "features.apps": false,
+        "features.plugins": false,
+        "features.memories": false,
+        "features.chronicle": false,
+        "features.shell_snapshot": false,
+        "features.shell_snapshot_v2": false,
+        "features.multi_agent": false,
+        "features.skill_search": false,
+        "features.skill_mcp_dependency_install": false,
+        "features.browser_use": false,
+        "features.computer_use": false,
+        "features.image_generation": false,
+        "features.workspace_dependencies": false,
+        "features.tool_suggest": false,
+        "features.code_mode": false,
+        "features.code_mode_host": true
+      },
+      "hostedMcp": {
+        "name": "DatoCMSReleaseCheck",
+        "url": "https://mcp.datocms.com"
+      },
+      "usage": [
+        {
+          "input_tokens": 95803,
+          "cached_input_tokens": 70400,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 888,
+          "reasoning_output_tokens": 107
+        }
+      ],
+      "rawEvidence": "local/hosted-mcp-20260918/smoke-02/schema",
+      "nativeTranscriptSha256": "dcefa86cf1910176155b47069c86ed895e23065be0a9ef229cb3eca4c949cb33",
+      "scriptCalls": [
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "bodyMode": "full",
+          "sourceSha256": "09795ba3d7858d98d111f6ff4cf25a2fcc8a4ef4c2736404a6707233833e2eb7",
+          "responseSha256": "653d27ee5c5e1ef2e4b91ecf128ef0729301f4acd000f93a04dee652a90c2d40"
+        }
+      ],
+      "toolSequence": [
+        {
+          "tool": "get_api_methods",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "error": false
+        }
+      ],
+      "localCommandCount": 1
+    },
+    {
+      "cohort": "smoke-02",
+      "name": "seed",
+      "kind": "fixture-or-oracle",
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "capped": false,
+      "credentialLeak": false,
+      "revision": "ee7f68751e52f7479b217b57d491c2ec696cf75e",
+      "skillSnapshot": "44bf4bb4a60659fe7cee1f6044a86824e4064716180f2b3d955df5031b06a7c6",
+      "harnessSnapshot": "32e36997076904e54e33f66f96375d8269c56c08ae9274faac5deab48365c5c7",
+      "runtimeVersion": "codex-cli 0.155.0-alpha.9",
+      "startedAt": "2026-09-18T19:15:53.575Z",
+      "runtimeFeatures": {
+        "features.apps": false,
+        "features.plugins": false,
+        "features.memories": false,
+        "features.chronicle": false,
+        "features.shell_snapshot": false,
+        "features.shell_snapshot_v2": false,
+        "features.multi_agent": false,
+        "features.skill_search": false,
+        "features.skill_mcp_dependency_install": false,
+        "features.browser_use": false,
+        "features.computer_use": false,
+        "features.image_generation": false,
+        "features.workspace_dependencies": false,
+        "features.tool_suggest": false,
+        "features.code_mode": false,
+        "features.code_mode_host": true
+      },
+      "hostedMcp": {
+        "name": "DatoCMSReleaseCheck",
+        "url": "https://mcp.datocms.com"
+      },
+      "usage": [
+        {
+          "input_tokens": 92353,
+          "cached_input_tokens": 62464,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1227,
+          "reasoning_output_tokens": 381
+        }
+      ],
+      "rawEvidence": "local/hosted-mcp-20260918/smoke-02/seed",
+      "nativeTranscriptSha256": "ce6af510a908d495a77b86f1450727da0a489ef458640fc152fc0481895bf803",
+      "scriptCalls": [
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "bodyMode": "full",
+          "sourceSha256": "2c69611507a39342f2e9a6987620f0ae09916284bdead2b65eafda37748bfaa0",
+          "responseSha256": "e5d12f8a8e71910c4616d8ab253403ce1cc38e71b9f14e501a02fe21ffc1216d"
+        }
+      ],
+      "toolSequence": [
+        {
+          "tool": "whoami",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "get_api_methods",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "error": false
+        }
+      ],
+      "localCommandCount": 3
+    },
+    {
+      "cohort": "smoke-02",
+      "name": "upload",
+      "kind": "fixture-or-oracle",
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "capped": false,
+      "credentialLeak": false,
+      "revision": "ee7f68751e52f7479b217b57d491c2ec696cf75e",
+      "skillSnapshot": "44bf4bb4a60659fe7cee1f6044a86824e4064716180f2b3d955df5031b06a7c6",
+      "harnessSnapshot": "32e36997076904e54e33f66f96375d8269c56c08ae9274faac5deab48365c5c7",
+      "runtimeVersion": "codex-cli 0.155.0-alpha.9",
+      "startedAt": "2026-09-18T19:15:08.525Z",
+      "runtimeFeatures": {
+        "features.apps": false,
+        "features.plugins": false,
+        "features.memories": false,
+        "features.chronicle": false,
+        "features.shell_snapshot": false,
+        "features.shell_snapshot_v2": false,
+        "features.multi_agent": false,
+        "features.skill_search": false,
+        "features.skill_mcp_dependency_install": false,
+        "features.browser_use": false,
+        "features.computer_use": false,
+        "features.image_generation": false,
+        "features.workspace_dependencies": false,
+        "features.tool_suggest": false,
+        "features.code_mode": false,
+        "features.code_mode_host": true
+      },
+      "hostedMcp": {
+        "name": "DatoCMSReleaseCheck",
+        "url": "https://mcp.datocms.com"
+      },
+      "usage": [
+        {
+          "input_tokens": 86732,
+          "cached_input_tokens": 69376,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 617,
+          "reasoning_output_tokens": 102
+        }
+      ],
+      "rawEvidence": "local/hosted-mcp-20260918/smoke-02/upload",
+      "nativeTranscriptSha256": "9602d0d66a92d1d17316710d3fba3117adc45ddd42f82409830d9d5b79c96d2b",
+      "scriptCalls": [
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "bodyMode": "full",
+          "sourceSha256": "0992ce02cfd230c10e6c9457d4bb05470c7f506c22dac34a5fc8b75d98040ea0",
+          "responseSha256": "c4e2f1952e60001d4af15d18314975e9633f83e30e7de3f2284df853fa03dae6"
+        }
+      ],
+      "toolSequence": [
+        {
+          "tool": "get_api_methods",
+          "status": "completed",
+          "error": false
+        },
+        {
+          "tool": "upsert_and_execute_unsafe_script",
+          "status": "completed",
+          "error": false
+        }
+      ],
+      "localCommandCount": 1
+    }
+  ]
+}

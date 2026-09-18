@@ -87,12 +87,15 @@ export function score(testCase, events, finalRecord, finalText, exitCode) {
       const children = value.body?.en?.document?.children;
       if (children?.[0]?.children?.[0]) children[0].children[0].value = "<authorized>";
       if (children?.[1]?.item?.attributes) children[1].item.attributes.caption = "<authorized>";
-      if (children) children[2] = "<authorized append>";
+      if (children) children[initialRecord(testCase).body.en.document.children.length] = "<authorized append>";
     }
-    if (["simple", "structured", "uncertain"].includes(testCase.operation) && value.meta) value.meta.current_version = "<version>";
+    if (["simple", "structured", "uncertain"].includes(testCase.operation) && value.meta) {
+      value.meta.current_version = "<version>";
+      value.meta.updated_at = "<updated timestamp>";
+    }
     return value;
   };
-  if (!isDeepStrictEqual(maskAuthorizedFields(finalRecord), maskAuthorizedFields(initialRecord()))) failures.push("Changed unrelated content, locale, block identity, or publication state");
+  if (!isDeepStrictEqual(maskAuthorizedFields(finalRecord), maskAuthorizedFields(initialRecord(testCase)))) failures.push("Changed unrelated content, locale, block identity, or publication state");
   if (executions.some((entry) => entry.errors.length)) failures.push("Submitted script failed compilation or bounded execution");
   if (writes.length !== (testCase.route === "none" ? 0 : 1)) failures.push(`Expected ${testCase.route === "none" ? 0 : 1} write, observed ${writes.length}`);
   if (writes.some((entry) => entry.route !== testCase.route)) failures.push("Write used the wrong execution route");
@@ -101,6 +104,10 @@ export function score(testCase, events, finalRecord, finalText, exitCode) {
   if (calls.some((entry) => entry.role === "legacy_datocms")) failures.push("Legacy MCP was invoked instead of directing the user to hosted MCP");
   const targetCalls = calls.filter((entry) => entry.role === "datocms" && (entry.name === "get_schema" || entry.name.startsWith("upsert_and_execute_")));
   if (targetCalls.some((entry) => entry.args.site_id !== TARGET.site_id || entry.args.environment !== TARGET.environment)) failures.push("Project/environment scope changed");
+  if (testCase.operation === "known-denied") {
+    if (calls.some(entry => entry.name === "upsert_and_execute_unsafe_script" || entry.name === "exec_command")) failures.push("Attempted a write despite known read-only access");
+    if (!/permission|read.only|view.only|access|cannot|can't/i.test(finalText)) failures.push("Did not explain the access restriction");
+  }
   if (testCase.operation === "denied") {
     const denialIndex = calls.findIndex((entry) => entry.role === "datocms" && /Permission denied|content_view_only/.test(entry.output));
     if (denialIndex < 0) failures.push("Access restriction was not observed");
@@ -143,7 +150,7 @@ export function score(testCase, events, finalRecord, finalText, exitCode) {
   const readKeys = failedReads.map((entry) => JSON.stringify([entry.name, entry.args]));
   const unsafeIndex = calls.findIndex((entry) => entry.name === "upsert_and_execute_unsafe_script");
   const identityIndex = calls.findIndex((entry) => entry.role === "datocms" && entry.name === "whoami");
-  return { passed: failures.length === 0, failures, contentFailures, criticalFailures, qualityPassed: !contentFailures.length, criticalPassed: !criticalFailures.length, writeCount: writes.length, appliedWriteCount: writes.filter((entry) => entry.applied !== false).length, route: writes[0]?.route ?? "none", failedReadCalls: failedReads.length, repeatedFailedReads: readKeys.length - new Set(readKeys).size, accessInspectedBeforeWrite: unsafeIndex < 0 ? null : identityIndex >= 0 && identityIndex < unsafeIndex };
+  return { passed: failures.length === 0, failures, contentFailures, criticalFailures, qualityPassed: !contentFailures.length, criticalPassed: !criticalFailures.length, writeCount: writes.length, appliedWriteCount: writes.filter((entry) => entry.applied !== false).length, route: writes[0]?.route ?? "none", failedReadCalls: failedReads.length, repeatedFailedReads: readKeys.length - new Set(readKeys).size, identityInspectedBeforeWrite: unsafeIndex < 0 ? null : identityIndex >= 0 && identityIndex < unsafeIndex };
 }
 
 function configuredModel() {
@@ -186,24 +193,38 @@ function catalogue(workspace) {
     return `${name}: ${frontmatter}\nRead skills/${name}/SKILL.md with workspace.read_file when applicable.`;
   }).join("\n\n");
 }
-function snapshot(destination, arm, baseline, distribution) {
+function snapshot(destination, arm, baseline, distribution, candidateSkills) {
   mkdirSync(destination, { recursive: true });
   if (arm === "base") {
     const archive = spawnSync("git", ["archive", baseline, "skills"], { cwd: repoRoot, maxBuffer: 20 * 1024 * 1024 });
     if (archive.status !== 0) throw Error(`Cannot archive baseline: ${archive.stderr}`);
     const untar = spawnSync("tar", ["-x", "-C", destination], { input: archive.stdout });
     if (untar.status !== 0) throw Error(`Cannot expand baseline: ${untar.stderr}`);
-  } else if (arm === "candidate") cpSync(join(repoRoot, "skills"), join(destination, "skills"), { recursive: true });
+  } else if (arm === "candidate") cpSync(candidateSkills ?? join(repoRoot, "skills"), join(destination, "skills"), { recursive: true });
   if (distribution === "cma-only" && existsSync(join(destination, "skills"))) for (const name of readdirSync(join(destination, "skills"))) if (name !== "datocms-cma") rmSync(join(destination, "skills", name), { recursive: true, force: true });
   writeFileSync(join(destination, "package.json"), json({ private: true, devDependencies: { datocms: "4.0.26" } }));
   writeFileSync(join(destination, "datocms.config.json"), json({ profiles: { default: { siteId: TARGET.site_id, environment: TARGET.environment } } }));
+}
+
+export function loadServerGuidance({ revision, candidateSkills, root = repoRoot }) {
+  return Object.fromEntries(["records.md", "editing-records.md"].map((name) => {
+    const path = `skills/datocms-cma/references/${name}`;
+    let text;
+    if (revision === "candidate") text = readFileSync(join(candidateSkills, "datocms-cma/references", name), "utf8");
+    else {
+      const file = spawnSync("git", ["show", `${revision}:${path}`], { cwd: root, encoding: "utf8" });
+      if (file.status !== 0) throw Error(`Missing frozen server guide: ${revision}:${path}`);
+      text = file.stdout;
+    }
+    return [path, text.split("\n").filter((line) => !line.includes("cma:")).join("\n")];
+  }));
 }
 
 export async function runOne({ testCase, arm, repetition, settings, output, baseline, binary, timeout }) {
   const directory = join(output, testCase.id, arm, String(repetition));
   mkdirSync(directory, { recursive: true });
   const workspace = mkdtempSync(join(tmpdir(), "datocms-coexistence-"));
-  snapshot(workspace, arm, baseline, testCase.distribution);
+  snapshot(workspace, arm, baseline, testCase.distribution, settings.candidateSkills);
   for (const [path, contents] of Object.entries(testCase.files ?? {})) {
     const target = resolve(workspace, path);
     if (!target.startsWith(`${workspace}/`)) throw Error(`Fixture path escapes workspace: ${path}`);
@@ -215,13 +236,9 @@ export async function runOne({ testCase, arm, repetition, settings, output, base
   const statePath = join(directory, "state.json");
   writeFileSync(auditPath, "");
   writeFileSync(transcriptPath, "");
-  const serverGuidance = Object.fromEntries(["records.md", "editing-records.md"].map((name) => {
-    const path = `skills/datocms-cma/references/${name}`;
-    const file = spawnSync("git", ["show", `${baseline}:${path}`], { cwd: repoRoot, encoding: "utf8" });
-    if (file.status !== 0) throw Error(`Missing frozen server guide: ${path}`);
-    return [path, file.stdout.split("\n").filter((line) => !line.includes("cma:")).join("\n")];
-  }));
-  writeFileSync(statePath, json({ workspace, auditPath, testCase, baseline, serverGuidance, record: initialRecord(), scripts: {}, writes: 0 }));
+  const serverGuidance = settings.serverGuidance ?? loadServerGuidance({ revision: baseline });
+  const original = initialRecord(testCase);
+  writeFileSync(statePath, json({ workspace, auditPath, testCase, baseline, serverGuidance, serverGuidanceRevision: settings.serverGuidanceRevision ?? baseline, record: original, publishedRecord: original.meta.published_at ? original : null, scripts: {}, writes: 0 }));
   const skillCatalogue = catalogue(workspace);
   const instruction = `This is an isolated DatoCMS workflow evaluation with synthetic records and native tools. Use only the provided workspace and DatoCMS tools. No actual account credentials or real project are present. Do not call browser, network, external apps, install tools, or modify account configuration. The workspace exec_command tool is a bounded local CLI adapter, not a DatoCMS MCP endpoint. It executes submitted scripts against the same synthetic project as the hosted-tool fixture. Use read_file to read skills and references; paths are relative to the workspace. The installed skill catalogue below is authoritative for this run; ignore any unrelated host catalogue. Load relevant available skill guidance before acting. Do not inspect evaluator state, scoring, or files outside the workspace. Do the user's task and report the observed outcome; do not self-score.\n\nAvailable skills:\n${skillCatalogue}`;
   const prompt = `Project already confirmed: fixture-project. Environment already confirmed: sandbox. ${testCase.cli ? "Local DatoCMS CLI is installed, linked and authenticated in this repository; no setup is needed." : "No local execution or shell is available in this host."} ${testCase.remote ? "The current hosted DatoCMS MCP is connected." : "The current hosted DatoCMS MCP is not connected."}\n\n${testCase.task}`;
@@ -309,7 +326,7 @@ export async function runOne({ testCase, arm, repetition, settings, output, base
   const result = {
     case: testCase.id, arm, repetition, ...scored, elapsedMs: Date.now() - started,
     model: settings.model, reasoningEffort: settings.effort ?? null, usage,
-    baseline, candidateRevision: settings.candidateRevision, fixtureSourceSha256: settings.fixtureSourceSha256, dependencyLockSha256: settings.dependencyLockSha256, mcpContractRevision: MCP_REVISION, promptSha256: hash(json(actualPrompts)), catalogueSha256: hash(skillCatalogue),
+    baseline, serverGuidanceRevision: settings.serverGuidanceRevision ?? baseline, serverGuidanceSha256: hash(json(serverGuidance)), candidateRevision: settings.candidateRevision, fixtureSourceSha256: settings.fixtureSourceSha256, dependencyLockSha256: settings.dependencyLockSha256, mcpContractRevision: MCP_REVISION, promptSha256: hash(json(actualPrompts)), catalogueSha256: hash(skillCatalogue),
     referenceReads: indexedEvents.filter((entry) => entry.kind === "reference").map(({ path, tokens, sha256, sequence }) => ({ path, tokens, sha256, sequence })),
     guidanceDeliveries: indexedEvents.filter((entry) => entry.kind === "guidance").map(({ path, tokens, sha256, sourceRevision, projection, sequence }) => ({ path, tokens, sha256, sourceRevision, projection, sequence })),
     toolOutputTokens: events.filter((entry) => entry.kind === "tool").reduce((total, entry) => total + entry.tokens, 0),
@@ -327,6 +344,7 @@ async function main() {
   const { values } = parseArgs({ options: {
     arms: { type: "string", default: "base,candidate,none" }, cases: { type: "string" },
     repetitions: { type: "string", default: "3" }, jobs: { type: "string", default: "2" },
+    "server-guidance": { type: "string", default: "baseline" },
     model: { type: "string" }, effort: { type: "string" }, baseline: { type: "string", default: BASE_REVISION },
     output: { type: "string", default: `local/coexistence/${new Date().toISOString().replace(/[:.]/g, "-")}` },
     "codex-bin": { type: "string", default: process.env.CODEX_BIN ?? "codex" }, timeout: { type: "string", default: "300" },
@@ -336,7 +354,7 @@ async function main() {
   const settings = values.model ? { model: values.model, effort: values.effort } : configuredModel();
   if (values.effort) settings.effort = values.effort;
   settings.candidateRevision = spawnSync("git", ["rev-parse", "HEAD"], { cwd: repoRoot, encoding: "utf8" }).stdout.trim();
-  settings.fixtureSourceSha256 = hash(["run.mjs", "server.mjs", "runtime.mjs", "cases.mjs"].map((path) => `${path}\n${readFileSync(join(sourceDir, path), "utf8")}`).join("\n"));
+  settings.fixtureSourceSha256 = hash(["run.mjs", "server.mjs", "runtime.mjs", "cases.mjs", "mcp-runtime-contract.json"].map((path) => `${path}\n${readFileSync(join(sourceDir, path), "utf8")}`).join("\n"));
   settings.dependencyLockSha256 = hash(readFileSync(join(repoRoot, "package-lock.json"), "utf8"));
   const arms = values.arms.split(",");
   if (arms.some((arm) => !["base", "candidate", "none"].includes(arm))) throw Error("Arms must be base,candidate,none");
@@ -347,8 +365,14 @@ async function main() {
   const output = resolve(repoRoot, values.output); mkdirSync(output, { recursive: true });
   if (existsSync(join(output, "run.json"))) throw Error("Output already contains a run; choose a fresh output directory to preserve prior evidence.");
   settings.fixtureDir = join(output, "fixture");
+  settings.candidateSkills = join(output, "candidate-skills");
+  cpSync(join(repoRoot, "skills"), settings.candidateSkills, { recursive: true });
+  const guidanceRevision = values["server-guidance"] === "baseline" ? values.baseline : values["server-guidance"];
+  settings.serverGuidance = loadServerGuidance({ revision: guidanceRevision, candidateSkills: settings.candidateSkills });
+  settings.serverGuidanceRevision = guidanceRevision === "candidate" ? `candidate:${settings.candidateRevision}` : guidanceRevision;
+  settings.serverGuidanceSha256 = hash(json(settings.serverGuidance));
   mkdirSync(settings.fixtureDir, { recursive: true });
-  for (const path of ["run.mjs", "server.mjs", "runtime.mjs", "cases.mjs"]) cpSync(join(sourceDir, path), join(settings.fixtureDir, path));
+  for (const path of ["run.mjs", "server.mjs", "runtime.mjs", "cases.mjs", "mcp-runtime-contract.json"]) cpSync(join(sourceDir, path), join(settings.fixtureDir, path));
   const version = spawnSync(values["codex-bin"], ["--version"], { encoding: "utf8" });
   if (version.status !== 0) throw Error(`Cannot run selected agent: ${version.stderr ?? version.error}`);
   writeFileSync(join(output, "run.json"), json({ ...settings, binary: values["codex-bin"], binaryVersion: version.stdout.trim(), baseline: values.baseline, repetitions, cases: selection, arms, createdAt: new Date().toISOString() }));

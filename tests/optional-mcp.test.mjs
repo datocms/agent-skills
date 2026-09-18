@@ -63,10 +63,19 @@ function section(tree, title) {
     // Allow only the reviewed request-type, content-preservation and pagination fixes.
     // All other code and prose must still match the base exactly.
     return { ...node, value: node.value.replace(
+      'marks.add("strong"); // Preserve existing custom marks too.',
+      "marks.add(\"strong\"); // 'strong'|'emphasis'|'code'|'underline'|'strikethrough'|'highlight'",
+    ).replace(
+      '  // Keep the nested response type if continuing through mapNodes.\n  const content = parse(edited, currentItem.content);',
+      '  // Use the writable field type when continuing through `mapNodes`.\n  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    parse(edited, currentItem.content);',
+    ).replace(
+      '  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    mapNodes(currentItem.content, (node, parent) => {',
+      '  let content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    currentItem.content;\n  content = mapNodes(content, (node, parent) => {',
+    ).replace(
       '  // `parse` reuses the original `item` for surviving block/inlineBlock IDs.\n  // Use the writable field type when continuing through `mapNodes`.\n  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    parse(edited, currentItem.content);',
       '  // `content` keeps the static type of `currentItem.content` and reuses the original\n  // `item` object for every block/inlineBlock whose id survives the edit.\n  const content = parse(edited, currentItem.content);',
     ).replace(
-      '      !node.children.some((child) => child.type === "inlineItem" || child.type === "inlineBlock") &&\n',
+      '      !node.children.some((child) => child.type === "inlineItem" || child.type === "inlineBlock" || child.type === "itemLink") &&\n',
       '',
     ).replace(
       '  content = mapNodes(content, (node, parent) => {',
@@ -109,6 +118,11 @@ const preservedWorkflows = {
 
 function withReviewedDastdownPreflight(source) {
   const corrections = [
+    ["Marks: `'strong' | 'emphasis' | 'code' | 'underline' | 'strikethrough' | 'highlight'`.", "Default marks include `strong`, `emphasis`, `code`, `underline`, `strikethrough`, and `highlight`. Custom marks are possible: preserve the fetched `string[]` instead of narrowing snapshots to a union of defaults."],
+    [
+      'Forgetting `nested: true` is #1 cause of broken update payloads — mapping over array of strings produces garbage. Block fields are only field type that change shape between two modes; asset fields + record-link fields always return IDs.',
+      'Forgetting `nested: true` is #1 cause of broken update payloads — mapping over array of strings produces garbage. Block fields are the field type that changes shape between these modes. Asset fields retain file-value objects (`upload_id`, alt/title, custom data, focal point, poster time), or `null`; record-link fields retain record IDs. Infer asset snapshot types from the fetched value instead of declaring them as strings.',
+    ],
     [
       '**Prefer dastdown over AST building/manipulation when possible!** Much less chance of logic/typing errors.',
       'Prefer dastdown for text-shaped edits after the unedited round-trip check below. If it throws or changes existing text, apply the requested edit with `mapNodes` on the original document before making any write.',

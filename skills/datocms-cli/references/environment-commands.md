@@ -21,7 +21,7 @@ Confirm these inputs when they are not already clear:
 
 ## environments:fork
 
-Include the planned sandboxes in the per-project batch check for [included allowances and paid extras](../../datocms-cma/references/project-settings-and-usage.md#included-allowances-and-paid-extras), reusing current verified information and cost authorization.
+Include the planned sandboxes in the per-project batch check for [included allowances and paid extras](../../datocms-cma/references/project-settings-and-usage.md#included-allowances-and-paid-extras), reusing current verified information and cost authorization. On a verified plan permitting paid extras, approved overage is billed automatically: approval does not increase the included allowance, and no separate extra-resource activation is needed.
 
 Create a new sandbox environment by forking an existing one:
 

@@ -8,7 +8,7 @@ import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
 import { cases, expectedRecord, initialRecord, TARGET } from "./cases.mjs";
 import { execute } from "./runtime.mjs";
-import { externalSkillOverrides, score } from "./run.mjs";
+import { externalSkillOverrides, loadServerGuidance, score } from "./run.mjs";
 
 const sourceDir = dirname(fileURLToPath(import.meta.url));
 const caseById = (id) => {
@@ -18,6 +18,36 @@ const caseById = (id) => {
 };
 const toolEvent = (name, extra = {}) => ({ kind: "tool", role: "datocms", name, args: {}, isError: false, output: "", ...extra });
 const writeEvent = (route = "mcp") => ({ kind: "execution", route, name: "script://edit.ts", errors: [], calls: [{ method: "items.update", id: "article-1", values: { title: "Summer update" }, applied: true }] });
+
+test("shipped localized mapper keeps response narrowing and creates a valid partial block update", () => {
+  const reference = readFileSync(new URL("../../skills/datocms-cma/references/editing-records.md", import.meta.url), "utf8");
+  const example = reference.split("## Chaining Structured Text helpers")[1].split("```ts\n")[1].split("```")[0];
+  const source = `
+    import { buildBlockRecord, type FieldValueInRequest } from '@datocms/cma-client-node';
+    import { mapNodes, isBlockWithItemOfType } from 'datocms-structured-text-utils';
+    const currentItem = await client.items.find<Schema.Article>('article-1', {nested: true});
+    ${example}
+    await client.items.update<Schema.Article>(currentItem.id, {body: {...currentItem.body, en: content}});
+  `;
+  for (const variant of [undefined, "unseen", "rich", "multiple"]) {
+    const original = initialRecord({variant});
+    const result = execute(source, original, {runtime: "mcp", writable: true});
+    assert.deepEqual(result.errors, []);
+    const expected = structuredClone(original);
+    for (const node of expected.body.en.document.children) {
+      if (node.type === "block") node.item.attributes.caption += " (reviewed)";
+    }
+    expected.meta.current_version = "2";
+    expected.meta.updated_at = "2026-09-18T12:00:00Z";
+    assert.deepEqual(result.record, expected);
+  }
+  for (const missing of [null, undefined]) {
+    const original = initialRecord(); original.body.en = missing;
+    const result = execute(source, original, {runtime: "mcp", writable: true});
+    assert.match(result.errors.join("\n"), /Missing English content/);
+    assert.equal(result.calls.filter(call => call.method === "items.update").length, 0);
+  }
+});
 
 test("host-skill isolation disables actual entrypoint files, including symlinks", () => {
   const root = mkdtempSync(join(tmpdir(), "coexistence-skills-"));
@@ -433,4 +463,217 @@ test("long conversation requires all three turns and defers the write until the 
   assert.match(score(testCase, early, expectedRecord(testCase), "Done.", 0).failures.join("\n"), /before the final content request/);
   const missing = events.filter((entry) => entry.turn !== 3);
   assert.match(score(testCase, missing, expectedRecord(testCase), "Done.", 0).failures.join("\n"), /Three native conversation turns/);
+});
+
+
+test('fixture accepts optional link metadata exposed by the real DAST types', () => {
+  const record=initialRecord();
+  const source='const item=await client.items.find<Schema.Article>("article-1"); if(item.body.en) mapNodes(item.body.en,node=>{if(isLink(node)) console.log(node.meta?.length ?? 0);return node;});';
+  assert.deepEqual(execute(source,record).errors,[]);
+  record.body.en.document.children[0].children[2].meta=[{id:'rel',value:'nofollow'}];
+  assert.deepEqual(execute(source,record).errors,[]);
+});
+
+
+test('fixture status uses the real CMA status union rather than narrowing every read to draft', () => {
+  const result=execute('const item=await client.items.find<Schema.Article>("article-1"); console.log(item.meta.status === "published");',initialRecord());
+  assert.deepEqual(result.errors,[]);
+});
+
+test("MCP scripts import real SDK and document-helper types, including aliased and namespace imports", () => {
+  const source = `
+    import { buildBlockRecord, type FieldValueInRequest } from '@datocms/cma-client-node';
+    import { isSpan as span, isBlockWithItemOfType, mapNodes } from 'datocms-structured-text-utils';
+    import * as markdown from 'datocms-structured-text-dastdown';
+    const before = await client.items.find<Schema.Article>('article-1', {nested: true});
+    const original = before.body.en;
+    if (!original) throw Error('Missing locale');
+    let body: NonNullable<FieldValueInRequest<typeof before, 'body'>>['en'] = original;
+    body = mapNodes(body, node => {
+      if (span(node) && node.value === 'Hello reader') return {...node, value: 'Welcome reader'};
+      if (isBlockWithItemOfType(Schema.ImageBlock.ID, node) && node.item.id === 'block-1')
+        return {...node, item: buildBlockRecord<Schema.ImageBlock>({id: node.item.id, caption: 'Summer portrait'})};
+      return node;
+    });
+    body.document.children.push(...markdown.parse('See you soon.').document.children);
+    await client.items.update<Schema.Article>(before.id, {body: {...before.body, en: body}});
+  `;
+  const result = execute(source, initialRecord(), { writable: true, runtime: 'mcp' });
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.record, expectedRecord(caseById('localized-structured-text')));
+});
+
+test("MCP rejects missing imports, nonexistent exports and modules outside the bounded fixture", () => {
+  for (const source of [
+    'console.log(isSpan({type:"span",value:"text"}));',
+    'import {notAnExport} from "datocms-structured-text-utils"; console.log(notAnExport);',
+    'import {readFileSync} from "node:fs"; console.log(readFileSync("secret"));',
+  ]) {
+    const result = execute(source, initialRecord(), {runtime: 'mcp'});
+    assert.ok(result.errors.length, source);
+    assert.deepEqual(result.calls, []);
+  }
+});
+
+test("MCP checks narrowing against real node unions instead of permissive fixture types", () => {
+  const prefix = `import {isParagraph} from 'datocms-structured-text-utils';
+    const item = await client.items.find<Schema.Article>('article-1', {nested: true});
+    if (!item.body.en) throw Error('Missing locale');
+    const first = item.body.en.document.children[0];
+  `;
+  const invalid = prefix + `function assert(condition: boolean): void { if (!condition) throw Error('Bad node'); }
+    assert(isParagraph(first)); console.log(first.children);`;
+  assert.ok(execute(invalid, initialRecord(), {runtime: 'mcp'}).errors.length);
+  const valid = prefix + `function assert(condition: boolean): asserts condition { if (!condition) throw Error('Bad node'); }
+    assert(isParagraph(first)); console.log(first.children);`;
+  assert.deepEqual(execute(valid, initialRecord(), {runtime: 'mcp'}).errors, []);
+});
+
+test("MCP supports pure Node value comparison without host callbacks or order-sensitive JSON equality", () => {
+  const source = `import {isDeepStrictEqual} from 'node:util';
+    if (!isDeepStrictEqual({image: {alt: null, ids: ['one']}}, {image: {ids: ['one'], alt: null}})) throw Error('Object key order');
+    if (isDeepStrictEqual({image: null}, {image: {alt: null}})) throw Error('Lost image');
+    if (isDeepStrictEqual(['one', 'two'], ['two', 'one'])) throw Error('Array order');
+    const before = await client.items.find<Schema.Article>('article-1', {nested: true});
+    const snapshot = structuredClone(before.body.it);
+    if (!isDeepStrictEqual(snapshot, before.body.it)) throw Error('Snapshot equality');
+    console.log('compared independent JSON values');`;
+  const result = execute(source, initialRecord({variant: 'rich'}), {runtime: 'mcp'});
+  assert.deepEqual(result.errors, []);
+  assert.match(result.output.join('\n'), /compared independent JSON values/);
+  assert.equal(result.calls.length, 1);
+});
+
+test("shipped snapshot comparison accepts independent equal values and catches changed content", () => {
+  const reference = readFileSync(new URL("../../skills/datocms-cma/references/editing-records.md", import.meta.url), "utf8");
+  const example = reference.split('In Node runtimes, use the standard value comparator')[1].split('```ts\n')[1].split('```')[0];
+  for (const change of [false, true]) {
+    const source = `
+      const before = await client.items.find<Schema.Article>('article-1', {nested: true});
+      const saved = await client.items.find<Schema.Article>('article-1', {nested: true});
+      ${change ? "saved.body.it = null;" : ""}
+      ${example}
+    `;
+    const result = execute(source, initialRecord({variant: 'rich'}), {runtime: 'mcp'});
+    if (change) assert.match(result.errors.join('\n'), /Italian content changed/);
+    else assert.deepEqual(result.errors, []);
+    assert.equal(result.calls.length, 2);
+  }
+});
+
+test("asset snapshots preserve typed file objects and reject string-ID annotations", () => {
+  const prefix = `import {findFirstNode, isBlockWithItemOfType} from 'datocms-structured-text-utils';
+    const record = await client.items.find<Schema.Article>('article-1', {nested: true});
+    if (!record.body.en) throw Error('Missing English');
+    const block = findFirstNode(record.body.en, isBlockWithItemOfType(Schema.ImageBlock.ID));
+    if (!block) throw Error('Missing block');`;
+  const invalid = execute(prefix + 'const image: string | null = block.node.item.attributes.image;', initialRecord({variant: 'rich'}), {runtime: 'mcp'});
+  assert.ok(invalid.errors.some(message => message.includes('FileFieldValue')));
+  const valid = execute(prefix + 'const image = structuredClone(block.node.item.attributes.image); console.log(image);', initialRecord({variant: 'rich'}), {runtime: 'mcp'});
+  assert.deepEqual(valid.errors, []);
+  assert.deepEqual(JSON.parse(valid.output[0]), initialRecord({variant: 'rich'}).body.en.document.children[1].item.attributes.image);
+});
+
+test("published reads reject never-published drafts and retain a separate published snapshot after updates", () => {
+  const draftRead = execute('await client.items.find<Schema.Article>("article-1", {version: "published"});', initialRecord(), {runtime: "mcp"});
+  assert.match(draftRead.errors.join('\n'), /NOT_FOUND/);
+  const original = initialRecord({variant: 'rich'});
+  const published = structuredClone(original); published.title = 'Previously published title';
+  const result = execute(`
+    await client.items.update<Schema.Article>('article-1', {title: 'New draft title'});
+    const current = await client.items.find<Schema.Article>('article-1');
+    const published = await client.items.find<Schema.Article>('article-1', {version: 'published'});
+    if (current.title !== 'New draft title' || published.title !== 'Previously published title') throw Error('Versions conflated');
+  `, original, {runtime: 'mcp', writable: true, publishedRecord: published});
+  assert.deepEqual(result.errors, []);
+  const later = execute(`console.log((await client.items.find<Schema.Article>('article-1', {version: 'published'})).title);`, result.record, {runtime: 'mcp', publishedRecord: published});
+  assert.deepEqual(later.errors, []);
+  assert.equal(later.output[0], 'Previously published title');
+});
+
+test("known read-only access stops before a mutation while an unknown restriction may be discovered once", () => {
+  const scenario = caseById('permission-known-read-only');
+  assert.equal(score(scenario, [], initialRecord(), 'This connection is read-only; no content was changed.', 0).passed, true);
+  const attempt = toolEvent('upsert_and_execute_unsafe_script', {args: TARGET, isError: true, output: 'Permission denied'});
+  assert.equal(score(scenario, [attempt], initialRecord(), 'Permission denied.', 0).passed, false);
+});
+
+test("held-out MCP data keeps publication status, image metadata and code whitespace observable", () => {
+  const scenario = caseById('long-followup-rich-values');
+  const before = initialRecord(scenario), after = expectedRecord(scenario);
+  assert.equal(after.meta.status, 'updated');
+  assert.deepEqual(after.body.en.document.children[1].item.attributes.image, before.body.en.document.children[1].item.attributes.image);
+  assert.deepEqual(after.body.it, before.body.it);
+  assert.equal(after.body.it.document.children[1].code, '  keep()\n\nnext();  ');
+  assert.notDeepEqual(before, initialRecord());
+});
+
+test("MCP can keep an independent JSON content snapshot using the Node runtime clone function", () => {
+  const source = `
+    const before = await client.items.find<Schema.Article>('article-1', {nested: true});
+    const snapshot = structuredClone(before);
+    before.title = 'Only the local object changed';
+    if (snapshot.title !== 'Original title') throw Error('Snapshot alias');
+    console.log(snapshot.body.it);
+  `;
+  const result = execute(source, initialRecord(), {runtime: 'mcp'});
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.record, initialRecord());
+});
+
+
+test("release server guidance is frozen separately from the skill comparison baseline", () => {
+  const directory = mkdtempSync(join(tmpdir(), "coexistence-guidance-"));
+  try {
+    const referenceDirectory = join(directory, "datocms-cma/references");
+    mkdirSync(referenceDirectory, {recursive: true});
+    for (const name of ["records.md", "editing-records.md"]) writeFileSync(join(referenceDirectory, name), `${name} candidate\nCLI cma:script removed\nShared guidance`);
+    const guidance = loadServerGuidance({revision: "candidate", candidateSkills: directory});
+    writeFileSync(join(referenceDirectory, "records.md"), "later working-tree edit");
+    assert.equal(guidance["skills/datocms-cma/references/records.md"], "records.md candidate\nShared guidance");
+    const baseline = loadServerGuidance({revision: "4c01e875325a19c50658dbcbc4ad34767bb08a98"});
+    assert.notDeepEqual(baseline, guidance);
+    assert.ok(Object.values(baseline).every(text => !text.includes("cma:")));
+    assert.throws(() => loadServerGuidance({revision: "missing-evaluation-revision"}), /Missing frozen server guide/);
+  } finally { rmSync(directory, {recursive: true, force: true}); }
+});
+
+test("MCP rejects never casts used to escape request types", () => {
+  const result = execute('await client.items.update("article-1", {title: 42 as never});', initialRecord(), {runtime: "mcp", writable: true});
+  assert.match(result.errors.join("\n"), /Casts to never/);
+  assert.equal(result.calls.length, 0);
+});
+
+
+test("shipped typed inspection captures nested spans, custom marks and nullable asset values", () => {
+  const reference = readFileSync(new URL("../../skills/datocms-cma/references/editing-records.md", import.meta.url), "utf8");
+  const example = reference.split("For typed inspection,")[1].split("```ts\n")[1].split("```")[0];
+  for (const variant of [undefined, "rich"]) {
+    const original = initialRecord({variant});
+    const result = execute(`
+      import {collectNodes, isSpan, isBlockWithItemOfType} from 'datocms-structured-text-utils';
+      const record = await client.items.find<Schema.Article>('article-1', {nested:true});
+      const english = record.body.en;
+      if (!english) throw new Error('Missing English content');
+      ${example}
+      console.log({spans, images});
+    `, original, {runtime:"mcp", writable:false});
+    assert.deepEqual(result.errors, []);
+    const snapshot = JSON.parse(result.output[0]);
+    assert.deepEqual(snapshot.spans.map(span => span.text), ["Hello reader", " — ", "Help"]);
+    assert.deepEqual(snapshot.spans[0].marks, original.body.en.document.children[0].children[0].marks);
+    assert.deepEqual(snapshot.images, [{id:"block-1", image:original.body.en.document.children[1].item.attributes.image}]);
+    assert.deepEqual(result.record, original);
+  }
+});
+
+
+test("multiple-block holdout preserves the non-target block and masks only the appended slot", () => {
+  const testCase = caseById("long-followup-multiple-blocks");
+  const original = initialRecord(testCase), final = expectedRecord(testCase);
+  assert.deepEqual(final.body.en.document.children[2], original.body.en.document.children[2]);
+  const events = [{kind:"turn-start",turn:1}, {kind:"tool", role:"datocms",name:"get_schema",args:TARGET,tokens:32000}, {kind:"turn-start",turn:3}, writeEvent()];
+  assert.deepEqual(score(testCase,events,final,"Updated",0).failures, []);
+  final.body.en.document.children[2].item.attributes.caption = "Unauthorized change";
+  assert.ok(score(testCase,events,final,"Updated",0).failures.some(f => /unrelated content/.test(f)));
 });

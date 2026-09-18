@@ -1,5 +1,7 @@
 # Evals
 
+For native `gpt-5.6-luna` medium task execution, live CMS verification, and built-application checks, see [the end-to-end suite](../e2e/README.md). Trigger classification below is a separate signal and does not count as end-to-end task success.
+
 This directory holds the evaluation framework for the skills shipped in this repo. Its single purpose is to **measure whether the skills are effective at being invoked on the right kind of prompt** — both correctly (precision) and reliably (recall).
 
 The loop follows the pattern from [Anthropic's skill-iteration article](https://claude.com/blog/improving-skill-creator-test-measure-and-refine-agent-skills): write a curated set of test prompts, score the skill against them, and iterate on the skill description until precision and recall are acceptable.

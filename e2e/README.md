@@ -1,69 +1,81 @@
-# cma:script end-to-end tests
+# End-to-end evaluation
 
-These tests drive a real coding-agent CLI (Claude Code by default, or opencode via `E2E_AGENT=opencode`) against a fresh DatoCMS project and measure how well — and in how many attempts — it can complete scripting tasks via `npx datocms cma:script` (stdin-mode, "inline").
+The maintained evaluation track exercises the repository's actual skills through a native agent session, then checks the resulting CMS state or application independently. It does not force a skill load, suppress the agent's verification, substitute another model, or treat a completed answer as a passing result.
 
-Each test:
+Use Node 24+, `npm ci`, and an authenticated native CLI. Set `CODEX_BIN` to its executable if it is not on PATH. The current validation baseline is `gpt-5.6-luna` with `model_reasoning_effort=medium`. Model and reasoning effort are pinned in `lib/nativeSession.ts`; a conflicting per-case model is rejected. Reports retain those settings so results can be reproduced and attributed to the tested configuration.
 
-1. Creates a fresh DatoCMS project (optionally applying fixtures) and gets back a full-access CMA API token.
-2. Spawns the selected agent (`claude -p` or `opencode run --format json`) in an isolated `tmp/e2e/<slug>/` working directory, with the entire `skills/` tree of this repo mirrored into `.claude/skills/` so every local skill is discoverable (opencode reads that path natively too). The project's `node_modules/.bin` is prepended to PATH so the locally-installed `datocms` CLI resolves. The API token is embedded in the prompt.
-3. Parses the agent's transcript, counting bash tool calls whose command matches `datocms ... cma:script` — those are the scripting "attempts".
-4. After the agent exits, runs an assertion directly against the CMA to verify final project state.
-5. Tears down the project.
+## Live CMS cases
 
-The agent is not asked to self-report — attempts are counted externally from the transcript, success is verified externally via the CMA.
-
-## Setup
+Supply `E2E_DATOCMS_API_TOKEN` through the process environment or a secret manager, together with `E2E_DATOCMS_SITE_ID`. Use a dedicated, disposable project with an empty primary environment. Never put the token in a command argument, prompt, fixture, or tracked file.
 
 ```bash
-npm install
+npm run test:e2e
+npm run test:e2e -- e2e/cases/recent-content-regressions.e2e.test.ts
 ```
 
-Then create `.env` (or `.env.local`) at the repo root (copy `.env.example` and fill it in — `cp .env.example .env`) with:
+Each case verifies the project ID, forks a uniquely named sandbox, seeds fixtures, runs the agent, independently asserts final state, and destroys only its sandbox. Cleanup runs after failures and verifies deletion. Token mode does not perform organization-wide cleanup. The default is one worker; increase workers only when the disposable project's sandbox capacity allows it. `E2E_KEEP_PROJECT=1` retains environments for deliberate debugging.
 
-- `TEST_DATOCMS_ACCOUNT_EMAIL` — one or more comma-separated emails of the test account pool (multiple accounts spread session rate limits across them).
-- `TEST_DATOCMS_ACCOUNT_PASSWORD` — shared password for that pool.
-- `TEST_DATOCMS_ORGANIZATION_ID` — the organization under which the test project is created.
+The agent receives the confirmed environment and CLI authentication context. Credentials are supplied only through environment variables. The runner installs this checkout's skills in an isolated workspace, disables host configuration/plugins/memory, uses temporary authentication links, and removes its workspace and authentication directory afterward. Shell environment snapshots are disabled so credentials are not copied into runtime snapshot files. Transcripts are redacted; observed credential output fails the run.
 
-No OAuth token is needed: the per-project full-access API token is minted at project creation and passed straight to the agent.
+The original dashboard-account provisioning route and other agent adapters remain available for compatibility, but are outside this track's validation claims.
 
-## Running
+## Application, generated-code, and advisory cases
 
 ```bash
-npm run test:e2e                                  # all e2e cases
-npm run test:e2e -- e2e/cases/<case>.e2e.test.ts  # one case
+npm run e2e:frontend -- --repetitions 3 --output local/frontend/run-01
+npm run e2e:code -- --repetitions 3 --output local/code/run-01
+npm run e2e:workflows -- --repetitions 3 --output local/workflows/run-01
 ```
 
-`.e2e.test.ts` files are picked up only by `vitest.e2e.config.ts`.
+- `frontend/run.mjs` scaffolds minimal Next.js, Nuxt, Astro, and SvelteKit applications. The agent implements preview routes; the evaluator rebuilds and starts them, then tests authentication, missing configuration, hostile redirects, valid query/fragment preservation, and embedded-preview cookies over HTTP. Astro's explicit missing-secret schema failure is accepted as fail-closed; arbitrary server failures are not. Exact direct dependencies are pinned and generated lockfiles remain in the evidence.
+- `workflows/code.mjs` executes generated TypeScript and converted DAST against independent semantic assertions. Creator audits use the actual SDK pagination implementation with a mocked API boundary. These are local integration cases, not live CMS evidence.
+- `workflows/run.mjs` records complete advisory tasks and evaluator-only rubrics. Every result starts as `review: pending`; a reviewer must assess both the answer and trace against the cited skill/API contract. No keyword grader or model-completion flag turns advice into a quality pass.
 
-## Reading results
+Use `--cases` to select workflow/code cases, or `--frameworks` for applications. `--recheck <original-output>` on code/application runners regrades the same generated artifacts without another model call; choose a new `--output` so original evidence remains intact. Rechecks rebuild applications and use their saved dependency lockfiles.
 
-Each run writes to `tmp/e2e/<case-slug>/`:
+## Controlled CLI/MCP coexistence
 
-- `raw.jsonl` — full stream-json transcript from `claude -p`.
-- `transcript.simplified.log` — human-friendly plain-text rendering: skills loaded, scripts run, tool results. ANSI-free, readable in editors and pagers.
-- `outcome.json` — pass/fail, attempts, tool call names, reason.
+```bash
+node evals/coexistence/run.mjs \
+  --model gpt-5.6-luna --effort medium \
+  --baseline <baseline-commit> --arms base,candidate \
+  --repetitions 3 --jobs 2 --output local/coexistence/run-01
+```
 
-A failing test's error message includes `transcriptPath` so you can replay exactly what Claude did.
+This suite runs native sessions with controlled CLI/MCP tools, including permission failures, uncertain writes, legacy routing, and resumed conversations. The server contract and content are simulated. It does not prove hosted MCP OAuth connectivity or production-server parity. `long-followup-unseen` varies original fields and locale content to expose verification based on guessed values. The rich-values and multiple-block variants add custom marks, complete asset values, publication history, code whitespace, and an untargeted block. Reports distinguish final content, applied writes, rejected write attempts, and compilation/recovery quality. Server guidance defaults to the baseline references. Add `--server-guidance candidate` to model a fresh server fetch after release, or select an explicit commit for cached-guidance compatibility. Candidate skills and the chosen server documents are frozen at run start; report those modes separately.
 
-## Writing a new case
+## Hosted MCP smoke
 
-Put `<name>.e2e.test.ts` under `e2e/cases/` and call `runE2ETest` with:
+Authenticate the native client against the real hosted server, using only a dedicated empty throwaway project with an English-only `main` environment. Grant the test connection access to that project and the permission to create and clean up its sandbox fixtures:
 
-- `name` — short slug used in the project name and log line.
-- `fixtures` (optional) — `async (cmaClient) => { ... }` to preload the project before Claude runs.
-- `task(project)` — natural-language instructions. Include `project.siteId` (the API token is auto-embedded by the harness preamble). The preamble also reminds the agent to load `datocms-cma` and `datocms-cli`. Do not ask Claude to report attempts or success — the harness does that.
-- `maxAttempts` — hard cap on `cma:script` invocations. When exceeded, the subprocess is killed and the test fails.
-- `assert(project)` — throws on unmet invariants. Run CMA queries via `project.cmaClient`.
-- `model`, `timeoutMs` — optional overrides.
+```bash
+codex mcp add DatoCMSReleaseCheck --url https://mcp.datocms.com
+npm run e2e:hosted -- --site <authorized-site-id> --output local/hosted/run-01
+```
 
-The function returns an `E2ETestOutcome` with `attempts`, `toolCallNames`, `transcriptPath` and `reason`. A failure throw from the test should include `transcriptPath` so you can replay what Claude actually did.
+The native client manages OAuth credentials. No API token is supplied to this runner. Its isolated sessions use the same server name and URL to reuse the authorized connection, with the pinned validation settings and shell snapshots disabled. When the temporary test connection is no longer needed, `codex mcp logout DatoCMSReleaseCheck` clears its local authorization. If registration used a separate `CODEX_HOME`, use that same home for logout.
 
-## Notes
+`hosted/run.mjs` forks one uniquely named environment and seeds typed models, a real uploaded image, localized documents, and a record with published history. Three fresh actors perform a title edit, a localized document edit, and an edit preserving published content and a second block. All CMS work goes through the hosted MCP; there is no API-token or CLI fallback.
 
-- Before every `npm run test:e2e` run, a global setup hook destroys any leftover test projects older than 30 minutes (orphans from a crashed previous run). Override with `E2E_CLEANUP_MAX_AGE_MS=<ms>` or force a full wipe with `E2E_CLEANUP_FORCE=1`.
-- Projects are destroyed on every run. Set `E2E_KEEP_PROJECT=1` in the environment to skip teardown when debugging a failing run.
-- Override the model for all cases with `E2E_MODEL=<id>` (e.g. `E2E_MODEL=claude-sonnet-4-6 npm run test:e2e`). Per-case `model` overrides still win.
-- Run against [opencode](https://opencode.ai/) instead of `claude` with `E2E_AGENT=opencode npm run test:e2e`. Default is `claude`. opencode discovers skills via the same `.claude/skills/` mirror, runs with `--pure` (no external plugins / MCP) and `--dangerously-skip-permissions`, and emits its own JSON event stream into `raw.jsonl` (rendered into `transcript.simplified.log` by a dedicated opencode simplifier). Override the opencode model with `E2E_OPENCODE_MODEL=<provider/model>`; per-case `model` overrides still win.
-- The harness uses a fresh temp dir as `cwd` for the Claude subprocess to avoid contamination from any `CLAUDE.md` in the repo. The repo's `skills/` tree is mirrored into that temp dir under `.claude/skills/` so local skills stay discoverable, then cleaned up on exit (only test artifacts remain).
-- Transcripts live under `./tmp/e2e/<case-slug>/` (relative to the repo root). The whole `tmp/e2e/` dir is wiped at the start of every `npm run test:e2e` run.
-- Tool whitelist passed to the Claude agent: `Bash,Read,Glob,Grep,Skill`. MCP is fully disabled via `--strict-mcp-config` with an empty server list. The opencode harness does not currently restrict the tool set — it relies on `--pure` to disable external plugins/MCP and on the prompt steering the agent toward `cma:script`.
+Fixture setup, independent reads, and cleanup use exact maintained scripts from `hosted/fixtures.mjs`. The agent transports those scripts after method discovery, but their source must match byte-for-byte after trimming, execute exactly once through the prescribed safe/unsafe tool, and return an actual execution receipt. These infrastructure sessions are counted separately from the three evaluated tasks. The local oracle compares fresh returned records against pre-edit snapshots, requires exactly one new parent version, and checks publication, locales, links, marks, asset values and untargeted content. It does not grade an actor's own success claim.
+
+Cleanup runs after failures and deletes only the named sandbox, then checks the primary project's models, uploads and locales. Failed runs remain in their original directories. A fixture/compiler failure is distinct from an actor failure; fix and typecheck the fixture before using a new output directory. Strict execution results remain diagnostic alongside independent outcome assertions.
+
+The [hosted validation report](reports/2026-09-18-hosted-mcp.md) records the initial fixture correction, three independently verified actor outcomes, and cleanup evidence.
+
+## Evidence and iteration
+
+Live runs default to `local/e2e/<timestamp>/<case>/`; set a fresh `E2E_RUN_ID` or `E2E_OUTPUT` to organize runs. Other suites require fresh output directories. Existing transcripts are never overwritten. Evidence includes prompts, skill hashes, revision, exact model/effort, runtime version, command events, errors, usage, independent assertions, and final answers. A source hash identifies uncommitted candidates more precisely than HEAD alone. Raw artifacts are ignored by Git; commit a sanitized report and coverage map instead.
+
+Choose behavior and failure consequences before writing a prompt. Check the test oracle against actual API normalization and supported SDK defaults. Preserve failed runs; distinguish fixture defects, infrastructure failures, recoverable execution errors, and wrong final state. Make the smallest skill correction supported by the trace, repeat the same cases, and test unseen inputs and neighboring workflows. Repeated passes increase confidence; they do not establish perfection or causality by themselves. Track task completion, preservation, unnecessary operations, retries, latency, and context usage separately.
+
+New live cases use `runE2ETest`: provide fixtures, a natural task, optional local files, bounded `maxAttempts`/`timeoutMs`, and an independent `assert` callback. Keep rubric/expected outputs out of the agent's prompt. `maxAttempts` counts observed CLI script invocations; a timeout/command cap also fails the run. A `cma:call` solution remains valid when it meets the task.
+
+Deterministic harness and shipped-example checks complement these paid sessions:
+
+```bash
+npm run test:e2e:harness
+npm run typecheck
+npm run test:coexistence:fixtures
+node --test tests/cma-content-safety.test.mjs tests/redirect-validation.test.mjs tests/optional-mcp.test.mjs tests/hosted-mcp.test.mjs
+```

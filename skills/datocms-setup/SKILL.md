@@ -28,7 +28,7 @@ Public setup entrypoint. Keep surface small, inspect repo first, load only neede
 ## Workflow
 
 1. Inspect repo silently before asking, follow `references/repo-conventions.md` + `patterns/MANDATORY_RULES.md`.
-2. **Greenfield gate** — if no `package.json` and no `datocms.config.json`, ask link-vs-create per `patterns/MANDATORY_RULES.md` § Project link or create before any recipe selection. On "create" → wait for confirmation, queue `datocms-content-modeling` before any frontend recipe. Frontend-framework targets — surface official DatoCMS tech starter before scaffolding (see **Tech Starters**). User picks starter → guide clone + env vars only, skip all recipe scaffolding.
+2. **Greenfield gate** — during implementation, if no `package.json` and no `datocms.config.json` and the user has not established whether a DatoCMS project exists, ask link-vs-create per `patterns/MANDATORY_RULES.md` § Project link or create. An empty workspace does not override an existing project or block read-only planning: clarify the desired outcome first, and request the repository when implementation needs it. On "create" → wait for confirmation, queue `datocms-content-modeling` before any frontend recipe. Frontend-framework targets — surface official DatoCMS tech starter before scaffolding (see **Tech Starters**). User picks starter → guide clone + env vars only, skip all recipe scaffolding.
 3. Read `references/router.md`.
 4. Read `references/recipe-manifest.json`, pick smallest recipe/bundle for request.
 5. Follow `references/router.md` to clarify only what remains unresolved:

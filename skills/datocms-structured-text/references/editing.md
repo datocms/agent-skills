@@ -104,7 +104,7 @@ Keep this order when multiple operations share a document:
 1. Serialize/edit/parse against the **original** document, if a text round-trip is needed.
 2. Apply requested AST and block changes to that result.
 3. Append new root nodes after the traversal.
-4. Validate the final document and hand it to the integration owner for its single final update.
+4. Validate plain DAST as described in `document-model.md`. For hydrated CMA blocks or new/partial block request payloads, hand typed content to the integration owner for its API/preflight checks and single final update.
 
 Parsing after block mutations can restore stale original objects; newly created block IDs have no original lookup entry. Duplicate from the original block source when later transformations may have changed the working tree. Skip steps the task does not need.
 

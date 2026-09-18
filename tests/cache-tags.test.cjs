@@ -40,6 +40,11 @@ const request = (tags, auth = 'secret') => new Request('https://fixture.invalid/
     collector.add('later');
     assert.deepEqual(plain(collector.headers('cloudflare')), { 'Cache-Control': 'private, no-store' });
     assert.deepEqual(plain(createPageCacheTags().headers('fastly')), {});
+    const missingDraftTags = createPageCacheTags();
+    missingDraftTags.add('public-before');
+    missingDraftTags.add(null, true);
+    missingDraftTags.add('public-after');
+    assert.deepEqual(plain(missingDraftTags.headers('cloudflare')), { 'Cache-Control': 'private, no-store' });
     for (const size of [1, 2, 100])
         for (const count of [0, size - 1, size, size + 1, 2 * size + 1]) {
             const tags = Array.from({ length: count }, (_, i) => `t${i}`), sent = [];

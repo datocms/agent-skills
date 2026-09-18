@@ -34,11 +34,45 @@ Peek + mutate in ONE script. No top-level `return` — wrap in `if (currentItem.
 
 ## Verify saved content
 
-Derive preservation checks from the original values, including `null` and empty values. Preserving an optional asset means keeping its original value, not requiring a populated asset.
+Resolve target nodes with typed guards before transforming them, then capture snapshots with `const` and inferred types. Avoid nullable callback accumulators and indexing `item` on a generic node union. Derive preservation checks from the original values, including `null` and empty values. Preserving an optional asset means keeping its original value, not requiring a populated asset.
+
+On a draft-enabled model, “do not publish” permits editing the current version of an already-published record: preserve its published version rather than requiring `meta.status === "draft"`. An update changes `meta.current_version` and `meta.updated_at` without publishing. Exclude those bookkeeping values from publication-preservation checks; compare publication timestamps, schedules, and the published content when a published version exists.
 
 Keep an independent snapshot of the original read. After updating, read back the same record/version with `nested: true`. Compare relevant field/node semantics in matching response shapes: optional arrays or metadata can normalize, while `===`/`!==` only compares object identity across API reads. Do not use `serialize()` or whole-tree JSON equality as the post-write oracle. Check requested field values against the intended changes and unchanged content against that snapshot. Check block identity, type, attributes, node order, marks, links, other locales, and publication state where relevant.
 
 Do not serialize an update payload to compare it with a saved response. Structured Text request types also allow new blocks without IDs, so they are not valid `serialize()` inputs. Block ID references and partial `buildBlockRecord` payloads expand into full objects on read, including unchanged attributes and response metadata; object-key order is also irrelevant. Compare the relevant values in matching response shapes. Do not strip block attributes or identity just to make equality pass. If post-write verification throws, inspect the saved state before deciding whether any further write is needed; never replay the mutation merely because its verification failed.
+
+For typed inspection, bind and guard the locale first, then use `collectNodes` with a type guard and `.map()` to infer snapshot types. Root children exclude nested spans; do not use their union as a visitor type. Untyped `[]` seeds in `reduceNodes` infer `never[]`. For example, with a checked `english` locale:
+
+```ts
+const spans = collectNodes(english, isSpan).map(({ node }) => ({
+  text: node.value,
+  marks: [...(node.marks ?? [])],
+}));
+const images = collectNodes(english, isBlockWithItemOfType(Schema.ImageBlock.ID))
+  .map(({ node }) => ({
+    id: node.item.id,
+    image: structuredClone(node.item.attributes.image),
+  }));
+```
+
+Capture these values before transforming content. Apply the same projections to a checked saved locale, comparing the values relevant to the requested edit; an authorized added span or changed caption is not a preservation failure.
+
+In Node runtimes, use the standard value comparator for unchanged response fields. Keep this snapshot and comparison in the same execution as the authorized update and fresh read; do not hand-write a generic deep-equality function:
+
+```ts
+import { isDeepStrictEqual } from "node:util";
+
+const originalItalian = structuredClone(before.body.it);
+// Apply the authorized update, then fetch saved with nested: true.
+if (!isDeepStrictEqual(saved.body.it, originalItalian)) {
+  throw new Error("Italian content changed");
+}
+```
+
+This compares values independently of object identity and key order. Use it for unchanged field values in the same response shape, not partial update payloads against hydrated responses. Normalize only documented representational differences when needed; never drop meaningful attributes to pass verification.
+
+The utility library's `validate()` accepts plain DAST with block IDs. Its `Document` signature does not accept hydrated CMA blocks or partial/new block request payloads. Use it before hydration for raw document work. For CMA edits, keep generated request types and the integration's API/preflight and saved-state checks; do not cast a nested payload to `Document` or serialize it to satisfy this validator.
 
 ## Imports
 
@@ -54,7 +88,7 @@ import {
 // Structured Text helpers come from their own package.
 
 import {
-  mapNodes, findFirstNode, reduceNodes,
+  mapNodes, findFirstNode, collectNodes, reduceNodes,
   isBlockWithItemOfType, isInlineBlockWithItemOfType,
   isHeading, isParagraph, isSpan, isLink, isItemLink, isInlineItem,
 } from "datocms-structured-text-utils";
@@ -71,14 +105,24 @@ Use these instead of local `const FOO_ID = "…" as const;` literals — guards 
 
 ## Chaining Structured Text helpers
 
-Before chaining `parse` → `mapNodes`, explicitly type the writable document with `FieldValueInRequest`. An inferred response type can select the wrong mapper overload with mixed helper versions. For a localized field, after checking the locale exists and passing the unedited round-trip check below:
+Keep the nested response type on the input to `mapNodes`; annotate its **result** with `FieldValueInRequest`. Widening the input first allows block IDs and partial request objects, so typed guards can no longer promise nested attributes. For a localized field, bind and check the locale before callbacks (`if (!english)` handles both null and undefined):
 
 ```ts
-let content: NonNullable<FieldValueInRequest<typeof currentItem, "body">>["en"] =
-  parse(editedText, currentItem.body.en);
+const english = currentItem.body.en;
+if (!english) throw new Error("Missing English content");
+// If text edits need parse(), pass its checked result instead of english.
+const content: NonNullable<FieldValueInRequest<typeof currentItem, "body">>["en"] =
+  mapNodes(english, (node) => {
+    if (isBlockWithItemOfType(Schema.ImageBlock.ID, node)) {
+      return { ...node, item: buildBlockRecord<Schema.ImageBlock>({
+        id: node.item.id, caption: node.item.attributes.caption + " (reviewed)",
+      }) };
+    }
+    return node;
+  });
 ```
 
-Pass this typed variable to `mapNodes` and assign its result back. Keep the original response for inspecting nested attributes; request values also allow block IDs and partial objects. Apply the existing text → typed block edits → root append workflow below.
+Keep the original response for inspection and verification. Run typed block edits in one walk over that response (or `parse(editedText, english)`), then append to the writable result. Do not inspect a rewritten block as if it still contained the full response. Preserve values with inferred constants or `JSON.stringify(originalValue)`; do not introduce broad `unknown`/`any` types for snapshots.
 
 Compound predicates such as `(node) => isSpan(node) && node.value === text` can return only `boolean` and lose narrowing. Reapply the corresponding guard before every node-specific access, including verification or logging after re-indexing. Guard paragraph children too: they may be links or inline records; `isParagraph(node)` does not make every child a span.
 
@@ -141,7 +185,7 @@ Every read endpoint returning records accepts `nested: true` (`items.find`, `ite
 | Max page size 500 | Max page size 30 (iterators auto-adjust → \~16× more page fetches) |
 | Counting, listing, "do these exist?" | Any read you intend to mutate or display |
 
-Forgetting `nested: true` is #1 cause of broken update payloads — mapping over array of strings produces garbage. Block fields are only field type that change shape between two modes; asset fields + record-link fields always return IDs.
+Forgetting `nested: true` is #1 cause of broken update payloads — mapping over array of strings produces garbage. Block fields are the field type that changes shape between these modes. Asset fields retain file-value objects (`upload_id`, alt/title, custom data, focal point, poster time), or `null`; record-link fields retain record IDs. Infer asset snapshot types from the fetched value instead of declaring them as strings.
 
 ### ID / object duality
 
@@ -179,7 +223,7 @@ Top-level value is `{ schema: "dast", document: { type: "root", children: [...] 
 | `link`, `itemLink` | `span` only — no nested links or inline embeds |
 | `span`, `code`, `thematicBreak`, `block`, `inlineBlock`, `inlineItem` | leaf — no children |
 
-`block` may only sit at root depth; inside text flow use `inlineBlock`. Line breaks live as literal `\n` inside `span.value` — no dedicated break node. Marks: `'strong' | 'emphasis' | 'code' | 'underline' | 'strikethrough' | 'highlight'`.
+`block` may only sit at root depth; inside text flow use `inlineBlock`. Line breaks live as literal `\n` inside `span.value` — no dedicated break node. Default marks include `strong`, `emphasis`, `code`, `underline`, `strikethrough`, and `highlight`. Custom marks are possible: preserve the fetched `string[]` instead of narrowing snapshots to a union of defaults.
 
 ## Structured text (`structured_text`)
 
@@ -224,9 +268,8 @@ if (currentItem.content) {
   const edited = /* … LLM / regex / diff-merge on `text` … */ text;
 
   // `parse` reuses the original `item` for surviving block/inlineBlock IDs.
-  // Use the writable field type when continuing through `mapNodes`.
-  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =
-    parse(edited, currentItem.content);
+  // Keep the nested response type if continuing through mapNodes.
+  const content = parse(edited, currentItem.content);
 
   await client.items.update<Schema.Article>(currentItem.id, { content });
 }
@@ -249,9 +292,8 @@ const currentItem = await client.items.find<Schema.Article>(id, { nested: true }
 const repo = new SchemaRepository(client);
 
 if (currentItem.content) {
-  let content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =
-    currentItem.content;
-  content = mapNodes(content, (node, parent) => {
+  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =
+    mapNodes(currentItem.content, (node, parent) => {
     if (isInlineBlockWithItemOfType(Schema.Mention.ID, node)) { // EDIT inline
       return { ...node, item: buildBlockRecord<Schema.Mention>({
         id: node.item.id, url: node.item.attributes.url + "?utm=x",
@@ -265,7 +307,7 @@ if (currentItem.content) {
     if (isHeading(node) && node.level === 1) return { ...node, level: 2 as const };
     if (isSpan(node)) { // marks: add/remove decorators
       const marks = new Set(node.marks ?? []);
-      marks.add("strong"); // 'strong'|'emphasis'|'code'|'underline'|'strikethrough'|'highlight'
+      marks.add("strong"); // Preserve existing custom marks too.
       return { ...node, marks: [...marks], value: node.value.replace(/x/g, "y") };
     }
     if (isLink(node)) { // link: { url, meta?, children: Span[] }
@@ -278,7 +320,7 @@ if (currentItem.content) {
     if (
       isParagraph(node) &&
       parent?.type === "root" &&
-      !node.children.some((child) => child.type === "inlineItem" || child.type === "inlineBlock") &&
+      !node.children.some((child) => child.type === "inlineItem" || child.type === "inlineBlock" || child.type === "itemLink") &&
       reduceNodes(node, (acc, n) => isSpan(n) ? acc + n.value.trim() : acc, "").length === 0
     ) {
       return null; // Drop empty root paragraphs; lists and blockquotes need their paragraphs.

@@ -152,7 +152,7 @@ For manual CDN integrations, load the [collector and purge adapter reference](..
 - Eligible CDA queries can be cached and selectively invalidated when content changes.
 - `X-Cacheable-On-Cdn` reports eligibility; `CF-Cache-Status: HIT` reports an actual hit.
 - `X-Cacheable-On-Cdn-Query-Length-Limit` reports the internally encoded GET URL's `length/limit`, including query and variables. It is not a gzip-body size. Requests over that limit bypass the CDN.
-- Uncached work is subject to both per-token rate limits and a project-wide concurrency cap. Bound concurrent queries across workers; retries alone do not coordinate them.
+- Uncached work is subject to both per-token rate limits and a project-wide concurrency cap. Inspect the 429 response and rate-limit reset headers before attributing the cause. Bound concurrent queries across workers; retries alone do not coordinate them, and adding tokens does not raise the shared cap.
 
 See `client-and-config.md` → "Technical Limits" for diagnostics and the distinction from monthly usage allowances.
 

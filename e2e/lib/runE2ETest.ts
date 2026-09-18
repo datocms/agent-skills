@@ -17,11 +17,14 @@ export type E2ETestCase<Context = undefined> = {
 	fixtures?: CreateTestProjectOptions<Context>["fixtures"];
 	/**
 	 * Task-specific instructions. The harness prepends a fixed preamble
-	 * that introduces the project, the `DATOCMS_API_TOKEN` env var, and
-	 * the `cma:script` skill — so the task should jump straight into what
+	 * that introduces the authenticated project and isolated environment,
+	 * so the task should jump straight into what
 	 * the agent has to accomplish.
 	 */
 	task: (project: TestProject<Context>) => string;
+	files?: (
+		project: TestProject<Context>,
+	) => Record<string, string | Uint8Array>;
 	maxAttempts: number;
 	assert: (project: TestProject<Context>) => Promise<void>;
 	model?: string;
@@ -45,9 +48,7 @@ function buildPrompt<Context>(
 ): string {
 	return (
 		`You have access to a DatoCMS project (site ID "${project.siteId}"). ` +
-		`Assume \`npx datocms cma:script\` and \`npx datocms schema:inspect\` are already configured and ready to run — no auth setup needed.\n\n` +
-		`Ensure you load both the datocms-cma AND datocms-cli skills before starting!\n\n` +
-		`After requested the task is done, do not spend extra time/passes to check for the actual results: I'll do it myself.\n\n` +
+		`The datocms CLI is installed and authenticated. Use environment "${project.environment ?? "main"}"; no auth setup is needed.\n\n` +
 		`Task: ${task}`
 	);
 }
@@ -60,14 +61,13 @@ export async function runE2ETest<Context = undefined>(
 		fixtures: testCase.fixtures,
 	});
 
-	const outcome = await runAndAssert(testCase, project);
-	await persistOutcome(outcome).catch(() => {}); // Best-effort.
-
-	if (!process.env.E2E_KEEP_PROJECT) {
-		await destroyTestProject(project).catch(() => {}); // Best-effort.
+	try {
+		const outcome = await runAndAssert(testCase, project);
+		await persistOutcome(outcome);
+		return outcome;
+	} finally {
+		if (!process.env.E2E_KEEP_PROJECT) await destroyTestProject(project);
 	}
-
-	return outcome;
 }
 
 async function runAndAssert<Context>(
@@ -81,6 +81,8 @@ async function runAndAssert<Context>(
 			prompt: buildPrompt(project, testCase.task(project)),
 			maxAttempts: testCase.maxAttempts,
 			apiToken: project.apiToken,
+			environment: project.environment,
+			files: testCase.files?.(project),
 			model: testCase.model,
 			timeoutMs: testCase.timeoutMs,
 		};
@@ -107,7 +109,7 @@ async function runAndAssert<Context>(
 		finalText: runResult.finalText,
 	};
 
-	if (runResult.terminatedByCap) {
+	if (runResult.terminatedByCap || runResult.attempts > testCase.maxAttempts) {
 		return {
 			...base,
 			passed: false,
@@ -119,7 +121,7 @@ async function runAndAssert<Context>(
 		return {
 			...base,
 			passed: false,
-			reason: `claude CLI exited with code ${runResult.exitCode}`,
+			reason: `Agent exited with code ${runResult.exitCode}`,
 		};
 	}
 

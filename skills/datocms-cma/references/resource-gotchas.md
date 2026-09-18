@@ -86,6 +86,29 @@ For modern plugins, these updates affect the selected installation; use a [devel
 
 **SDK compatibility:** Check that the installed SDK supports and serializes `enabled` and `package_name` on update. Older versions can omit these newer attributes; a TypeScript cast does not add serialization support. Use a supporting SDK version or, when an upgrade is unavailable, the documented JSON:API request through `client.request()` or the CMS actions described above.
 
+For that raw fallback, the update is `PUT /plugins/:id` and JSON:API `data.type` is singular `"plugin"`. For example, switching an installation and disabling it while preserving its parameters:
+
+```ts
+const pluginId = "EXISTING_INSTALLATION_ID";
+await client.request({
+  method: "PUT",
+  url: `/plugins/${pluginId}`,
+  body: {
+    data: {
+      type: "plugin",
+      id: pluginId,
+      attributes: {
+        package_name: "datocms-plugin-example",
+        enabled: false,
+      },
+    },
+  },
+});
+const affectedFields = await client.plugins.fields(pluginId);
+```
+
+Omitting `parameters` retains the saved global settings. The raw request bypasses the older SDK attribute allowlist; casting a simplified `plugins.update()` payload does not.
+
 ## Dashboard and schema menus (`menuItems`, `schemaMenuItems`)
 
 CLI lookup: `cma:docs menuItems`, `cma:docs schemaMenuItems` cover create/update/list/find/destroy, `label` / `position` / `parent` / `item_type` / `external_url` attributes.
