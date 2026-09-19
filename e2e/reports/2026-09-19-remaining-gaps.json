@@ -1,11 +1,13 @@
 {
   "date": "2026-09-19",
-  "status": "in-progress",
+  "status": "completed-with-deferrals",
   "excluded": [
     "wordpress-import",
     "contentful-import",
     "cache-tags",
-    "tag-based CDN invalidation"
+    "tag-based CDN invalidation",
+    "hosting-deployment",
+    "live-search-indexing-and-external-crawling"
   ],
   "usageResetsUsed": 0,
   "notes": [
@@ -13,7 +15,8 @@
     "The first Nuxt result recorded end-of-run harness hashes; its native provenance captures the loaded harness. Later live results freeze hashes at runner startup.",
     "Source files under ignored local directories retain full transcripts and provenance.",
     "Earlier runner strictPass fields described actor execution only. This ledger preserves that value as strictExecutionPass and requires a passing outcome and verified cleanup for strictPass.",
-    "Reference diagnostics use actual framework types and Vue effect scopes with controlled transport; they are recorded separately from live E2E attempts."
+    "Reference diagnostics use actual framework types and Vue effect scopes with controlled transport; they are recorded separately from live E2E attempts.",
+    "Hosting deployment and live search indexing/external crawling were explicitly deferred after the final passing Nuxt evaluation; these exclusions are not counted as covered."
   ],
   "attempts": [
     {

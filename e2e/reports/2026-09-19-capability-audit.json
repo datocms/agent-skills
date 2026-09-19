@@ -4,7 +4,9 @@
   "excluded": [
     "WordPress import",
     "Contentful import",
-    "cache tags and tag-based CDN invalidation"
+    "cache tags and tag-based CDN invalidation",
+    "hosting deployment",
+    "live search indexing and external crawling"
   ],
   "interpretation": "Each entrypoint, reference, recipe and setup pattern is inventoried by capability. Evidence links identify representative checked outcomes, not complete coverage of every source paragraph or framework combination. Gaps remain open unless an independent result explicitly closes them.",
   "groups": [
@@ -38,7 +40,7 @@
         "2026-09-19-remaining-gaps.md"
       ],
       "gaps": [
-        "Actual hosting deployment awaits a disposable target"
+        "Deferred: actual hosting deployment"
       ]
     },
     {
@@ -111,8 +113,8 @@
       ],
       "gaps": [
         "Each component in each framework has not been browser tested; live image, SEO, favicon and video delivery are covered in Next.js",
-        "Real search indexing and external crawl exclusion",
-        "External robots/sitemap production crawl; local production output is independently checked"
+        "Deferred: Real search indexing and external crawl exclusion",
+        "Deferred: External robots/sitemap production crawl; local production output is independently checked"
       ]
     },
     {
