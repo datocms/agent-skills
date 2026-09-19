@@ -16,7 +16,7 @@ import { buildClient } from '@datocms/cma-client-browser';
 const client = buildClient({ apiToken: 'YOUR_API_TOKEN' });
 ```
 
-The API token should be a read-only token with Site Search permissions.
+Use a dedicated search-only token and role, configured as described in [Site Search API prerequisites](site-search-api.md#dato-side-prerequisites). The token's CMA transport flag must be enabled even though its role grants no content-management actions.
 
 ## Initialization Options
 
@@ -30,6 +30,8 @@ The API token should be a read-only token with Site Search permissions.
 ## State Behavior
 
 The hook/composable returns a `state` object with the current query, locale, and page. Changing any state value triggers a new API request automatically.
+
+On localized pages, initialize the locale filter from the validated route locale. Keep it in sync when navigation changes that locale, and reset pagination when the query or locale changes. A language selector alone does not make `/it/search` default to Italian results.
 
 - **React:** Use setter functions (`state.setQuery()`, `state.setPage()`, `state.setLocale()`)
 - **Vue:** Use direct assignment or `v-model` (`state.query = ...`, `state.page = ...`)

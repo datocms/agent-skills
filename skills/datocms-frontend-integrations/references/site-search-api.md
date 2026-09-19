@@ -23,7 +23,9 @@ Before a search UI can work, the Dato project needs:
 2. A least-privilege **role** with only `can_perform_site_search` enabled
 3. An **API token** associated with that role
 
-Use a public-facing search token for client-side search requests. Never expose a CMA-capable management token in the browser.
+Use a dedicated public-facing search token for client-side search requests. Site Search uses a CMA endpoint, so the **token** needs `can_access_cma: true`; disabling that transport gate returns 401 even when its role grants search. Keep `can_access_cda` and `can_access_cda_preview` false. The associated **role** should grant only `can_perform_site_search`, with no content, upload, configuration-management, or trigger permissions and no inherited grants. Never expose an administrator or content-management token in the browser.
+
+Verify both sides: a search request with the new token succeeds, and a content-management action is denied. Reading token flags alone does not prove that search works.
 
 Always pass `search_index_id` explicitly, even if the project currently has a single index.
 

@@ -1,5 +1,7 @@
 # Remaining catalog coverage
 
+Follow-up: the [deployed workflow report](2026-09-19-deployed-workflows.md) covers the hosting, real search crawl and Next.js cache-tag work that was deferred at this checkpoint. The earlier attempts and exclusions below remain historical evidence; imports are still deferred.
+
 This round continues the [catalog workflow validation](2026-09-19-catalog-workflows.md). WordPress imports, Contentful imports, cache tags, tag-based CDN invalidation, hosting deployment and live search indexing/external crawling are deferred by request. Evaluated sessions use `gpt-5.6-luna` with medium reasoning. Model-free browser rechecks and guided repairs are separate evidence. No usage reset credits are used.
 
 The prioritized coverage work is complete with those deferrals. The [capability inventory](2026-09-19-capability-audit.json) assigns all 164 skill entrypoints, references, recipes and setup patterns to 14 capability groups. Evidence is representative, not exhaustive coverage of every paragraph, framework and failure combination. Routing or static validation alone is never counted as a completed behavioral workflow. The [attempt ledger](2026-09-19-remaining-gaps.json) retains failed implementations and evaluator corrections rather than calculating a success rate across changing candidates.

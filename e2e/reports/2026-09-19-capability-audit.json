@@ -3,10 +3,7 @@
   "date": "2026-09-19",
   "excluded": [
     "WordPress import",
-    "Contentful import",
-    "cache tags and tag-based CDN invalidation",
-    "hosting deployment",
-    "live search indexing and external crawling"
+    "Contentful import"
   ],
   "interpretation": "Each entrypoint, reference, recipe and setup pattern is inventoried by capability. Evidence links identify representative checked outcomes, not complete coverage of every source paragraph or framework combination. Gaps remain open unless an independent result explicitly closes them.",
   "groups": [
@@ -37,10 +34,11 @@
       "id": "cli-release",
       "scope": "Maintenance, migration validation and environment promotion",
       "evidence": [
-        "2026-09-19-remaining-gaps.md"
+        "2026-09-19-remaining-gaps.md",
+        "2026-09-19-deployed-workflows.md"
       ],
       "gaps": [
-        "Deferred: actual hosting deployment"
+        "Additional hosting providers and combined migration/deployment failure combinations"
       ]
     },
     {
@@ -50,12 +48,12 @@
         "2026-09-18-production-readiness.md",
         "2026-09-18-hosted-mcp.md",
         "2026-09-19-catalog-workflows.md",
-        "2026-09-19-remaining-gaps.md"
+        "2026-09-19-remaining-gaps.md",
+        "2026-09-19-deployed-workflows.md"
       ],
       "gaps": [
-        "Webhook delivery and retries",
-        "Build-trigger delivery",
-        "Full role/token permission combinations"
+        "Automatic webhook retry/backoff policy and additional event types; real delivery and repeated cache-tag delivery are covered",
+        "Full role/token permission combinations; dedicated search-token permissions are covered"
       ]
     },
     {
@@ -105,16 +103,16 @@
     },
     {
       "id": "frontend-other",
-      "scope": "Images, SEO, Structured Text, video, search and crawler routes",
+      "scope": "Images, SEO, Structured Text, video, search and crawler routes and Next.js cache-tag invalidation",
       "evidence": [
         "2026-09-18-production-readiness.md",
         "2026-09-19-catalog-workflows.md",
-        "2026-09-19-remaining-gaps.md"
+        "2026-09-19-remaining-gaps.md",
+        "2026-09-19-deployed-workflows.md"
       ],
       "gaps": [
-        "Each component in each framework has not been browser tested; live image, SEO, favicon and video delivery are covered in Next.js",
-        "Deferred: Real search indexing and external crawl exclusion",
-        "Deferred: External robots/sitemap production crawl; local production output is independently checked"
+        "Each component in each framework has not been browser tested; live Next.js search crawl, UI, cache tags, image, SEO, favicon and video delivery are covered",
+        "Alternate CDN and managed database provider integrations"
       ]
     },
     {
@@ -146,11 +144,12 @@
       "scope": "Setup discovery, prerequisites and recipe selection",
       "evidence": [
         "2026-09-18-production-readiness.md",
-        "2026-09-19-remaining-gaps.md"
+        "2026-09-19-remaining-gaps.md",
+        "2026-09-19-deployed-workflows.md"
       ],
       "gaps": [
         "Recipe routing is not proof of every installed outcome",
-        "Webhooks, build triggers and blueprint setup"
+        "Blueprint setup and additional webhook/build-trigger configurations; real project delivery is covered"
       ]
     },
     {
@@ -165,7 +164,7 @@
     },
     {
       "id": "excluded",
-      "scope": "User-deferred WordPress, Contentful and cache-tag work",
+      "scope": "User-deferred WordPress and Contentful imports",
       "evidence": [],
       "gaps": []
     }
@@ -725,7 +724,7 @@
     },
     {
       "path": "skills/datocms-setup/recipes/frontend-foundation/cache-tags/recipe.md",
-      "capability": "excluded"
+      "capability": "frontend-other"
     },
     {
       "path": "skills/datocms-setup/recipes/frontend-foundation/cda-client/recipe.md",

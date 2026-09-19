@@ -111,7 +111,7 @@ Otherwise proceed and call out unresolved values instead of stalling.
 
 Read relevant sections from `references/`; preview long files' contents first.
 
-For manual CDN collection/purge, load `references/cache-tag-adapters.md`; draft pages emit no cache tags. Skip it for Next.js query-ID mappings or native cache providers.
+For cache-tag work, read the selected framework reference's **Cache Tags (Optional)** section, including for a targeted patch to an existing query helper. The Core section alone does not cover granular invalidation. For manual CDN collection/purge, also load `references/cache-tag-adapters.md`; skip that adapter file for Next.js query-ID mappings or native cache providers.
 
 ### Component concept references
 
