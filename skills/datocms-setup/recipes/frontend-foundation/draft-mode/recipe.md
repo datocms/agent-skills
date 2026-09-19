@@ -106,7 +106,7 @@ Create all files following the patterns in the loaded references. Generate:
   - SvelteKit: `$env/dynamic/private`
   - Astro: `astro:env/server`
 - Use the framework's native redirect and response mechanisms
-- Non-Next.js frameworks: follow the selected framework reference's JWT cookie helper and its signing/verification library
+- Non-Next.js frameworks: keep the reference's JWT signing/verification helper server-only. Nuxt Vue components use `useDraftMode` with `jwt-decode`; they must not import the Node-only signing helper
 
 #### TypeScript
 

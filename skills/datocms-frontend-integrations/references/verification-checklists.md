@@ -2,7 +2,7 @@
 
 Use only the sections that match the work you actually performed.
 
-When real credentials and routes are available, run the app and check a representative public page and the affected preview flow, including response status and rendered content. A successful build alone does not verify server rendering or request context. State which runtime checks remain unverified if execution is unavailable.
+When real credentials and routes are available, run the app and check a representative public page and the affected preview flow, including response status and rendered content. Use a browser for client features such as click-to-edit and subscriptions. A successful build alone does not verify server rendering or request context. State which runtime checks remain unverified if execution is unavailable.
 
 ## Contents
 

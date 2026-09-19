@@ -21,10 +21,10 @@ server/api/
 ├── draft-mode/
 │   ├── enable.ts
 │   └── disable.ts
-lib/
-├── api/
-│   ├── draftMode.ts
-│   └── utils.ts
+server/utils/
+└── draftMode.ts            (server-only signing/verification)
+lib/api/
+└── utils.ts
 composables/
 ├── useDraftMode.ts          (create)
 └── useQuery.ts              (modify existing or create)
@@ -36,7 +36,7 @@ nuxt.config.ts               (modify)
 **File:** `server/api/draft-mode/enable.ts`
 
 ```ts
-import { enableDraftMode } from '~/lib/api/draftMode';
+import { enableDraftMode } from '~~/server/utils/draftMode';
 import { ensureHttpMethods, isRelativeUrl } from '~/lib/api/utils';
 
 /*
@@ -79,7 +79,7 @@ Key points:
 **File:** `server/api/draft-mode/disable.ts`
 
 ```ts
-import { disableDraftMode } from '~/lib/api/draftMode';
+import { disableDraftMode } from '~~/server/utils/draftMode';
 import { ensureHttpMethods, isRelativeUrl } from '~/lib/api/utils';
 
 /*
@@ -103,7 +103,7 @@ export default eventHandler(async (event) => {
 
 ### Draft Mode Helper
 
-**File:** `lib/api/draftMode.ts`
+**File:** `server/utils/draftMode.ts`
 
 ```ts
 import { deleteCookie, getCookie, setCookie, type EventHandlerRequest, type H3Event } from 'h3';
@@ -176,7 +176,7 @@ export function draftModeHeaders(): HeadersInit {
 Key points:
 
 - JWT payload contains draft CDA token (`datocmsDraftContentCdaToken`) — decoded client-side for real-time
-- Import H3 cookie helpers explicitly because this shared module can also be loaded outside Nitro's server directory.
+- Keep this helper server-only. Vue components and universal query composables use `useDraftMode`; importing `jsonwebtoken` or this signing helper into them can break browser hydration, even when its call is guarded by `import.meta.server`.
 - Cookie opts: `partitioned: true`, `secure: true`, `sameSite: 'none'`
 
 ### Utils
@@ -830,7 +830,7 @@ The example assumes preview mode exists. For a published-only project, omit the 
 import { rawExecuteQuery } from '@datocms/cda-client';
 import type { TadaDocumentNode } from 'gql.tada';
 import type { H3Event } from 'h3';
-import { isDraftModeEnabled } from '~/lib/api/draftMode';
+import { isDraftModeEnabled } from '~~/server/utils/draftMode';
 
 export async function fetchWithCacheTags<Result, Variables>(
   event: H3Event,
