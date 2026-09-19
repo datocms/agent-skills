@@ -86,6 +86,7 @@ export function sourceHashes(
 const harnessHashesAtLoad = sourceHashes(resolve(import.meta.dirname, "../.."), "e2e");
 
 export type NativeOptions = {
+  model?: typeof MODEL | "gpt-5.6-sol";
   workspace: string;
   output: string;
   prompt: string;
@@ -102,6 +103,9 @@ export type NativeOptions = {
 
 export async function nativeSession(options: NativeOptions) {
   const { workspace, output, repoRoot } = options;
+  const model = options.model ?? MODEL;
+  if (![MODEL, "gpt-5.6-sol"].includes(model))
+    throw Error(`Unsupported evaluation model: ${model}`);
   mkdirSync(workspace, { recursive: true });
   mkdirSync(output, { recursive: true });
   const transcriptPath = join(output, "native.jsonl");
@@ -130,7 +134,7 @@ export async function nativeSession(options: NativeOptions) {
     );
   const instructions = `Work only on the user's task in this isolated workspace. Do not read parent directories, evaluation code, assertions, other runs, or host credentials. Do not delegate. Never print environment variables or credentials, or store credential values in files. Use only the skills installed in this workspace; ignore host-installed copies. Do not publish packages, deploy websites, contact people, or change billing. ${options.instructions ?? ""}`;
   const config: Record<string, unknown> = {
-    model: MODEL,
+    model,
     model_reasoning_effort: EFFORT,
     approval_policy: "never",
     project_doc_max_bytes: 0,
@@ -216,7 +220,7 @@ export async function nativeSession(options: NativeOptions) {
     symlinkSync(authPath, join(nativeHome, "auth.json"));
   environment.CODEX_HOME = nativeHome;
   const provenance = {
-    model: MODEL,
+    model,
     reasoningEffort: EFFORT,
     binaryVersion: version.stdout.trim(),
     revision: spawnSync("git", ["rev-parse", "HEAD"], {
@@ -348,7 +352,7 @@ export async function nativeSession(options: NativeOptions) {
   writeFileSync(join(output, "stderr.log"), redact(stderr), { mode: 0o600 });
   if (secrets.some((secret) => stderr.includes(secret))) credentialLeak = true;
   const result = {
-    model: MODEL,
+    model,
     reasoningEffort: EFFORT,
     exitCode,
     timedOut,

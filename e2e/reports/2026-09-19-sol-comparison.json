@@ -1,0 +1,599 @@
+{
+  "date": "2026-09-19",
+  "status": "Six correct Sol outcomes; historical Luna failures retained",
+  "skillRevision": "173953bebff27a62ee68fd25e61892e6460539a0",
+  "model": "gpt-5.6-sol",
+  "reasoningEffort": "medium",
+  "defaultModelUnchanged": "gpt-5.6-luna",
+  "nativeSessions": 6,
+  "attemptsPerCase": 3,
+  "protocolFrozenAt": "2026-09-19T19:02:16.251Z",
+  "protocolSha256": "d7a59ee390446db2edc49bd8339751a703364d3a099e698299fd0cbbd9e2ad94",
+  "usageResetsUsed": 0,
+  "skillChanges": 0,
+  "scope": "Local CLI parsing and synthetic browser fixtures only; no live project or deployment actions",
+  "priorLedger": "2026-09-19-guidance-acceptance.json",
+  "unchangedSkillManifestSha256": "0358dbd696f131bd080e7a30eb58320274cf6128ac145789bd19081e3146a8a9",
+  "oracleCorrections": [
+    "Accept valid pnpm shorthand when no command or script conflicts; still parse actions and flags against CLI metadata",
+    "Recognize the installed Content Link SDK competing-payload warning and validate a negative control with correct final targets"
+  ],
+  "correctedCheckSha256": "368e9079e6d9c17dce2b2a9b13b8da268713ddfd268c56c6ced9468f7cc1965d",
+  "controls": {
+    "passed": true,
+    "checks": [
+      "CLI: both valid pnpm forms accepted; three invalid documentation flags and a wrong action rejected",
+      "Content Link: correct groups accepted; missing independence, encoded display label and competing-source warning rejected",
+      "Notice: correct preview/published behavior accepted; encoded navigation URL rejected",
+      "Document: surgical edit accepted; whole-JSON replacement rejected"
+    ]
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "case": "asset-cli",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "elapsedMs": 35433,
+      "usage": [
+        {
+          "input_tokens": 58195,
+          "cached_input_tokens": 29696,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1042,
+          "reasoning_output_tokens": 590
+        }
+      ],
+      "commandCount": 3,
+      "originalScoring": {
+        "passed": false,
+        "error": "AssertionError [ERR_ASSERTION]: All requested CMA commands must be present\n\n0 !== 3\n"
+      },
+      "correctedScoring": {
+        "passed": true,
+        "runtime": {
+          "passed": true,
+          "observations": [
+            {
+              "command": "cma:docs",
+              "args": {
+                "resource": "uploads",
+                "action": "self"
+              },
+              "flags": {}
+            },
+            {
+              "command": "cma:docs",
+              "args": {
+                "resource": "uploads",
+                "action": "create"
+              },
+              "flags": {
+                "expand-types": [
+                  "*"
+                ]
+              }
+            },
+            {
+              "command": "cma:call",
+              "args": {
+                "resource": "uploads",
+                "method": "find"
+              },
+              "flags": {
+                "config-file": "./datocms.config.json",
+                "profile": "studio",
+                "environment": "photo-review"
+              }
+            }
+          ],
+          "cliVersion": "4.2.0",
+          "network": "none; parser and local resource metadata only"
+        }
+      },
+      "skillReads": [
+        ".agents/skills/datocms-cli/SKILL.md",
+        ".agents/skills/datocms-cli/references/direct-cma-calls.md"
+      ],
+      "changedFiles": [],
+      "skillManifestSha256": "0358dbd696f131bd080e7a30eb58320274cf6128ac145789bd19081e3146a8a9",
+      "harnessManifestSha256": "9b6b4248eecc28b5b1dff704198ebee376328e42d6c16e5f2f75b4931fb1bf55",
+      "fixtureManifestSha256": "c9f76f80a516c34e3f952339a8fd81f2de853e5ac09d7dd24f7429c0f0b5fe00",
+      "promptSha256": "298133f5fe18bb9a97216bac768744c34b6c7600939c2685d86fede1292805b8",
+      "transcriptSha256": "e0f8be9f179efd2e2ece3b8837abf7f4752084ceaf1b0611b0fe4d0c50d385cb",
+      "provenanceSha256": "6e8af408fafade5d33f1059c6c2dce222d725de05d0557a84edd3d0ecb7c1dad",
+      "originalResultSha256": "2b07484b8b435008628cd9f5d56c095f6fb2c5bde93e0ffe92cfdef09bf1c538",
+      "recheckedResultSha256": "446987a6a2d77aac7b4a36de6048bcf2fc1e001e6cdb9c838a9b6abebf4fcc2d",
+      "commands": [
+        "pnpm datocms cma:docs uploads self",
+        "pnpm datocms cma:docs uploads create --expand-types \"*\"",
+        "pnpm datocms cma:call uploads find asset_47 --environment photo-review --profile studio"
+      ],
+      "privateEvidence": "local/acceptance/sol-comparison/attempt-1/asset-cli"
+    },
+    {
+      "attempt": 1,
+      "case": "collection-links",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "elapsedMs": 106918,
+      "usage": [
+        {
+          "input_tokens": 314435,
+          "cached_input_tokens": 264448,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 4308,
+          "reasoning_output_tokens": 1908
+        }
+      ],
+      "commandCount": 8,
+      "originalScoring": {
+        "passed": true
+      },
+      "correctedScoring": {
+        "passed": true,
+        "runtime": {
+          "passed": true,
+          "evidence": [
+            {
+              "id": "iris",
+              "row": "https://editor.example/iris/heading",
+              "image": "https://editor.example/iris/image",
+              "curator": "https://editor.example/iris/curator",
+              "count": "https://editor.example/iris/record",
+              "filter": "archive",
+              "badge": "ARCHIVE",
+              "text": "Visible content retained; metadata omitted"
+            },
+            {
+              "id": "elm",
+              "row": "https://editor.example/elm/heading",
+              "image": "https://editor.example/elm/image",
+              "curator": "https://editor.example/elm/curator",
+              "count": "https://editor.example/elm/record",
+              "filter": "limited run",
+              "badge": "Limited Run",
+              "text": "Visible content retained; metadata omitted"
+            },
+            {
+              "id": "elm",
+              "row": "https://editor.example/elm/heading",
+              "image": "https://editor.example/elm/image",
+              "curator": "https://editor.example/elm/curator",
+              "count": "https://editor.example/elm/record",
+              "filter": "archive",
+              "badge": "ARCHIVE",
+              "text": "Visible content retained; metadata omitted"
+            },
+            {
+              "id": "iris",
+              "row": "https://editor.example/iris/heading",
+              "image": "https://editor.example/iris/image",
+              "curator": "https://editor.example/iris/curator",
+              "count": "https://editor.example/iris/record",
+              "filter": "limited run",
+              "badge": "Limited Run",
+              "text": "Visible content retained; metadata omitted"
+            }
+          ]
+        }
+      },
+      "skillReads": [
+        ".agents/skills/datocms-frontend-integrations/SKILL.md",
+        ".agents/skills/datocms-frontend-integrations/references/content-link-concepts.md",
+        ".agents/skills/datocms-frontend-integrations/references/react-content-link.md",
+        ".agents/skills/datocms-frontend-integrations/references/verification-checklists.md"
+      ],
+      "changedFiles": [
+        "workspace/src/components/Collection.tsx"
+      ],
+      "skillManifestSha256": "0358dbd696f131bd080e7a30eb58320274cf6128ac145789bd19081e3146a8a9",
+      "harnessManifestSha256": "9b6b4248eecc28b5b1dff704198ebee376328e42d6c16e5f2f75b4931fb1bf55",
+      "fixtureManifestSha256": "b4aca4185f48cb712c862cc2e30834a6316d240d718ad42af967bf13f7f4de5d",
+      "promptSha256": "64c5ca3e228395bf13a5283067dc94da3b5e58e01594f578757a4278fcadd57e",
+      "transcriptSha256": "903bc219b1086e4c8294c738156add942b2c85a5c002e4cf0c9aba8bebd15e83",
+      "provenanceSha256": "21f12648390d9911289fd56f2edf548faeda618e2d6edcd12278630b02673c89",
+      "originalResultSha256": "e435b3b51203eaf9080c8bdf4920b5b3476b4c2bcb11e6a2dd1f6c401ec88f65",
+      "recheckedResultSha256": "a4d32e414489324eb7e610d343d6eb1d9f0b790de6fe442851b44cfd7b64b2e8",
+      "privateEvidence": "local/acceptance/sol-comparison/attempt-1/collection-links"
+    },
+    {
+      "attempt": 2,
+      "case": "asset-cli",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "elapsedMs": 32906,
+      "usage": [
+        {
+          "input_tokens": 76721,
+          "cached_input_tokens": 64384,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1131,
+          "reasoning_output_tokens": 564
+        }
+      ],
+      "commandCount": 4,
+      "originalScoring": {
+        "passed": true
+      },
+      "correctedScoring": {
+        "passed": true,
+        "runtime": {
+          "passed": true,
+          "observations": [
+            {
+              "command": "cma:docs",
+              "args": {
+                "resource": "uploads",
+                "action": "self"
+              },
+              "flags": {}
+            },
+            {
+              "command": "cma:docs",
+              "args": {
+                "resource": "uploads",
+                "action": "create"
+              },
+              "flags": {
+                "expand-types": [
+                  "*"
+                ]
+              }
+            },
+            {
+              "command": "cma:call",
+              "args": {
+                "resource": "uploads",
+                "method": "find"
+              },
+              "flags": {
+                "config-file": "./datocms.config.json",
+                "profile": "studio",
+                "environment": "photo-review"
+              }
+            }
+          ],
+          "cliVersion": "4.2.0",
+          "network": "none; parser and local resource metadata only"
+        }
+      },
+      "skillReads": [
+        ".agents/skills/datocms-cli/SKILL.md",
+        ".agents/skills/datocms-cli/references/direct-cma-calls.md"
+      ],
+      "changedFiles": [],
+      "skillManifestSha256": "0358dbd696f131bd080e7a30eb58320274cf6128ac145789bd19081e3146a8a9",
+      "harnessManifestSha256": "42862729050b8d20bebe3a51ac59fbe33fbc43fa336d13e8a0e08a88d9b71844",
+      "fixtureManifestSha256": "c9f76f80a516c34e3f952339a8fd81f2de853e5ac09d7dd24f7429c0f0b5fe00",
+      "promptSha256": "298133f5fe18bb9a97216bac768744c34b6c7600939c2685d86fede1292805b8",
+      "transcriptSha256": "22edf3887b61a9e6ac488cfe80953563db218417450d3672b5087ad23f2f11e6",
+      "provenanceSha256": "4fa2a95e04d23434560b3a94e4d9052446a22eade2ea9d5802602edc32eee806",
+      "originalResultSha256": "d1f8eefdf5ec5e8b1e76328470f77d49a4dc05dce4a883cee696adaaeb1a46d7",
+      "recheckedResultSha256": "1c7640ebf0a8a6bc6eff6c6e1f0644bcaf2a5bfb84373795fd68dd65d9d6085d",
+      "commands": [
+        "pnpm exec datocms cma:docs uploads self",
+        "pnpm exec datocms cma:docs uploads create --expand-types \"*\"",
+        "pnpm exec datocms cma:call uploads find asset_47 --environment photo-review --profile studio"
+      ],
+      "privateEvidence": "local/acceptance/sol-comparison/attempt-2/asset-cli"
+    },
+    {
+      "attempt": 2,
+      "case": "collection-links",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "elapsedMs": 90241,
+      "usage": [
+        {
+          "input_tokens": 245354,
+          "cached_input_tokens": 199680,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3370,
+          "reasoning_output_tokens": 1415
+        }
+      ],
+      "commandCount": 9,
+      "originalScoring": {
+        "passed": true
+      },
+      "correctedScoring": {
+        "passed": true,
+        "runtime": {
+          "passed": true,
+          "evidence": [
+            {
+              "id": "iris",
+              "row": "https://editor.example/iris/heading",
+              "image": "https://editor.example/iris/image",
+              "curator": "https://editor.example/iris/curator",
+              "count": "https://editor.example/iris/record",
+              "filter": "archive",
+              "badge": "ARCHIVE",
+              "text": "Visible content retained; metadata omitted"
+            },
+            {
+              "id": "elm",
+              "row": "https://editor.example/elm/heading",
+              "image": "https://editor.example/elm/image",
+              "curator": "https://editor.example/elm/curator",
+              "count": "https://editor.example/elm/record",
+              "filter": "limited run",
+              "badge": "Limited Run",
+              "text": "Visible content retained; metadata omitted"
+            },
+            {
+              "id": "elm",
+              "row": "https://editor.example/elm/heading",
+              "image": "https://editor.example/elm/image",
+              "curator": "https://editor.example/elm/curator",
+              "count": "https://editor.example/elm/record",
+              "filter": "archive",
+              "badge": "ARCHIVE",
+              "text": "Visible content retained; metadata omitted"
+            },
+            {
+              "id": "iris",
+              "row": "https://editor.example/iris/heading",
+              "image": "https://editor.example/iris/image",
+              "curator": "https://editor.example/iris/curator",
+              "count": "https://editor.example/iris/record",
+              "filter": "limited run",
+              "badge": "Limited Run",
+              "text": "Visible content retained; metadata omitted"
+            }
+          ]
+        }
+      },
+      "skillReads": [
+        ".agents/skills/datocms-frontend-integrations/SKILL.md",
+        ".agents/skills/datocms-frontend-integrations/references/content-link-concepts.md",
+        ".agents/skills/datocms-frontend-integrations/references/react-content-link.md",
+        ".agents/skills/datocms-frontend-integrations/references/verification-checklists.md"
+      ],
+      "changedFiles": [
+        "workspace/src/components/Collection.tsx",
+        "workspace/dist/assets/hero-CLDdwZDr.png",
+        "workspace/dist/assets/index-BRDr3nmD.js",
+        "workspace/dist/assets/index-D64VDMd1.css",
+        "workspace/dist/assets/react-CHdo91hT.svg",
+        "workspace/dist/assets/vite-BF8QNONU.svg",
+        "workspace/dist/favicon.svg",
+        "workspace/dist/icons.svg",
+        "workspace/dist/index.html"
+      ],
+      "skillManifestSha256": "0358dbd696f131bd080e7a30eb58320274cf6128ac145789bd19081e3146a8a9",
+      "harnessManifestSha256": "42862729050b8d20bebe3a51ac59fbe33fbc43fa336d13e8a0e08a88d9b71844",
+      "fixtureManifestSha256": "b4aca4185f48cb712c862cc2e30834a6316d240d718ad42af967bf13f7f4de5d",
+      "promptSha256": "64c5ca3e228395bf13a5283067dc94da3b5e58e01594f578757a4278fcadd57e",
+      "transcriptSha256": "be91d2580656018b35190edf0233ae09ea21d4cf4fceac17b0c504bfdd9d15c5",
+      "provenanceSha256": "a17ef4c33c70b931c46c68e1a1383bd40b60e5784dec77f3bf1d36785305f3a9",
+      "originalResultSha256": "2365df66b7e399322b0c3570bbbf0ee93fb41a910ed23b104c3f45490c88bba7",
+      "recheckedResultSha256": "f826256e81598556a4da608cfa398a4e7eace7ea5dae5fff49ce7da723d0f058",
+      "privateEvidence": "local/acceptance/sol-comparison/attempt-2/collection-links"
+    },
+    {
+      "attempt": 3,
+      "case": "asset-cli",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "elapsedMs": 40470,
+      "usage": [
+        {
+          "input_tokens": 41211,
+          "cached_input_tokens": 23296,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 813,
+          "reasoning_output_tokens": 516
+        }
+      ],
+      "commandCount": 2,
+      "originalScoring": {
+        "passed": false,
+        "error": "AssertionError [ERR_ASSERTION]: All requested CMA commands must be present\n\n0 !== 3\n"
+      },
+      "correctedScoring": {
+        "passed": true,
+        "runtime": {
+          "passed": true,
+          "observations": [
+            {
+              "command": "cma:docs",
+              "args": {
+                "resource": "uploads",
+                "action": "self"
+              },
+              "flags": {}
+            },
+            {
+              "command": "cma:docs",
+              "args": {
+                "resource": "uploads",
+                "action": "create"
+              },
+              "flags": {
+                "expand-types": [
+                  "*"
+                ]
+              }
+            },
+            {
+              "command": "cma:call",
+              "args": {
+                "resource": "uploads",
+                "method": "find"
+              },
+              "flags": {
+                "config-file": "./datocms.config.json",
+                "profile": "studio",
+                "environment": "photo-review"
+              }
+            }
+          ],
+          "cliVersion": "4.2.0",
+          "network": "none; parser and local resource metadata only"
+        }
+      },
+      "skillReads": [
+        ".agents/skills/datocms-cli/SKILL.md",
+        ".agents/skills/datocms-cli/references/direct-cma-calls.md"
+      ],
+      "changedFiles": [],
+      "skillManifestSha256": "0358dbd696f131bd080e7a30eb58320274cf6128ac145789bd19081e3146a8a9",
+      "harnessManifestSha256": "42862729050b8d20bebe3a51ac59fbe33fbc43fa336d13e8a0e08a88d9b71844",
+      "fixtureManifestSha256": "c9f76f80a516c34e3f952339a8fd81f2de853e5ac09d7dd24f7429c0f0b5fe00",
+      "promptSha256": "298133f5fe18bb9a97216bac768744c34b6c7600939c2685d86fede1292805b8",
+      "transcriptSha256": "e5f33c5040f9f52d6ec5e458f93fa6401bc6eb441b60c35b5a0458a9ec67fbb8",
+      "provenanceSha256": "6a5f787bd9f09beb529ad71e1d1fea451a7c842853d4a3079330f8a147fd398d",
+      "originalResultSha256": "b63ccbfae9e7c01893e8161044b9b1bc94886722ef3f837db7ea1242017f7fab",
+      "recheckedResultSha256": "da07bd04b298bf9ab8e1165e61caf14234e2892feef2e28391551de28078ee98",
+      "commands": [
+        "pnpm datocms cma:docs uploads self",
+        "pnpm datocms cma:docs uploads create --expand-types '*'",
+        "pnpm datocms cma:call uploads find asset_47 --environment=photo-review --profile=studio"
+      ],
+      "privateEvidence": "local/acceptance/sol-comparison/attempt-3/asset-cli"
+    },
+    {
+      "attempt": 3,
+      "case": "collection-links",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "elapsedMs": 71626,
+      "usage": [
+        {
+          "input_tokens": 174838,
+          "cached_input_tokens": 145536,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2860,
+          "reasoning_output_tokens": 1027
+        }
+      ],
+      "commandCount": 6,
+      "originalScoring": {
+        "passed": true
+      },
+      "correctedScoring": {
+        "passed": true,
+        "runtime": {
+          "passed": true,
+          "evidence": [
+            {
+              "id": "iris",
+              "row": "https://editor.example/iris/heading",
+              "image": "https://editor.example/iris/image",
+              "curator": "https://editor.example/iris/curator",
+              "count": "https://editor.example/iris/record",
+              "filter": "archive",
+              "badge": "ARCHIVE",
+              "text": "Visible content retained; metadata omitted"
+            },
+            {
+              "id": "elm",
+              "row": "https://editor.example/elm/heading",
+              "image": "https://editor.example/elm/image",
+              "curator": "https://editor.example/elm/curator",
+              "count": "https://editor.example/elm/record",
+              "filter": "limited run",
+              "badge": "Limited Run",
+              "text": "Visible content retained; metadata omitted"
+            },
+            {
+              "id": "elm",
+              "row": "https://editor.example/elm/heading",
+              "image": "https://editor.example/elm/image",
+              "curator": "https://editor.example/elm/curator",
+              "count": "https://editor.example/elm/record",
+              "filter": "archive",
+              "badge": "ARCHIVE",
+              "text": "Visible content retained; metadata omitted"
+            },
+            {
+              "id": "iris",
+              "row": "https://editor.example/iris/heading",
+              "image": "https://editor.example/iris/image",
+              "curator": "https://editor.example/iris/curator",
+              "count": "https://editor.example/iris/record",
+              "filter": "limited run",
+              "badge": "Limited Run",
+              "text": "Visible content retained; metadata omitted"
+            }
+          ]
+        }
+      },
+      "skillReads": [
+        ".agents/skills/datocms-frontend-integrations/SKILL.md",
+        ".agents/skills/datocms-frontend-integrations/references/content-link-concepts.md",
+        ".agents/skills/datocms-frontend-integrations/references/react-content-link.md",
+        ".agents/skills/datocms-frontend-integrations/references/verification-checklists.md"
+      ],
+      "changedFiles": [
+        "workspace/src/components/Collection.tsx",
+        "workspace/dist/assets/hero-CLDdwZDr.png",
+        "workspace/dist/assets/index-BRDr3nmD.js",
+        "workspace/dist/assets/index-D64VDMd1.css",
+        "workspace/dist/assets/react-CHdo91hT.svg",
+        "workspace/dist/assets/vite-BF8QNONU.svg",
+        "workspace/dist/favicon.svg",
+        "workspace/dist/icons.svg",
+        "workspace/dist/index.html"
+      ],
+      "skillManifestSha256": "0358dbd696f131bd080e7a30eb58320274cf6128ac145789bd19081e3146a8a9",
+      "harnessManifestSha256": "42862729050b8d20bebe3a51ac59fbe33fbc43fa336d13e8a0e08a88d9b71844",
+      "fixtureManifestSha256": "b4aca4185f48cb712c862cc2e30834a6316d240d718ad42af967bf13f7f4de5d",
+      "promptSha256": "64c5ca3e228395bf13a5283067dc94da3b5e58e01594f578757a4278fcadd57e",
+      "transcriptSha256": "bb06e4f8e9be845a29489b3340c18ecab46af209cab570e59aae7ca35bdb7d68",
+      "provenanceSha256": "ab7193163b23e793f0f9c4381a945632a26c5d9fb32a30c3fcf53d595725650b",
+      "originalResultSha256": "abe89128c093fc41da5fd89497002474cb3fb9af757af5326bc2924ba7a69414",
+      "recheckedResultSha256": "e9f222947696033a4c32713838b53e714626f1fed41a8ce8bfaa35b96d412c5a",
+      "privateEvidence": "local/acceptance/sol-comparison/attempt-3/collection-links"
+    }
+  ],
+  "lunaRechecks": [
+    {
+      "run": "round-1",
+      "case": "asset-cli",
+      "passed": false,
+      "reason": "Nonexistent documentation action find",
+      "cliSkillHashesUnchanged": true,
+      "priorSnapshot": "candidate-1"
+    },
+    {
+      "run": "candidate-cli-repeat-1",
+      "case": "asset-cli",
+      "passed": true,
+      "reason": "Correct documentation and project commands",
+      "cliSkillHashesUnchanged": true,
+      "priorSnapshot": "candidate-1"
+    },
+    {
+      "run": "final-sequential-1",
+      "case": "collection-links",
+      "passed": false,
+      "reason": "Rendered badge still includes invisible editing metadata",
+      "fullSkillHashesUnchanged": true,
+      "priorSnapshot": "candidate-3"
+    }
+  ],
+  "comparisonChecks": [
+    "All six runtime models and effort labels verified",
+    "All six installed skill manifests equal the current repository and prior final snapshot",
+    "Initial fixture hashes, prompts, instructions, limits, runtime feature settings and executable versions match prior comparable runs",
+    "Both models scored with the same corrected evaluators without model reruns or source repairs",
+    "All six initial runner and evaluator code hashes match; only the harness README changed during execution. Corrected scoring kept separately"
+  ],
+  "limits": [
+    "Three fresh repetitions of two known cases; not an unseen or randomized benchmark",
+    "Historical Luna CLI sample has two attempts and identical CLI skills; other skill files evolved afterwards",
+    "Only one completed historical Luna collection attempt uses the exact final snapshot; two earlier failures use preceding revisions",
+    "Evaluator corrections were made after observing outputs and are disclosed; initial results retained",
+    "Small starter fixtures, including the prior optional-linter limitation, are not large customer applications"
+  ],
+  "decision": "Keep current skill text and regression tests; these results do not justify further instruction growth. Draft state and release version remain unchanged."
+}

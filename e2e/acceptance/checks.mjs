@@ -34,13 +34,15 @@ export function words(line) {
 }
 
 export async function checkCli(text, variant = 'uploads') {
-  const lines = text.replace(/\\\r?\n/g, ' ').split('\n').filter(line => /^\s*pnpm exec datocms cma:/.test(line));
+  // These fixtures have no conflicting package script; pnpm's exec is optional.
+  const lines = text.replace(/\\\r?\n/g, ' ').split('\n').filter(line => /^\s*pnpm(?: exec)? datocms cma:/.test(line));
   assert.equal(lines.length, variant === 'uploads' ? 3 : 2, 'All requested CMA commands must be present');
   const observations = [];
   const call = new Call([], {});
   const resources = call.loadResources();
   for (const line of lines) {
-    const tokens = words(line.trim()), id = tokens[3], argv = tokens.slice(4);
+    const tokens = words(line.trim()), commandIndex = tokens[1] === 'exec' ? 3 : 2;
+    const id = tokens[commandIndex], argv = tokens.slice(commandIndex + 1);
     assert.ok(['cma:docs', 'cma:call'].includes(id));
     const Command = require(`datocms/lib/commands/${id.replace(':', '/')}`).default;
     const parsed = await Parser.parse(argv, { ...Command, args: Command.args, flags: { ...Command.baseFlags, ...Command.flags } });
@@ -83,7 +85,9 @@ async function browserCode(workspace, contents, callback) {
   page.setDefaultTimeout(5000);
   const errors = [], collisions = [];
   page.on('pageerror', e => errors.push(e.message));
-  page.on('console', m => { if (/collision/i.test(m.text())) collisions.push(m.text()); });
+  page.on('console', m => {
+    if (m.type() === 'warning' && /collision|Multiple stega-encoded payloads resolved to the same DOM element/i.test(m.text())) collisions.push(m.text());
+  });
   try {
     await page.setContent('<html><body><div id="app"></div></body></html>');
     await page.addScriptTag({ content: bundle.outputFiles[0].text });

@@ -12,8 +12,10 @@ mkdirSync(output, { recursive: true });
 const checks = [];
 const commands = 'pnpm exec datocms cma:docs uploads self\npnpm exec datocms cma:docs uploads create --expand-types "*"\npnpm exec datocms cma:call uploads find asset_47 --profile studio --environment photo-review';
 await checkCli(commands);
+await checkCli(commands.replaceAll('pnpm exec datocms', 'pnpm datocms'));
 for (const flag of ['--profile studio', '--environment photo-review', '--api-token synthetic']) await assert.rejects(() => checkCli(commands.replace('uploads self', `uploads self ${flag}`)), /Nonexistent flag/);
-checks.push('CLI: correct scope accepted; three invalid documentation flags rejected');
+await assert.rejects(() => checkCli(commands.replaceAll('pnpm exec datocms', 'pnpm datocms').replace('uploads self', 'uploads find')), /Documentation action must exist/);
+checks.push('CLI: both valid pnpm forms accepted; three invalid documentation flags and a wrong action rejected');
 
 const links = join(output, 'links'); mkdirSync(join(links, 'src/components'), { recursive: true });
 symlinkSync(join(resolve(values.dependencies), 'node_modules'), join(links, 'node_modules'));
@@ -24,7 +26,11 @@ writeFileSync(path, component.replaceAll('data-datocms-content-link-boundary', '
 await assert.rejects(() => checkLinks(links));
 writeFileSync(path, component.replace('{stripStega(e.badge)}</span>', '{e.badge}</span>'));
 await assert.rejects(() => checkLinks(links));
-checks.push('Content Link: correct groups accepted; missing independence and encoded display label rejected');
+// All final targets can look correct while two sources still compete. The SDK
+// warning describes multiple payloads rather than using the word "collision".
+writeFileSync(path, component.replace('<h2>{e.heading}</h2>', '<span hidden>{e.badge}</span><h2>{e.heading}</h2>'));
+await assert.rejects(() => checkLinks(links), /Multiple stega-encoded payloads/);
+checks.push('Content Link: correct groups accepted; missing independence, encoded display label and competing-source warning rejected');
 
 const noticePath = join(links, 'src/components/NoticeBanner.tsx');
 const notice = `import {stripStega} from '@datocms/content-link';export default function NoticeBanner({notice:n}){return <section className="notice" data-datocms-content-link-group><p className="audience">{stripStega(n.audience)}</p><h2><a href={stripStega(n.href)}>{n.heading}</a></h2><p className="body" data-datocms-content-link-boundary>{n.body}</p></section>}`;
