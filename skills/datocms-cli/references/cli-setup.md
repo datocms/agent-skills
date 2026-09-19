@@ -11,7 +11,7 @@ Installation, authentication, project linking, profiles, token resolution, and g
 - Configuration File
 - Active Profile Selection
 - API Token Resolution
-- Global Flags
+- Command Flags
 
 ## Inputs to confirm before running commands
 
@@ -242,9 +242,9 @@ DATOCMS_API_TOKEN=your_full_access_token
 DATOCMS_CLIENT_A_PROFILE_API_TOKEN=your_client_a_token
 ```
 
-## Global Flags
+## Command Flags
 
-Run `npx datocms <command> --help` for available flags. CMA-based commands support `--api-token`, `--profile`, `--log-level`, `--log-mode`, `--json`.
+Flags are command-specific: check `npx datocms <command> --help`. Commands operating on a project share authentication/profile flags; public documentation reads do not select a project. See [direct CMA calls](./direct-cma-calls.md) for the distinct `cma:docs` and `cma:call` flags.
 
 ### Log Mode Details
 

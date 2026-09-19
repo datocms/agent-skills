@@ -69,6 +69,8 @@ The [hosted validation report](reports/2026-09-18-hosted-mcp.md) records the ini
 
 ## Evidence and iteration
 
+The [reading-cost comparisons](ablation/README.md) evaluate deletion candidates against a frozen release, then run a combined candidate on tasks reserved from tuning. These focused cases explicitly name the intended skill; they measure behavior after activation, not automatic skill discovery. They preserve baseline failures, rejected attempts, actual context usage, and independent browser/build results. A shorter document is not automatically a better skill, and one successful pair is not proof of non-inferiority.
+
 The [deployed website harness](deployed/README.md) adds explicitly scoped Vercel deployment, real search crawling and Next.js cache-tag checks. Its [validation report](reports/2026-09-19-deployed-workflows.md) separates evaluated implementations from operator deployments and independent browser/API verification.
 
 Live runs default to `local/e2e/<timestamp>/<case>/`; set a fresh `E2E_RUN_ID` or `E2E_OUTPUT` to organize runs. Other suites require fresh output directories. Existing transcripts are never overwritten. Evidence includes prompts, skill hashes, revision, exact model/effort, runtime version, command events, errors, usage, independent assertions, and final answers. A source hash identifies uncommitted candidates more precisely than HEAD alone. Raw artifacts are ignored by Git; commit a sanitized report and coverage map instead.

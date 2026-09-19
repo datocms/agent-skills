@@ -9,8 +9,7 @@ Astro-specific wiring for `@datocms/astro/ContentLink`. Unlike React, Vue, and S
 - View Transitions Support
 - Enabling Click-to-Edit
 - `<ContentLink />` Props
-- Data Attributes Reference
-- Group & Boundary Resolution Rules
+- Data Attributes and Target Resolution
 - Structured Text Integration
 - Low-Level Utilities
 - Troubleshooting
@@ -104,86 +103,9 @@ Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily invert click-to-
 
 **Note:** Unlike React/Vue/Svelte which also accept `onNavigateTo`, `currentPath`, and `root` props, Astro's `<ContentLink />` only has 2 props. Navigation is handled automatically.
 
-## Data Attributes Reference
+## Data Attributes and Target Resolution
 
-### Developer-Specified Attributes
-
-#### `data-datocms-content-link-url`
-
-Marks an element as editable with an explicit edit URL. Use for **non-text fields** (booleans, numbers, dates, JSON) that cannot contain stega encoding. Use the `_editingUrl` field:
-
-```graphql
-query {
-  product {
-    price
-    isActive
-    _editingUrl
-  }
-}
-```
-
-```astro
-<span data-datocms-content-link-url={product._editingUrl}>
-  ${product.price}
-</span>
-```
-
-#### `data-datocms-content-link-source`
-
-Attaches stega metadata without rendering it as content. For elements that can't contain text (`<video>`, `<audio>`, `<iframe>`, etc.):
-
-```astro
-<div data-datocms-content-link-source={video.alt}>
-  <video src={video.url} poster={video.posterImage.url} controls></video>
-</div>
-```
-
-The value must be a stega-encoded string (any text field from the API works).
-
-#### `data-datocms-content-link-group`
-
-Expands the clickable area to a parent element. By default, only the immediate parent of stega text is clickable. This makes a larger ancestor clickable instead:
-
-```astro
-<article data-datocms-content-link-group>
-  <h2>{product.title}</h2>
-  <p>${product.price}</p>
-</article>
-```
-
-Clicking anywhere in `<article>` opens the editor.
-
-**Important:** A group should contain only one stega-encoded source. Multiple sources in the same group cause a collision warning (last URL wins).
-
-#### `data-datocms-content-link-boundary`
-
-Stops the upward DOM traversal for group resolution. Creates an independent editable region:
-
-```astro
-<div data-datocms-content-link-group>
-  <h1>{page.title}</h1>
-  <section data-datocms-content-link-boundary>
-    <span>{page.author}</span>
-  </section>
-</div>
-```
-
-Without the boundary, clicking `page.author` would open the outer group's URL.
-
-### Library-Managed Attributes (Automatic)
-
-| Attribute | Description |
-| - | - |
-| `data-datocms-contains-stega` | Added to elements with stega content (only when `stripStega` is false) |
-| `data-datocms-auto-content-link-url` | Added to elements identified as editable targets; contains the resolved edit URL |
-
-## Group & Boundary Resolution Rules
-
-When stega content is found, the library walks up the DOM from that element:
-
-1. **Finds `data-datocms-content-link-group`** — stamps that element as clickable target
-2. **Finds `data-datocms-content-link-boundary`** — stops traversal, stamps the starting element as clickable target
-3. **Reaches root without finding either** — stamps the starting element
+Use the shared [data attributes](./content-link-concepts.md#data-attributes-reference) for explicit record URLs, non-text sources, groups and boundaries, and the [resolution algorithm](./content-link-concepts.md#group-and-boundary-resolution-algorithm) to keep independent editing targets separate. The HTML attribute names are the same in every framework; use this framework's normal attribute-binding syntax.
 
 ## Structured Text Integration
 
@@ -266,47 +188,11 @@ import InlineTeamMember from '~/components/InlineTeamMember.astro';
 
 ## Low-Level Utilities
 
-### `stripStega`
-
-Removes stega encoding from any data type:
-
-```js
-import { stripStega } from '@datocms/astro/ContentLink';
-
-stripStega("Hello world")           // clean string
-stripStega({ name: "John", age: 30 }) // clean object
-stripStega(["First", "Second"])      // clean array
+```ts
+import { stripStega, decodeStega, revealStega } from '@datocms/astro/ContentLink';
 ```
 
-### `decodeStega`
-
-Extracts editing metadata from stega-encoded content:
-
-```js
-import { decodeStega } from '@datocms/astro/ContentLink';
-
-const metadata = decodeStega(text);
-// Returns: { origin: string, href: string } | null
-```
-
-### `revealStega` (debugging)
-
-Replaces each invisible stega segment with a visible `[STEGA:/editor/...]` marker. Preserves the input shape — strings stay strings, objects/arrays keep their structure. Use this whenever a stega-related bug is suspected, since `console.log` alone shows nothing (the encoding is zero-width Unicode):
-
-```js
-import { revealStega } from '@datocms/astro/ContentLink';
-
-console.log(revealStega(page.title));        // "Hello[STEGA:/editor/...]"
-console.log(revealStega(graphqlResponse));   // same object shape, markers visible inside strings
-```
-
-**Use cases:**
-
-- **Meta tags and social sharing**: Use `stripStega()` to clean text before adding to `<meta>` tags
-- **Programmatic text processing**: Remove invisible characters before string operations, comparisons, splits, slug/URL generation, analytics, or any non-render use
-- **Debugging**: Use `revealStega()` to see which fields in a GraphQL response carry stega; use `decodeStega()` to inspect a specific editing URL
-
-See [content-link-concepts.md → When to Strip Stega](./content-link-concepts.md#when-to-strip-stega) for the full rule. Note: DatoCMS `slug` field types are never stega-encoded and don't need stripping.
+See the shared [utility APIs](./content-link-concepts.md#stega-stripping-utilities) and [when to strip stega](./content-link-concepts.md#when-to-strip-stega). Keep encoding for rendered editable content; clean values used in logic, metadata or URL construction. `revealStega` makes invisible metadata visible for debugging.
 
 ## Troubleshooting
 

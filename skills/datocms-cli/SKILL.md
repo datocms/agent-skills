@@ -57,33 +57,7 @@ For CLI work, use `npx datocms schema:inspect` on selected project/environment b
 - **Interactive CLI execution**: OAuth via `login` + `link`. Never ask user to paste token or add `DATOCMS_CMA_TOKEN=...` to `.env` for this case.
 - **Unattended execution** (CI, cron, server-side app, shared scripts without OAuth session): CMA-enabled token via env var. Read-only CDA tokens (`DATOCMS_READONLY_API_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`) won't work — flag that separate CMA-enabled token is needed.
 
-**Token resolution order CLI uses:**
-
-- `--api-token` flag
-- Linked project (OAuth-backed, default after `login` + `link`)
-- Env var: `DATOCMS_API_TOKEN` (default profile), `DATOCMS_<PROFILE>_PROFILE_API_TOKEN` (named), or custom `apiTokenEnvName`
-- Profile override via `DATOCMS_PROFILE`
-
-## Step 2: Understand the Task
-
-Classify user's task into one or more categories:
-
-| Category | Examples |
-| - | - |
-| **CLI setup** | Install CLI, authenticate (`login`/`logout`/`whoami`), discover accessible projects (`projects:list`), link/unlink projects (`link`/`unlink`), configure profiles, `datocms.config.json` |
-| **Schema changes** | Add, modify, or remove models, fields, fieldsets, or block models — via migration script (default) or direct CMA operation against chosen environment |
-| **Creating migrations** | Scaffold new migration scripts, autogenerate from environment diffs, custom templates (sub-task of schema changes once migration approach chosen) |
-| **Running migrations** | Execute pending migrations, dry-run, fork-and-run, in-place execution |
-| **Schema generation** | Run `schema:generate`, scope output to item types, target specific environment |
-| **Schema inspection** | Run `schema:inspect` to dump models, blocks, fields, validators, appearance, default values, fieldsets, nested blocks, referenced models, or embedding models — use any time agent or user needs to understand how project is structured before writing code or mutations |
-| **Direct CMA calls** | Use `cma:docs` to browse API reference, `cma:call` for single call with shape from docs, `cma:script` for one-off TS logic that needs loops, branching, or typed `Schema.*` types — stdin-mode for heredocs/pipes, file-mode for longer scripts in gitignored scratch dir |
-| **Environment management** | Fork, promote, rename, destroy, list environments via CLI commands |
-| **Deployment workflow** | Maintenance mode, safe deployment sequences, CI/CD integration |
-| **Multi-project sync** | Shared migrations across blueprint/client projects via CLI profiles |
-| **Importing content** | WordPress import, Contentful import |
-| **CLI plugin management** | Install, remove, update, list, inspect, link, or reset CLI plugins (`plugins:*` commands) |
-
-## Step 2.5: Collect Critical Inputs Before You Commit To Commands
+## Step 2: Resolve the Workflow
 
 Do **not** skip questions merely because category is obvious. Skip follow-up questions **only if** request already includes critical inputs for relevant category, or repo inspection answers them safely.
 
@@ -160,108 +134,16 @@ Based on task classification, read appropriate reference files from `references/
 - If multi-project sync involves rollout execution -> also load `running-migrations.md`
 - If CLI plugin install is specifically for WordPress/Contentful import -> also load `importing-content.md`
 
-## Step 4: Generate Code
+## Step 4: Implement and Verify
 
-Write commands and scripts following mandatory rules:
+Use the selected reference for command syntax, required inputs, templates and verification. Keep the repo's package-manager runner; otherwise use `npx datocms`.
 
-### Command Prefix
-
-- Respect repo's existing package-manager execution style when one already established (`npm run ...`, `pnpm exec ...`, `bunx ...`)
-- Otherwise default to `npx datocms` so local CLI version used
-- Example: `npx datocms migrations:new "add blog model" --ts`
-
-### Migration File Templates
-
-- When generating migration file content, use **exact function signatures** from reference files
-- TypeScript: `export default async function(client: Client): Promise<void>`
-- JavaScript: `module.exports = async (client) => {}`
-- Import for TypeScript migrations: `import { Client } from 'datocms/lib/cma-client-node'`
-
-### File Naming
-
-- Migration files automatically named: `{unix_timestamp}_{camelCaseName}.ts|.js`
-- Don't manually create migration files — always use `npx datocms migrations:new`
-
-### Migration Script Bodies
-
-- For CMA API calls inside migration scripts (creating models, fields, records, uploads), defer to **datocms-cma** reference patterns
-- `client` parameter in migrations is same CMA client from `@datocms/cma-client-node`
-
-### Schema Generation
-
-- Use `npx datocms schema:generate <filename>` to generate TS schema definitions
-- Use `--item-types` to narrow output when user only needs specific models
-- Use `--environment` when generated types must reflect sandbox or staging environment
-- Route follow-up code changes that consume those types to `datocms-cma`
-
-### Schema Inspection
-
-- Use `npx datocms schema:inspect` any time agent or user needs project structure information — models, blocks, field definitions, validators, appearance, default values, fieldset grouping, nested blocks, referenced or embedding models
-- No argument dumps every model and block; pass API key, id, or display name to narrow down (fuzzy fallback when there is no exact match)
-- Defaults to TOON output for agent consumption; add `--json` when piping through `jq`
-- Opt into extra detail selectively with `--include-validators`, `--include-appearance`, `--include-default-values`, `--include-fieldsets`, `--include-nested-blocks`, `--include-referenced-models`, `--include-embedding-models`; use `--fields-details=complete` to include everything at once
-- Restrict to regular models or modular blocks with `--type=models_only` / `--type=blocks_only`; target sandbox schemas with `--environment`
-- Prefer `schema:inspect` over composing `cma:call itemTypes list` + `fields list` by hand — it already resolves fieldsets, nested blocks, and embedding models in one call
-
-### Direct CMA Calls
-
-- Discover actions with `npx datocms cma:docs <resource>`, then inspect `<action>` for endpoint details. Documentation actions (`self`, `instances`) differ from SDK methods (`find`, `list`).
-- Use `npx datocms cma:call <resourceCamelCase> <methodCamelCase> [...pathArgs]` for simple single-method operations. Use `cma:script` to transform localized/block/Structured Text values.
-- Pass request bodies with `--data '{...}'` and query parameters with `--params '{...}'`
-- Add `--environment` when call must target sandbox environment
-- `cma:call` is **positional** (`<resourceCamelCase> <methodCamelCase>` + URL placeholders as extra positional args). It is **not** REST wrapper: there is no `--endpoint`, `--method`, `--query-params`, or `--body` flag — don't invent these
-- Prefer **camelCase** for resource/method names in examples (matches JS client: `client.itemTypes.create`); snake_case is also accepted but be consistent
-
-Concrete shape, with JSON5 accepted in `--data` / `--params`:
-
-```bash
-npx datocms cma:call items list --params='{filter: {type: "article"}}'
-npx datocms cma:docs items self # documents client.items.find(); "find" is not a docs action
-npx datocms cma:call items find <ITEM_ID>
-npx datocms cma:call items update <ITEM_ID> --data='{title: "Updated"}'
-npx datocms cma:call items publish <ITEM_ID>
-npx datocms cma:call fields create <ITEM_TYPE_ID> --data='{label: "Title", api_key: "title", field_type: "string"}'
-```
-
-Run `npx datocms cma:call --help` for full list of built-in examples, or `npx datocms cma:docs <resource> <action>` for body schema and required fields.
-
-- Use `npx datocms cma:script` when task needs loops, branching, multiple dependent calls, or typed `Schema.*` records, but code does not need to live in repo
-- **stdin-mode** (heredoc / pipe / redirect): top-level await only, ambient `client` and `Schema`, `tsc --noEmit` type-checks before execution, pre-installed packages available. Zero setup
-- **file-mode** (`.ts` file on disk):
-  - Signature: `export default async function (client: Client)` with `Client` imported from `datocms/lib/cma-client-node` — same import as migrations, so file-mode script can be promoted with plain `mv` into `migrations/`.
-  - Validation: no CLI-side typecheck; rely on your editor LSP against your `tsconfig.json`, or explicit `tsc --noEmit`. Typed `Schema.*` is opt-in via `datocms schema:generate ./datocms-schema.ts`.
-  - Placement: gitignored scratch dir (`tmp/scripts/`, `scratch/`). Prefer migration for anything you want to commit, version, and replay across environments.
-- Redirect `2>/dev/null` when piping stdin-mode stdout into `jq`
-- Switch to **datocms-cma** when task needs reusable code checked into repo for **unattended runtime** (CI, app server, webhook, long-lived automation)
-- **Schema changes:** default to scaffolding migration. Only propose `cma:call` or `cma:script` for schema mutations after user has explicitly opted out of migration workflow, and never propose direct schema mutation against primary-like environment without explicit confirmation from user
-
-### CLI Plugin Commands
-
-- Use `npx datocms plugins:available` to discover official CLI plugins before installing
-- Use `npx datocms plugins:add <PLUGIN>` to install CLI plugin by npm package name or GitHub URL
-- Use `npx datocms plugins:link <PATH>` only for local plugin development
-- These commands manage CLI extensions, not DatoCMS project plugins — route project plugin work to **datocms-plugin**
-
-### Environment Safety
-
-- Always specify `--source` when running migrations to be explicit about target
-- Use `--dry-run` first to preview changes before applying
-- Prefer fork-and-run (default) over `--in-place` for production environments
-- Treat `--force` as explicit override, not default
-
-## Step 5: Verify
-
-Before execution, verify applicable prerequisites; for command examples, state missing prerequisites without connecting:
-
-1. **API token** — Confirm CMA-enabled token available (via env var or `--api-token` flag)
-2. **Config file** — If using profiles, verify `datocms.config.json` exists and has right profile
-3. **Migrations directory** — Confirm migrations directory exists or will be created by command
-4. **TypeScript config** — If generating TS migrations, ensure `tsconfig.json` exists or `--migrations-tsconfig` is set
-5. **Schema generation scope** — If using `schema:generate`, verify output file path plus any `--item-types` / `--environment` scope match request
-6. **Direct CMA calls** — If using `cma:call`, verify positional args, `--data`, `--params`, and `--environment` align with targeted method. If using `cma:script`, verify script uses `Schema.*` types (not `any`/`unknown`), imports only from pre-installed package list, and targets intended environment
-7. **Environment targeting** — Verify correct `--source` / `--destination` environment specified
-8. **Safety checks** — For destructive operations (promote, destroy, destructive `cma:call` usage, risky imports, maintenance-mode force), confirm user intends to target right environment. For schema mutations, confirm chosen approach (migration vs direct) and — if direct — target environment (sandbox vs primary) before issuing commands
-9. **CLI plugin commands** — If using `plugins:*` commands, verify plugin name is correct and distinguish CLI plugins from DatoCMS project plugins
+- Scaffold migrations with `migrations:new`, not hand-named files. Use the reference's exact function signature; load **datocms-cma** for API calls inside the body.
+- Inspect the selected project/environment schema before schema-dependent code or mutations. Prefer `schema:inspect` over manually joining model and field calls.
+- For migrations, specify `--source`, dry-run first, and prefer fork-and-run over primary `--in-place`. Treat `--force` as an explicit override.
+- For direct calls, load `direct-cma-calls.md` or `cma-script.md` before choosing positional arguments, stdin or file mode. Keep schema-approach and environment authorization from Step 2.
+- Before execution, verify the selected authentication route, profile, environment and output paths. Reuse established OAuth or unattended token authentication; don't require both.
+- Verify the requested result and report what ran, what was checked, and any unresolved inputs. For command examples, state missing prerequisites without connecting.
 
 ## Cross-Skill Routing
 

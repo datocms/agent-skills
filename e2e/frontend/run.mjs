@@ -14,6 +14,8 @@ const { values } = parseArgs({
     output: { type: "string" },
     repetitions: { type: "string", default: "1" },
     recheck: { type: "string" },
+    "skills-root": { type: "string" },
+    skill: { type: "string" },
   },
 });
 const repetitions = Number(values.repetitions);
@@ -267,7 +269,7 @@ async function assertApplication(workspace, framework, spec, directory) {
 if (frameworks.some((name) => !specifications[name]))
   throw Error("Unknown framework selection");
 const results = [];
-for (let repetition = 1; repetition <= repetitions; repetition++)
+suite: for (let repetition = 1; repetition <= repetitions; repetition++)
   for (const framework of frameworks) {
     const spec = specifications[framework];
     if (!spec) throw Error(`Unknown framework ${framework}`);
@@ -322,14 +324,19 @@ for (let repetition = 1; repetition <= repetitions; repetition++)
               ? "NUXT_"
               : "";
         const param = framework === "nuxt" ? "url" : "redirect";
-        const prompt = `Add working DatoCMS draft-mode enable and disable routes to this existing ${framework} app at /api/draft-mode/enable and /api/draft-mode/disable. The enable link uses query parameters token and ${param}. Enable preview with a valid secret and redirect back to the requested local page; disabling preview needs no secret. Keep complete query strings and fragments intact. Use this framework's standard server-side draft/session mechanism, and make preview cookies work in an embedded editor. Runtime supplies ${secretName}, ${prefix}SIGNED_COOKIE_JWT_SECRET, and ${prefix}DATOCMS_DRAFT_CONTENT_CDA_TOKEN. Use datocms_preview as the cookie name where a custom cookie is needed. Do not fetch CMS content or add visual editing or realtime features. Install any required dependencies and confirm the application builds. This is a local application; no deployment or CMS connection is needed.`;
+        const prompt = `${values.skill ? `$${values.skill} ` : ""}Add working DatoCMS draft-mode enable and disable routes to this existing ${framework} app at /api/draft-mode/enable and /api/draft-mode/disable. The enable link uses query parameters token and ${param}. Enable preview with a valid secret and redirect back to the requested local page; disabling preview needs no secret. Keep complete query strings and fragments intact. Use this framework's standard server-side draft/session mechanism, and make preview cookies work in an embedded editor. Runtime supplies ${secretName}, ${prefix}SIGNED_COOKIE_JWT_SECRET, and ${prefix}DATOCMS_DRAFT_CONTENT_CDA_TOKEN. Use datocms_preview as the cookie name where a custom cookie is needed. Do not fetch CMS content or add visual editing or realtime features. Install any required dependencies and confirm the application builds. This is a local application; no deployment or CMS connection is needed.`;
+        const started = Date.now();
         const session = await nativeSession({
-          repoRoot: root,
+          repoRoot: values["skills-root"] ? resolve(values["skills-root"]) : root,
           workspace,
           output: directory,
           prompt,
           timeoutMs: 600000,
         });
+        result.elapsedMs = Date.now() - started;
+        result.usage = session.usage;
+        result.commandCount = session.commands.length;
+        result.usageLimitReached = session.usageLimitReached;
         result.agentCompleted =
           session.completed &&
           session.exitCode === 0 &&
@@ -376,5 +383,7 @@ for (let repetition = 1; repetition <= repetitions; repetition++)
     console.log(
       `${result.passed ? "PASS" : "FAIL"} ${result.case}/${repetition}${result.error ? ": " + result.error : ""}`,
     );
+    if (result.usageLimitReached) break suite;
   }
-if (results.some((r) => !r.passed)) process.exitCode = 1;
+if (results.some((r) => r.usageLimitReached)) process.exitCode = 2;
+else if (results.some((r) => !r.passed)) process.exitCode = 1;

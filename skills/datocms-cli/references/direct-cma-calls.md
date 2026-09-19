@@ -65,6 +65,8 @@ npx datocms cma:call <resourceCamelCase> <methodCamelCase> [...pathArgs] [--data
 
 ### `cma:docs` — Browse full API reference
 
+These are public API reference reads, independent of a project or authentication session. `cma:docs` does not accept `--profile`, `--environment` or `--api-token`; use project-selection flags only on the subsequent project command.
+
 `cma:docs <resource>` lists documentation **action names**; `cma:call` takes SDK **method names** from the action's Client Methods section. They can differ: for `items`, docs action `self` maps to method `find`, and `instances` to `list`. Discover the action, then use its documented method for calls.
 
 ```bash
