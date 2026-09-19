@@ -2,6 +2,8 @@
 
 Use only the sections that match the work you actually performed.
 
+When real credentials and routes are available, run the app and check a representative public page and the affected preview flow, including response status and rendered content. A successful build alone does not verify server rendering or request context. State which runtime checks remain unverified if execution is unavailable.
+
 ## Contents
 
 - Setup Flows
@@ -45,6 +47,7 @@ Use only the sections that match the work you actually performed.
 - The correct subscription primitive is used for the framework.
 - Subscription options match the draft-aware query wrapper.
 - Draft-only subscriptions stay draft-only when appropriate.
+- Navigation and unmounting release the previous subscription, including connections still opening.
 - React / Vue custom fetchers are defined outside reactive render scope.
 - Astro uses page reload behavior through `<QueryListener />`, not live data hooks.
 

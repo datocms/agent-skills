@@ -13,6 +13,53 @@ import { join } from "node:path";
 import { replayVisualApplication } from "../e2e/catalog/replay.mjs";
 import { replay as replaySchemaDiff } from "../e2e/catalog/schema-diff.mjs";
 
+for (const scenario of ["public-site", "video-playback"])
+  test(`${scenario} replay preserves model literals and requires the original scenario`, () => {
+    const root = mkdtempSync(join(tmpdir(), "public-site-replay-"));
+    const previous = join(root, "previous"),
+      workspace = join(root, "recheck");
+    try {
+      for (const directory of [
+        "previous/native",
+        "previous/workspace/src",
+        "previous/workspace/node_modules",
+        "recheck",
+      ])
+        mkdirSync(join(root, directory), { recursive: true });
+      writeFileSync(
+        join(previous, "result.json"),
+        JSON.stringify({
+          scenario,
+          siteId: "123",
+          environment: "e2e-old",
+          framework: "nextjs",
+        }),
+      );
+      writeFileSync(
+        join(previous, "native/provenance.json"),
+        JSON.stringify({ prompt: "Render published content from e2e-old." }),
+      );
+      const original =
+        "export const environment='e2e-old'; export const model='literal-model-id';";
+      writeFileSync(join(previous, "workspace/src/query.ts"), original);
+      const options = {
+        previous,
+        workspace,
+        project: { siteId: "123", environment: "e2e-new" },
+        state: { framework: "nextjs" },
+        save: () => {},
+      };
+      assert.throws(() => replayVisualApplication(options), /visual-editing/);
+      replayVisualApplication({ ...options, scenario });
+      assert.equal(
+        readFileSync(join(workspace, "src/query.ts"), "utf8"),
+        original.replace("e2e-old", "e2e-new"),
+      );
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
 test("schema diff rechecks preserve generated IDs without copying private authentication or an old CLI launcher", () => {
   const root = mkdtempSync(join(tmpdir(), "schema-replay-"));
   const previous = join(root, "previous"),

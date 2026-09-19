@@ -56,12 +56,17 @@ assert.ok(
     "scheduling",
     "schema-diff",
     "graphql-types",
+    "public-site",
+    "video-playback",
   ].includes(values.case),
   "Choose one catalog workflow",
 );
 assert.ok(
-  !values.recheck || ["visual-editing", "schema-diff"].includes(values.case),
-  "Live recheck supports visual-editing and schema-diff",
+  !values.recheck ||
+    ["visual-editing", "schema-diff", "public-site", "video-playback"].includes(
+      values.case,
+    ),
+  "Live recheck supports visual-editing, schema-diff, public-site and video-playback",
 );
 assert.ok(
   !values.repair || values.case === "visual-editing",

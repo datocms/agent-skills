@@ -2,6 +2,8 @@
 
 Core below provides authentication and query helpers. For full visual editing, also read the [Content Link controller](./vue-content-link.md#nuxt), [Web Previews](#web-previews-optional), and [real-time query composable](#query-composable-with-real-time-subscription). The controller must be mounted explicitly, and subscriptions run only in the browser; the Core query helper alone does not provide either behavior.
 
+In custom composables, call Nuxt context helpers (`useRuntimeConfig`, `useCookie`, `useRequestEvent`, `useFetch`) and register lifecycle cleanup before the first `await`. An awaited dynamic import can lose that context; capture request values synchronously instead of looking them up afterward.
+
 ## Contents
 
 - Core
@@ -717,11 +719,11 @@ Replace Core `useQuery` with real-time subscription version:
 **File:** `composables/useQuery.ts`
 
 ```ts
-import type { AsyncData } from '#app';
 import { buildRequestInit } from '@datocms/cda-client';
 import type { TadaDocumentNode } from 'gql.tada';
 import { hash } from 'ohash';
-import { useQuerySubscription } from 'vue-datocms';
+import { subscribeToQuery } from 'datocms-listen';
+import { onScopeDispose, shallowRef } from 'vue';
 
 const isServer = typeof window === 'undefined';
 
@@ -744,7 +746,7 @@ export async function useQuery<Result, Variables>(
     throw new Error('Missing API token');
   }
 
-  const initialData = await useFetch('https://graphql.datocms.com/', {
+  const initialData = useFetch('https://graphql.datocms.com/', {
     ...buildRequestInit(query, {
       token: apiToken,
       includeDrafts: Boolean(draftMode),
@@ -761,31 +763,49 @@ export async function useQuery<Result, Variables>(
     },
   });
 
-  if (!draftMode || isServer) {
-    return initialData.data;
-  }
+  if (!draftMode || isServer) return (await initialData).data;
 
-  return useQuerySubscription<Result, Variables>({
+  const data = shallowRef<Result>();
+  let disposed = false;
+  let unsubscribe: (() => void) | undefined;
+  onScopeDispose(() => {
+    disposed = true;
+    unsubscribe?.();
+  });
+
+  await initialData;
+  if (disposed) return data;
+  data.value = initialData.data.value as Result | undefined;
+  void subscribeToQuery<Result, Variables>({
     query,
     variables: options?.variables,
     token: apiToken,
-    initialData: (initialData as AsyncData<Result, null>).data.value,
     includeDrafts: true,
     excludeInvalid: true,
-  }).data;
+    onUpdate: ({ response }) => {
+      if (!disposed) data.value = response.data;
+    },
+  }).then((stop) => {
+    if (disposed) stop();
+    else unsubscribe = stop;
+  }).catch(() => {
+    if (!disposed) console.error('Unable to start real-time updates');
+  });
+  return data;
 }
 ```
 
 Key points:
 
-- Draft mode ON + client-side: `useQuerySubscription` from `vue-datocms`
+- Draft mode ON + client-side: `subscribeToQuery` from `datocms-listen`
 - Draft mode OFF or server-side: return data directly
+- Register disposal before awaiting the fetch, and immediately close a connection that finishes opening after disposal. This covers both navigation during the initial fetch and during subscription startup.
 
-**Combining with Content Link** — Keep `environment`, `contentLink` and `baseEditingUrl` consistent in both `buildRequestInit` and `useQuerySubscription`. Use the selected sandbox for both. If the query selects `_editingUrl`, retain `baseEditingUrl` for published reads too. Pass plain token and variable values to the subscription; key the consuming page by its route when query variables change so the previous subscription is disposed.
+**Combining with Content Link** — Keep `environment`, `contentLink` and `baseEditingUrl` consistent in both `buildRequestInit` and `subscribeToQuery`. Use the selected sandbox for both. If the query selects `_editingUrl`, retain `baseEditingUrl` for published reads too. Pass plain token and variable values to the subscription; key the consuming page by its route when query variables change so the previous subscription is disposed.
 
 ### Real-Time Dependencies
 
-- `vue-datocms` — `useQuerySubscription` composable
+- `datocms-listen` — `subscribeToQuery` listener
 
 ## Cache Tags (Optional)
 

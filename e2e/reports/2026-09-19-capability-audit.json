@@ -16,8 +16,7 @@
         "2026-09-19-remaining-gaps.md"
       ],
       "gaps": [
-        "Full filter/operator matrix",
-        "SEO, image and video live delivery"
+        "Full filter/operator matrix"
       ]
     },
     {
@@ -107,13 +106,13 @@
       "scope": "Images, SEO, Structured Text, video, search and crawler routes",
       "evidence": [
         "2026-09-18-production-readiness.md",
-        "2026-09-19-catalog-workflows.md"
+        "2026-09-19-catalog-workflows.md",
+        "2026-09-19-remaining-gaps.md"
       ],
       "gaps": [
-        "Each component in each framework has not been browser tested",
-        "Real search indexing and crawl exclusion",
-        "Video playback states",
-        "Robots and sitemap production crawl"
+        "Each component in each framework has not been browser tested; live image, SEO, favicon and video delivery are covered in Next.js",
+        "Real search indexing and external crawl exclusion",
+        "External robots/sitemap production crawl; local production output is independently checked"
       ]
     },
     {

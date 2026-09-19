@@ -3,12 +3,14 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@datocms/cda-client": "0.3.2",
+    "datocms-listen": "1.0.4",
+    "gql.tada": "1.11.3",
     "nuxt": "4.5.2",
-    "vue-datocms": "8.1.19",
-    "@datocms/cda-client": "0.3.2"
+    "vue-datocms": "8.1.19"
   },
   "devDependencies": {
-    "typescript": "6.0.3",
-    "@types/node": "22.19.17"
+    "@types/node": "22.19.17",
+    "typescript": "6.0.3"
   }
 }

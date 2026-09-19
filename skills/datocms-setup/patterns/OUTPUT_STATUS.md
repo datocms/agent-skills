@@ -21,7 +21,7 @@ This status requires that:
 - All environment variables reference real values or are populated
 - All route mappings and model API keys match the actual DatoCMS project
 - No placeholder comments remain in generated code
-- The feature works end-to-end without manual edits
+- The feature has been exercised end-to-end without manual edits; for frontend flows, serve and check a representative public page and the affected preview flow, not just the build
 
 ## Final handoff requirements
 
@@ -67,6 +67,6 @@ Examples by recipe category:
 ### General rules
 
 - Always assume the dev server is already running — never tell the user to start it
-- Use the actual env var names and route paths from the generated code, not generic placeholders
+- Use the actual env var names and route paths from the generated code; keep credential placeholders in shared URLs and command output
 - If the recipe is `scaffolded` (tokens still placeholder), note which values must be filled in before testing
 - Keep it to 1-3 steps — this is a quick smoke test, not a full QA checklist

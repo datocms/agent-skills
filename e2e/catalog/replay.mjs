@@ -19,13 +19,17 @@ export function replayVisualApplication({
   project,
   state,
   save,
+  scenario = "visual-editing",
 }) {
   previous = resolve(previous);
   const prior = JSON.parse(readFileSync(join(previous, "result.json")));
   const provenance = JSON.parse(
     readFileSync(join(previous, "native/provenance.json")),
   );
-  assert.equal(prior.scenario, "visual-editing");
+  assert.ok(
+    ["visual-editing", "public-site", "video-playback"].includes(scenario),
+  );
+  assert.equal(prior.scenario, scenario);
   assert.equal(prior.siteId, project.siteId);
   assert.equal(
     prior.framework ?? "nextjs",
@@ -36,11 +40,11 @@ export function replayVisualApplication({
   const modelId = provenance.prompt.match(
     /Map the catalog_article model ([\w-]+) to /,
   )?.[1];
-  assert.ok(modelId, "Original prompt does not identify the fixture model");
-  const bindings = [
-    [prior.environment, project.environment],
-    [modelId, state.records[0].item_type.id],
-  ];
+  const bindings = [[prior.environment, project.environment]];
+  if (scenario === "visual-editing") {
+    assert.ok(modelId, "Original prompt does not identify the fixture model");
+    bindings.push([modelId, state.records[0].item_type.id]);
+  }
   const source = join(previous, "workspace");
   const allowedDirectories = [
     "src",

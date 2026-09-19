@@ -8,7 +8,9 @@ These scenarios exercise workflows that were missing from the regression suites.
 | CDA | Real GraphQL reads, pagination and totals, locale fallback, embedded records and blocks rendered in Chrome, draft separation | Server-rendered React module |
 | Migration | Recovery from partial schema, existing-record preservation, tracking records, independent no-op rerun, execution from empty schema | Owned disposable sandbox; no promotion |
 | Import | Quoted and multiline CSV, updates and preservation, attachment bytes from the CDN, shared assets, duplicate-free independent rerun | CSV and local files; not WordPress or Contentful importers |
-| Visual editing | Production Next.js, Nuxt, SvelteKit, or Astro app; real preview links, authenticated draft flow, exact edit destination, live CMS updates, embedded navigation and record selection, return to published content | Controlled iframe host by default; consult the results report for which frameworks passed |
+| Visual editing | Production Next.js, Nuxt, SvelteKit, or Astro app; real preview links, authenticated draft flow, exact edit destination, live CMS updates, embedded navigation and record selection, previous subscription closed, return to published content | Controlled iframe host by default; consult the results report for which frameworks passed |
+| Public site | Published/localized pages and 404s; SEO, canonical and favicon without browser JavaScript; actual responsive-image delivery; null-image handling; robots rules and exact sitemap URLs/lastmod | Next.js production server, real CDA/CDN; no external search crawler or hosting deployment |
+| Video playback | Real processed clip and streaming requests; browser play/pause, player seeking and completion; privacy defaults; absent clip and 404s | Next.js production server, generated synthetic clip, real DatoCMS/Mux processing |
 | Promotion | Real CLI migrations and promotion; original primary preservation; failed migration and validation cannot promote; maintenance released on every exit | Disposable project only; restores original primary before removing the owned sandbox |
 | Schema types | Actual schema inspection, scoped generation with linked dependencies, compile-time field/localization checks and stable independent regeneration | Read-only CMS operation in an owned sandbox |
 | GraphQL types | Real sandbox schema generation, result/variable type errors enforced, generated typed query executed against published CDA content | gql.tada in a Next.js fixture; distinct from CMA schema types |
@@ -36,7 +38,7 @@ node_modules/.bin/tsx e2e/catalog/live.mjs \
   --case cda --output local/catalog-live/cda-01
 ```
 
-Choose one of `cda`, `migration`, `import`, `visual-editing`, `promotion`, `schema-types`, `schema-diff`, `graphql-types`, or `scheduling` per invocation. Visual editing also requires `E2E_DATOCMS_EDITING_BASE` with the authorized project's `https://PROJECT.admin.datocms.com` URL. The live runner requires an empty primary schema, forks an owned sandbox, and removes it in `finally`. Web scenarios mint temporary CDA-only tokens and revoke them during cleanup. Never run against a production project.
+Choose one of `cda`, `migration`, `import`, `visual-editing`, `promotion`, `schema-types`, `schema-diff`, `graphql-types`, `scheduling`, `public-site`, or `video-playback` per invocation. Visual editing also requires `E2E_DATOCMS_EDITING_BASE` with the authorized project's `https://PROJECT.admin.datocms.com` URL. The live runner requires an empty primary schema, forks an owned sandbox, and removes it in `finally`. Web scenarios mint temporary CDA-only tokens and revoke them during cleanup. Never run against a production project.
 
 For visual editing, select `--framework nextjs`, `nuxt`, `sveltekit`, or `astro` (default `nextjs`). Install the matching `e2e/catalog/web-FRAMEWORK` dependency set with `npm ci`; Next.js uses `e2e/catalog/web`. All frameworks verify the same user outcomes. React/Vue/Svelte must update in place; Astro may use its documented QueryListener page reload. Rechecks must specify the original framework and can rebind environment/model IDs in framework source files without changing application logic.
 
@@ -74,11 +76,17 @@ node e2e/catalog/plugin.mjs \
 
 Visual-editing checks can also be repeated without a model call by passing `--recheck local/catalog-live/visual-01` to the live runner. This creates a fresh sandbox and reuses the original application and dependency installation. It substitutes only the environment and model IDs explicitly supplied in the original task; `replay.json` records every substitution and file hash. It does not repair application logic. These runs are independent outcome rechecks, not new skill evaluations.
 
+Public-site and video-playback cases support the same `--recheck` flow. Only the supplied environment is rebound; the original application must query the new fixture's images and videos. Rechecks require the same scenario, site and framework.
+
 Schema-diff checks also support `--recheck`: the original helper and generated migration are copied byte-for-byte, then independently applied to a fresh empty target. The runner supplies new sandbox authentication and records file hashes; it does not regenerate or repair the migration.
 
 For an existing-app debugging task, use `--repair <original-output> --issue "observed runtime symptom"` instead of `--recheck`. The runner rebinds fixture coordinates, then starts a new evaluated session against the current skills. These results are explicitly labelled `guided-repair`, retain their failed source attempt, and are not counted as fresh implementations. The independent outcome checks stay unchanged.
 
 An account usage-exhaustion error stops the native actor, records `paused-usage-limit`, and exits with code 2 after cleanup. Do not retry a quota failure or consume reset credits. Resume only when ordinary usage is available. This check is separate from application API rate limiting.
+
+## Reference diagnostic
+
+After installing `e2e/catalog/web-nuxt` dependencies, run `node e2e/catalog/nuxt-reference.mjs --output local/catalog-reference/run-01`. It extracts the literal real-time composable from the Nuxt reference, checks its types, and exercises real Vue effect-scope disposal before and after a connection opens. Fetch and subscription transport are controlled for deterministic timing. This model-free diagnostic complements the live browser checks and does not count as a CMS E2E or a fresh skill evaluation.
 
 ## Interpret results
 

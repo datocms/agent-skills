@@ -234,7 +234,8 @@ Follow loaded references and shared rules:
 - Add or preserve `includeDrafts` option for draft-aware querying
 - Switch between published and draft CDA tokens based on that option
 - Default to `excludeInvalid: true` for draft-aware wrapper patterns unless task explicitly needs invalid records during schema work
-- Enable repo's existing `contentLink` mode (`'v1'` or `'vercel-v1'`) plus `baseEditingUrl` only in draft / visual-editing contexts
+- Enable repo's existing `contentLink` mode (`'v1'` or `'vercel-v1'`) only in draft / visual-editing contexts
+- Supply the public `baseEditingUrl` whenever a query selects `_editingUrl`, including published reads
 
 ### Framework rules
 

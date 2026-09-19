@@ -46,7 +46,8 @@ Framework-specific libraries wrap SSE subscription:
 | - | - | - |
 | React / Next.js | `react-datocms` | `useQuerySubscription` hook |
 | SvelteKit | `@datocms/svelte` | `querySubscription` store |
-| Nuxt (Vue) | `vue-datocms` | `useQuerySubscription` composable |
+| Nuxt | `datocms-listen` | `subscribeToQuery` with explicit Vue scope disposal; see `nuxt.md` |
+| Vue components | `vue-datocms` | `useQuerySubscription` composable; see lifecycle guidance in `vue-realtime.md` |
 | Astro | `@datocms/astro` | `QueryListener` component |
 
 ## Pattern: Fetch Initial + Subscribe

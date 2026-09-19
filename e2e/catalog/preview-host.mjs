@@ -66,9 +66,42 @@ export async function checkEmbeddedPreview({
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  await page.addInitScript(() => {
+    window.subscriptionLifecycle = {
+      document: crypto.randomUUID(),
+      sources: [],
+      updates: 0,
+      initial: [],
+    };
+    const OriginalEventSource = window.EventSource;
+    window.EventSource = class extends OriginalEventSource {
+      constructor(url, options) {
+        super(url, options);
+        window.subscriptionLifecycle.sources.push(this);
+        this.addEventListener("update", () => {
+          window.subscriptionLifecycle.updates++;
+        });
+      }
+    };
+  });
+  let websiteFrame;
   try {
     await page.goto(`http://localhost:${host.address().port}`);
     await page.evaluate(() => window.ready);
+    websiteFrame = page
+      .frames()
+      .find((frame) => frame.url().startsWith(state.origin));
+    assert.ok(websiteFrame, "Website iframe did not load");
+    await websiteFrame.waitForFunction(
+      () => window.subscriptionLifecycle.updates > 0,
+      {},
+      { timeout: 45000 },
+    );
+    const originalDocument = await websiteFrame.evaluate(() => {
+      const trace = window.subscriptionLifecycle;
+      trace.initial = [...trace.sources];
+      return trace.document;
+    });
     await page.evaluate(() =>
       window.website.navigateTo({ path: "/articles/article-1" }),
     );
@@ -110,12 +143,49 @@ export async function checkEmbeddedPreview({
     assert.equal(opened.itemId, state.records[1].id);
     assert.equal(opened.environment, state.environment.DATOCMS_ENVIRONMENT);
     assert.equal(opened.fieldPath, "title.en");
+    // A changed title alone can hide orphaned subscriptions from the old page.
+    // Full document navigation releases its sources; reused documents must
+    // explicitly close the previous subscription and establish the new one.
+    await websiteFrame.waitForFunction(
+      (document) => {
+        const trace = window.subscriptionLifecycle;
+        return trace.document !== document
+          ? trace.updates > 0
+          : trace.initial.every((source) => source.readyState === 2) &&
+              trace.sources.some(
+                (source) =>
+                  !trace.initial.includes(source) && source.readyState === 1,
+              );
+      },
+      originalDocument,
+      { timeout: 20000 },
+    );
+    observation.subscriptionLifecycle = await websiteFrame.evaluate(() => ({
+      opened: window.subscriptionLifecycle.sources.length,
+      closed: window.subscriptionLifecycle.sources.filter(
+        (source) => source.readyState === 2,
+      ).length,
+      active: window.subscriptionLifecycle.sources.filter(
+        (source) => source.readyState === 1,
+      ).length,
+    }));
     assert.deepEqual(errors, [], "Embedded preview runtime errors");
     save("embedded-preview.json", observation);
-    return "embedded host navigation, selected-record state and click-to-edit use the real iframe protocol";
+    return "embedded navigation selects the correct record and field and releases the previous subscription";
   } finally {
     save("embedded-preview-checkpoint.json", {
       errors,
+      subscriptionLifecycle: await websiteFrame
+        ?.evaluate(() => ({
+          opened: window.subscriptionLifecycle?.sources.length,
+          initialStates: window.subscriptionLifecycle?.initial.map(
+            (source) => source.readyState,
+          ),
+          currentStates: window.subscriptionLifecycle?.sources.map(
+            (source) => source.readyState,
+          ),
+        }))
+        .catch(() => null),
       observation: await page
         .evaluate(() => ({ states: window.states, opened: window.opened }))
         .catch(() => null),
