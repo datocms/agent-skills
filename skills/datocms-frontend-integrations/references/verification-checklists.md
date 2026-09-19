@@ -40,7 +40,8 @@ When real credentials and routes are available, run the app and check a represen
   - SvelteKit uses `onNavigateTo` and `currentPath`.
   - Astro uses only its supported props.
 - Structured Text boundaries are present only where the framework expects them.
-- **Stega leakage check.** Every text/string field value coming from the CDA is only used for direct render (text/HTML output). Any non-render use — equality / `includes` / `switch` comparisons, `split` / `replace` / regex, slug or URL generation, SEO meta / `<title>` / Open Graph / JSON-LD, analytics events, webhook or third-party payloads, cache keys, persisted writes, length checks — is wrapped in `stripStega()`. Values whose source field type is the dedicated DatoCMS `slug` field never carry stega and are exempt; for unknown provenance, default to wrapping. When debugging suspected leaks, use `revealStega()` to see the encoding (it's zero-width Unicode and invisible to `console.log`). For a field structurally never rendered as prose (key/code/slug-in-text/ID/external-system value), consider the source-side fix instead of wrapping every read — set CMA `content_link_enabled: false` on the field so CDA never encodes it (see `content-link-concepts.md` → Source-side opt-out).
+- **Editing targets:** Check resolved targets and collision warnings with encoded input. Each group has one owner; independent fields retain their own targets; intentionally non-editable text contains no stega in the rendered DOM.
+- **Stega leakage:** Apply the [per-use stripping rules](./content-link-concepts.md#when-to-strip-stega), including non-render values, known slug-field exemptions, and source-side opt-out where appropriate. Use `revealStega()` to inspect invisible metadata; a successful build alone does not verify editing behavior.
 
 ### Real-Time Updates
 

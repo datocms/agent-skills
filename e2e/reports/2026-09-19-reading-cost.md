@@ -4,6 +4,8 @@ The retained changes remove 557 net lines of repeated skill guidance, with no ma
 
 This supports a conservative reduction, not a claim of unchanged performance on every task or model. The [attempt ledger](2026-09-19-reading-cost.json) includes every model session, source/transcript hashes, errors, actual usage, independent checks and review limitations. Raw evidence remains under `local/ablation/`.
 
+The subsequent [guidance corrections and reserved acceptance round](2026-09-19-guidance-acceptance.md) addresses the observed weaknesses and tests ordinary requests in new fixtures. This report remains the unchanged historical comparison; later results and remaining failures are recorded separately.
+
 ## What was reduced
 
 | Area | Before → after, estimated tokens | Decision |

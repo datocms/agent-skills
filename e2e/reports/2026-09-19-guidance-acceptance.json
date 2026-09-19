@@ -1,0 +1,1135 @@
+{
+  "date": "2026-09-19",
+  "status": "completed-with-unresolved-acceptance-failure",
+  "model": "gpt-5.6-luna",
+  "reasoningEffort": "medium",
+  "baselineRevision": "7b0dfa5f26c5826ae1f698ba31201d8cd21ff586",
+  "nativeSessions": 18,
+  "usageResetsUsed": 0,
+  "scope": "Local repository fixtures and synthetic data only; no live CMS, Vercel, account, publishing or billing changes.",
+  "protocol": {
+    "independence": "Fresh native sessions, isolated workspace skills and external outcome checks. Author also grades advisory results; not author-blinded.",
+    "invocation": "Original two regression tasks explicitly name skills; all seven new task families use ordinary requests without skill names.",
+    "snapshots": [
+      "candidate-1: scoped documentation flags and shared per-use group/stripping rules",
+      "candidate-2: concrete group example and corrected boundary explanation",
+      "candidate-3: replace duplicate verification prose with two concise canonical checks"
+    ],
+    "acceptance": "Initial six reserved cases were frozen before execution. Collection case became a regression after its result informed revisions. Notice task was written and frozen before any notice actor output; initial session produced no work, then unchanged retry ran.",
+    "stoppingRule": "Do not add repetitive instructions to force one stubborn collection example green. Preserve its failure and keep draft status. No release sign-off from this round."
+  },
+  "documents": [
+    {
+      "path": "skills/datocms-cli/references/cli-setup.md",
+      "beforeTokens": 2269,
+      "afterTokens": 2294,
+      "deltaTokens": 25,
+      "sha256": "0c14276ca774c841073fc209b2588d065572f312e76dc22e375bfe85f3c929e0"
+    },
+    {
+      "path": "skills/datocms-cli/references/direct-cma-calls.md",
+      "beforeTokens": 3920,
+      "afterTokens": 3969,
+      "deltaTokens": 49,
+      "sha256": "790c2f07a1538f71c631ee7b3aee0e2f8afa4c86ad44c1f9067da11d99ed4f72"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/content-link-concepts.md",
+      "beforeTokens": 5886,
+      "afterTokens": 5908,
+      "deltaTokens": 22,
+      "sha256": "374511c820f71cdef3a8af3cf00766aebea83a7a73c5334b305d2b08c42f1eff"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/verification-checklists.md",
+      "beforeTokens": 1319,
+      "afterTokens": 1200,
+      "deltaTokens": -119,
+      "sha256": "d2c1b0cc01ad9441ccb155bcf91a3d971491d0670bb3fdf2e157e552230c7bec"
+    }
+  ],
+  "netTokenDeltaFromPriorPrHead": -23,
+  "finalSkillHashes": {
+    "skills/datocms-cda/SKILL.md": "52b77427aa8708156571470efc5655264f974949d14f74256a23fc0388d51b36",
+    "skills/datocms-cda/agents/openai.yaml": "d70c5e161aa58c9758c849033acbb8c4a14c6cb8e49ff0453ed4f442ec86a25e",
+    "skills/datocms-cda/references/client-and-config.md": "55004e032b2d3d8872e85b9f5fe42e2c25697f89f09262567340f2b0ad684e17",
+    "skills/datocms-cda/references/draft-caching-environments.md": "a07e894e2f5fc80f73e22503adcc6a68204c3cd7677be60bd6a04e90d30120eb",
+    "skills/datocms-cda/references/filtering.md": "05fa398691e3d8178c2657188481e7457057c6ddb591637133b67c7c834d2579",
+    "skills/datocms-cda/references/fragment-patterns.md": "6dbda7de1f207e0079f21b88970441ecd39d74dd9f2f2f7c5493a5cfbfb7d189",
+    "skills/datocms-cda/references/images-and-videos.md": "906663210018e3b509392d78b3fe729c41f199f1a3e1a744007e1d9f436820b5",
+    "skills/datocms-cda/references/localization.md": "97614d2cffb5d28303055cc171e986a437db42f9d4ea3c873e75618c7ab0c7a7",
+    "skills/datocms-cda/references/modular-content.md": "cc496f5004718364500bc1695c2f547c4c1d23bd1ecb8ccb59aa3cb45f8dfc36",
+    "skills/datocms-cda/references/pagination-and-ordering.md": "e20fc42b4bcd84e1273d9c7a5267f158f37513f888200420b1d9afc762292895",
+    "skills/datocms-cda/references/querying-basics.md": "ded5a23712c9264659d672c0ff3b16e72ca63a485c42fb17d95f48b31345a761",
+    "skills/datocms-cda/references/seo-and-meta.md": "7437bafea6ee0de981d1ba90965fd52d792c1e962cc724d8ade13a5a6e84b241",
+    "skills/datocms-cda/references/structured-text.md": "a92f40e42c29a6a17f8c97918580d28598bcfb0e1818a510cd53601e3eb1e798",
+    "skills/datocms-cda/references/type-generation.md": "d16039ae6dc1102af33c059e0afd330fa9f363e2513bc9cb332c5439c8e8dcf2",
+    "skills/datocms-cli/SKILL.md": "24e7756dd7ad0dfe2b919fd92b7838fe81f1dbfa0592171110d7d2cda2b0a009",
+    "skills/datocms-cli/agents/openai.yaml": "8cd471a5363a7bc30c97541c45eaff73837003fc5a8026a4e67ef75a0f58ff0e",
+    "skills/datocms-cli/references/blueprint-sync.md": "550130b7bfbdc3e6d7e82f1c636cabd954fcbc686a13636e3a00bf177c8d78a3",
+    "skills/datocms-cli/references/cli-plugin-management.md": "0f98684115dd16a87cee1a1e57ab635a6cdcd543b25043201f9bd87e0cf68aea",
+    "skills/datocms-cli/references/cli-setup.md": "0c14276ca774c841073fc209b2588d065572f312e76dc22e375bfe85f3c929e0",
+    "skills/datocms-cli/references/cma-script.md": "4fde97c76482de1b7622448e6eef9271da3a7f26695f1a83baa6d6d2a3368933",
+    "skills/datocms-cli/references/creating-migrations.md": "5cde7b0e4c6886bf37917247ece87f335053cfe9b4880c8213ef64d63ab91f0d",
+    "skills/datocms-cli/references/deployment-workflow.md": "e763006f69042e33295f58a74f33bfc7296ac717e86ffa55e6014e70f6dfcdf4",
+    "skills/datocms-cli/references/direct-cma-calls.md": "790c2f07a1538f71c631ee7b3aee0e2f8afa4c86ad44c1f9067da11d99ed4f72",
+    "skills/datocms-cli/references/environment-commands.md": "76dfa85df108d999abde976251cb90c2b5b44cf6a149aa06d24fc4a29040df57",
+    "skills/datocms-cli/references/importing-content.md": "394356ff6fcce4db442ef111c6a9d7dd6bf3952804a0616735eac4309fecebc5",
+    "skills/datocms-cli/references/running-migrations.md": "83deb0ef077c908bad79cfec153d32280b2c5d7bb1795f79632a55909abd3ab0",
+    "skills/datocms-cli/references/schema-generate.md": "8106cea5406f1036e4beeae118ea8e2466eadbca430e24b97ba75223e2348acd",
+    "skills/datocms-cli/references/schema-inspect.md": "7b4c380e43cbfce4f2535b33818ba236fac02f8adc56f3b4cb5164f7e8b3224a",
+    "skills/datocms-cma/SKILL.md": "7670e08b38d873d1b8c3e3bb0d5a448f14b761066549dad03a51097276eb8e13",
+    "skills/datocms-cma/agents/openai.yaml": "15151fa650643a988eb3b257580dcd9ba4da0f4817e92039b16d85435c6bfe8b",
+    "skills/datocms-cma/references/access-control.md": "d653a35806d2733e3dcfd9f074b112755f603d8a217ae0748660050b97a4b14b",
+    "skills/datocms-cma/references/client-setup-and-errors.md": "8ca6ad925a2871fe3c1d8a7314b94ec27b96f749c58af646ed1e4de8808b6b59",
+    "skills/datocms-cma/references/client-types-and-behaviors.md": "86984ce04eaecc3fac58395f25b43e121928920efed1ea7789f660c62eb90c24",
+    "skills/datocms-cma/references/editing-records.md": "6528dc00aadefedcbfa7543ef3cbe6d7db5f7498e1ba431310cc0782d02cbad5",
+    "skills/datocms-cma/references/environments.md": "54f0575b3a7001e147230c3ab7d09c6687e5bdb7dc807b511e51a6ec9f73e468",
+    "skills/datocms-cma/references/filtering-and-pagination.md": "42321155100e72c5e429b57f46c75315c98a9b6bc49bbcfbe2f7fbc11e7597e6",
+    "skills/datocms-cma/references/localization.md": "5b90ba80ea02d129044493117e97f31b7df208c2e7edb83e9b830d3d73caedcb",
+    "skills/datocms-cma/references/mcp.md": "dabf96f7286d47d95b8cf62de4cb7ad19126ea65a72cb804d018746116e5172e",
+    "skills/datocms-cma/references/migration-patterns.md": "919176d22a4aa81cc691445f6d27eb9196f9e2a8930039f98ac965fdb96b7e89",
+    "skills/datocms-cma/references/project-settings-and-usage.md": "f8990f06f6f3a7241c2424e28e9fa662c140f1c51be8ed1e2396f6c37d9032e1",
+    "skills/datocms-cma/references/records.md": "6e3a14c5e8f49c2cededb5019e2e8cab6de6a3b65be8c7922a35831994eecfbb",
+    "skills/datocms-cma/references/resource-gotchas.md": "b84418a0fca82ed278706696b423beb7315a09fe39cc3e2c1dcffcbfccc7f20f",
+    "skills/datocms-cma/references/schema.md": "c07841063b00c445d976ca374338070714b7dd5f4038f29b47740264e3549d55",
+    "skills/datocms-cma/references/type-generation.md": "5c00e5e4191d31f2c5be1680706738ce8db9f7f47948a995039cf3d3b18123c1",
+    "skills/datocms-cma/references/uploads.md": "7d15bff6daa78718f8a1bdb4a4f3675576461c87894be77421f2852e9fecbb67",
+    "skills/datocms-content-modeling/SKILL.md": "08c7f82a1abfaeff78b84538cd4cd84afb7f880490c4359095ac053a2c4c562c",
+    "skills/datocms-content-modeling/agents/openai.yaml": "6309fb9f2d0025189202c3252b540f801d8f56efe79ce96ef61c48836b89779a",
+    "skills/datocms-content-modeling/references/block-fields-and-structured-text.md": "218a3ca9c0bea5f82673c2cea3d44809c2790ba9c630ef0a227540f3f7cf7bc2",
+    "skills/datocms-content-modeling/references/content-reuse.md": "9a1743b843bc75ccf7b8a87a257a469a3d6bf1996e7f5b322eb84039575d00e6",
+    "skills/datocms-content-modeling/references/field-configuration.md": "ccc1473ee84e375374c8c37f588f21cf5101a5014c8bf20707fbbc6de2dbb720",
+    "skills/datocms-content-modeling/references/model-configuration.md": "b597fbc6a70d0269e22465526ba8a18906ec7f27307c7f68e88f96ae7f5efa97",
+    "skills/datocms-content-modeling/references/models-vs-blocks.md": "754afe48db45fe424d4e615e06d0fdc6a07cf20a6c1e39cbdcdfca2d2b7d0195",
+    "skills/datocms-content-modeling/references/separation-of-concerns.md": "7d9c835338fc4cc42bc339eb00b9823ef94972813cd9147a47fae46bc31c93e8",
+    "skills/datocms-content-modeling/references/taxonomy-classification.md": "bdf721ced2b86042fe4acb2f166811dcec606541cebb07706fbb75905b6d93e3",
+    "skills/datocms-content-modeling/references/ui-organization.md": "f517f52fb86e7eccf99b78b8b731744707a1c7e62b4d18c6d421de986064c0a9",
+    "skills/datocms-feedback/SKILL.md": "c3342ced883f121ac0f81e4b00ed9f2da20cfafffe3c233cff9f410507fcbfb7",
+    "skills/datocms-feedback/agents/openai.yaml": "6ac27f458c10c041910b15ef83c097caa190f701afb20ba558950d984aa01a4c",
+    "skills/datocms-frontend-integrations/SKILL.md": "95fbc8f399c46aabd58bfa34193ae5aa84a809f3feb2d0de9725095e99eacf1d",
+    "skills/datocms-frontend-integrations/agents/openai.yaml": "a937f74cd898089bfd69facb8f5e8558f9499cef42c17970c1205128b46959a4",
+    "skills/datocms-frontend-integrations/references/astro-content-link.md": "8db16545650fc5d56825ebbf8a3231df112c78fa92c52af990e17612866df94b",
+    "skills/datocms-frontend-integrations/references/astro-image.md": "6c3828f274eb46cd3e6634048bbf14936d9c3e843f8be485b68285e62619b23b",
+    "skills/datocms-frontend-integrations/references/astro-realtime.md": "11f7cc3f36b649e7e7568693d5edc96d9dd779b01fded236cdb7793c3cb5a8dc",
+    "skills/datocms-frontend-integrations/references/astro-seo.md": "c33f8d4d6b2861893e7ed1e1ce7fb79e3546c6106b153ea878544b41c42b0dbe",
+    "skills/datocms-frontend-integrations/references/astro-structured-text.md": "b14dac33eaa962db6551a7220824db4bdc2e5c802f80f5d5e67e1ed767d7d0f2",
+    "skills/datocms-frontend-integrations/references/astro.md": "d7bae2dc1906a50dc6a62015b55ea8f9d1ee4156a6a5bd81956734c93a297469",
+    "skills/datocms-frontend-integrations/references/cache-tag-adapters.md": "0569331510880bed93c8b58079e7d0a1e54353b7c1b2f5d7ceddc12cd33fa6d5",
+    "skills/datocms-frontend-integrations/references/content-link-concepts.md": "374511c820f71cdef3a8af3cf00766aebea83a7a73c5334b305d2b08c42f1eff",
+    "skills/datocms-frontend-integrations/references/draft-mode-concepts.md": "dbf13db86030d4be4ffb119176176d28b53f0515869e0e1a7b2175d3e43f4f2e",
+    "skills/datocms-frontend-integrations/references/image-concepts.md": "2a392091f0e6b1fa1f49023cdc6a844e8f78c96c587f4763aaa1ae4b380ff7e8",
+    "skills/datocms-frontend-integrations/references/nextjs.md": "ceda4cc2ae7f01424a47ac3ce76813b07a3f7b7b3882cedfe78bb00aa26cd1ac",
+    "skills/datocms-frontend-integrations/references/nuxt.md": "88401d6d339c11b7de7261f55fbca5a4985f9b7e62b349a259863aacca6af2b9",
+    "skills/datocms-frontend-integrations/references/react-content-link.md": "8078f6726eaa9065feaf1fd944bef702962639e9a7b33dbde0373561af82cf60",
+    "skills/datocms-frontend-integrations/references/react-image.md": "0355da9d2c8c7bdaa90d353d3894483b95f05522184191b50eb255caf3029558",
+    "skills/datocms-frontend-integrations/references/react-realtime.md": "c5f3213630680516a861453c10ee22d39543726b07f635233c16546cb188fe96",
+    "skills/datocms-frontend-integrations/references/react-seo.md": "07c62682f54513870a805b61f2ecae7385a1a678344a70c00347dcf0a6893d12",
+    "skills/datocms-frontend-integrations/references/react-site-search.md": "0a52c205eeb17f7be46c84bf360252410221716aeb9f4451bba1d28ed3adffc7",
+    "skills/datocms-frontend-integrations/references/react-structured-text.md": "0c30a562a224e2e2a6bf943912626e0a0f703c193faf087d93bf9929f8db5bb4",
+    "skills/datocms-frontend-integrations/references/react-video-player.md": "c759cb9b1342746e405f6a056b87f37a2e6b6cf5dcce696212fffa8512975480",
+    "skills/datocms-frontend-integrations/references/realtime-concepts.md": "a463c02b459a8e229bc716f53cafc2a27a21e32c759ff833dc98e526ce85f12f",
+    "skills/datocms-frontend-integrations/references/remix.md": "8e71c6d1fe082e9d55d24a2a330ee6dc3d65e5de96b9b1b66b8354dec441f16a",
+    "skills/datocms-frontend-integrations/references/robots-and-sitemaps.md": "a79b5a178715899c334a926036a4d8e23e031da8143814b7a7d9339f1a7202a4",
+    "skills/datocms-frontend-integrations/references/seo-concepts.md": "f4bb46ab632b1bedf0f535fab33e61c2be7a248395bc69f6c3c2a6254b008333",
+    "skills/datocms-frontend-integrations/references/site-search-api.md": "8769318b6ce77db1b2b8684a657e26cd956349952bcd2108f441fb59c5a59e6f",
+    "skills/datocms-frontend-integrations/references/site-search-concepts.md": "926688faa8d2744bcb913a34624ff55959f1119873bb949eaed2e554500b92e6",
+    "skills/datocms-frontend-integrations/references/svelte-content-link.md": "a437dae5d0cef537b6d7336898ea7bec5e7b1123f43a916d2ef39572c7ae0c74",
+    "skills/datocms-frontend-integrations/references/svelte-image.md": "cd4883c43ca8af2b78c5d906f1256479336ab75f8dcb9a43dd9d680b2089d5bd",
+    "skills/datocms-frontend-integrations/references/svelte-realtime.md": "569f727d17fac58da639e7c5e1ef375a0ef3e1b52f7de90134ff6c8155058aac",
+    "skills/datocms-frontend-integrations/references/svelte-seo.md": "1dbdc584e1ea9b06a0a612d96c8019773682cc409220afddaf7a0ac32bb68de2",
+    "skills/datocms-frontend-integrations/references/svelte-structured-text.md": "78effe717557029487683bda9ecb6a4c4448cdb718c21423b4ad378a24704984",
+    "skills/datocms-frontend-integrations/references/svelte-video-player.md": "688bfe90965f0c5dcf964cf42fe46ba339af0a2c7ac3e8e2fff6e1112ed6bee3",
+    "skills/datocms-frontend-integrations/references/sveltekit.md": "2300227eef2243684522a6a1331b60bd2c2e1d3726083f76099df84b99235ee8",
+    "skills/datocms-frontend-integrations/references/url-builders.md": "a3c29ada393bee18271b0bab11ea76f484c3ce80cbd094e84209ab13a99f4789",
+    "skills/datocms-frontend-integrations/references/verification-checklists.md": "d2c1b0cc01ad9441ccb155bcf91a3d971491d0670bb3fdf2e157e552230c7bec",
+    "skills/datocms-frontend-integrations/references/video-player-concepts.md": "6a884f24ca592b8f43952c6f8c94e09736d671a3947dee24c456dbb7c542355c",
+    "skills/datocms-frontend-integrations/references/visual-editing-concepts.md": "8e4e635f606e31ac6b705c20211a9b6263a3480e0e129235bf3cff1aca300a88",
+    "skills/datocms-frontend-integrations/references/vue-content-link.md": "501139ec6511778463e71b79635754255993649c325eb44349da79cdc20e3723",
+    "skills/datocms-frontend-integrations/references/vue-image.md": "031ff141a7be1510c455723aa3acd5d170a14d166912db689b997a5064dd6b48",
+    "skills/datocms-frontend-integrations/references/vue-realtime.md": "8d4bb0a77f4c90bb9bc4588ce6a0feffe111e758597e2f94b13880175cfba463",
+    "skills/datocms-frontend-integrations/references/vue-seo.md": "de4a8fd844061e378918e3994f3c3681d909af1930830009296a7a373d8187b7",
+    "skills/datocms-frontend-integrations/references/vue-site-search.md": "d68e41621e4bc71b0d9c80955bd5631f0392822e2a757b03d298d80083dd2bb0",
+    "skills/datocms-frontend-integrations/references/vue-structured-text.md": "3c1aa6fea61530a9c7f8bbcd0516b915ae9af41227206a56862b1bb338bc7b16",
+    "skills/datocms-frontend-integrations/references/vue-video-player.md": "375ef70dc39c83c2f6355a8beab28e98a8112a7b71a80f5ed79b0cd38c8b9edf",
+    "skills/datocms-frontend-integrations/references/web-previews-concepts.md": "a6363c1c5dee49f50580333454c6854d8343a7662f1a261f7c802014b45cd817",
+    "skills/datocms-plugin/SKILL.md": "97058ae40256ad16b24172de0c5c934faac029d76cc199f326d0298492616db5",
+    "skills/datocms-plugin/agents/openai.yaml": "0d6fcbc48291ea16ec70d2f052f38867002808d10254568869651f159a35c178",
+    "skills/datocms-plugin/references/asset-sources.md": "af4d0302f7b3423e5112ea6e89dbdcfbeb31375ba9fb97b0d38c20ac4d547574",
+    "skills/datocms-plugin/references/config-screen.md": "889bb8988b9d3c6857d07da445da8db16000eadaaf7c32998a26b76a416a11d9",
+    "skills/datocms-plugin/references/connect-conventions.md": "9c80bb7971bb2fd547ac080f44d98412bc65ba583bf432a4b9ff3f4b0366300a",
+    "skills/datocms-plugin/references/current-plugin-patterns.md": "d57e0aaa17ca0179597d5498994d79c977d0df3452c80ceaf9c9f4db82630c67",
+    "skills/datocms-plugin/references/custom-pages.md": "6fd3e6dd6bd21d1e1e031d0fb2b4f228bf7a4429a21c35d2cb83d169d6d3c9da",
+    "skills/datocms-plugin/references/dark-mode-upgrade.md": "6a50e21ce9c6adedf7acad4975950c221669a00ebb53cb838988600101e884ae",
+    "skills/datocms-plugin/references/design-datocms-react-ui-bridge.md": "09a0d6713348d9477e79ae9d1ab07bf9706dec323d75b6dbd7e8a0e29ca59cd5",
+    "skills/datocms-plugin/references/design-forms-and-controls.md": "9b4d50e07e4b6979f3277f2ac33a78766d1217a3b553ead8c6764c58d3ebd8a1",
+    "skills/datocms-plugin/references/design-foundations.md": "bfbb93a3e74398275797d3bebc24ea8c5987a57af6b60406881ac79cc10c535f",
+    "skills/datocms-plugin/references/design-layouts.md": "37ef847cb033803e4ccaecbef64b8efbb6854ef5ff29c8c1d4b6de3a73841945",
+    "skills/datocms-plugin/references/design-navigation-feedback-and-data-display.md": "a2e62c38d93bac418ac400c8c5011ae883f1f3a35d652fe87e555d8abdfd9ce0",
+    "skills/datocms-plugin/references/design-plugin-surfaces.md": "5169e33406feec8f9b47b64c77834abd04f1a0bb46860b94d365e2dbf647fcb7",
+    "skills/datocms-plugin/references/design-raw-css-fallbacks.md": "e3b91408a19c9876096bf870760cc6fe6aee29631c22c921b0d8e5488d8c373f",
+    "skills/datocms-plugin/references/design-tokens.md": "08b7430b530e2d36165a9d552d299b79bbc4b57b6cb40eca4304e6fc5a7f9665",
+    "skills/datocms-plugin/references/dropdown-actions.md": "924a206cca7438ace1347ee61872992a4656ca08aa7e7ba82e724b531cdcc6cf",
+    "skills/datocms-plugin/references/field-extensions.md": "7e136e02ae00e73168392c21a2e8818e21ee48e58e9821d107b2492dc107cb4e",
+    "skills/datocms-plugin/references/form-values.md": "6aa67ac0140da0a2230e7e1e32d9346e90304ad63f04f2acce8cb7c3b520d795",
+    "skills/datocms-plugin/references/inspectors.md": "1d371197141d5103bbe6f077332aeedc667481c73707273d05ac5467ef6c6d90",
+    "skills/datocms-plugin/references/lifecycle-hooks.md": "d878beb7add71d7db9b02a6da3677362e3c8622c3dd376559b52d67e5a35f057",
+    "skills/datocms-plugin/references/modals.md": "28189bdfab88fe1f05773b5d2eae03e13bc06119079c5d4e063319643ac00a22",
+    "skills/datocms-plugin/references/outlets.md": "bb811ebc1ec46f570b696ab67f96fd48f6f8a8674c042b1baffe4aa6e4363327",
+    "skills/datocms-plugin/references/permissions.md": "839bb2f3241440b2b47c8bfef711b6613eba4e4f4e2c0c17d5d82f987f5054af",
+    "skills/datocms-plugin/references/project-scaffold.md": "902effe991bf3768bd9d647fa219d984fab7c25ac290b7a5ff129bce4f263bfc",
+    "skills/datocms-plugin/references/rapid-patterns.md": "6a2929da223e40f5b93ab709a7a563e3922556fcc6617cb863e577b49abd8d6e",
+    "skills/datocms-plugin/references/record-presentation.md": "e2d1bb99a9a7bd5c7fba6423913fce605dca91f34f33a184a7b35d9a71458dea",
+    "skills/datocms-plugin/references/sdk-connect-and-frames.md": "bab032f9b3f69df859d5f1bb966dec704c73df6870143af7637be5c94514d4d3",
+    "skills/datocms-plugin/references/sdk-context-and-cma.md": "aee432ee6feb0ab3c2aa803823b6cd1ed453d4ffca476c4304742344a77c0a92",
+    "skills/datocms-plugin/references/sidebar-panels.md": "c9d5abb80da526e03384a69765f1b651df653f8b7b36c9b298ca5a6f940ac40c",
+    "skills/datocms-plugin/references/structured-text.md": "48cb76ee9e320c6b3379a1f5310c62270b82aae3c093a900d6bd852715344d4a",
+    "skills/datocms-plugin/references/surface-starters.md": "e8baae871d1ab946a2301124f77cb5fcd8ed0d5dca98f645e9a8eeb196315dc0",
+    "skills/datocms-plugin/references/upload-sidebars.md": "cbf7c78c6e71f76d34a8690d4daa338632b4d37e7fd2f60a8968d39afbdb8bbd",
+    "skills/datocms-setup/SKILL.md": "79d293ea5f1c16dc672cd32adaadf592268df0dff81f43f1a1b0fd983ab34630",
+    "skills/datocms-setup/agents/openai.yaml": "f9530646e2c3adcc150348670ef8e5f6a58f67c7d2898627cf8156db8b150b1a",
+    "skills/datocms-setup/patterns/MANDATORY_RULES.md": "3bdb2947e6451380a3a6ab0374607f05369c101b5d8f11a4f27360e6de10f7f4",
+    "skills/datocms-setup/patterns/OUTPUT_STATUS.md": "6b16126072f88a9195c82168187e355f689e18af8eebd22c72f42f79ee85435e",
+    "skills/datocms-setup/recipes/frontend-features/responsive-images/recipe.md": "e3fe3cb2ea8491c982635473cd5e4ec2d5d191d7fcc0174934d9ca3887ba2c48",
+    "skills/datocms-setup/recipes/frontend-features/robots-sitemaps/recipe.md": "abe2b3dc9b94d0082d685e6eef5375a9d05c8ed95a9f7494950e02a4a2170eef",
+    "skills/datocms-setup/recipes/frontend-features/seo/recipe.md": "16f9d2c383de6856426cdf236b5a5738821410ae31b1e69bfbd7795d66ddb70f",
+    "skills/datocms-setup/recipes/frontend-features/site-search/recipe.md": "02939c8b5e7c6fd6aebdb37aedc608f9e8a262bce1ef3e5d087995a99cff4f3a",
+    "skills/datocms-setup/recipes/frontend-features/structured-text/recipe.md": "766ee04589e6418b0359ab0de0fbdd0e8e6b916de5121481e7bfa3d3117f0292",
+    "skills/datocms-setup/recipes/frontend-features/video-player/recipe.md": "d188d76008cf3e8597ed8de0edad4a6c5795a59555efc2a5df8c9be0d03920c5",
+    "skills/datocms-setup/recipes/frontend-foundation/cache-tags/recipe.md": "ce5f21d7d53d384fc8082a68ba2271d5bf3d85718752c93669404e37046af9bd",
+    "skills/datocms-setup/recipes/frontend-foundation/cda-client/recipe.md": "a1f3eb4aad3f6e0a133e6aa31101eb0c804c5f5ba29f909f44ea4f6a3280d969",
+    "skills/datocms-setup/recipes/frontend-foundation/content-link/recipe.md": "0753433722dda0d2fb942510df0b869bc5ad5cb34207af6ea8d463b180939e47",
+    "skills/datocms-setup/recipes/frontend-foundation/draft-mode/recipe.md": "14566a8dbaa2f3425ec03b90a430bb4e1682747d7af17d2996ff8c53a5d84ac6",
+    "skills/datocms-setup/recipes/frontend-foundation/graphql-types/recipe.md": "a21cca936c96405b7641081fd52e8de3fb81cb65a0d15c1fbcfad2edc26c65d9",
+    "skills/datocms-setup/recipes/frontend-foundation/realtime/recipe.md": "f4a5f446b80a77e2bbd3c09ac5c8f684004c54ea790f6bbd2144ce55b53a8980",
+    "skills/datocms-setup/recipes/frontend-foundation/visual-editing/recipe.md": "a8d4a84e8440b80925a281fef7cc46e9509771760a6d87b610c7eb7aebacb96c",
+    "skills/datocms-setup/recipes/frontend-foundation/web-previews/recipe.md": "babdc40c3bca4e5429ac056381f7c1f40bc4a2cdc077d7ece765ec396e14c1b9",
+    "skills/datocms-setup/recipes/migrations/blueprint-sync/assets/datocms-sync.github-actions.yml": "0f9d7893f6ffd89b25223e3bf485214e616ddfb59db35420f1caa37d0e4d5cba",
+    "skills/datocms-setup/recipes/migrations/blueprint-sync/recipe.md": "daaf37b435a2229bbe5167c4531aefb89b079ddd6ba7a9067210112b8b714c35",
+    "skills/datocms-setup/recipes/migrations/blueprint-sync/scripts/datocms-sync-projects.mjs": "440f4c955ed113cdc8895032913f7c683239494da975a79b18ee949e7591b9b7",
+    "skills/datocms-setup/recipes/migrations/cli-profiles/recipe.md": "e4e952c5e93fd1375747e87322b8319a3f829c4cc4b4cf7eb1a2bf509557a8ab",
+    "skills/datocms-setup/recipes/migrations/migration-autogenerate/recipe.md": "b30ab0a01cdd6de6cded292646f26603ebf70d7741c45ab64a3e342583de8393",
+    "skills/datocms-setup/recipes/migrations/migration-autogenerate/scripts/datocms-autogenerate-migration.mjs": "e4ae67a3489ae59cc434b3efde9d51489f8000545a5718ef42985cbc533f398a",
+    "skills/datocms-setup/recipes/migrations/migration-release-workflow/assets/datocms-release.github-actions.yml": "f2f32719b1725cd8a225e5a071ace49cb0333bc078b48ba36a5d477c3dd1f229",
+    "skills/datocms-setup/recipes/migrations/migration-release-workflow/recipe.md": "bd9ee17c93ae20363267f6b94023ed4b3ae0c24cb30ca499e60d21144724a890",
+    "skills/datocms-setup/recipes/migrations/migration-release-workflow/scripts/datocms-release.mjs": "9b414a9560c7065347dea95460ea55c36a5a3b8b08237b654938d7f53d3d53f1",
+    "skills/datocms-setup/recipes/migrations/migrations/recipe.md": "53cb5c43194b33bc9f2ba578ab3d4f654eb5d390e5451d57c0b38bb2ad753220",
+    "skills/datocms-setup/recipes/migrations/sandbox-iteration/recipe.md": "4867e0c3302e1a83807fad2c2cd58b7ddf6a9dceb02cf7b5f2d615fa5541785d",
+    "skills/datocms-setup/recipes/migrations/sandbox-iteration/scripts/datocms-reset-sandbox.mjs": "3316d613087c43b64cb5dbade65daab91065eb789a8e059025f475722fd39472",
+    "skills/datocms-setup/recipes/onboarding/contentful-import/recipe.md": "52b749a62a585affc71f78598c7185a7900982c4607de15e62295a84cf090411",
+    "skills/datocms-setup/recipes/onboarding/contentful-import/scripts/datocms-import-contentful.mjs": "4ec7e89b9ab467a9ed4effd84779bf081c606050aef40862d964823f017cfbbb",
+    "skills/datocms-setup/recipes/onboarding/wordpress-import/recipe.md": "79908fc94635be8b33e65985b59ab6062eac5ee220b12733ba5478bed370dc58",
+    "skills/datocms-setup/recipes/onboarding/wordpress-import/scripts/datocms-import-wordpress.mjs": "114def45fc3fa6bdac79dddc8713ea55e8678f962cf65aeebe0b19b9a1c919af",
+    "skills/datocms-setup/recipes/platform/build-triggers/recipe.md": "e01b66ac5af2a2345052a41c8e368bd52b79f18fb0f153439fa7fe68e93f61e4",
+    "skills/datocms-setup/recipes/platform/build-triggers/scripts/datocms-build-triggers-smoke.mjs": "78e313f011867569c2e127e345c399954352585c63ee945a0d42a7fc68a5542d",
+    "skills/datocms-setup/recipes/platform/build-triggers/scripts/datocms-sync-build-triggers.mjs": "75f10874733015940828363fd032e5674a7f5390ee0d3ef7b07d88da4b6a4c75",
+    "skills/datocms-setup/recipes/platform/cli-bootstrap/recipe.md": "67de54769ad46c4ddea596cd43fa47a7c414958c215173c455274c01d3f7082e",
+    "skills/datocms-setup/recipes/platform/cma-types/recipe.md": "95f78e00e7602fd1a069e68cc828e648aa5372e204db61b1408f34faf0f78263",
+    "skills/datocms-setup/recipes/platform/webhooks/recipe.md": "2f5b637ae0b5b9beb3725fb7bedbaa1ebe848620a02c882cebd48808082b5ddc",
+    "skills/datocms-setup/recipes/platform/webhooks/scripts/datocms-sync-webhooks.mjs": "4584e54ebe195451752124d20fb2aa85a8bb4be4ffbdbd393417785b81856232",
+    "skills/datocms-setup/references/recipe-manifest.json": "b8ca04aaaf287ccc0877540429a2f539cb550b487998a9d1902dcb6b21c449fb",
+    "skills/datocms-setup/references/repo-conventions.md": "d285066377f56b731d30421dcfc6c77ec0dcc6461814907582c70e04f520ba86",
+    "skills/datocms-setup/references/router.md": "55a690bc569dec898ce71e1bae973fab1a47c20d61b42eb950e28198bcace736",
+    "skills/datocms-structured-text/SKILL.md": "3ef1441d4e4bd5a487fad28097b57bb8eb697db508c4f3ec00449a835907f48a",
+    "skills/datocms-structured-text/agents/openai.yaml": "d739516351526da2139ce855128d6269fc4dd4d206322108795b1859cfd9b034",
+    "skills/datocms-structured-text/references/conversion.md": "67d81427865c60d804b27087590176885f5d1519477d254113ef006d958ad39e",
+    "skills/datocms-structured-text/references/document-model.md": "bcbe73ed963eb9c2f24c97a84e84f845e4aadf896446ad8d19a5d8d3d7780e93",
+    "skills/datocms-structured-text/references/editing.md": "ec9896dd1ced3766717fc3a9ac122bc054a93dbc0c0e4d7b1767cf34ccd9e313",
+    "skills/datocms-structured-text/scripts/convert.mjs": "3b3b90795dcc193f1234e105db56cba7cb9d2094e52b99fb9edea5ec7c86271e",
+    "skills/datocms-structured-text/scripts/package-lock.json": "0361f971a283a1a81175bb85b3e9b0871c07ebf320ff722dc7e1120eb437c63b",
+    "skills/datocms-structured-text/scripts/package.json": "12a612a037d9f91051f0469c1bfb99213407f95baf07935c01afe8d0f4b14596"
+  },
+  "fixtures": [
+    {
+      "repository": "https://github.com/vitejs/vite",
+      "revision": "e9078f865cdff6bed77cd729214a7e2868f126b5",
+      "directory": "packages/create-vite/template-react-ts/",
+      "sha256": {
+        "LICENSE": "692057af3d664cbb79ac38293eb50aa3c4987f8182e2a440136e59e08f1b4a54",
+        "README.md": "fa8aac78b8be1993010b57f41000a243ecba006f6731513fe4ec91e788bf2517",
+        "_gitignore": "fe718e7babb14f3cbad2d97f08889b9ce5215ed3fe0e43b2b8cfbfb3b9b844e8",
+        "_oxlintrc.json": "b4d344818a1e1bf43997e4744a9153c8eef770c98b58229cd86363dabb85ded4",
+        "index.html": "b0504693a411c40d20187bf340bc73afed8457f43a57eea65fee536229bac851",
+        "package.json": "25d58c698d7c452a09f987e73fcd9de8ffc64ffb545841f160cf9a6e7e94ee45",
+        "public/favicon.svg": "61bc9a161de58248288e6905425d7180f0624c2865007b97d763fdac12043a66",
+        "public/icons.svg": "b45fa506195cfcdef406ba9f0c77b36ddc1a7c224040926ec70abc2fdea7b93a",
+        "src/App.css": "6e25a776d3e8102da5bacb3cb99f4a5fc662a2e01e6143140671a556d28c3d5c",
+        "src/App.tsx": "c7184fc9b1c36d7492093e1b5f5844c440bd3396deeace21b6699d3838f6ecb2",
+        "src/assets/hero.png": "881ffbcaafc212e49addad08846a5b82761355fa20624253af3477ba33262c5c",
+        "src/assets/react.svg": "35ef61ed53b323ae94a16a8ec659b3d0af3880698791133f23b084085ab1c2e5",
+        "src/assets/vite.svg": "5be21acd42eb7b896e517f4e0f0f11eb5c5d9e54fbbcebe9453f033008fcca6f",
+        "src/index.css": "535c25dd1f338486ab3678832fc698011c8b8d1fe4ffd3d0ef5e33181457cc9f",
+        "src/main.tsx": "6e9e5807fcbd48b75a96db5cbef36c996262196be42e6d4760dc86babbe61ad2",
+        "tsconfig.app.json": "8e5d12ba330e7d86409edec74b95451e0db22ee09b9426c94b5bf817571eddb0",
+        "tsconfig.json": "770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808",
+        "tsconfig.node.json": "d366cc0827139db39c61815f22491bbfda56c654354a42ad7795143d314e45e8",
+        "vite.config.ts": "e1eefd0ed1639c88d1213884ef760516884db9e168190e223fee6b063ad3e088"
+      }
+    },
+    {
+      "repository": "https://github.com/withastro/astro",
+      "revision": "db2eaf17ce84a5f75c5eab30f4ae15af32de1a13",
+      "directory": "examples/basics/",
+      "sha256": {
+        "LICENSE": "4aa72be797aad0e5e21827eaae6a1df9e122d7a401f07d2c308a6b9a5f0e1278",
+        ".gitignore": "d2a2dcd9450a0fbd898e5151b48cad83022d3af806f97562b1b8cdda543db202",
+        "README.md": "1b2d70ac608f9dd43ec83140b60bc8e66dde39d498fddedc83f16cbc94ef627a",
+        "astro.config.mjs": "30a47326419698ffe6e21bd253471e2306cc56129f90c5b6303c7f2122ad974e",
+        "package.json": "b8d23615e7a63dfbd3cb43111cebe52d6cc5c937e4ce1ad43cbf84a6a2d59b58",
+        "public/favicon.ico": "09d2ac08d8cca9b6e1f90221f345a8c4dd0371c64a0dc52b6f96fc589b1e3d67",
+        "public/favicon.svg": "2d7a310283d6f9cc753210d83224cd6db6348cb82a5536348884e5831d46203f",
+        "src/assets/astro.svg": "f6acc666531071302a93230b4d36ada513eb3743e5550e136caffb3bb6c50105",
+        "src/assets/background.svg": "a2c94dccaf7921a18dcacdbc39137955c827d60befc9490fdbc838fc090ecd84",
+        "src/components/Welcome.astro": "bb6d35916f196b9054f715e7834ae3779f6e211d35e4aec305b6ceb98adbfd46",
+        "src/layouts/Layout.astro": "0e09da7f2b41f07933474255c6c2555de1c870ce83c60dadd12ec3be07d32eb5",
+        "src/pages/index.astro": "f2ebca3052038e9f431ad7e5dc5ae785c0cd73b714a58914da4dc2d241881b85",
+        "tsconfig.json": "b5b0a5b04a14cddd7713c5e1c82e86c79c17c2f86b170e26e9b170b3d5e01cd9"
+      }
+    }
+  ],
+  "oracleControls": {
+    "passed": true,
+    "checks": [
+      "CLI: correct scope accepted; three invalid documentation flags rejected",
+      "Content Link: correct groups accepted; missing independence and encoded display label rejected",
+      "Notice: correct preview/published behavior accepted; encoded navigation URL rejected",
+      "Document: surgical edit accepted; whole-JSON replacement rejected"
+    ]
+  },
+  "diagnosticArtifact": {
+    "scope": "Artifact-only check of timed-out actor; not an acceptance pass",
+    "passed": true,
+    "checks": [
+      "exact prose edit",
+      "valid DAST",
+      "reference/code/metadata/style/mark preservation",
+      "input immutability",
+      "empty and absent searches"
+    ]
+  },
+  "attempts": [
+    {
+      "run": "regression-1",
+      "case": "cli-inspection",
+      "snapshot": "candidate-1",
+      "phase": "regression",
+      "outcome": "pass",
+      "review": "Original documentation flags corrected; parser validates documentation and record call. Schema command details reviewed separately.",
+      "completed": true,
+      "timedOut": false,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 24839,
+      "usage": [
+        {
+          "input_tokens": 37048,
+          "cached_input_tokens": 23808,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 791,
+          "reasoning_output_tokens": 210
+        }
+      ],
+      "commands": 2,
+      "failedCommands": 0,
+      "transcriptSha256": "f8f4865e40723fdfa7b4716ecd0d19a824252e252decc8996008003dbe268104",
+      "provenanceSha256": "4d42e8e2e1a3cceea7afa2807c87ee57a75b1323127b48944e131188548121a7",
+      "skillManifestSha256": "340551fed3c4293e3a2d0208003ab242c49fa11bd02a66f74ef2a3f584aa48c2",
+      "harnessManifestSha256": "d2a72b121ef7dc45ad5d866b328059aa7aafd6715da62cdd52945a40b6185a7a",
+      "fixtureManifestSha256": null,
+      "runtime": null,
+      "skillReads": null,
+      "privateEvidence": "local/acceptance/regression-1/cli-inspection"
+    },
+    {
+      "run": "regression-1",
+      "case": "content-link-card",
+      "snapshot": "candidate-1",
+      "phase": "regression",
+      "outcome": "pass",
+      "review": "Original card passes typecheck and real-controller target checks for two inputs.",
+      "completed": true,
+      "timedOut": false,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 65924,
+      "usage": [
+        {
+          "input_tokens": 172581,
+          "cached_input_tokens": 137728,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2748,
+          "reasoning_output_tokens": 1017
+        }
+      ],
+      "commands": 8,
+      "failedCommands": 1,
+      "transcriptSha256": "0fe61a8677fe3886782c6ee0f4b2f0be8ebd55fb41ea59c14912bdb43f6892e7",
+      "provenanceSha256": "0f787a256b0e8cee24044cb68455f81ae62fe846bb739dbf83ccd2e015685b11",
+      "skillManifestSha256": "340551fed3c4293e3a2d0208003ab242c49fa11bd02a66f74ef2a3f584aa48c2",
+      "harnessManifestSha256": "d2a72b121ef7dc45ad5d866b328059aa7aafd6715da62cdd52945a40b6185a7a",
+      "fixtureManifestSha256": null,
+      "runtime": {
+        "passed": true,
+        "evidence": [
+          {
+            "card": "https://editor.example/items/title",
+            "author": "https://editor.example/items/author",
+            "video": "https://editor.example/items/video",
+            "price": "https://editor.example/items/record",
+            "category": "summer",
+            "text": "Visible content retained; encoded values omitted from report"
+          },
+          {
+            "card": "https://editor.example/items/title",
+            "author": "https://editor.example/items/author",
+            "video": "https://editor.example/items/video",
+            "price": "https://editor.example/items/record",
+            "category": "spring collection",
+            "text": "Visible content retained; encoded values omitted from report"
+          }
+        ],
+        "checks": [
+          "TypeScript",
+          "real controller target resolution for two inputs",
+          "no group collisions",
+          "clean filter values",
+          "visible content retained"
+        ]
+      },
+      "skillReads": null,
+      "privateEvidence": "local/acceptance/regression-1/content-link-card"
+    },
+    {
+      "run": "baseline-1",
+      "case": "asset-cli",
+      "snapshot": "baseline",
+      "phase": "comparison",
+      "outcome": "pass",
+      "review": "Correct public action names and scoped upload call.",
+      "completed": true,
+      "timedOut": false,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 21096,
+      "usage": [
+        {
+          "input_tokens": 35402,
+          "cached_input_tokens": 23808,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 876,
+          "reasoning_output_tokens": 490
+        }
+      ],
+      "commands": 2,
+      "failedCommands": 0,
+      "transcriptSha256": "1ed34d3356acd78e3554bdd2d1063dd07b92b2cea4cc0d43888a2e3b97935e8b",
+      "provenanceSha256": "9972a099a9e8c21260869f5c9f8840397c12df0f0a859ef041b2f2417a03fb00",
+      "skillManifestSha256": "3a22cf56def36232708ac032aaa4853cddc7a5df17d209340e9661ccbe911f50",
+      "harnessManifestSha256": "87a5814b6ea739955c58b0d29020d67a19a5c9be83f24d2ee34aece1f6190a5a",
+      "fixtureManifestSha256": "ff4678114b58ba224b4bcf1b4ceb60e94d17927d59339c4d59e9bff4e6c94441",
+      "runtime": {
+        "passed": true,
+        "observations": [
+          {
+            "command": "cma:docs",
+            "args": {
+              "resource": "uploads",
+              "action": "self"
+            },
+            "flags": {}
+          },
+          {
+            "command": "cma:docs",
+            "args": {
+              "resource": "uploads",
+              "action": "create"
+            },
+            "flags": {
+              "expand-types": [
+                "*"
+              ]
+            }
+          },
+          {
+            "command": "cma:call",
+            "args": {
+              "resource": "uploads",
+              "method": "find"
+            },
+            "flags": {
+              "config-file": "./datocms.config.json",
+              "profile": "studio",
+              "environment": "photo-review"
+            }
+          }
+        ],
+        "cliVersion": "4.2.0",
+        "network": "none; parser and local resource metadata only"
+      },
+      "skillReads": [
+        ".agents/skills/datocms-cli/SKILL.md",
+        ".agents/skills/datocms-cli/references/direct-cma-calls.md"
+      ],
+      "privateEvidence": "local/acceptance/baseline-1/asset-cli"
+    },
+    {
+      "run": "baseline-1",
+      "case": "collection-links",
+      "snapshot": "baseline",
+      "phase": "comparison",
+      "outcome": "fail",
+      "review": "Rendered badge and filter value retain editing metadata.",
+      "completed": true,
+      "timedOut": false,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 77977,
+      "usage": [
+        {
+          "input_tokens": 122479,
+          "cached_input_tokens": 100608,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3431,
+          "reasoning_output_tokens": 1681
+        }
+      ],
+      "commands": 7,
+      "failedCommands": 1,
+      "transcriptSha256": "31f7aa3fc53a2feec3a927006d3f58898a7c0b878009967f9284a76a56e87a62",
+      "provenanceSha256": "3ce436cf89d4fd11e11def07e5f20d3561399f2f41688cbb1eb9087266e7f454",
+      "skillManifestSha256": "3a22cf56def36232708ac032aaa4853cddc7a5df17d209340e9661ccbe911f50",
+      "harnessManifestSha256": "87a5814b6ea739955c58b0d29020d67a19a5c9be83f24d2ee34aece1f6190a5a",
+      "fixtureManifestSha256": "65bf15fe469098a7a3cdb8a2176dcdf8c69f3395406e1cac11c95213515ec1be",
+      "runtime": null,
+      "skillReads": [
+        ".agents/skills/datocms-frontend-integrations/SKILL.md",
+        ".agents/skills/datocms-frontend-integrations/references/content-link-concepts.md",
+        ".agents/skills/datocms-frontend-integrations/references/react-content-link.md",
+        ".agents/skills/datocms-frontend-integrations/references/verification-checklists.md"
+      ],
+      "privateEvidence": "local/acceptance/baseline-1/collection-links"
+    },
+    {
+      "run": "round-1",
+      "case": "asset-cli",
+      "snapshot": "candidate-1",
+      "phase": "reserved",
+      "outcome": "fail",
+      "review": "Uses uploads find for public documentation; installed resource metadata requires self. Project flags are correctly scoped.",
+      "completed": true,
+      "timedOut": false,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 26896,
+      "usage": [
+        {
+          "input_tokens": 51124,
+          "cached_input_tokens": 37888,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1025,
+          "reasoning_output_tokens": 579
+        }
+      ],
+      "commands": 3,
+      "failedCommands": 0,
+      "transcriptSha256": "b63a1f42eeec6680275f7e69c0a1830347b9756bd61a45f2fd3bca1ac9b72d55",
+      "provenanceSha256": "e826120433da48906c1ed9d7a9d71f90708c29e0b982e39058476dcda03cf13f",
+      "skillManifestSha256": "340551fed3c4293e3a2d0208003ab242c49fa11bd02a66f74ef2a3f584aa48c2",
+      "harnessManifestSha256": "87a5814b6ea739955c58b0d29020d67a19a5c9be83f24d2ee34aece1f6190a5a",
+      "fixtureManifestSha256": "ff4678114b58ba224b4bcf1b4ceb60e94d17927d59339c4d59e9bff4e6c94441",
+      "runtime": null,
+      "skillReads": [
+        ".agents/skills/datocms-cli/SKILL.md",
+        ".agents/skills/datocms-cli/references/direct-cma-calls.md"
+      ],
+      "privateEvidence": "local/acceptance/round-1/asset-cli"
+    },
+    {
+      "run": "round-1",
+      "case": "collection-links",
+      "snapshot": "candidate-1",
+      "phase": "reserved",
+      "outcome": "fail",
+      "review": "Filter is cleaned, but the displayed badge retains metadata. This case becomes a regression case after this result.",
+      "completed": true,
+      "timedOut": false,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 94838,
+      "usage": [
+        {
+          "input_tokens": 249724,
+          "cached_input_tokens": 217344,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3802,
+          "reasoning_output_tokens": 1851
+        }
+      ],
+      "commands": 9,
+      "failedCommands": 0,
+      "transcriptSha256": "a812468176809843cb0bc9f4660da6065a6e834f2f738584972ac94c5b555650",
+      "provenanceSha256": "fadb6596b09f2becf6f3e0dce824ba2c976e13baf9f56311bde468f7badbbd62",
+      "skillManifestSha256": "340551fed3c4293e3a2d0208003ab242c49fa11bd02a66f74ef2a3f584aa48c2",
+      "harnessManifestSha256": "87a5814b6ea739955c58b0d29020d67a19a5c9be83f24d2ee34aece1f6190a5a",
+      "fixtureManifestSha256": "65bf15fe469098a7a3cdb8a2176dcdf8c69f3395406e1cac11c95213515ec1be",
+      "runtime": null,
+      "skillReads": [
+        ".agents/skills/datocms-frontend-integrations/SKILL.md",
+        ".agents/skills/datocms-frontend-integrations/references/content-link-concepts.md",
+        ".agents/skills/datocms-frontend-integrations/references/react-content-link.md",
+        ".agents/skills/datocms-frontend-integrations/references/verification-checklists.md"
+      ],
+      "privateEvidence": "local/acceptance/round-1/collection-links"
+    },
+    {
+      "run": "round-1",
+      "case": "astro-1",
+      "snapshot": "candidate-1",
+      "phase": "reserved",
+      "outcome": "pass",
+      "review": "Production build and 20 HTTP observations pass; original homepage retained.",
+      "completed": true,
+      "timedOut": false,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 196719,
+      "usage": [
+        {
+          "input_tokens": 463158,
+          "cached_input_tokens": 425984,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 7942,
+          "reasoning_output_tokens": 2068
+        }
+      ],
+      "commands": 14,
+      "failedCommands": 4,
+      "transcriptSha256": "d986530e21f38208367f4a505ac2b8d10481cbcee8263b26f6926d505c7799ab",
+      "provenanceSha256": "452c88bfbbe80eca23a9d00129145a7e79a16bd62d0c680d5b5633758c508c97",
+      "skillManifestSha256": "340551fed3c4293e3a2d0208003ab242c49fa11bd02a66f74ef2a3f584aa48c2",
+      "harnessManifestSha256": "87a5814b6ea739955c58b0d29020d67a19a5c9be83f24d2ee34aece1f6190a5a",
+      "fixtureManifestSha256": "7f847c3e2c12342e4dfd4616f4589a0c24c73da81e00295f8d199514675a2ba5",
+      "runtime": {
+        "passed": true,
+        "assertions": 20
+      },
+      "skillReads": [
+        ".agents/skills/datocms-frontend-integrations/SKILL.md",
+        ".agents/skills/datocms-frontend-integrations/references/astro.md",
+        ".agents/skills/datocms-frontend-integrations/references/draft-mode-concepts.md",
+        ".agents/skills/datocms-frontend-integrations/references/verification-checklists.md"
+      ],
+      "privateEvidence": "local/acceptance/round-1/astro-1"
+    },
+    {
+      "run": "round-1",
+      "case": "document-rename",
+      "snapshot": "candidate-1",
+      "phase": "reserved",
+      "outcome": "incomplete",
+      "review": "Actor times out after implementation and typecheck. Separate artifact-only oracle passes; this is not a completed acceptance pass.",
+      "completed": false,
+      "timedOut": true,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 600180,
+      "usage": [],
+      "commands": 10,
+      "failedCommands": 2,
+      "transcriptSha256": "f64618c73799830ef9b46937fbda8ecd8548b86c241a3fdc5d3d2aab80831fe8",
+      "provenanceSha256": "a58e7013ba8e2c02dd7e3c987cfc9e0f6f396b69e14ad40df91a329baecac40c",
+      "skillManifestSha256": "340551fed3c4293e3a2d0208003ab242c49fa11bd02a66f74ef2a3f584aa48c2",
+      "harnessManifestSha256": "87a5814b6ea739955c58b0d29020d67a19a5c9be83f24d2ee34aece1f6190a5a",
+      "fixtureManifestSha256": "199b3ca421276e28bb7385b6e08603fa08c414427db67a7ff20170e9070f55e7",
+      "runtime": null,
+      "skillReads": [
+        ".agents/skills/datocms-structured-text/SKILL.md",
+        ".agents/skills/datocms-structured-text/references/editing.md"
+      ],
+      "privateEvidence": "local/acceptance/round-1/document-rename"
+    },
+    {
+      "run": "round-1",
+      "case": "modeling-advice",
+      "snapshot": "candidate-1",
+      "phase": "reserved",
+      "outcome": "pass",
+      "review": "Correct core record/block/reuse/localization advice, no writes. Optional section-record alternative adds complexity that may not be necessary. Advisory review is not blinded.",
+      "completed": true,
+      "timedOut": false,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 108054,
+      "usage": [
+        {
+          "input_tokens": 91893,
+          "cached_input_tokens": 55808,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3375,
+          "reasoning_output_tokens": 1537
+        }
+      ],
+      "commands": 22,
+      "failedCommands": 9,
+      "transcriptSha256": "f54cc75188b8e90dc9d834a4e39d9f46955e15bea7973c7b93a0de025caea258",
+      "provenanceSha256": "b29ffa6d56c648dcbe4fc2a4eee651130c21727cb7cb87d607dc3325d233a1ca",
+      "skillManifestSha256": "340551fed3c4293e3a2d0208003ab242c49fa11bd02a66f74ef2a3f584aa48c2",
+      "harnessManifestSha256": "87a5814b6ea739955c58b0d29020d67a19a5c9be83f24d2ee34aece1f6190a5a",
+      "fixtureManifestSha256": "ca1f5a2482fd8813d0e637930a3d9d273888e8df346b0f554958a5f44ee2c16e",
+      "runtime": null,
+      "skillReads": [
+        ".agents/skills/datocms-content-modeling/SKILL.md",
+        ".agents/skills/datocms-content-modeling/references/block-fields-and-structured-text.md",
+        ".agents/skills/datocms-content-modeling/references/content-reuse.md",
+        ".agents/skills/datocms-content-modeling/references/field-configuration.md",
+        ".agents/skills/datocms-content-modeling/references/model-configuration.md",
+        ".agents/skills/datocms-content-modeling/references/models-vs-blocks.md",
+        ".agents/skills/datocms-content-modeling/references/separation-of-concerns.md",
+        ".agents/skills/datocms-content-modeling/references/taxonomy-classification.md",
+        ".agents/skills/datocms-content-modeling/references/ui-organization.md",
+        "skills/datocms-content-modeling/SKILL.md"
+      ],
+      "privateEvidence": "local/acceptance/round-1/modeling-advice"
+    },
+    {
+      "run": "round-1",
+      "case": "ordinary-counter",
+      "snapshot": "candidate-1",
+      "phase": "reserved",
+      "outcome": "pass",
+      "review": "Build and browser sequence 0,2,4,0 pass; no DatoCMS skill read or CMS workflow observed.",
+      "completed": true,
+      "timedOut": false,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 43335,
+      "usage": [
+        {
+          "input_tokens": 65559,
+          "cached_input_tokens": 44544,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1260,
+          "reasoning_output_tokens": 437
+        }
+      ],
+      "commands": 4,
+      "failedCommands": 0,
+      "transcriptSha256": "12cdbd589af12163da1a7f4927b3e105d79eb82679301e477e128721e99e4c4c",
+      "provenanceSha256": "15b6d2408560180616dcf65cedb67b7a864e168b8470202faf3dcdd903c7fc6e",
+      "skillManifestSha256": "340551fed3c4293e3a2d0208003ab242c49fa11bd02a66f74ef2a3f584aa48c2",
+      "harnessManifestSha256": "87a5814b6ea739955c58b0d29020d67a19a5c9be83f24d2ee34aece1f6190a5a",
+      "fixtureManifestSha256": "a3d48f63fb6e6c8639070b963e8e76dec78736694927f7dbdcfc2add0d40c19b",
+      "runtime": {
+        "passed": true,
+        "evidence": [
+          "Count is 0",
+          "Count is 2",
+          "Count is 4",
+          "Count is 0"
+        ]
+      },
+      "skillReads": [],
+      "privateEvidence": "local/acceptance/round-1/ordinary-counter"
+    },
+    {
+      "run": "candidate-cli-repeat-1",
+      "case": "asset-cli",
+      "snapshot": "candidate-1",
+      "phase": "unchanged-repeat",
+      "outcome": "pass",
+      "review": "Fresh repeat uses self correctly; no skill or task changes. Original failed attempt remains counted.",
+      "completed": true,
+      "timedOut": false,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 36010,
+      "usage": [
+        {
+          "input_tokens": 55190,
+          "cached_input_tokens": 33792,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1083,
+          "reasoning_output_tokens": 592
+        }
+      ],
+      "commands": 3,
+      "failedCommands": 1,
+      "transcriptSha256": "4a4e743edd10e04472050ba6f6e2947c08809fa11305ac5e6e6d464d7f344000",
+      "provenanceSha256": "9ac80e10fdad452b3cf62aa30e9dc990c086eba46cef1bdf711679c29cbcb974",
+      "skillManifestSha256": "340551fed3c4293e3a2d0208003ab242c49fa11bd02a66f74ef2a3f584aa48c2",
+      "harnessManifestSha256": "87a5814b6ea739955c58b0d29020d67a19a5c9be83f24d2ee34aece1f6190a5a",
+      "fixtureManifestSha256": "ff4678114b58ba224b4bcf1b4ceb60e94d17927d59339c4d59e9bff4e6c94441",
+      "runtime": {
+        "passed": true,
+        "observations": [
+          {
+            "command": "cma:docs",
+            "args": {
+              "resource": "uploads",
+              "action": "self"
+            },
+            "flags": {}
+          },
+          {
+            "command": "cma:docs",
+            "args": {
+              "resource": "uploads",
+              "action": "create"
+            },
+            "flags": {
+              "expand-types": [
+                "*"
+              ]
+            }
+          },
+          {
+            "command": "cma:call",
+            "args": {
+              "resource": "uploads",
+              "method": "find"
+            },
+            "flags": {
+              "config-file": "./datocms.config.json",
+              "profile": "studio",
+              "environment": "photo-review"
+            }
+          }
+        ],
+        "cliVersion": "4.2.0",
+        "network": "none; parser and local resource metadata only"
+      },
+      "skillReads": [
+        ".agents/skills/datocms-cli/SKILL.md",
+        ".agents/skills/datocms-cli/references",
+        ".agents/skills/datocms-cli/references/direct-cma-calls.md"
+      ],
+      "privateEvidence": "local/acceptance/candidate-cli-repeat-1/asset-cli"
+    },
+    {
+      "run": "baseline-cli-repeat-1",
+      "case": "asset-cli",
+      "snapshot": "baseline",
+      "phase": "unchanged-repeat",
+      "outcome": "pass",
+      "review": "Baseline repeat also passes.",
+      "completed": true,
+      "timedOut": false,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 25379,
+      "usage": [
+        {
+          "input_tokens": 35727,
+          "cached_input_tokens": 20736,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 950,
+          "reasoning_output_tokens": 563
+        }
+      ],
+      "commands": 2,
+      "failedCommands": 0,
+      "transcriptSha256": "119aafd03e412ffd92d318c37fb86396ee79b878da1d8df50ee53fe99d63a737",
+      "provenanceSha256": "3ee725b46094135a834b8afc60379822d4c15073720b445c70bfe0e27f5cc623",
+      "skillManifestSha256": "3a22cf56def36232708ac032aaa4853cddc7a5df17d209340e9661ccbe911f50",
+      "harnessManifestSha256": "87a5814b6ea739955c58b0d29020d67a19a5c9be83f24d2ee34aece1f6190a5a",
+      "fixtureManifestSha256": "ff4678114b58ba224b4bcf1b4ceb60e94d17927d59339c4d59e9bff4e6c94441",
+      "runtime": {
+        "passed": true,
+        "observations": [
+          {
+            "command": "cma:docs",
+            "args": {
+              "resource": "uploads",
+              "action": "self"
+            },
+            "flags": {}
+          },
+          {
+            "command": "cma:docs",
+            "args": {
+              "resource": "uploads",
+              "action": "create"
+            },
+            "flags": {
+              "expand-types": [
+                "*"
+              ]
+            }
+          },
+          {
+            "command": "cma:call",
+            "args": {
+              "resource": "uploads",
+              "method": "find"
+            },
+            "flags": {
+              "config-file": "./datocms.config.json",
+              "profile": "studio",
+              "environment": "photo-review"
+            }
+          }
+        ],
+        "cliVersion": "4.2.0",
+        "network": "none; parser and local resource metadata only"
+      },
+      "skillReads": [
+        ".agents/skills/datocms-cli/SKILL.md",
+        ".agents/skills/datocms-cli/references/direct-cma-calls.md"
+      ],
+      "privateEvidence": "local/acceptance/baseline-cli-repeat-1/asset-cli"
+    },
+    {
+      "run": "content-link-regression-2",
+      "case": "collection-links",
+      "snapshot": "candidate-2",
+      "phase": "regression",
+      "outcome": "fail",
+      "review": "A concrete example and corrected boundary explanation alone do not resolve rendered badge metadata.",
+      "completed": true,
+      "timedOut": false,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 88937,
+      "usage": [
+        {
+          "input_tokens": 213185,
+          "cached_input_tokens": 169216,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3865,
+          "reasoning_output_tokens": 1863
+        }
+      ],
+      "commands": 8,
+      "failedCommands": 1,
+      "transcriptSha256": "ef04b0380346ebbeb24e81fdfbf42a64f545636faf3d655c4f187ac795366cd6",
+      "provenanceSha256": "94ff24bca167f18a9ebcf2abcce0f4ff256a61409a328a8871f4ed92391e195a",
+      "skillManifestSha256": "5a6ca7c808cb76b84780011aa5f43f65a9972c3e0cc134724fd81cbaae47e277",
+      "harnessManifestSha256": "02798dedf0df9c6e16e740ca5da105600175dc9491143b6a435895708847d1c0",
+      "fixtureManifestSha256": "65bf15fe469098a7a3cdb8a2176dcdf8c69f3395406e1cac11c95213515ec1be",
+      "runtime": null,
+      "skillReads": [
+        ".agents/skills/datocms-frontend-integrations/SKILL.md",
+        ".agents/skills/datocms-frontend-integrations/references/content-link-concepts.md",
+        ".agents/skills/datocms-frontend-integrations/references/react-content-link.md",
+        ".agents/skills/datocms-frontend-integrations/references/verification-checklists.md"
+      ],
+      "privateEvidence": "local/acceptance/content-link-regression-2/collection-links"
+    },
+    {
+      "run": "content-link-regression-3",
+      "case": "collection-links",
+      "snapshot": "candidate-3",
+      "phase": "regression",
+      "outcome": "incomplete",
+      "review": "No actor commands or answer before timeout; outcome unavailable.",
+      "completed": false,
+      "timedOut": true,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 600149,
+      "usage": [],
+      "commands": 0,
+      "failedCommands": 0,
+      "transcriptSha256": "491a9b92aad3a944823df58a678d6559aee2e71b16c6aaaecf5c7d9a166e9a15",
+      "provenanceSha256": "43d954436a855065641591fc9f88caeba65413b9395b0cc1428c8f3a11c05e53",
+      "skillManifestSha256": "9a95894256d093ae733b74cbb45d0b89bfa724ad4031ec47723b1cac18a56dc8",
+      "harnessManifestSha256": "f7717ad7642f4479c7babfb5a4880063b94e11589d4cb03641336637e0db7aed",
+      "fixtureManifestSha256": "65bf15fe469098a7a3cdb8a2176dcdf8c69f3395406e1cac11c95213515ec1be",
+      "runtime": null,
+      "skillReads": [],
+      "privateEvidence": "local/acceptance/content-link-regression-3/collection-links"
+    },
+    {
+      "run": "final-reserved-1",
+      "case": "notice-navigation",
+      "snapshot": "candidate-3",
+      "phase": "reserved",
+      "outcome": "incomplete",
+      "review": "No actor commands or answer before timeout; outcome unavailable.",
+      "completed": false,
+      "timedOut": true,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 600135,
+      "usage": [],
+      "commands": 0,
+      "failedCommands": 0,
+      "transcriptSha256": "aaf721b884a6d0ffa54fadde4963fd15fc75afb3636db66d740e82a0e4354938",
+      "provenanceSha256": "838b06f85c8e3851bb20da9273f4738bbee34a7176b8f539515afddfe47e8d42",
+      "skillManifestSha256": "9a95894256d093ae733b74cbb45d0b89bfa724ad4031ec47723b1cac18a56dc8",
+      "harnessManifestSha256": "f7717ad7642f4479c7babfb5a4880063b94e11589d4cb03641336637e0db7aed",
+      "fixtureManifestSha256": "49483036fb77acaefe20665dbd21c607cecbbc7226bbc63cfa9a8e4f8a4dcebb",
+      "runtime": null,
+      "skillReads": [],
+      "privateEvidence": "local/acceptance/final-reserved-1/notice-navigation"
+    },
+    {
+      "run": "final-sequential-1",
+      "case": "collection-links",
+      "snapshot": "candidate-3",
+      "phase": "regression",
+      "outcome": "fail",
+      "review": "Completed retry still leaves metadata in the display-only badge; acceptance requirement remains unmet.",
+      "completed": true,
+      "timedOut": false,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 144456,
+      "usage": [
+        {
+          "input_tokens": 281023,
+          "cached_input_tokens": 243968,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3964,
+          "reasoning_output_tokens": 1901
+        }
+      ],
+      "commands": 8,
+      "failedCommands": 1,
+      "transcriptSha256": "c57b5c87bb0a1f2860ff129ade5e652624c1ab25298dc10fa8f6f4736a5a1ea2",
+      "provenanceSha256": "6ab48188be5680108ba42261fae4d13eb65565c196bb3f4886f09cd442f33866",
+      "skillManifestSha256": "9a95894256d093ae733b74cbb45d0b89bfa724ad4031ec47723b1cac18a56dc8",
+      "harnessManifestSha256": "f7717ad7642f4479c7babfb5a4880063b94e11589d4cb03641336637e0db7aed",
+      "fixtureManifestSha256": "65bf15fe469098a7a3cdb8a2176dcdf8c69f3395406e1cac11c95213515ec1be",
+      "runtime": null,
+      "skillReads": [
+        ".agents/skills/datocms-frontend-integrations/SKILL.md",
+        ".agents/skills/datocms-frontend-integrations/references/content-link-concepts.md",
+        ".agents/skills/datocms-frontend-integrations/references/react-content-link.md",
+        ".agents/skills/datocms-frontend-integrations/references/verification-checklists.md"
+      ],
+      "privateEvidence": "local/acceptance/final-sequential-1/collection-links"
+    },
+    {
+      "run": "final-sequential-1",
+      "case": "notice-navigation",
+      "snapshot": "candidate-3",
+      "phase": "reserved-retry",
+      "outcome": "pass",
+      "review": "New banner passes build and real-controller checks in preview and published modes, including clean label and URL.",
+      "completed": true,
+      "timedOut": false,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 84387,
+      "usage": [
+        {
+          "input_tokens": 177348,
+          "cached_input_tokens": 136448,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 2576,
+          "reasoning_output_tokens": 831
+        }
+      ],
+      "commands": 7,
+      "failedCommands": 1,
+      "transcriptSha256": "1fd8bdd7baee17e1bd35f19a4c529c5670c12e73a0d450f668e46806b916a526",
+      "provenanceSha256": "207685f297e8c893c0d84888de8f97da9b3ac7242ec8cb8e6aab18fa2614bcd4",
+      "skillManifestSha256": "9a95894256d093ae733b74cbb45d0b89bfa724ad4031ec47723b1cac18a56dc8",
+      "harnessManifestSha256": "f7717ad7642f4479c7babfb5a4880063b94e11589d4cb03641336637e0db7aed",
+      "fixtureManifestSha256": "49483036fb77acaefe20665dbd21c607cecbbc7226bbc63cfa9a8e4f8a4dcebb",
+      "runtime": {
+        "passed": true,
+        "evidence": [
+          {
+            "preview": true,
+            "banner": "https://editor.example/notice/heading",
+            "body": "https://editor.example/notice/body",
+            "audience": "ALL VISITORS",
+            "href": "/exhibits?audience=all%20ages#opening",
+            "text": "Visible content retained; metadata omitted"
+          },
+          {
+            "preview": false,
+            "banner": null,
+            "body": null,
+            "audience": "ALL VISITORS",
+            "href": "/exhibits?audience=all%20ages#opening",
+            "text": "Visible content retained; metadata omitted"
+          }
+        ]
+      },
+      "skillReads": [
+        ".agents/skills/datocms-frontend-integrations/SKILL.md",
+        ".agents/skills/datocms-frontend-integrations/references/content-link-concepts.md",
+        ".agents/skills/datocms-frontend-integrations/references/react-content-link.md",
+        ".agents/skills/datocms-frontend-integrations/references/verification-checklists.md"
+      ],
+      "privateEvidence": "local/acceptance/final-sequential-1/notice-navigation"
+    },
+    {
+      "run": "final-sequential-1",
+      "case": "document-rename",
+      "snapshot": "candidate-3",
+      "phase": "reserved-retry",
+      "outcome": "pass",
+      "review": "Completed retry passes functional DAST preservation and input-immutability checks.",
+      "completed": true,
+      "timedOut": false,
+      "capped": false,
+      "usageLimitReached": false,
+      "credentialLeak": false,
+      "elapsedMs": 104181,
+      "usage": [
+        {
+          "input_tokens": 215649,
+          "cached_input_tokens": 182528,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3113,
+          "reasoning_output_tokens": 1129
+        }
+      ],
+      "commands": 9,
+      "failedCommands": 0,
+      "transcriptSha256": "e6e03b6982ca4e0be4ec12c63a6ca755f869c00056bf83b0c68ad29f0f1e5333",
+      "provenanceSha256": "38e7ab156690457dcfda1947834b8a2fa282d794a71a947362961f2a05356c19",
+      "skillManifestSha256": "9a95894256d093ae733b74cbb45d0b89bfa724ad4031ec47723b1cac18a56dc8",
+      "harnessManifestSha256": "f7717ad7642f4479c7babfb5a4880063b94e11589d4cb03641336637e0db7aed",
+      "fixtureManifestSha256": "199b3ca421276e28bb7385b6e08603fa08c414427db67a7ff20170e9070f55e7",
+      "runtime": {
+        "passed": true,
+        "checks": [
+          "exact prose edit",
+          "valid DAST",
+          "reference/code/metadata/style/mark preservation",
+          "input immutability",
+          "empty and absent searches"
+        ]
+      },
+      "skillReads": [
+        ".agents/skills/datocms-structured-text/SKILL.md",
+        ".agents/skills/datocms-structured-text/references/editing.md"
+      ],
+      "privateEvidence": "local/acceptance/final-sequential-1/document-rename"
+    }
+  ],
+  "corrections": [
+    "Before acceptance, merge inherited baseFlags into the offline CLI parser. The public docs command has no project base flags. Schema-generator imports were not used as an offline oracle because they stalled; only the relevant docs/call commands are parsed.",
+    "Upstream binary fixture acquisition switched from raw content output to the Git blob base64 API before model runs. Pinned source and fixture preparation were verified in a fresh directory.",
+    "Initial prepared Vite runtime omitted oxlint while retaining the upstream lint script. Build/browser checks did not depend on lint; all such failures remain in command evidence. The committed lock now includes the pinned upstream linter; a fresh npm ci succeeds. Actor artifacts were not silently modified."
+  ],
+  "limits": [
+    "Small, adaptive sample with a persistent collection-label failure and one intermittent CLI action-name mistake. It does not establish universal reliability or statistical non-inferiority.",
+    "Three timed-out sessions have no final usage report. Token totals cannot account for their full consumption, and an artifact-only pass does not repair session completion.",
+    "Astro, modeling and counter acceptance ran on candidate-1. Final candidate changes only shared Content Link concepts/verification; the full final skill tree was used for the final three sequential cases. Per-attempt hashes identify exact coverage.",
+    "No cross-model/provider conclusion. Imports remain deferred. Hosted-editor, OAuth, live CMA and Vercel coverage is not repeated here.",
+    "Setup automatic invocation policy and skill discovery descriptions were preserved; this suite is a sample of natural routing, not coverage of all routes."
+  ]
+}
