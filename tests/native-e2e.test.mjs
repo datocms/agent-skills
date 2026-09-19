@@ -10,7 +10,20 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { nativeSession } from "../e2e/lib/nativeSession.ts";
+import { nativeSession, isUsageLimitError } from "../e2e/lib/nativeSession.ts";
+
+test("account usage exhaustion stops the actor without treating application rate limits as account limits", async () => {
+  assert.equal(isUsageLimitError({ type: "item.completed", item: { type: "command_execution", aggregated_output: "usage_limit_reached" } }), false);
+  assert.equal(isUsageLimitError({ type: "error", message: "HTTP 429: API rate limit" }), false);
+  await fixture(async ({ options, writeBinary }) => {
+    writeBinary(`console.log(JSON.stringify({type:'turn.failed',error:{message:'You have exhausted your weekly usage limit',code:'usage_limit_reached'}}));setInterval(()=>{},1000);`);
+    const result = await nativeSession(options);
+    assert.equal(result.usageLimitReached, true);
+    assert.equal(result.completed, false);
+    assert.equal(result.timedOut, false);
+    assert.equal(result.errors.length, 1);
+  });
+});
 
 async function fixture(callback) {
   const root = mkdtempSync(join(tmpdir(), "native-e2e-unit-"));

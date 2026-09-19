@@ -39,7 +39,7 @@ Follow shared repo inspection conventions in `../../../references/repo-conventio
 
 4. **Existing realtime utilities** — Check for existing subscription components or patterns
 
-5. **Installed deps** — Check `package.json` for: `react-datocms`, `vue-datocms`, `@datocms/svelte`, `@datocms/astro`
+5. **Installed deps** — Check `package.json` for: `react-datocms`, `datocms-listen` (Nuxt), `vue-datocms`, `@datocms/svelte`, `@datocms/astro`
 
 ### Stop conditions
 
@@ -114,12 +114,14 @@ Generate two files in `src/lib/datocms/realtime/` (or `lib/datocms/realtime/` if
 
 ### Nuxt (Vue)
 
-Generate a usage pattern/example showing how to use `useQuerySubscription` composable from `vue-datocms`:
+Use the real-time query composable from `nuxt.md`, with `subscribeToQuery` from `datocms-listen`:
 
 - Wrap existing page data fetching with the composable
 - Pass `includeDrafts`, `excludeInvalid`, and the draft CDA token
 - If Content Link is configured: pass `contentLink` and `baseEditingUrl`
-- Access `data`, `error`, `status` as Vue `Ref` values
+- Keep server rendering on the initial fetch and subscribe only in the browser
+- Register scope disposal before awaiting; close connections that finish opening after disposal
+- Return live data as a Vue ref and key the page consumer when query variables change
 
 ### SvelteKit
 
@@ -175,7 +177,7 @@ Install missing packages:
 | Package | When |
 | - | - |
 | `react-datocms` | Next.js (if not already installed) |
-| `vue-datocms` | Nuxt (if not already installed) |
+| `datocms-listen` | Nuxt (if not already installed) |
 | `@datocms/svelte` | SvelteKit (if not already installed) |
 | `@datocms/astro` | Astro (if not already installed) |
 
@@ -203,7 +205,7 @@ Before presenting the final code, verify:
 2. Subscription includes `includeDrafts: true` and `excludeInvalid: true`
 3. If Content Link is configured, subscription includes `contentLink` and `baseEditingUrl`
 4. Next.js: `generateRealtimeComponent.tsx` and `generatePageComponent.tsx` are created
-5. Nuxt: usage example uses `useQuerySubscription` composable correctly with Vue refs
+5. Nuxt: query helper returns a Vue ref, subscribes only in the browser and releases the listener even if navigation happens during startup
 6. SvelteKit: usage example uses `querySubscription` store with `$subscription` syntax
 7. Astro: uses `<QueryListener />` from subpath import, triggers page reload (not live data)
 8. Astro: `<QueryListener />` only renders in draft mode

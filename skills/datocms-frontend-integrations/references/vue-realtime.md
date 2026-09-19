@@ -4,6 +4,10 @@ Vue 3 composable for live content updates via DatoCMS's [Real-time Updates API](
 
 See `realtime-concepts.md` for shared initialization options, connection status values, error object shape, and the `fetcher` gotcha.
 
+In Nuxt, use the [server/client query pattern](./nuxt.md#query-composable-with-real-time-subscription): render server-fetched data during SSR and start the subscription only in the browser. The subscription transport accesses `window`. Pass plain values for `token` and `variables`; those options are not unwrapped from Vue refs. Remount a keyed consumer when its query variables change.
+
+Call `useQuerySubscription` synchronously during setup, before any `await`. For pages that can unmount during connection startup, use the explicit `onScopeDispose`/`subscribeToQuery` ownership pattern in the linked reference: register cleanup before awaiting and close a connection that resolves after disposal. The SDK composable in `vue-datocms` 8.1.19 registers cleanup after connecting and can miss that early unmount.
+
 ## Contents
 
 - Basic Usage
@@ -98,7 +102,7 @@ const { data } = useQuerySubscription({
   excludeInvalid: true,
   // For Content Link (visual editing):
   contentLink: 'v1',
-  baseEditingUrl: 'https://your-project.admin.datocms.com/environments/main',
+  baseEditingUrl: 'https://your-project.admin.datocms.com',
   // Server-fetched data as initial render:
   initialData: serverData,
 });

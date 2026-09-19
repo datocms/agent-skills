@@ -77,7 +77,7 @@ const data = await executeQuery(query, {
   includeDrafts: true,
   excludeInvalid: true,
   contentLink: 'v1',
-  baseEditingUrl: 'https://your-project.admin.datocms.com/environments/main',
+  baseEditingUrl: 'https://your-project.admin.datocms.com',
 });
 ---
 
@@ -89,7 +89,7 @@ const data = await executeQuery(query, {
   includeDrafts={true}
   excludeInvalid={true}
   contentLink="v1"
-  baseEditingUrl="https://your-project.admin.datocms.com/environments/main"
+  baseEditingUrl="https://your-project.admin.datocms.com"
 />
 ```
 

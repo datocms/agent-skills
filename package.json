@@ -16,11 +16,14 @@
     "bump:minor": "tsx scripts/bump-version.ts minor",
     "bump:major": "tsx scripts/bump-version.ts major",
     "prepare": "husky",
-    "test:e2e:harness": "node --test tests/native-e2e.test.mjs",
+    "test:e2e:harness": "node --test tests/native-e2e.test.mjs tests/catalog-replay.test.mjs tests/deployed-scope.test.mjs",
     "e2e:frontend": "node e2e/frontend/run.mjs",
     "e2e:hosted": "node e2e/hosted/run.mjs",
     "e2e:code": "node e2e/workflows/code.mjs",
-    "e2e:workflows": "node e2e/workflows/run.mjs"
+    "e2e:workflows": "node e2e/workflows/run.mjs",
+    "e2e:catalog:plugin": "node e2e/catalog/plugin.mjs",
+    "e2e:catalog:live": "tsx e2e/catalog/live.mjs",
+    "e2e:deployed": "tsx e2e/deployed/actor.mjs"
   },
   "devDependencies": {
     "@datocms/cma-client-node": "^6.1.0",

@@ -1,6 +1,8 @@
-# Nuxt — Draft Mode Reference
+# Nuxt — Preview and Integration Reference
 
-Nuxt draft mode patterns. Follow Core first, then optional sections.
+Core below provides authentication and query helpers. For full visual editing, also read the [Content Link controller](./vue-content-link.md#nuxt), [Web Previews](#web-previews-optional), and [real-time query composable](#query-composable-with-real-time-subscription). The controller must be mounted explicitly, and subscriptions run only in the browser; the Core query helper alone does not provide either behavior.
+
+In custom composables, call Nuxt context helpers (`useRuntimeConfig`, `useCookie`, `useRequestEvent`, `useFetch`) and register lifecycle cleanup before the first `await`. An awaited dynamic import can lose that context; capture request values synchronously instead of looking them up afterward.
 
 ## Contents
 
@@ -19,10 +21,10 @@ server/api/
 ├── draft-mode/
 │   ├── enable.ts
 │   └── disable.ts
-lib/
-├── api/
-│   ├── draftMode.ts
-│   └── utils.ts
+server/utils/
+└── draftMode.ts            (server-only signing/verification)
+lib/api/
+└── utils.ts
 composables/
 ├── useDraftMode.ts          (create)
 └── useQuery.ts              (modify existing or create)
@@ -34,7 +36,7 @@ nuxt.config.ts               (modify)
 **File:** `server/api/draft-mode/enable.ts`
 
 ```ts
-import { enableDraftMode } from '~/lib/api/draftMode';
+import { enableDraftMode } from '~~/server/utils/draftMode';
 import { ensureHttpMethods, isRelativeUrl } from '~/lib/api/utils';
 
 /*
@@ -77,7 +79,7 @@ Key points:
 **File:** `server/api/draft-mode/disable.ts`
 
 ```ts
-import { disableDraftMode } from '~/lib/api/draftMode';
+import { disableDraftMode } from '~~/server/utils/draftMode';
 import { ensureHttpMethods, isRelativeUrl } from '~/lib/api/utils';
 
 /*
@@ -101,10 +103,10 @@ export default eventHandler(async (event) => {
 
 ### Draft Mode Helper
 
-**File:** `lib/api/draftMode.ts`
+**File:** `server/utils/draftMode.ts`
 
 ```ts
-import type { EventHandlerRequest, H3Event } from 'h3';
+import { deleteCookie, getCookie, setCookie, type EventHandlerRequest, type H3Event } from 'h3';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import type { CookieSerializeOptions } from 'cookie-es';
 
@@ -174,7 +176,7 @@ export function draftModeHeaders(): HeadersInit {
 Key points:
 
 - JWT payload contains draft CDA token (`datocmsDraftContentCdaToken`) — decoded client-side for real-time
-- Nuxt/H3 auto-imports: `setCookie`, `deleteCookie`, `getCookie`
+- Keep this helper server-only. Vue components and universal query composables use `useDraftMode`; importing `jsonwebtoken` or this signing helper into them can break browser hydration, even when its call is guarded by `import.meta.server`.
 - Cookie opts: `partitioned: true`, `secure: true`, `sameSite: 'none'`
 
 ### Utils
@@ -270,9 +272,8 @@ export function useDraftMode() {
 
 Key points:
 
-- Decodes JWT client-side to extract draft CDA token
-- Returns `false` if no cookie/invalid JWT
-- Returns decoded payload (`datocmsDraftContentCdaToken`) if valid
+- Universal: `useCookie` reads the request cookie during SSR and the browser cookie after hydration. Both query paths take the draft CDA token from this decoded payload.
+- Returns `false` if the cookie is absent or cannot be decoded; decoding does not verify the signature. The CDA authenticates the supplied token. Server actions that require a verified session use the server-only JWT helper.
 
 ### Query Composable
 
@@ -563,7 +564,7 @@ export async function useQuery<Result, Variables>(
       excludeInvalid: true,
       variables: options?.variables,
       contentLink: draftMode ? 'v1' : undefined,
-      baseEditingUrl: draftMode ? config.public.datocmsBaseEditingUrl : undefined,
+      baseEditingUrl: config.public.datocmsBaseEditingUrl,
     }),
     key: hash([query, options]),
     transform: (response: { data: Result; errors?: any[] }) => {
@@ -598,46 +599,7 @@ export default defineNuxtConfig({
 
 ### ContentLink Component Setup
 
-Create client component with routing for Web Previews Visual tab. Wrap in `<ClientOnly>` (requires browser APIs):
-
-**File:** `components/ContentLink.vue`
-
-```vue
-<script setup lang="ts">
-import { createController } from '@datocms/content-link';
-import { onMounted, onUnmounted, watch } from 'vue';
-
-const router = useRouter();
-const route = useRoute();
-
-let controller: ReturnType<typeof createController> | null = null;
-
-onMounted(() => {
-  controller = createController({
-    onNavigateTo: (path) => {
-      router.push(path);
-    },
-  });
-  controller.enableClickToEdit();
-});
-
-watch(
-  () => route.path,
-  (newPath) => {
-    controller?.setCurrentPath(newPath);
-  },
-);
-
-onUnmounted(() => {
-  controller?.dispose();
-  controller = null;
-});
-</script>
-
-<template>
-  <div />
-</template>
-```
+Use the [Nuxt controller component](./vue-content-link.md#nuxt). It owns its routing callback and updates the path in `router.afterEach` before DOM stamping. Mount the wrapper without passing a second routing callback from its parent.
 
 Add to layout, render only when draft mode enabled. Wrap in `<ClientOnly>`:
 
@@ -740,7 +702,7 @@ Content Link embeds invisible chars in text fields. Use `stripStega()` from `@da
 ### Content Link Environment Variables
 
 ```
-NUXT_PUBLIC_DATOCMS_BASE_EDITING_URL=   # For Content Link, e.g. https://your-project.admin.datocms.com/environments/main
+NUXT_PUBLIC_DATOCMS_BASE_EDITING_URL=   # For Content Link, e.g. https://your-project.admin.datocms.com
 ```
 
 ### Content Link Dependencies
@@ -756,11 +718,11 @@ Replace Core `useQuery` with real-time subscription version:
 **File:** `composables/useQuery.ts`
 
 ```ts
-import type { AsyncData } from '#app';
 import { buildRequestInit } from '@datocms/cda-client';
 import type { TadaDocumentNode } from 'gql.tada';
 import { hash } from 'ohash';
-import { useQuerySubscription } from 'vue-datocms';
+import { subscribeToQuery } from 'datocms-listen';
+import { onScopeDispose, shallowRef } from 'vue';
 
 const isServer = typeof window === 'undefined';
 
@@ -775,6 +737,15 @@ export async function useQuery<Result, Variables>(
   const config = useRuntimeConfig();
   const draftMode = useDraftMode();
 
+  let disposed = false;
+  let unsubscribe: (() => void) | undefined;
+  if (draftMode && !isServer) {
+    onScopeDispose(() => {
+      disposed = true;
+      unsubscribe?.();
+    });
+  }
+
   const apiToken = draftMode
     ? draftMode.datocmsDraftContentCdaToken
     : config.public.datocmsPublishedContentCdaToken;
@@ -783,7 +754,7 @@ export async function useQuery<Result, Variables>(
     throw new Error('Missing API token');
   }
 
-  const initialData = await useFetch('https://graphql.datocms.com/', {
+  const initialData = useFetch('https://graphql.datocms.com/', {
     ...buildRequestInit(query, {
       token: apiToken,
       includeDrafts: Boolean(draftMode),
@@ -800,31 +771,42 @@ export async function useQuery<Result, Variables>(
     },
   });
 
-  if (!draftMode || isServer) {
-    return initialData.data;
-  }
+  if (!draftMode || isServer) return (await initialData).data;
 
-  return useQuerySubscription<Result, Variables>({
+  const data = shallowRef<Result>();
+  await initialData;
+  if (disposed) return data;
+  data.value = initialData.data.value as Result | undefined;
+  void subscribeToQuery<Result, Variables>({
     query,
     variables: options?.variables,
     token: apiToken,
-    initialData: (initialData as AsyncData<Result, null>).data.value,
     includeDrafts: true,
     excludeInvalid: true,
-  }).data;
+    onUpdate: ({ response }) => {
+      if (!disposed) data.value = response.data;
+    },
+  }).then((stop) => {
+    if (disposed) stop();
+    else unsubscribe = stop;
+  }).catch(() => {
+    if (!disposed) console.error('Unable to start real-time updates');
+  });
+  return data;
 }
 ```
 
 Key points:
 
-- Draft mode ON + client-side: `useQuerySubscription` from `vue-datocms`
+- Draft mode ON + client-side: `subscribeToQuery` from `datocms-listen`
 - Draft mode OFF or server-side: return data directly
+- Register disposal before awaiting the fetch, and immediately close a connection that finishes opening after disposal. This covers both navigation during the initial fetch and during subscription startup.
 
-**Note: Combining with Content Link** — Add `contentLink` and `baseEditingUrl` to `buildRequestInit` options (see Content Link section).
+**Combining with Content Link** — Keep `environment`, `contentLink` and `baseEditingUrl` consistent in both `buildRequestInit` and `subscribeToQuery`. Use the selected sandbox for both. If the query selects `_editingUrl`, retain `baseEditingUrl` for published reads too. Pass plain token and variable values to the subscription; key the consuming page by its route when query variables change so the previous subscription is disposed.
 
 ### Real-Time Dependencies
 
-- `vue-datocms` — `useQuerySubscription` composable
+- `datocms-listen` — `subscribeToQuery` listener
 
 ## Cache Tags (Optional)
 
@@ -849,7 +831,7 @@ The example assumes preview mode exists. For a published-only project, omit the 
 import { rawExecuteQuery } from '@datocms/cda-client';
 import type { TadaDocumentNode } from 'gql.tada';
 import type { H3Event } from 'h3';
-import { isDraftModeEnabled } from '~/lib/api/draftMode';
+import { isDraftModeEnabled } from '~~/server/utils/draftMode';
 
 export async function fetchWithCacheTags<Result, Variables>(
   event: H3Event,

@@ -1,0 +1,504 @@
+{
+  "date": "2026-09-19",
+  "status": "completed-with-explicit-limits",
+  "model": "gpt-5.6-luna",
+  "reasoningEffort": "medium",
+  "modelSessions": 7,
+  "usageResetsUsed": 0,
+  "scope": {
+    "included": [
+      "Vercel project build failure/recovery",
+      "real search crawl and five-locale results",
+      "deployed search UI",
+      "Next.js persistent cache-tag mapping and real publication webhook"
+    ],
+    "deferredByUser": [
+      "WordPress import",
+      "Contentful import"
+    ],
+    "limits": [
+      "One Next.js/Vercel website, not every framework/provider combination",
+      "SQLite-backed external fixture mapping service, not every managed database provider",
+      "No claim that other models inherit these outcomes",
+      "Repairs, fresh implementations and model-free checks are distinct"
+    ]
+  },
+  "versions": {
+    "next": "16.0.7",
+    "react": "19.2.1",
+    "reactDatocms": "8.1.2",
+    "cdaClient": "0.3.1",
+    "cmaBrowserClient": "6.1.0"
+  },
+  "notes": [
+    "The first environment REST read returned ciphertext; validated environment-download values fixed the fixture, not the skill.",
+    "The search build-repair runner falsely flagged public origin/index values included in its secret list. Context audit found no actual credential output; raw flag remains preserved.",
+    "The initial pagination oracle observed the changed page label before the new response; it now waits for response and rendered result replacement.",
+    "Fresh final cache code was deployed unchanged. Its local build encountered missing installed dependencies; the provider clean lockfile install passed.",
+    "A successful callback does not alone prove selective invalidation: query dependencies may legitimately share CDA tags. Checks establish persistent mappings, real invalidation and observed freshness, not universal one-record/one-page isolation."
+  ],
+  "attempts": [
+    {
+      "id": "search-implementation-01",
+      "taskKind": "fresh-implementation",
+      "modelCalls": 1,
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "timedOut": false,
+      "usageLimitReached": false,
+      "unsuccessfulCommands": 1,
+      "strictExecutionPass": false,
+      "runnerCredentialLeakFlag": false,
+      "credentialOutputObserved": false,
+      "interpretation": "Fixture supplied encrypted runtime values; search token transport gate was also disabled",
+      "transcriptSha256": "7fb4dd54b7f2a9f9ad93925d2e0cf4b8156c26c36d4c5de778deb7cae9071ec7",
+      "provenanceSha256": "f1fe866784ab0aeb77a87fd98d7ec958b5028d86df76a39370d4bb2be47bc111",
+      "sourceRevision": "5d3b7324318db1d33e722ae9c87d4a6a56319aea",
+      "candidateSkillSetSha256": "8e392f687f08a7ce83f8e3234edd6f08132d90fc0f3febbc60c34f871d5eff3b",
+      "relevantSkillHashes": {
+        "skills/datocms-frontend-integrations/SKILL.md": "b2f1989e846fb3bd6c93c8f6521b557413b80dff6911edaab5abd01f36de1a11",
+        "skills/datocms-frontend-integrations/references/nextjs.md": "ceda4cc2ae7f01424a47ac3ce76813b07a3f7b7b3882cedfe78bb00aa26cd1ac",
+        "skills/datocms-frontend-integrations/references/react-site-search.md": "95ae03a12d8ec9a2b6aaa38e925b23f51ff486df9913bec69d1546d30ec55f1a",
+        "skills/datocms-frontend-integrations/references/site-search-api.md": "7de2cff805df5496c454e21b9e9842542e824fc5aa660d1714e35c2601f1ddfb",
+        "skills/datocms-frontend-integrations/references/site-search-concepts.md": "4669f7c96b2f6a39ec03aa284d17ffab9acf938357970dcea2e8194f710ad8b9"
+      },
+      "evidenceDirectory": "local/deployed-search/implementation-01/native"
+    },
+    {
+      "id": "search-build-repair-02",
+      "taskKind": "guided-repair",
+      "modelCalls": 1,
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "timedOut": false,
+      "usageLimitReached": false,
+      "unsuccessfulCommands": 3,
+      "strictExecutionPass": false,
+      "runnerCredentialLeakFlag": true,
+      "credentialOutputObserved": false,
+      "interpretation": "Build/routes passed after fixture correction; actual search request returned 401",
+      "transcriptSha256": "b73abf4f631d318b94a79bcb001be1a4e109f2de44e28f7cb2859004a3bd4b32",
+      "provenanceSha256": "1ee64b36b0abb7785ad3ae4cec7d87783003eeb0318035bb7460125862d6c663",
+      "sourceRevision": "5d3b7324318db1d33e722ae9c87d4a6a56319aea",
+      "candidateSkillSetSha256": "8e392f687f08a7ce83f8e3234edd6f08132d90fc0f3febbc60c34f871d5eff3b",
+      "relevantSkillHashes": {
+        "skills/datocms-frontend-integrations/SKILL.md": "b2f1989e846fb3bd6c93c8f6521b557413b80dff6911edaab5abd01f36de1a11",
+        "skills/datocms-frontend-integrations/references/nextjs.md": "ceda4cc2ae7f01424a47ac3ce76813b07a3f7b7b3882cedfe78bb00aa26cd1ac",
+        "skills/datocms-frontend-integrations/references/react-site-search.md": "95ae03a12d8ec9a2b6aaa38e925b23f51ff486df9913bec69d1546d30ec55f1a",
+        "skills/datocms-frontend-integrations/references/site-search-api.md": "7de2cff805df5496c454e21b9e9842542e824fc5aa660d1714e35c2601f1ddfb",
+        "skills/datocms-frontend-integrations/references/site-search-concepts.md": "4669f7c96b2f6a39ec03aa284d17ffab9acf938357970dcea2e8194f710ad8b9"
+      },
+      "evidenceDirectory": "local/deployed-search/build-repair-02"
+    },
+    {
+      "id": "search-token-repair-03",
+      "taskKind": "guided-repair",
+      "modelCalls": 1,
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "timedOut": false,
+      "usageLimitReached": false,
+      "unsuccessfulCommands": 0,
+      "strictExecutionPass": true,
+      "runnerCredentialLeakFlag": false,
+      "credentialOutputObserved": false,
+      "interpretation": "Idempotent provisioning repaired and search request passed",
+      "transcriptSha256": "95010b4f32abb05207af6553b754fc95b5793a3b5f021814942055e9def65b48",
+      "provenanceSha256": "8fe36afdd75ef0fe133125c6ff961eef738900eeb66c7bed88505fa9ff5c3f12",
+      "sourceRevision": "5d3b7324318db1d33e722ae9c87d4a6a56319aea",
+      "candidateSkillSetSha256": "e84b04b597b3717fa1ca723d35fa5a44b738133adacf3b89409026dba259be5a",
+      "relevantSkillHashes": {
+        "skills/datocms-frontend-integrations/SKILL.md": "b2f1989e846fb3bd6c93c8f6521b557413b80dff6911edaab5abd01f36de1a11",
+        "skills/datocms-frontend-integrations/references/nextjs.md": "ceda4cc2ae7f01424a47ac3ce76813b07a3f7b7b3882cedfe78bb00aa26cd1ac",
+        "skills/datocms-frontend-integrations/references/react-site-search.md": "95ae03a12d8ec9a2b6aaa38e925b23f51ff486df9913bec69d1546d30ec55f1a",
+        "skills/datocms-frontend-integrations/references/site-search-api.md": "8769318b6ce77db1b2b8684a657e26cd956349952bcd2108f441fb59c5a59e6f",
+        "skills/datocms-frontend-integrations/references/site-search-concepts.md": "4669f7c96b2f6a39ec03aa284d17ffab9acf938357970dcea2e8194f710ad8b9"
+      },
+      "evidenceDirectory": "local/deployed-search/token-repair-03"
+    },
+    {
+      "id": "search-credential-fresh-04",
+      "taskKind": "fresh-implementation",
+      "modelCalls": 1,
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "timedOut": false,
+      "usageLimitReached": false,
+      "unsuccessfulCommands": 1,
+      "strictExecutionPass": false,
+      "runnerCredentialLeakFlag": false,
+      "credentialOutputObserved": false,
+      "interpretation": "Fresh provisioning passed independent search, least-privilege and write-denial checks; owned role/token removed",
+      "transcriptSha256": "cd9482d49e3e93c25a39b175c4e777a6c00f7aa1d58f779bb957729cb5161ccc",
+      "provenanceSha256": "3fefd2b47582ae9162f043e962fa646912bf7a3350d52a750424340fde003198",
+      "sourceRevision": "5d3b7324318db1d33e722ae9c87d4a6a56319aea",
+      "candidateSkillSetSha256": "e84b04b597b3717fa1ca723d35fa5a44b738133adacf3b89409026dba259be5a",
+      "relevantSkillHashes": {
+        "skills/datocms-frontend-integrations/SKILL.md": "b2f1989e846fb3bd6c93c8f6521b557413b80dff6911edaab5abd01f36de1a11",
+        "skills/datocms-frontend-integrations/references/nextjs.md": "ceda4cc2ae7f01424a47ac3ce76813b07a3f7b7b3882cedfe78bb00aa26cd1ac",
+        "skills/datocms-frontend-integrations/references/react-site-search.md": "95ae03a12d8ec9a2b6aaa38e925b23f51ff486df9913bec69d1546d30ec55f1a",
+        "skills/datocms-frontend-integrations/references/site-search-api.md": "8769318b6ce77db1b2b8684a657e26cd956349952bcd2108f441fb59c5a59e6f",
+        "skills/datocms-frontend-integrations/references/site-search-concepts.md": "4669f7c96b2f6a39ec03aa284d17ffab9acf938357970dcea2e8194f710ad8b9"
+      },
+      "evidenceDirectory": "local/deployed-search/credential-fresh-04/native"
+    },
+    {
+      "id": "cache-implementation-01",
+      "taskKind": "fresh-implementation",
+      "modelCalls": 1,
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "timedOut": false,
+      "usageLimitReached": false,
+      "unsuccessfulCommands": 5,
+      "strictExecutionPass": false,
+      "runnerCredentialLeakFlag": false,
+      "credentialOutputObserved": false,
+      "interpretation": "Five of six deployed cache checks passed; authenticated empty tags returned 400",
+      "transcriptSha256": "3b6624526e157c7101430d15fad9f7a1e46e455978dd2304b947674c4dc30af2",
+      "provenanceSha256": "f01acf1215ec4c1c9e5f657bb0e2fe73ae7a02813de2402dcbd28be8fb8b90a9",
+      "sourceRevision": "5d3b7324318db1d33e722ae9c87d4a6a56319aea",
+      "candidateSkillSetSha256": "e84b04b597b3717fa1ca723d35fa5a44b738133adacf3b89409026dba259be5a",
+      "relevantSkillHashes": {
+        "skills/datocms-frontend-integrations/SKILL.md": "b2f1989e846fb3bd6c93c8f6521b557413b80dff6911edaab5abd01f36de1a11",
+        "skills/datocms-frontend-integrations/references/nextjs.md": "ceda4cc2ae7f01424a47ac3ce76813b07a3f7b7b3882cedfe78bb00aa26cd1ac",
+        "skills/datocms-frontend-integrations/references/react-site-search.md": "95ae03a12d8ec9a2b6aaa38e925b23f51ff486df9913bec69d1546d30ec55f1a",
+        "skills/datocms-frontend-integrations/references/site-search-api.md": "8769318b6ce77db1b2b8684a657e26cd956349952bcd2108f441fb59c5a59e6f",
+        "skills/datocms-frontend-integrations/references/site-search-concepts.md": "4669f7c96b2f6a39ec03aa284d17ffab9acf938357970dcea2e8194f710ad8b9"
+      },
+      "evidenceDirectory": "local/deployed-cache/implementation-01/native"
+    },
+    {
+      "id": "cache-search-repair-02",
+      "taskKind": "guided-repair",
+      "modelCalls": 1,
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "timedOut": false,
+      "usageLimitReached": false,
+      "unsuccessfulCommands": 0,
+      "strictExecutionPass": true,
+      "runnerCredentialLeakFlag": false,
+      "credentialOutputObserved": false,
+      "interpretation": "Focused locale/cache repair passed build and local checks; repair is not counted as a fresh setup",
+      "transcriptSha256": "7e85c5491fd753257c0a1e56f55541477d7adaac96483f05997f0ad53db37328",
+      "provenanceSha256": "692c49520f416a768acb3cbcd14c79b83f1895d7489b0949c6dd4839275e6a6e",
+      "sourceRevision": "5d3b7324318db1d33e722ae9c87d4a6a56319aea",
+      "candidateSkillSetSha256": "e91d74350e02c812db45a3097b63257ee07763a22dcdaa40913d8579d5017985",
+      "relevantSkillHashes": {
+        "skills/datocms-frontend-integrations/SKILL.md": "b2f1989e846fb3bd6c93c8f6521b557413b80dff6911edaab5abd01f36de1a11",
+        "skills/datocms-frontend-integrations/references/nextjs.md": "ceda4cc2ae7f01424a47ac3ce76813b07a3f7b7b3882cedfe78bb00aa26cd1ac",
+        "skills/datocms-frontend-integrations/references/react-site-search.md": "0a52c205eeb17f7be46c84bf360252410221716aeb9f4451bba1d28ed3adffc7",
+        "skills/datocms-frontend-integrations/references/site-search-api.md": "8769318b6ce77db1b2b8684a657e26cd956349952bcd2108f441fb59c5a59e6f",
+        "skills/datocms-frontend-integrations/references/site-search-concepts.md": "926688faa8d2744bcb913a34624ff55959f1119873bb949eaed2e554500b92e6"
+      },
+      "evidenceDirectory": "local/deployed-cache/repair-02"
+    },
+    {
+      "id": "cache-fresh-03",
+      "taskKind": "fresh-implementation",
+      "modelCalls": 1,
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "medium",
+      "completed": true,
+      "timedOut": false,
+      "usageLimitReached": false,
+      "unsuccessfulCommands": 5,
+      "strictExecutionPass": false,
+      "runnerCredentialLeakFlag": false,
+      "credentialOutputObserved": false,
+      "interpretation": "Unchanged fresh cache implementation deployed with locked dependencies; six independent deployed cache checks passed",
+      "transcriptSha256": "f0e267fe02d111f6d73bfd517cae63e78ba3b5b08660e9ee0596f3e02de17e0f",
+      "provenanceSha256": "18de7c0a4b17a26d4df5d275c728bb07481e76b0aba55a7a6ae7bbc73822bf8a",
+      "sourceRevision": "5d3b7324318db1d33e722ae9c87d4a6a56319aea",
+      "candidateSkillSetSha256": "018b6863da60b1b58ba3c47f07dcbeb8f72931ac04cdbcf1272dbdd2ceef4844",
+      "relevantSkillHashes": {
+        "skills/datocms-frontend-integrations/SKILL.md": "95fbc8f399c46aabd58bfa34193ae5aa84a809f3feb2d0de9725095e99eacf1d",
+        "skills/datocms-frontend-integrations/references/nextjs.md": "ceda4cc2ae7f01424a47ac3ce76813b07a3f7b7b3882cedfe78bb00aa26cd1ac",
+        "skills/datocms-frontend-integrations/references/react-site-search.md": "0a52c205eeb17f7be46c84bf360252410221716aeb9f4451bba1d28ed3adffc7",
+        "skills/datocms-frontend-integrations/references/site-search-api.md": "8769318b6ce77db1b2b8684a657e26cd956349952bcd2108f441fb59c5a59e6f",
+        "skills/datocms-frontend-integrations/references/site-search-concepts.md": "926688faa8d2744bcb913a34624ff55959f1119873bb949eaed2e554500b92e6"
+      },
+      "evidenceDirectory": "local/deployed-cache/fresh-03/native"
+    }
+  ],
+  "operatorEvidence": [
+    {
+      "id": "build-permission-01",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-build/attempt-01/result.json",
+      "sha256": "fe929dc291b51760018a12011392a0d2c2bb5428e16330c028c6e498dcf94305",
+      "passed": false,
+      "error": "Vercel GET /v6/deployments: HTTP 403"
+    },
+    {
+      "id": "build-failure-and-oracle-correction-02",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-build/attempt-02/result.json",
+      "sha256": "06553e07836610057a9385cedc553a7778caca74305c44853a61ddfeed52c0d0",
+      "passed": false,
+      "error": "Deployment controlled-build-failure did not meet expectations",
+      "interpretation": "Real failure delivery succeeded; initial oracle confused the latest attempted production target with the live public alias"
+    },
+    {
+      "id": "build-recovery-03",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-build/attempt-03/result.json",
+      "sha256": "b4513fb1f3e668cd81561aa6380bb8023214a8900cf8ba95cee2e17c5994add5",
+      "passed": true
+    },
+    {
+      "id": "associated-build-failure-04",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-build/attempt-04/result.json",
+      "sha256": "173f64333c6d0f549b7ff0ec82f0d7aada8bb536f8ceff8ce5be3e8ccd54a6f8",
+      "passed": true
+    },
+    {
+      "id": "direct-deployment-permission",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-search/deployment-submit.json",
+      "sha256": "f974a4a88e8d83c8217b625c04234bd65c137b740ecf70dfcac5b02c1f7ea15a",
+      "passed": false,
+      "interpretation": "Provider integration denied direct CLI production deployment; no project deployment was created by that attempt"
+    },
+    {
+      "id": "deployment-install-correction",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-search/deployment-hook-01/result.json",
+      "sha256": "0ed4902768d87f61367c9fa4c1a13f49b934b38dc12edbcf2800d349881a5d9b",
+      "passed": false,
+      "phase": "deployed",
+      "error": "Candidate build did not succeed"
+    },
+    {
+      "id": "search-deployment",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-search/deployment-hook-02/result.json",
+      "sha256": "667785635abad5fcdf4d947e893dcb4b9897f64988e98b6b8ec962288a38c9a9",
+      "passed": true,
+      "phase": "deployed"
+    },
+    {
+      "id": "real-crawl",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-search/crawl-01/search-checks.json",
+      "sha256": "eb6b2c4107742f52dfd8aff286af3878622aefd8fb663cc03dd1480c04aad65d",
+      "checks": [
+        {
+          "name": "published, unlisted and draft route boundaries",
+          "passed": true
+        },
+        {
+          "name": "public sitemap exposes published localized fixture URLs only",
+          "passed": true
+        },
+        {
+          "name": "real indexing completes and search respects locale and URL exclusions",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "browser-launch-correction",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-search/browser-01/result.json",
+      "sha256": "20dc3680896dfcfed487fd923cd34cd1ef8eec5b6c12a70693d862243c1dd4bd",
+      "passed": false,
+      "phase": "browser-launch",
+      "error": "Bundled Playwright executable absent; use existing Chrome channel like catalog harness"
+    },
+    {
+      "id": "browser-initial-oracle",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-search/browser-02/browser-checks.json",
+      "sha256": "51e4c59b8f10594145f539e7a85c198a7e7d27271aac50a1ae591c2c04fd68c2",
+      "checks": [
+        {
+          "name": "search defaults to the page locale",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n'en' !== 'it'\n"
+        },
+        {
+          "name": "real localized results and two-result pagination",
+          "passed": false,
+          "error": "The expression evaluated to a falsy value:\n\n  assert.ok(second.every(url => !first.includes(url)))\n"
+        },
+        {
+          "name": "empty, loading and request-error states",
+          "passed": true
+        },
+        {
+          "name": "no browser runtime exceptions",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "browser-corrected-oracle",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-search/browser-03/browser-checks.json",
+      "sha256": "0702f7cf37d6c8ce19bbb937dde27ebd1766293313b8ff3ae3968459c7337ed8",
+      "checks": [
+        {
+          "name": "search defaults to the page locale",
+          "passed": false,
+          "error": "Expected values to be strictly equal:\n\n'en' !== 'it'\n"
+        },
+        {
+          "name": "real localized results and two-result pagination",
+          "passed": true
+        },
+        {
+          "name": "empty, loading and request-error states",
+          "passed": true
+        },
+        {
+          "name": "no browser runtime exceptions",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "cache-initial",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-cache/check-01/cache-checks.json",
+      "sha256": "6d42b368e5f6d0435468b6aff0311c7f6e20fa580465090b8dc1947933f80fda",
+      "checks": [
+        {
+          "name": "webhook authentication and payload validation",
+          "passed": false,
+          "error": "empty\n\n400 !== 200\n"
+        },
+        {
+          "name": "published post mappings use real CDA tags and distinct query identities",
+          "passed": true
+        },
+        {
+          "name": "draft reads bypass published data and mappings",
+          "passed": true
+        },
+        {
+          "name": "real publish webhook immediately refreshes the published post",
+          "passed": true
+        },
+        {
+          "name": "repeated delivery remains successful",
+          "passed": true
+        },
+        {
+          "name": "mapping dependency failure is surfaced and recovers",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "cache-final-fresh",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-cache/check-fresh-03/cache-checks.json",
+      "sha256": "d5942503a2215d44c4db3ff8b4f98176d54c0c33787c173b9218848d02822c96",
+      "checks": [
+        {
+          "name": "webhook authentication and payload validation",
+          "passed": true
+        },
+        {
+          "name": "published post mappings use real CDA tags and distinct query identities",
+          "passed": true
+        },
+        {
+          "name": "draft reads bypass published data and mappings",
+          "passed": true
+        },
+        {
+          "name": "real publish webhook immediately refreshes the published post",
+          "passed": true
+        },
+        {
+          "name": "repeated delivery remains successful",
+          "passed": true
+        },
+        {
+          "name": "mapping dependency failure is surfaced and recovers",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "browser-final",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-search/browser-final/browser-checks.json",
+      "sha256": "8d9a732666789b4a1de054fe186c29f475fbae4a49345d5ce9848865cefdc2c4",
+      "checks": [
+        {
+          "name": "search defaults to the page locale",
+          "passed": true
+        },
+        {
+          "name": "real localized results and two-result pagination",
+          "passed": true
+        },
+        {
+          "name": "empty, loading and request-error states",
+          "passed": true
+        },
+        {
+          "name": "no browser runtime exceptions",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "automatic-crawl",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-search/automatic-crawl.json",
+      "sha256": "df3ed72bc3423671de47f98009da4828d56c5fa6b0352b5ba965327697c7890b",
+      "passed": true
+    },
+    {
+      "id": "automatic-index-readback",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-search/final-index-readback.json",
+      "sha256": "2e357c208a5b8927a5e81bb9cfc25c797b5c057185a3b4f93e7dfae62eb5379f",
+      "passed": true
+    },
+    {
+      "id": "public-credential-audit",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-search/public-credential-audit.json",
+      "sha256": "22372e616f19c471969fe719d83b57841d1879b0fccf8412a66af0f2f094a6ee",
+      "passed": true
+    },
+    {
+      "id": "final-deployment",
+      "modelCalls": 0,
+      "evidencePath": "local/deployed-cache/deployment-fresh-03/result.json",
+      "sha256": "dc7bc52216bd14c914f612f0693f2904ee0d05428980c717f2e18a7a369d4cd8",
+      "passed": true,
+      "phase": "finished"
+    }
+  ],
+  "cleanup": {
+    "complete": true,
+    "steps": [
+      "Owned webhook and automatic indexing disabled",
+      "Owned records removed and absence verified",
+      "Owned project environment variables removed and absence verified",
+      "Original repository revision redeployed through the authorized project",
+      "Original webhook restored; owned webhook, search index, token and role removed",
+      "Original CMS record hashes, resource sets and role/token permissions match baseline",
+      "Provider configuration and linked Git branch match baseline",
+      "Original decrypted runtime values match; temporary variables absent",
+      "Mapping service and tunnel terminated; loopback port closed; no evaluated application listeners",
+      "Restored baseline cache invalidated; temporary post/search routes absent and original home healthy"
+    ],
+    "evidencePath": "local/deployed-cleanup/result.json",
+    "sha256": "d96dba9d049cbf8d1a052b6c06795e0b075f127c17b17081625f9a2c71bdc9ae"
+  }
+}

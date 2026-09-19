@@ -33,6 +33,10 @@ npm run e2e:workflows -- --repetitions 3 --output local/workflows/run-01
 
 Use `--cases` to select workflow/code cases, or `--frameworks` for applications. `--recheck <original-output>` on code/application runners regrades the same generated artifacts without another model call; choose a new `--output` so original evidence remains intact. Rechecks rebuild applications and use their saved dependency lockfiles.
 
+## Catalog workflow coverage
+
+The [catalog scenarios](catalog/README.md) add real CDA reads and rendering, migration execution and recovery, duplicate-free content and asset imports, SDK plugin behavior in Chrome, and visual-editing flows with live CMS updates. They use independent outcome checks, disposable sandboxes, and model-free rechecks for saved applications. The [catalog report](reports/2026-09-19-catalog-workflows.md) and [remaining-gap report](reports/2026-09-19-remaining-gaps.md) preserve successful outcomes, implementation failures, and separate harness corrections. The latter also tracks Nuxt, SvelteKit and Astro, actual hosted-editor operation, environment promotion, scoped schema types, and the catalog capability inventory.
+
 ## Controlled CLI/MCP coexistence
 
 ```bash
@@ -64,6 +68,8 @@ Cleanup runs after failures and deletes only the named sandbox, then checks the 
 The [hosted validation report](reports/2026-09-18-hosted-mcp.md) records the initial fixture correction, three independently verified actor outcomes, and cleanup evidence.
 
 ## Evidence and iteration
+
+The [deployed website harness](deployed/README.md) adds explicitly scoped Vercel deployment, real search crawling and Next.js cache-tag checks. Its [validation report](reports/2026-09-19-deployed-workflows.md) separates evaluated implementations from operator deployments and independent browser/API verification.
 
 Live runs default to `local/e2e/<timestamp>/<case>/`; set a fresh `E2E_RUN_ID` or `E2E_OUTPUT` to organize runs. Other suites require fresh output directories. Existing transcripts are never overwritten. Evidence includes prompts, skill hashes, revision, exact model/effort, runtime version, command events, errors, usage, independent assertions, and final answers. A source hash identifies uncommitted candidates more precisely than HEAD alone. Raw artifacts are ignored by Git; commit a sanitized report and coverage map instead.
 

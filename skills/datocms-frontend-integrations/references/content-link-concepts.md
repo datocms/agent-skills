@@ -35,9 +35,9 @@ When `includeDrafts` is true, add these options:
 
 ```ts
 const result = await executeQuery(query, {
-  // ... other options
+  ...options, // token, variables, environment and includeDrafts
   contentLink: options?.includeDrafts ? 'v1' : undefined,
-  baseEditingUrl: options?.includeDrafts ? BASE_EDITING_URL : undefined,
+  baseEditingUrl: BASE_EDITING_URL,
 });
 ```
 
@@ -45,7 +45,7 @@ const result = await executeQuery(query, {
 
 ## `baseEditingUrl`
 
-Your DatoCMS project editor URL: **DatoCMS → Settings → Environment settings**. Format: `https://{project-slug}.admin.datocms.com/environments/{environment-name}`. Store as env var (e.g., `DATOCMS_BASE_EDITING_URL`).
+Use the project editor origin, `https://{project-slug}.admin.datocms.com`, as an env var (e.g., `DATOCMS_BASE_EDITING_URL`). The CDA adds the environment and record paths; including `/environments/...` in this base duplicates that path. Select the content environment with the separate `environment` query/subscription option.
 
 ## `createController()` API
 
@@ -124,7 +124,7 @@ query {
 </span>
 ```
 
-`_editingUrl` available on all records, returns full URL to edit that record in DatoCMS.
+`_editingUrl` is available on all records and returns the full record-editing URL. Every query selecting it requires `baseEditingUrl`, including published reads with `contentLink` disabled. The base is a public project origin, not a credential. Keep it in shared query options, or omit `_editingUrl` from the published query; only the draft token and stega encoding need the draft-mode boundary.
 
 #### `data-datocms-content-link-source`
 

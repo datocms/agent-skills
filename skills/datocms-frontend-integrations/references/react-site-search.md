@@ -36,7 +36,7 @@ function SearchWidget() {
 
   return (
     <div>
-      <form onSubmit={(e) => { e.preventDefault(); state.setQuery(query); }}>
+      <form onSubmit={(e) => e.preventDefault()}>
         <input
           type="search"
           value={state.query}
@@ -115,13 +115,13 @@ import { useState } from 'react';
 
 const client = buildClient({ apiToken: 'YOUR_API_TOKEN' });
 
-function SearchPage() {
+function SearchPage({ locale = 'en' }) {
   const [query, setQuery] = useState('');
 
   const { state, error, data } = useSiteSearch({
     client,
     searchIndexId: '7497',
-    initialState: { locale: 'en' },
+    initialState: { locale },
     highlightMatch: (text, key, context) =>
       context === 'title' ? (
         <strong key={key}>{text}</strong>

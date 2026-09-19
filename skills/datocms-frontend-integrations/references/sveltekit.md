@@ -460,7 +460,7 @@ Modify the `performQuery` function from the Core section to add Content Link sup
 
 ```ts
 contentLink: draftModeEnabled ? 'v1' : undefined,
-baseEditingUrl: draftModeEnabled ? privateEnv.PRIVATE_DATOCMS_BASE_EDITING_URL : undefined,
+baseEditingUrl: privateEnv.PRIVATE_DATOCMS_BASE_EDITING_URL,
 ```
 
 The full query function with Content Link enabled:
@@ -487,7 +487,7 @@ export async function performQuery<Result, Variables>(
       ? privateEnv.PRIVATE_DATOCMS_DRAFT_CONTENT_CDA_TOKEN
       : privateEnv.PRIVATE_DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN,
     contentLink: draftModeEnabled ? 'v1' : undefined,
-    baseEditingUrl: draftModeEnabled ? privateEnv.PRIVATE_DATOCMS_BASE_EDITING_URL : undefined,
+    baseEditingUrl: privateEnv.PRIVATE_DATOCMS_BASE_EDITING_URL,
   });
 }
 ```
@@ -727,7 +727,7 @@ export async function generateRealtimeSubscription<Result, Variables>(
 
 ```ts
 contentLink: draftModeEnabled ? 'v1' : undefined,
-baseEditingUrl: draftModeEnabled ? privateEnv.PRIVATE_DATOCMS_BASE_EDITING_URL : undefined,
+baseEditingUrl: privateEnv.PRIVATE_DATOCMS_BASE_EDITING_URL,
 ```
 
 ### Usage in `+page.server.ts`
@@ -745,18 +745,36 @@ export async function load(event) {
 
 ### Usage in `+page.svelte`
 
+SvelteKit reuses page components when route parameters change. `querySubscription` captures its options at component initialization; it does not follow later prop changes. Put it in a child keyed by the server's subscription options so navigation replaces the old subscription and its initial data.
+
+```svelte
+<script lang="ts">
+  import LiveContent from '$lib/LiveContent.svelte';
+
+  let { data } = $props();
+</script>
+
+{#key data.subscription}
+  <LiveContent options={data.subscription} />
+{/key}
+```
+
+**File:** `src/lib/LiveContent.svelte`
+
 ```svelte
 <script lang="ts">
   import { querySubscription } from '@datocms/svelte';
 
-  let { data } = $props();
-  const { data: result } = querySubscription(data.subscription);
+  let { options } = $props();
+  const subscription = querySubscription(options);
 </script>
 
-{#if $result}
-  <!-- Render your content using $result -->
+{#if $subscription.data}
+  <!-- Render your query's fields from $subscription.data -->
 {/if}
 ```
+
+The return value is one readable store, not an object of stores; use `$subscription.data`. Verify navigation between two slugs as well as a live edit on the current page. Keep the configured `environment` in both the server query and subscription options. If the query selects `_editingUrl`, `baseEditingUrl` is required for published reads too.
 
 Key points:
 

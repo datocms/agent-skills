@@ -211,10 +211,10 @@ Use project's package manager (see `../../../patterns/MANDATORY_RULES.md`).
 
 Add base editing URL placeholder to env files when missing:
 
-- Next.js: `DATOCMS_BASE_EDITING_URL=https://your-project.admin.datocms.com/environments/main`
-- Nuxt: `NUXT_PUBLIC_DATOCMS_BASE_EDITING_URL=https://your-project.admin.datocms.com/environments/main`
-- SvelteKit: `PRIVATE_DATOCMS_BASE_EDITING_URL=https://your-project.admin.datocms.com/environments/main`
-- Astro: `DATOCMS_BASE_EDITING_URL=https://your-project.admin.datocms.com/environments/main`
+- Next.js: `DATOCMS_BASE_EDITING_URL=https://your-project.admin.datocms.com`
+- Nuxt: `NUXT_PUBLIC_DATOCMS_BASE_EDITING_URL=https://your-project.admin.datocms.com`
+- SvelteKit: `PRIVATE_DATOCMS_BASE_EDITING_URL=https://your-project.admin.datocms.com`
+- Astro: `DATOCMS_BASE_EDITING_URL=https://your-project.admin.datocms.com`
 
 Only add variables that do NOT already exist.
 

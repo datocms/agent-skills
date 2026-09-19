@@ -77,6 +77,8 @@ type WebPreviewsResponse = {
 };
 ```
 
+Draft preview URLs contain the shared secret, so the response body is credential-bearing too. During verification, parse and assert the response in memory; print only status, labels and URL pathnames, never the raw body or authenticated URLs.
+
 ### Status Branching Logic
 
 Endpoint branches on `item.meta.status`:
@@ -154,6 +156,8 @@ routeRules: {
 ```
 
 ## `recordToWebsiteRoute` Pattern
+
+The incoming JSON:API item has `relationships.item_type.data.id`, not `__itemTypeId`. The latter is a local discriminator added by `deserializeRawItem`; accepting it as an optional request field does not populate it. Deserialize the wire item before routing, or read its raw relationship directly. Test the endpoint with the actual raw payload, without SDK-added properties.
 
 Maps DatoCMS record to frontend URL. Used by preview-links endpoint.
 

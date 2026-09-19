@@ -523,7 +523,7 @@ Modify `executeQuery` function from Core section to add Content Link support. Ad
 
 ```ts
 contentLink: options?.includeDrafts ? 'v1' : undefined,
-baseEditingUrl: options?.includeDrafts ? DATOCMS_BASE_EDITING_URL : undefined,
+baseEditingUrl: DATOCMS_BASE_EDITING_URL,
 ```
 
 Full query function with Content Link enabled:
@@ -549,7 +549,7 @@ export async function executeQuery<Result, Variables>(
       ? DATOCMS_DRAFT_CONTENT_CDA_TOKEN
       : DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN,
     contentLink: options?.includeDrafts ? 'v1' : undefined,
-    baseEditingUrl: options?.includeDrafts ? DATOCMS_BASE_EDITING_URL : undefined,
+    baseEditingUrl: DATOCMS_BASE_EDITING_URL,
   });
 
   return result;
@@ -716,7 +716,7 @@ Content Link embeds invisible characters in text fields. Use `stripStega()` from
 ### Content Link Environment Variables
 
 ```
-DATOCMS_BASE_EDITING_URL=             # For Content Link, e.g. https://your-project.admin.datocms.com/environments/main
+DATOCMS_BASE_EDITING_URL=             # For Content Link, e.g. https://your-project.admin.datocms.com
 ```
 
 ### Content Link Dependencies

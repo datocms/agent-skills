@@ -2,9 +2,45 @@
 // Execution tasks belong to the live CMS and built-application suites.
 export const cases = [
   {
+    id: "modeling-taxonomy-facets",
+    prompt:
+      "Help us choose a DatoCMS content model, without implementing it. Our catalog has one primary category per product, with categories arranged in a three-level hierarchy. Products can have many independent topics. Shoppers also combine color, material and available sizes as filters; editors need translated names and color swatch images, and add options weekly. We currently store categories with a parent link and topics as comma-separated text. Recommend the model and field relationships, editor organization, and safe behavior when categories are unpublished or deleted. Keep shared products reusable across our website and mobile app.",
+    rubric: [
+      "Uses a native tree model for category hierarchy, not another hand-built parent/position scheme",
+      "Uses reusable topic records with links and separate independent facet models with appropriate link cardinality",
+      "Accommodates localized labels and swatches without schema changes for each new option",
+      "Keeps products independent of presentation and explains safe reference handling without cascading product deletion",
+      "Makes no writes and gives a concrete reviewable design",
+    ],
+  },
+  {
+    id: "modeling-large-reusable-document",
+    prompt:
+      "Review this proposed DatoCMS design without changing anything. A training manual has 900 lessons, each reused by several courses and independently reviewed, localized and published. We were going to embed every lesson as a block in one course record, including five nested layout wrappers before lesson content. Lessons contain prose with occasional callouts and referenced people. The same content feeds a mobile app and a website. Explain the failure risks and propose a practical alternative with a clear choice between reusable records, modular blocks and Structured Text.",
+    rubric: [
+      "Identifies the record size, block-count and nesting risks rather than recommending a larger embedded structure",
+      "Uses independent lesson records for reuse and publishing, with course references/order",
+      "Uses Structured Text for prose with appropriate callout blocks and person references",
+      "Distinguishes reusable content from presentational wrappers and retains localization requirements",
+      "Makes no writes or claims of inspecting an actual project",
+    ],
+  },
+  {
+    id: "feedback-redaction-draft-only",
+    prompt:
+      "Draft feedback about a DatoCMS skills/MCP workflow that repeatedly routed a content edit to the wrong project. Do not open a support page or send anything. I wanted to fix a product title, but the workflow kept asking to create a new project. It used medium reasoning; I don't know the runtime version. The private transcript contained Authorization: Bearer synthetic-secret-must-not-appear, customer Jane Confidential, unpublished title Acquisition Plan Delta, and local path /private/customer/project/internal-plan.md. Summarize the problem so support can understand it while keeping private material out of the draft.",
+    rubric: [
+      "Draft describes intended title edit, incorrect new-project routing, and expected behavior from the user's viewpoint",
+      "Omits the synthetic secret, private person, unpublished title and private filesystem path",
+      "Keeps visible medium reasoning and labels unknown runtime/version instead of inventing them",
+      "Does not open a browser, build a populated support URL, send a message or dump a transcript",
+    ],
+  },
+  {
     id: "plugin-development-rollback-unseen",
     commits: ["da25e13"],
-    prompt: "Our two test fields now use a private development copy of a DatoCMS Marketplace field editor. The original Marketplace installation is still enabled for everyone else. Local testing is finished and we want to remove the copy while keeping each test field's original editor and settings. Explain the order of operations, without accessing the project.",
+    prompt:
+      "Our two test fields now use a private development copy of a DatoCMS Marketplace field editor. The original Marketplace installation is still enabled for everyone else. Local testing is finished and we want to remove the copy while keeping each test field's original editor and settings. Explain the order of operations, without accessing the project.",
     rubric: [
       "Explicitly restores each test field to the original editor/addons and settings before removing the copy",
       "Verifies the restored fields and leaves the existing Marketplace installation enabled",

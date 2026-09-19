@@ -68,51 +68,45 @@ const route = useRoute();
 
 ### Nuxt
 
+Use a client-only controller component so route changes reach Web Previews before Nuxt renders the next page. This wrapper owns router integration; mount it as `<ContentLink />` without also passing routing callbacks from its parent.
+
+**File:** `components/ContentLink.vue`
+
 ```vue
-<script setup>
-import { ContentLink } from 'vue-datocms';
+<script setup lang="ts">
+import { createController } from '@datocms/content-link';
+import { onMounted, onUnmounted } from 'vue';
 
 const router = useRouter();
-const route = useRoute();
+let controller: ReturnType<typeof createController> | null = null;
+let removeAfterEach: (() => void) | undefined;
+
+onMounted(() => {
+  controller = createController({
+    onNavigateTo: (path) => {
+      router.push(path);
+    },
+  });
+  controller.setCurrentPath(router.currentRoute.value.fullPath);
+  removeAfterEach = router.afterEach((to, _from, failure) => {
+    if (!failure) controller?.setCurrentPath(to.fullPath);
+  });
+  controller.enableClickToEdit();
+});
+
+onUnmounted(() => {
+  removeAfterEach?.();
+  controller?.dispose();
+  controller = null;
+});
 </script>
 
 <template>
-  <ContentLink
-    :on-navigate-to="(path) => router.push(path)"
-    :current-path="route.path"
-  />
+  <div />
 </template>
 ```
 
-Or create a reusable component:
-
-```vue
-<!-- components/DatoContentLink.vue -->
-<script setup>
-import { ContentLink as DatoContentLink } from 'vue-datocms';
-
-const router = useRouter();
-const route = useRoute();
-</script>
-
-<template>
-  <DatoContentLink
-    :on-navigate-to="(path) => router.push(path)"
-    :current-path="route.path"
-  />
-</template>
-```
-
-Then use it in your layout:
-
-```vue
-<template>
-  <div>
-    <DatoContentLink />
-    <slot />
-  </div>
-</template>
-```
+Update the controller path in the router's `afterEach` hook, before the next page's DOM is stamped. Nuxt's `useRoute()` updates after the page content changes; watching it can report the new record with the previous path to Web Previews. Verify navigation between two records in the embedded preview, including the reported path and record together.
 
 ## Enabling Click-to-Edit
 
@@ -142,7 +136,7 @@ With options:
 
 ### Via Keyboard Shortcut (Temporary)
 
-Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily show click-to-edit overlays. Releasing the key hides them.
+Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily invert click-to-edit: enable it when off, or disable it when already on. Releasing the key restores the previous state.
 
 ## `<ContentLink>` Props
 

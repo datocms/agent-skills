@@ -1,0 +1,830 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-19",
+  "excluded": [
+    "WordPress import",
+    "Contentful import"
+  ],
+  "interpretation": "Each entrypoint, reference, recipe and setup pattern is inventoried by capability. Evidence links identify representative checked outcomes, not complete coverage of every source paragraph or framework combination. Gaps remain open unless an independent result explicitly closes them.",
+  "groups": [
+    {
+      "id": "cda-content",
+      "scope": "CDA queries, pagination, localization, modular and Structured Text rendering",
+      "evidence": [
+        "2026-09-19-catalog-workflows.md",
+        "2026-09-19-remaining-gaps.md"
+      ],
+      "gaps": [
+        "Full filter/operator matrix"
+      ]
+    },
+    {
+      "id": "cli-migrations",
+      "scope": "Migration creation, partial recovery, tracking and safe reruns",
+      "evidence": [
+        "2026-09-19-catalog-workflows.md",
+        "2026-09-19-remaining-gaps.md"
+      ],
+      "gaps": [
+        "Multi-project blueprint synchronization",
+        "CLI plugin lifecycle"
+      ]
+    },
+    {
+      "id": "cli-release",
+      "scope": "Maintenance, migration validation and environment promotion",
+      "evidence": [
+        "2026-09-19-remaining-gaps.md",
+        "2026-09-19-deployed-workflows.md"
+      ],
+      "gaps": [
+        "Additional hosting providers and combined migration/deployment failure combinations"
+      ]
+    },
+    {
+      "id": "cma-content",
+      "scope": "Record mutations, bulk pagination, localization, assets, publication and preservation",
+      "evidence": [
+        "2026-09-18-production-readiness.md",
+        "2026-09-18-hosted-mcp.md",
+        "2026-09-19-catalog-workflows.md",
+        "2026-09-19-remaining-gaps.md",
+        "2026-09-19-deployed-workflows.md"
+      ],
+      "gaps": [
+        "Automatic webhook retry/backoff policy and additional event types; real delivery and repeated cache-tag delivery are covered",
+        "Full role/token permission combinations; dedicated search-token permissions are covered"
+      ]
+    },
+    {
+      "id": "cma-boundaries",
+      "scope": "Route ownership, permission failures and uncertain writes",
+      "evidence": [
+        "2026-09-18-production-readiness.md",
+        "2026-09-18-hosted-mcp.md"
+      ],
+      "gaps": [
+        "Every hosted permission and transport failure is not covered"
+      ]
+    },
+    {
+      "id": "modeling",
+      "scope": "Schema design decisions and editor ergonomics",
+      "evidence": [
+        "2026-09-19-remaining-gaps.md"
+      ],
+      "gaps": [
+        "Additional domain-specific modeling decisions and edge cases; two reviewed designs are representative"
+      ]
+    },
+    {
+      "id": "structured-text",
+      "scope": "Document construction, surgical edits, conversion and preservation",
+      "evidence": [
+        "2026-09-18-production-readiness.md",
+        "2026-09-18-hosted-mcp.md",
+        "2026-09-19-catalog-workflows.md"
+      ],
+      "gaps": [
+        "Additional adversarial documents and all source export variations"
+      ]
+    },
+    {
+      "id": "frontend-visual",
+      "scope": "Draft mode, preview links, Content Link, real-time subscriptions",
+      "evidence": [
+        "2026-09-18-production-readiness.md",
+        "2026-09-19-catalog-workflows.md",
+        "2026-09-19-remaining-gaps.md"
+      ],
+      "gaps": [
+        "Additional browser, authentication and routing combinations; final fresh Nuxt setup passes, and earlier failed attempts remain recorded"
+      ]
+    },
+    {
+      "id": "frontend-other",
+      "scope": "Images, SEO, Structured Text, video, search and crawler routes and Next.js cache-tag invalidation",
+      "evidence": [
+        "2026-09-18-production-readiness.md",
+        "2026-09-19-catalog-workflows.md",
+        "2026-09-19-remaining-gaps.md",
+        "2026-09-19-deployed-workflows.md"
+      ],
+      "gaps": [
+        "Each component in each framework has not been browser tested; live Next.js search crawl, UI, cache tags, image, SEO, favicon and video delivery are covered",
+        "Alternate CDN and managed database provider integrations"
+      ]
+    },
+    {
+      "id": "plugin-field",
+      "scope": "SDK field editor values, paths, host updates, disabling and theme",
+      "evidence": [
+        "2026-09-19-catalog-workflows.md",
+        "2026-09-19-remaining-gaps.md"
+      ],
+      "gaps": [
+        "Other field types and editor permission combinations remain outside this localized field check"
+      ]
+    },
+    {
+      "id": "plugin-other",
+      "scope": "Other SDK hooks and plugin surfaces",
+      "evidence": [
+        "2026-09-18-production-readiness.md",
+        "2026-09-19-remaining-gaps.md"
+      ],
+      "gaps": [
+        "Hosted asset-source and page flows; controlled and actual hosted sidebar/modal behavior is covered",
+        "Lifecycle failures and permission denials",
+        "Structured Text Slate editor integration"
+      ]
+    },
+    {
+      "id": "setup-routing",
+      "scope": "Setup discovery, prerequisites and recipe selection",
+      "evidence": [
+        "2026-09-18-production-readiness.md",
+        "2026-09-19-remaining-gaps.md",
+        "2026-09-19-deployed-workflows.md"
+      ],
+      "gaps": [
+        "Recipe routing is not proof of every installed outcome",
+        "Blueprint setup and additional webhook/build-trigger configurations; real project delivery is covered"
+      ]
+    },
+    {
+      "id": "feedback",
+      "scope": "Sanitized feedback drafting",
+      "evidence": [
+        "2026-09-19-remaining-gaps.md"
+      ],
+      "gaps": [
+        "Browser support-form handoff and inferred-frustration conversation branches; no message was sent"
+      ]
+    },
+    {
+      "id": "excluded",
+      "scope": "User-deferred WordPress and Contentful imports",
+      "evidence": [],
+      "gaps": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "skills/datocms-cda/SKILL.md",
+      "capability": "cda-content"
+    },
+    {
+      "path": "skills/datocms-cda/references/client-and-config.md",
+      "capability": "cda-content"
+    },
+    {
+      "path": "skills/datocms-cda/references/draft-caching-environments.md",
+      "capability": "cda-content"
+    },
+    {
+      "path": "skills/datocms-cda/references/filtering.md",
+      "capability": "cda-content"
+    },
+    {
+      "path": "skills/datocms-cda/references/fragment-patterns.md",
+      "capability": "cda-content"
+    },
+    {
+      "path": "skills/datocms-cda/references/images-and-videos.md",
+      "capability": "cda-content"
+    },
+    {
+      "path": "skills/datocms-cda/references/localization.md",
+      "capability": "cda-content"
+    },
+    {
+      "path": "skills/datocms-cda/references/modular-content.md",
+      "capability": "cda-content"
+    },
+    {
+      "path": "skills/datocms-cda/references/pagination-and-ordering.md",
+      "capability": "cda-content"
+    },
+    {
+      "path": "skills/datocms-cda/references/querying-basics.md",
+      "capability": "cda-content"
+    },
+    {
+      "path": "skills/datocms-cda/references/seo-and-meta.md",
+      "capability": "cda-content"
+    },
+    {
+      "path": "skills/datocms-cda/references/structured-text.md",
+      "capability": "cda-content"
+    },
+    {
+      "path": "skills/datocms-cda/references/type-generation.md",
+      "capability": "cda-content"
+    },
+    {
+      "path": "skills/datocms-cli/SKILL.md",
+      "capability": "cli-migrations"
+    },
+    {
+      "path": "skills/datocms-cli/references/blueprint-sync.md",
+      "capability": "cli-migrations"
+    },
+    {
+      "path": "skills/datocms-cli/references/cli-plugin-management.md",
+      "capability": "cli-migrations"
+    },
+    {
+      "path": "skills/datocms-cli/references/cli-setup.md",
+      "capability": "cli-migrations"
+    },
+    {
+      "path": "skills/datocms-cli/references/cma-script.md",
+      "capability": "cli-migrations"
+    },
+    {
+      "path": "skills/datocms-cli/references/creating-migrations.md",
+      "capability": "cli-migrations"
+    },
+    {
+      "path": "skills/datocms-cli/references/deployment-workflow.md",
+      "capability": "cli-release"
+    },
+    {
+      "path": "skills/datocms-cli/references/direct-cma-calls.md",
+      "capability": "cli-migrations"
+    },
+    {
+      "path": "skills/datocms-cli/references/environment-commands.md",
+      "capability": "cli-release"
+    },
+    {
+      "path": "skills/datocms-cli/references/importing-content.md",
+      "capability": "excluded"
+    },
+    {
+      "path": "skills/datocms-cli/references/running-migrations.md",
+      "capability": "cli-migrations"
+    },
+    {
+      "path": "skills/datocms-cli/references/schema-generate.md",
+      "capability": "cli-migrations"
+    },
+    {
+      "path": "skills/datocms-cli/references/schema-inspect.md",
+      "capability": "cli-migrations"
+    },
+    {
+      "path": "skills/datocms-cma/SKILL.md",
+      "capability": "cma-content"
+    },
+    {
+      "path": "skills/datocms-cma/references/access-control.md",
+      "capability": "cma-boundaries"
+    },
+    {
+      "path": "skills/datocms-cma/references/client-setup-and-errors.md",
+      "capability": "cma-boundaries"
+    },
+    {
+      "path": "skills/datocms-cma/references/client-types-and-behaviors.md",
+      "capability": "cma-boundaries"
+    },
+    {
+      "path": "skills/datocms-cma/references/editing-records.md",
+      "capability": "cma-content"
+    },
+    {
+      "path": "skills/datocms-cma/references/environments.md",
+      "capability": "cma-content"
+    },
+    {
+      "path": "skills/datocms-cma/references/filtering-and-pagination.md",
+      "capability": "cma-content"
+    },
+    {
+      "path": "skills/datocms-cma/references/localization.md",
+      "capability": "cma-content"
+    },
+    {
+      "path": "skills/datocms-cma/references/mcp.md",
+      "capability": "cma-boundaries"
+    },
+    {
+      "path": "skills/datocms-cma/references/migration-patterns.md",
+      "capability": "cma-content"
+    },
+    {
+      "path": "skills/datocms-cma/references/project-settings-and-usage.md",
+      "capability": "cma-content"
+    },
+    {
+      "path": "skills/datocms-cma/references/records.md",
+      "capability": "cma-content"
+    },
+    {
+      "path": "skills/datocms-cma/references/resource-gotchas.md",
+      "capability": "cma-content"
+    },
+    {
+      "path": "skills/datocms-cma/references/schema.md",
+      "capability": "cma-content"
+    },
+    {
+      "path": "skills/datocms-cma/references/type-generation.md",
+      "capability": "cma-content"
+    },
+    {
+      "path": "skills/datocms-cma/references/uploads.md",
+      "capability": "cma-content"
+    },
+    {
+      "path": "skills/datocms-content-modeling/SKILL.md",
+      "capability": "modeling"
+    },
+    {
+      "path": "skills/datocms-content-modeling/references/block-fields-and-structured-text.md",
+      "capability": "modeling"
+    },
+    {
+      "path": "skills/datocms-content-modeling/references/content-reuse.md",
+      "capability": "modeling"
+    },
+    {
+      "path": "skills/datocms-content-modeling/references/field-configuration.md",
+      "capability": "modeling"
+    },
+    {
+      "path": "skills/datocms-content-modeling/references/model-configuration.md",
+      "capability": "modeling"
+    },
+    {
+      "path": "skills/datocms-content-modeling/references/models-vs-blocks.md",
+      "capability": "modeling"
+    },
+    {
+      "path": "skills/datocms-content-modeling/references/separation-of-concerns.md",
+      "capability": "modeling"
+    },
+    {
+      "path": "skills/datocms-content-modeling/references/taxonomy-classification.md",
+      "capability": "modeling"
+    },
+    {
+      "path": "skills/datocms-content-modeling/references/ui-organization.md",
+      "capability": "modeling"
+    },
+    {
+      "path": "skills/datocms-feedback/SKILL.md",
+      "capability": "feedback"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/SKILL.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/astro-content-link.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/astro-image.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/astro-realtime.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/astro-seo.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/astro-structured-text.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/astro.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/cache-tag-adapters.md",
+      "capability": "excluded"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/content-link-concepts.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/draft-mode-concepts.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/image-concepts.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/nextjs.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/nuxt.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/react-content-link.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/react-image.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/react-realtime.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/react-seo.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/react-site-search.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/react-structured-text.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/react-video-player.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/realtime-concepts.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/remix.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/robots-and-sitemaps.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/seo-concepts.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/site-search-api.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/site-search-concepts.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/svelte-content-link.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/svelte-image.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/svelte-realtime.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/svelte-seo.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/svelte-structured-text.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/svelte-video-player.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/sveltekit.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/url-builders.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/verification-checklists.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/video-player-concepts.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/visual-editing-concepts.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/vue-content-link.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/vue-image.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/vue-realtime.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/vue-seo.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/vue-site-search.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/vue-structured-text.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/vue-video-player.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-frontend-integrations/references/web-previews-concepts.md",
+      "capability": "frontend-visual"
+    },
+    {
+      "path": "skills/datocms-plugin/SKILL.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/asset-sources.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/config-screen.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/connect-conventions.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/current-plugin-patterns.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/custom-pages.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/dark-mode-upgrade.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/design-datocms-react-ui-bridge.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/design-forms-and-controls.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/design-foundations.md",
+      "capability": "plugin-field"
+    },
+    {
+      "path": "skills/datocms-plugin/references/design-layouts.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/design-navigation-feedback-and-data-display.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/design-plugin-surfaces.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/design-raw-css-fallbacks.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/design-tokens.md",
+      "capability": "plugin-field"
+    },
+    {
+      "path": "skills/datocms-plugin/references/dropdown-actions.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/field-extensions.md",
+      "capability": "plugin-field"
+    },
+    {
+      "path": "skills/datocms-plugin/references/form-values.md",
+      "capability": "plugin-field"
+    },
+    {
+      "path": "skills/datocms-plugin/references/inspectors.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/lifecycle-hooks.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/modals.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/outlets.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/permissions.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/project-scaffold.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/rapid-patterns.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/record-presentation.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/sdk-connect-and-frames.md",
+      "capability": "plugin-field"
+    },
+    {
+      "path": "skills/datocms-plugin/references/sdk-context-and-cma.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/sidebar-panels.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/structured-text.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/surface-starters.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-plugin/references/upload-sidebars.md",
+      "capability": "plugin-other"
+    },
+    {
+      "path": "skills/datocms-setup/SKILL.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/patterns/MANDATORY_RULES.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/patterns/OUTPUT_STATUS.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/frontend-features/responsive-images/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/frontend-features/robots-sitemaps/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/frontend-features/seo/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/frontend-features/site-search/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/frontend-features/structured-text/recipe.md",
+      "capability": "structured-text"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/frontend-features/video-player/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/frontend-foundation/cache-tags/recipe.md",
+      "capability": "frontend-other"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/frontend-foundation/cda-client/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/frontend-foundation/content-link/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/frontend-foundation/draft-mode/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/frontend-foundation/graphql-types/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/frontend-foundation/realtime/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/frontend-foundation/visual-editing/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/frontend-foundation/web-previews/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/migrations/blueprint-sync/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/migrations/cli-profiles/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/migrations/migration-autogenerate/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/migrations/migration-release-workflow/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/migrations/migrations/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/migrations/sandbox-iteration/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/onboarding/contentful-import/recipe.md",
+      "capability": "excluded"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/onboarding/wordpress-import/recipe.md",
+      "capability": "excluded"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/platform/build-triggers/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/platform/cli-bootstrap/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/platform/cma-types/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/recipes/platform/webhooks/recipe.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/references/repo-conventions.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-setup/references/router.md",
+      "capability": "setup-routing"
+    },
+    {
+      "path": "skills/datocms-structured-text/SKILL.md",
+      "capability": "structured-text"
+    },
+    {
+      "path": "skills/datocms-structured-text/references/conversion.md",
+      "capability": "structured-text"
+    },
+    {
+      "path": "skills/datocms-structured-text/references/document-model.md",
+      "capability": "structured-text"
+    },
+    {
+      "path": "skills/datocms-structured-text/references/editing.md",
+      "capability": "structured-text"
+    }
+  ]
+}

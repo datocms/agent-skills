@@ -73,6 +73,8 @@ $: ({ data, error, status } = $subscription);
 
 **Important:** Unlike React's `useQuerySubscription` (returns plain objects) and Vue's `useQuerySubscription` (returns Vue `Ref` values), Svelte's `querySubscription` returns a **Svelte store**. Access values using the `$` prefix syntax.
 
+Options are captured when the component initializes. For SvelteKit pages whose route data changes during navigation, use the [keyed child component pattern](./sveltekit.md#usage-in-pagesvelte) to replace the subscription. Calling it once with the initial page props leaves later routes displaying the first query.
+
 ## Initialization Options
 
 See `realtime-concepts.md` for the full options table shared across all frameworks.
@@ -100,7 +102,7 @@ When used in a draft mode context, pass the relevant options:
     excludeInvalid: true,
     // For Content Link (visual editing):
     contentLink: 'v1',
-    baseEditingUrl: 'https://your-project.admin.datocms.com/environments/main',
+    baseEditingUrl: 'https://your-project.admin.datocms.com',
     // Server-fetched data as initial render:
     initialData: serverData,
   });

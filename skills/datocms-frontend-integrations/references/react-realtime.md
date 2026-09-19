@@ -86,7 +86,7 @@ const { data } = useQuerySubscription({
   excludeInvalid: true,
   // For Content Link (visual editing):
   contentLink: 'v1',
-  baseEditingUrl: 'https://your-project.admin.datocms.com/environments/main',
+  baseEditingUrl: 'https://your-project.admin.datocms.com',
   // Server-fetched data as initial render:
   initialData: serverData,
 });

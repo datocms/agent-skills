@@ -46,7 +46,8 @@ Framework-specific libraries wrap SSE subscription:
 | - | - | - |
 | React / Next.js | `react-datocms` | `useQuerySubscription` hook |
 | SvelteKit | `@datocms/svelte` | `querySubscription` store |
-| Nuxt (Vue) | `vue-datocms` | `useQuerySubscription` composable |
+| Nuxt | `datocms-listen` | `subscribeToQuery` with explicit Vue scope disposal; see `nuxt.md` |
+| Vue components | `vue-datocms` | `useQuerySubscription` composable; see lifecycle guidance in `vue-realtime.md` |
 | Astro | `@datocms/astro` | `QueryListener` component |
 
 ## Pattern: Fetch Initial + Subscribe
@@ -59,10 +60,12 @@ Standard pattern:
 
 Ensures fast initial page loads (server-rendered) with seamless live updates after hydration.
 
+Pass the same `environment` to the initial query and the subscription when targeting a sandbox. A subscription does not inherit the server query wrapper's options; omitting its environment reads the primary environment instead.
+
 ```
-Server: executeQuery(query, { token, includeDrafts: true })
+Server: executeQuery(query, { token, environment, includeDrafts: true })
          ↓ initialData
-Client: useQuerySubscription({ query, token, initialData, includeDrafts: true })
+Client: useQuerySubscription({ query, token, environment, initialData, includeDrafts: true })
          ↓ live data
 Render: display data (auto-updates on changes)
 ```
