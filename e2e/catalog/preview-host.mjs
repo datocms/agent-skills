@@ -64,6 +64,8 @@ export async function checkEmbeddedPreview({
   });
   await new Promise((resolve) => host.listen(0, "127.0.0.1", resolve));
   const page = await context.newPage();
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
   try {
     await page.goto(`http://localhost:${host.address().port}`);
     await page.evaluate(() => window.ready);
@@ -108,9 +110,21 @@ export async function checkEmbeddedPreview({
     assert.equal(opened.itemId, state.records[1].id);
     assert.equal(opened.environment, state.environment.DATOCMS_ENVIRONMENT);
     assert.equal(opened.fieldPath, "title.en");
+    assert.deepEqual(errors, [], "Embedded preview runtime errors");
     save("embedded-preview.json", observation);
     return "embedded host navigation, selected-record state and click-to-edit use the real iframe protocol";
   } finally {
+    save("embedded-preview-checkpoint.json", {
+      errors,
+      observation: await page
+        .evaluate(() => ({ states: window.states, opened: window.opened }))
+        .catch(() => null),
+      headings: await page
+        .frameLocator("iframe")
+        .locator("h1")
+        .evaluateAll((elements) => elements.map((element) => element.outerHTML))
+        .catch(() => []),
+    });
     await page.close();
     await new Promise((resolve) => host.close(resolve));
   }

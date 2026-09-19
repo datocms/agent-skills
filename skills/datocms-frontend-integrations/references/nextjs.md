@@ -406,7 +406,7 @@ export async function executeQuery<Result, Variables>(
      * click-to-edit overlays.
      */
     contentLink: options?.includeDrafts ? 'v1' : undefined,
-    baseEditingUrl: options?.includeDrafts ? process.env.DATOCMS_BASE_EDITING_URL : undefined,
+    baseEditingUrl: process.env.DATOCMS_BASE_EDITING_URL,
     requestInitOptions: {
       cache: 'force-cache',
       next: {

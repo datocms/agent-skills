@@ -1,0 +1,18 @@
+{
+  "name": "catalog-sveltekit-fixture",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@sveltejs/kit": "2.70.3",
+    "@sveltejs/adapter-node": "5.5.7",
+    "@sveltejs/vite-plugin-svelte": "7.3.0",
+    "svelte": "5.57.0",
+    "vite": "8.3.0",
+    "@datocms/svelte": "4.2.16",
+    "@datocms/cda-client": "0.3.2"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3",
+    "@types/node": "22.19.17"
+  }
+}

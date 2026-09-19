@@ -35,9 +35,9 @@ When `includeDrafts` is true, add these options:
 
 ```ts
 const result = await executeQuery(query, {
-  // ... other options
+  ...options, // token, variables, environment and includeDrafts
   contentLink: options?.includeDrafts ? 'v1' : undefined,
-  baseEditingUrl: options?.includeDrafts ? BASE_EDITING_URL : undefined,
+  baseEditingUrl: BASE_EDITING_URL,
 });
 ```
 
@@ -124,7 +124,7 @@ query {
 </span>
 ```
 
-`_editingUrl` available on all records, returns full URL to edit that record in DatoCMS.
+`_editingUrl` is available on all records and returns the full record-editing URL. Every query selecting it requires `baseEditingUrl`, including published reads with `contentLink` disabled. The base is a public project origin, not a credential. Keep it in shared query options, or omit `_editingUrl` from the published query; only the draft token and stega encoding need the draft-mode boundary.
 
 #### `data-datocms-content-link-source`
 

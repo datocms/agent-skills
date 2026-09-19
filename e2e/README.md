@@ -35,7 +35,7 @@ Use `--cases` to select workflow/code cases, or `--frameworks` for applications.
 
 ## Catalog workflow coverage
 
-The [catalog scenarios](catalog/README.md) add real CDA reads and rendering, migration execution and recovery, duplicate-free content and asset imports, SDK plugin behavior in Chrome, and a Next.js visual-editing flow with live CMS updates. They use independent outcome checks, disposable sandboxes, and model-free rechecks for saved applications. The [catalog report](reports/2026-09-19-catalog-workflows.md) preserves the successful outcomes, implementation failures, and separate harness corrections.
+The [catalog scenarios](catalog/README.md) add real CDA reads and rendering, migration execution and recovery, duplicate-free content and asset imports, SDK plugin behavior in Chrome, and visual-editing flows with live CMS updates. They use independent outcome checks, disposable sandboxes, and model-free rechecks for saved applications. The [catalog report](reports/2026-09-19-catalog-workflows.md) and [remaining-gap report](reports/2026-09-19-remaining-gaps.md) preserve successful outcomes, implementation failures, and separate harness corrections. The latter also tracks Nuxt, SvelteKit and Astro, actual hosted-editor operation, environment promotion, scoped schema types, and the catalog capability inventory.
 
 ## Controlled CLI/MCP coexistence
 

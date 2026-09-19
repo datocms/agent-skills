@@ -27,6 +27,11 @@ export function replayVisualApplication({
   );
   assert.equal(prior.scenario, "visual-editing");
   assert.equal(prior.siteId, project.siteId);
+  assert.equal(
+    prior.framework ?? "nextjs",
+    state.framework ?? "nextjs",
+    "Recheck must use the original framework",
+  );
   assert.ok(prior.environment?.startsWith("e2e-"));
   const modelId = provenance.prompt.match(
     /Map the catalog_article model ([\w-]+) to /,
@@ -45,9 +50,16 @@ export function replayVisualApplication({
     "lib",
     "public",
     "styles",
+    "server",
+    "composables",
+    "plugins",
+    "middleware",
+    "utils",
+    "types",
+    "layouts",
   ];
   const allowedFiles =
-    /^(package(?:-lock)?\.json|tsconfig.*\.json|next(?:\.config\.[cm]?[jt]s|-env\.d\.ts)|README\.md)$/;
+    /^(package(?:-lock)?\.json|tsconfig.*\.json|next(?:\.config\.[cm]?[jt]s|-env\.d\.ts)|(?:nuxt|astro|svelte|vite)\.config\.[cm]?[jt]s|app\.vue|README\.md)$/;
   for (const entry of readdirSync(source, { withFileTypes: true })) {
     if (
       !(entry.isDirectory()
@@ -77,7 +89,7 @@ export function replayVisualApplication({
       }
       if (
         !entry.isFile() ||
-        !/[.](?:[cm]?[jt]sx?|json|md|html)$/.test(entry.name)
+        !/[.](?:[cm]?[jt]sx?|json|md|html|vue|svelte|astro)$/.test(entry.name)
       )
         continue;
       const original = readFileSync(file);

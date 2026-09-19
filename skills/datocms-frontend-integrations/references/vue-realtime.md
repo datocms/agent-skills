@@ -4,6 +4,8 @@ Vue 3 composable for live content updates via DatoCMS's [Real-time Updates API](
 
 See `realtime-concepts.md` for shared initialization options, connection status values, error object shape, and the `fetcher` gotcha.
 
+In Nuxt, use the [server/client query pattern](./nuxt.md#query-composable-with-real-time-subscription): render server-fetched data during SSR and start the subscription only in the browser. The subscription transport accesses `window`. Pass plain values for `token` and `variables`; those options are not unwrapped from Vue refs. Remount a keyed consumer when its query variables change.
+
 ## Contents
 
 - Basic Usage

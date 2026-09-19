@@ -14,8 +14,19 @@ import { nativeSession, sourceHashes } from "../lib/nativeSession.ts";
 
 const root = resolve(import.meta.dirname, "../..");
 const { values } = parseArgs({
-  options: { output: { type: "string" }, recheck: { type: "string" } },
+  options: {
+    output: { type: "string" },
+    recheck: { type: "string" },
+    variant: { type: "string", default: "field" },
+  },
 });
+assert.ok(["field", "sidebar-modal"].includes(values.variant));
+const oracleHashesAtLoad = sourceHashes(root, "e2e/catalog");
+const { checkPlugin } = await import(
+  values.variant === "sidebar-modal"
+    ? "./plugin-modal-check.mjs"
+    : "./plugin-check.mjs"
+);
 const output = resolve(
   values.output ??
     join(
@@ -36,7 +47,10 @@ const save = (name, data) =>
     typeof data === "string" ? data : JSON.stringify(data, null, 2),
   );
 let result = {
-  scenario: "plugin-localized-field-editor",
+  scenario:
+    values.variant === "sidebar-modal"
+      ? "plugin-sidebar-modal"
+      : "plugin-localized-field-editor",
   status: "pending",
   browserHost: "local SDK protocol fixture",
   workspace,
@@ -92,7 +106,9 @@ try {
       timeoutMs: 420000,
       maxCommands: 45,
       prompt:
-        'Finish this private DatoCMS title-editor plugin. Add an opt-in manual editor named "Title editor", ID "title-editor", for string fields. Use the installed SDK and DatoCMS UI. It should show a labelled text input for the current field and a live character count; edits must update the current field through the host. It must work for localized fields and fields inside nested blocks, refresh when the host sends new values, treat a missing value as an empty string, and prevent editing when the host marks the field disabled. Keep the host theme and automatic iframe sizing working. Complete the existing scaffold and verify the production build. No CMS installation or publishing is requested.',
+        values.variant === "sidebar-modal"
+          ? 'Finish this private DatoCMS plugin with a sidebar panel named "Title tools", ID "title-tools", shown only for the article model. Its "Edit title" button opens a custom modal, ID "title-dialog", showing a labelled "Title" input initialized from the current locale of the title field. "Apply" updates only that localized form field through the host, including when clearing the title. "Cancel" or closing the modal leaves form values unchanged. Use the latest host form values each time the dialog opens. Disable the sidebar action while the form is submitting. Use the installed SDK, DatoCMS UI, theme and automatic iframe sizing. Do not automatically save, request extra permissions, access the CMA, install into a CMS or publish. Complete the scaffold and verify the production build.'
+          : 'Finish this private DatoCMS title-editor plugin. Add an opt-in manual editor named "Title editor", ID "title-editor", for string fields. Use the installed SDK and DatoCMS UI. It should show a labelled text input for the current field and a live character count; edits must update the current field through the host. It must work for localized fields and fields inside nested blocks, refresh when the host sends new values, treat a missing value as an empty string, and prevent editing when the host marks the field disabled. Keep the host theme and automatic iframe sizing working. Complete the existing scaffold and verify the production build. No CMS installation or publishing is requested.',
     });
     result.session = {
       completed: session.completed,
@@ -101,7 +117,7 @@ try {
       capped: session.capped,
       errors: session.errors,
     };
-    result.strictPass =
+    result.strictExecutionPass =
       session.completed &&
       session.exitCode === 0 &&
       !session.errors.length &&
@@ -128,7 +144,6 @@ try {
     });
     save("build.log", (built.stdout ?? "") + (built.stderr ?? ""));
     assert.equal(built.status, 0, "Production build failed");
-    const { checkPlugin } = await import("./plugin-check.mjs");
     result.checks = await checkPlugin(workspace, output);
     result.status = "passed";
   }
@@ -137,7 +152,10 @@ try {
   result.error = String(error.stack ?? error);
   process.exitCode = 1;
 } finally {
-  result.oracleHashes = sourceHashes(root, "e2e/catalog");
+  result.oracleHashes = oracleHashesAtLoad;
+  if (result.session)
+    result.strictPass =
+      result.status === "passed" && result.strictExecutionPass;
   save("result.json", result);
   console.log(
     JSON.stringify({ output, status: result.status, error: result.error }),

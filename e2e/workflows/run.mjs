@@ -42,9 +42,10 @@ const queue = [];
 for (let repetition = 1; repetition <= repetitions; repetition++)
   for (const c of selected) queue.push({ c, repetition });
 const results = [];
+let usageLimitReached = false;
 await Promise.all(
   Array.from({ length: jobs }, async () => {
-    while (queue.length) {
+    while (queue.length && !usageLimitReached) {
       const { c, repetition } = queue.shift();
       const directory = join(output, `${c.id}-${repetition}`);
       mkdirSync(join(directory, "workspace"), { recursive: true });
@@ -62,6 +63,7 @@ await Promise.all(
         repetition,
         model: session.model,
         reasoningEffort: session.reasoningEffort,
+        usageLimitReached: session.usageLimitReached,
         completed:
           session.completed &&
           session.exitCode === 0 &&
@@ -75,6 +77,24 @@ await Promise.all(
         rubric: c.rubric,
         review: "pending",
       };
+      if (session.usageLimitReached) {
+        usageLimitReached = true;
+        writeFileSync(
+          join(output, "usage-checkpoint.json"),
+          JSON.stringify(
+            {
+              status: "paused-usage-limit",
+              interrupted: { case: c.id, repetition },
+              remaining: queue.map(({ c, repetition }) => ({
+                case: c.id,
+                repetition,
+              })),
+            },
+            null,
+            2,
+          ),
+        );
+      }
       results.push(result);
       writeFileSync(
         join(directory, "result.json"),
@@ -91,4 +111,5 @@ await Promise.all(
   }),
 );
 // Advisory results require evidence-backed review; completion is never a quality pass.
-if (results.some((x) => !x.completed)) process.exitCode = 1;
+if (usageLimitReached) process.exitCode = 2;
+else if (results.some((x) => !x.completed)) process.exitCode = 1;

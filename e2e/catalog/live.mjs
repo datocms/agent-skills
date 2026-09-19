@@ -21,13 +21,22 @@ import { cliLauncherSource } from "../lib/cliLauncher.ts";
 import { replayVisualApplication } from "./replay.mjs";
 
 const root = resolve(import.meta.dirname, "../..");
+const harnessHashesAtLoad = {
+  ...sourceHashes(root, "e2e/catalog"),
+  ...sourceHashes(root, "e2e/frontend"),
+  ...sourceHashes(root, "e2e/lib"),
+};
 const { values } = parseArgs({
   options: {
     site: { type: "string" },
     organization: { type: "string" },
     case: { type: "string" },
     variant: { type: "string" },
+    framework: { type: "string", default: "nextjs" },
     recheck: { type: "string" },
+    repair: { type: "string" },
+    issue: { type: "string" },
+    "hosted-editor": { type: "boolean", default: false },
     output: { type: "string" },
   },
 });
@@ -37,12 +46,43 @@ assert.match(
   "Pass the explicitly authorized throwaway site ID",
 );
 assert.ok(
-  ["cda", "migration", "import", "visual-editing"].includes(values.case),
+  [
+    "cda",
+    "migration",
+    "import",
+    "visual-editing",
+    "promotion",
+    "schema-types",
+    "scheduling",
+    "schema-diff",
+    "graphql-types",
+  ].includes(values.case),
   "Choose one catalog workflow",
 );
 assert.ok(
-  !values.recheck || values.case === "visual-editing",
-  "Live recheck currently supports visual-editing only",
+  !values.recheck || ["visual-editing", "schema-diff"].includes(values.case),
+  "Live recheck supports visual-editing and schema-diff",
+);
+assert.ok(
+  !values.repair || values.case === "visual-editing",
+  "Repair currently supports visual-editing only",
+);
+assert.ok(!(values.recheck && values.repair), "Choose recheck or repair");
+assert.ok(
+  !values.repair || values.issue,
+  "A repair needs the observed user-visible issue",
+);
+assert.ok(
+  ["nextjs", "nuxt", "sveltekit", "astro"].includes(values.framework),
+  "Unknown framework",
+);
+assert.ok(
+  values.framework === "nextjs" || values.case === "visual-editing",
+  "Framework selection requires visual-editing",
+);
+assert.ok(
+  !values["hosted-editor"] || values.case === "visual-editing",
+  "Hosted browser review requires visual-editing",
 );
 const output = resolve(
   values.output ??
@@ -69,19 +109,29 @@ const save = (name, value) =>
   );
 const result = {
   scenario: values.case,
+  taskKind: values.repair
+    ? "guided-repair"
+    : values.recheck
+      ? "model-free-recheck"
+      : "fresh-implementation",
+  framework: values.framework,
   status: "pending",
+  outcome: "not-checked",
   siteId: values.site,
   cleanup: "not-needed",
 };
 result.phase = "authentication";
 async function primarySnapshot(client) {
-  const [site, models, uploads, environments, tokens] = await Promise.all([
-    client.site.find(),
-    client.itemTypes.list(),
-    client.uploads.list({ page: { limit: 100 } }),
-    client.environments.list(),
-    client.accessTokens.list(),
-  ]);
+  const [site, models, uploads, environments, tokens, maintenance, plugins] =
+    await Promise.all([
+      client.site.find(),
+      client.itemTypes.list(),
+      client.uploads.list({ page: { limit: 100 } }),
+      client.environments.list(),
+      client.accessTokens.list(),
+      client.maintenanceMode.find(),
+      client.plugins.list(),
+    ]);
   return {
     siteId: site.id,
     locales: site.locales,
@@ -91,6 +141,8 @@ async function primarySnapshot(client) {
       .map((e) => ({ id: e.id, primary: e.meta.primary }))
       .sort((a, b) => a.id.localeCompare(b.id)),
     tokens: tokens.map((t) => t.id).sort(),
+    maintenance: maintenance.active,
+    plugins: plugins.map((p) => p.id).sort(),
   };
 }
 try {
@@ -137,6 +189,8 @@ try {
   save("checkpoint.json", result);
   const state = await scenario.prepare({
     variant: values.variant,
+    framework: values.framework,
+    hostedEditor: values["hosted-editor"],
     project,
     workspace,
     output,
@@ -155,16 +209,20 @@ try {
     // Only the separately minted read-only delivery token enters the web actor.
     delete environment.DATOCMS_API_TOKEN;
     Object.assign(environment, state.environment);
+    const fixture =
+      state.framework && state.framework !== "nextjs"
+        ? `web-${state.framework}`
+        : "web";
     cpSync(
-      join(import.meta.dirname, "web/package.json"),
+      join(import.meta.dirname, fixture, "package.json"),
       join(workspace, "package.json"),
     );
     cpSync(
-      join(import.meta.dirname, "web/package-lock.json"),
+      join(import.meta.dirname, fixture, "package-lock.json"),
       join(workspace, "package-lock.json"),
     );
     symlinkSync(
-      join(import.meta.dirname, "web/node_modules"),
+      join(import.meta.dirname, fixture, "node_modules"),
       join(workspace, "node_modules"),
     );
   } else {
@@ -198,15 +256,17 @@ try {
     environment.PATH = `${join(workspace, "bin")}:${process.env.PATH}`;
   }
   await scenario.configure?.({ workspace, state });
-  if (values.recheck) {
-    replayVisualApplication({
-      previous: values.recheck,
+  if (values.recheck || values.repair) {
+    (scenario.replay ?? replayVisualApplication)({
+      previous: values.recheck ?? values.repair,
       workspace,
       project,
       state,
       save,
     });
-    result.replayedFrom = resolve(values.recheck);
+    result.replayedFrom = resolve(values.recheck ?? values.repair);
+  }
+  if (values.recheck) {
     result.phase = "independent-check";
     result.checks = await scenario.check({
       project,
@@ -217,6 +277,7 @@ try {
       environment,
     });
     result.status = "passed";
+    result.outcome = "passed";
   } else {
     result.phase = "actor";
     const session = await nativeSession({
@@ -227,19 +288,27 @@ try {
       secrets,
       timeoutMs: 600000,
       maxCommands: 65,
-      instructions: `The only authorized project is ${values.site}, disposable sandbox ${project.environment}. Never write to primary or other environments, change account permissions, promote environments, or create/delete environments. Authentication is already provided.`,
-      prompt: scenario.prompt({ project, state }),
+      instructions:
+        scenario.instructions?.({ project, state }) ??
+        `The only authorized project is ${values.site}, disposable sandbox ${project.environment}. Never write to primary or other environments, change account permissions, promote environments, or create/delete environments. Authentication is already provided.`,
+      prompt:
+        scenario.prompt({ project, state }) +
+        (values.repair
+          ? ` This is a repair of the existing application. The observed runtime problem is: ${values.issue}. Inspect and correct the implementation, preserve working behavior, and verify the affected public and draft flows. All environment bindings have already been updated for this sandbox.`
+          : ""),
     });
     result.session = {
       completed: session.completed,
       usageLimitReached: session.usageLimitReached,
       timedOut: session.timedOut,
       capped: session.capped,
+      credentialOutputObserved: session.credentialLeak,
       errors: session.errors,
     };
-    result.strictPass =
+    result.strictExecutionPass =
       session.completed &&
       session.exitCode === 0 &&
+      !session.credentialLeak &&
       !session.errors.length &&
       session.commands.every((c) => c.exit_code === 0);
     if (session.usageLimitReached) {
@@ -247,10 +316,7 @@ try {
       process.exitCode = 2;
     } else {
       assert.ok(
-        session.completed &&
-          !session.credentialLeak &&
-          !session.timedOut &&
-          !session.capped,
+        session.completed && !session.timedOut && !session.capped,
         "Actor did not complete safely",
       );
       result.phase = "independent-check";
@@ -262,10 +328,17 @@ try {
         save,
         environment,
       });
-      result.status = "passed";
+      result.outcome = "passed";
+      result.status = session.credentialLeak ? "failed" : "passed";
+      if (session.credentialLeak) {
+        result.error =
+          "Credential output was observed and redacted; functional outcomes are recorded separately";
+        process.exitCode = 1;
+      }
     }
   }
 } catch (error) {
+  if (result.phase === "independent-check") result.outcome = "failed";
   result.status = "failed";
   result.error = String(error.stack ?? error);
   process.exitCode = 1;
@@ -291,7 +364,12 @@ try {
       process.exitCode = 1;
     }
   }
-  result.harnessHashes = sourceHashes(root, "e2e/catalog");
+  result.harnessHashes = harnessHashesAtLoad;
+  if (result.session)
+    result.strictPass =
+      result.status === "passed" &&
+      result.cleanup === "verified" &&
+      result.strictExecutionPass;
   save("result.json", result);
   console.log(
     JSON.stringify({ output, status: result.status, cleanup: result.cleanup }),

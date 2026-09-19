@@ -1,6 +1,6 @@
-# Nuxt — Draft Mode Reference
+# Nuxt — Preview and Integration Reference
 
-Nuxt draft mode patterns. Follow Core first, then optional sections.
+Core below provides authentication and query helpers. For full visual editing, also read the [Content Link controller](./vue-content-link.md#nuxt), [Web Previews](#web-previews-optional), and [real-time query composable](#query-composable-with-real-time-subscription). The controller must be mounted explicitly, and subscriptions run only in the browser; the Core query helper alone does not provide either behavior.
 
 ## Contents
 
@@ -104,7 +104,7 @@ export default eventHandler(async (event) => {
 **File:** `lib/api/draftMode.ts`
 
 ```ts
-import type { EventHandlerRequest, H3Event } from 'h3';
+import { deleteCookie, getCookie, setCookie, type EventHandlerRequest, type H3Event } from 'h3';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import type { CookieSerializeOptions } from 'cookie-es';
 
@@ -174,7 +174,7 @@ export function draftModeHeaders(): HeadersInit {
 Key points:
 
 - JWT payload contains draft CDA token (`datocmsDraftContentCdaToken`) — decoded client-side for real-time
-- Nuxt/H3 auto-imports: `setCookie`, `deleteCookie`, `getCookie`
+- Import H3 cookie helpers explicitly because this shared module can also be loaded outside Nitro's server directory.
 - Cookie opts: `partitioned: true`, `secure: true`, `sameSite: 'none'`
 
 ### Utils
@@ -563,7 +563,7 @@ export async function useQuery<Result, Variables>(
       excludeInvalid: true,
       variables: options?.variables,
       contentLink: draftMode ? 'v1' : undefined,
-      baseEditingUrl: draftMode ? config.public.datocmsBaseEditingUrl : undefined,
+      baseEditingUrl: config.public.datocmsBaseEditingUrl,
     }),
     key: hash([query, options]),
     transform: (response: { data: Result; errors?: any[] }) => {
@@ -598,46 +598,7 @@ export default defineNuxtConfig({
 
 ### ContentLink Component Setup
 
-Create client component with routing for Web Previews Visual tab. Wrap in `<ClientOnly>` (requires browser APIs):
-
-**File:** `components/ContentLink.vue`
-
-```vue
-<script setup lang="ts">
-import { createController } from '@datocms/content-link';
-import { onMounted, onUnmounted, watch } from 'vue';
-
-const router = useRouter();
-const route = useRoute();
-
-let controller: ReturnType<typeof createController> | null = null;
-
-onMounted(() => {
-  controller = createController({
-    onNavigateTo: (path) => {
-      router.push(path);
-    },
-  });
-  controller.enableClickToEdit();
-});
-
-watch(
-  () => route.path,
-  (newPath) => {
-    controller?.setCurrentPath(newPath);
-  },
-);
-
-onUnmounted(() => {
-  controller?.dispose();
-  controller = null;
-});
-</script>
-
-<template>
-  <div />
-</template>
-```
+Use the [Nuxt controller component](./vue-content-link.md#nuxt). It owns its routing callback and updates the path in `router.afterEach` before DOM stamping. Mount the wrapper without passing a second routing callback from its parent.
 
 Add to layout, render only when draft mode enabled. Wrap in `<ClientOnly>`:
 
@@ -820,7 +781,7 @@ Key points:
 - Draft mode ON + client-side: `useQuerySubscription` from `vue-datocms`
 - Draft mode OFF or server-side: return data directly
 
-**Note: Combining with Content Link** — Add `contentLink` and `baseEditingUrl` to `buildRequestInit` options (see Content Link section).
+**Combining with Content Link** — Keep `environment`, `contentLink` and `baseEditingUrl` consistent in both `buildRequestInit` and `useQuerySubscription`. Use the selected sandbox for both. If the query selects `_editingUrl`, retain `baseEditingUrl` for published reads too. Pass plain token and variable values to the subscription; key the consuming page by its route when query variables change so the previous subscription is disposed.
 
 ### Real-Time Dependencies
 

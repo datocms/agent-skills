@@ -155,6 +155,8 @@ routeRules: {
 
 ## `recordToWebsiteRoute` Pattern
 
+The incoming JSON:API item has `relationships.item_type.data.id`, not `__itemTypeId`. The latter is a local discriminator added by `deserializeRawItem`; accepting it as an optional request field does not populate it. Deserialize the wire item before routing, or read its raw relationship directly. Test the endpoint with the actual raw payload, without SDK-added properties.
+
 Maps DatoCMS record to frontend URL. Used by preview-links endpoint.
 
 Same pattern across all frameworks: deserialize the raw item with `deserializeRawItem` from `@datocms/rest-client-utils`, then switch on `item.__itemTypeId`. With `cma-types` in place, each `case Schema.X.ID` narrows `item.attributes` to that model's fields — no `as` casts needed.
