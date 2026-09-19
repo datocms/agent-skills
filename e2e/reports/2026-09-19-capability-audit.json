@@ -98,7 +98,7 @@
         "2026-09-19-remaining-gaps.md"
       ],
       "gaps": [
-        "Fresh Nuxt setup remains under review after failed implementations and guided repairs; hosted Visual behavior passes all four frameworks"
+        "Additional browser, authentication and routing combinations; final fresh Nuxt setup passes, and earlier failed attempts remain recorded"
       ]
     },
     {

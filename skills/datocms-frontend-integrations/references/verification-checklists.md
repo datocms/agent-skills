@@ -23,7 +23,7 @@ When real credentials and routes are available, run the app and check a represen
 
 ### Web Previews
 
-- Preview-links endpoint validates the shared secret token.
+- Preview-links endpoint validates the shared secret token; verification asserts the response without printing its secret-bearing URLs.
 - CORS headers and `OPTIONS` handling are present.
 - Unexpected errors are serialized consistently.
 - If `frame-ancestors` is present, it allows both the exact DatoCMS project origin and `https://plugins-cdn.datocms.com`; if absent, no CSP directive was added solely for Web Previews.

@@ -272,9 +272,8 @@ export function useDraftMode() {
 
 Key points:
 
-- Decodes JWT client-side to extract draft CDA token
-- Returns `false` if no cookie/invalid JWT
-- Returns decoded payload (`datocmsDraftContentCdaToken`) if valid
+- Universal: `useCookie` reads the request cookie during SSR and the browser cookie after hydration. Both query paths take the draft CDA token from this decoded payload.
+- Returns `false` if the cookie is absent or cannot be decoded; decoding does not verify the signature. The CDA authenticates the supplied token. Server actions that require a verified session use the server-only JWT helper.
 
 ### Query Composable
 
@@ -738,6 +737,15 @@ export async function useQuery<Result, Variables>(
   const config = useRuntimeConfig();
   const draftMode = useDraftMode();
 
+  let disposed = false;
+  let unsubscribe: (() => void) | undefined;
+  if (draftMode && !isServer) {
+    onScopeDispose(() => {
+      disposed = true;
+      unsubscribe?.();
+    });
+  }
+
   const apiToken = draftMode
     ? draftMode.datocmsDraftContentCdaToken
     : config.public.datocmsPublishedContentCdaToken;
@@ -766,13 +774,6 @@ export async function useQuery<Result, Variables>(
   if (!draftMode || isServer) return (await initialData).data;
 
   const data = shallowRef<Result>();
-  let disposed = false;
-  let unsubscribe: (() => void) | undefined;
-  onScopeDispose(() => {
-    disposed = true;
-    unsubscribe?.();
-  });
-
   await initialData;
   if (disposed) return data;
   data.value = initialData.data.value as Result | undefined;

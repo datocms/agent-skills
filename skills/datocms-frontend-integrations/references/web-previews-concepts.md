@@ -77,6 +77,8 @@ type WebPreviewsResponse = {
 };
 ```
 
+Draft preview URLs contain the shared secret, so the response body is credential-bearing too. During verification, parse and assert the response in memory; print only status, labels and URL pathnames, never the raw body or authenticated URLs.
+
 ### Status Branching Logic
 
 Endpoint branches on `item.meta.status`:
