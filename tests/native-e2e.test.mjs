@@ -98,6 +98,19 @@ test("native runner pins model and effort, redacts credentials, and removes auth
       /Refusing to replace evidence/,
     );
   }));
+test("an explicit comparison model is passed to the runtime and recorded without changing effort", async () =>
+  fixture(async ({ root, options, writeBinary }) => {
+    writeBinary(`require('node:fs').writeFileSync(process.env.ARGUMENTS_PATH,JSON.stringify(process.argv));console.log(JSON.stringify({type:'turn.completed'}));`);
+    const result = await nativeSession({ ...options, model: 'gpt-5.6-sol', environment: { ARGUMENTS_PATH: join(root, 'arguments.json') } });
+    const args = JSON.parse(readFileSync(join(root, 'arguments.json'), 'utf8'));
+    assert.ok(args.includes('model="gpt-5.6-sol"'));
+    assert.ok(args.includes('model_reasoning_effort="medium"'));
+    assert.equal(result.model, 'gpt-5.6-sol');
+    assert.equal(result.reasoningEffort, 'medium');
+    const provenance = JSON.parse(readFileSync(join(options.output, 'provenance.json'), 'utf8'));
+    assert.equal(provenance.model, result.model);
+    assert.equal(provenance.reasoningEffort, result.reasoningEffort);
+  }));
 test("a native tool initialization error remains a failure despite normal completion", async () =>
   fixture(async ({ options, writeBinary }) => {
     writeBinary(

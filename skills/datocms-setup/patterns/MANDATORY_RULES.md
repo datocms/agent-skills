@@ -31,11 +31,7 @@ These rules apply to every datocms-setup recipe. They are not repeated in indivi
 
 ## Shared Repo Inspection Defaults
 
-- Start from `../references/repo-conventions.md` before following recipe-specific checks
-- Confirm the strongest framework, runtime, `src/` layout, package-manager, and env-file signals first
-- Inspect existing route helpers, query wrappers, renderer components, scripts, and endpoints before creating new ones
-- Preserve the strongest existing owner by default instead of creating a parallel implementation
-- Ask only when patching the wrong owner would materially change behavior, safety, or project conventions
+Follow `../references/repo-conventions.md` once per setup bundle for framework, layout, package manager, env files and existing code ownership. Recipes add only their task-specific checks.
 
 ## Framework Environment Variable Conventions
 

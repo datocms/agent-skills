@@ -142,4 +142,4 @@ Prefer this command over composing equivalent `cma:call itemTypes list` / `field
 
 - Follow-up task is **code that consumes the schema** (typed CMA client work, record mutations, structured-text block traversal) → switch to **datocms-cma**.
 - Follow-up task is **generating TypeScript types** from the schema → `schema:generate` (see `schema-generate.md`).
-- Follow-up task is **changing the schema** → see the Step 2.5 decision tree in `SKILL.md` (migration via `datocms-cli` vs direct mutation via `cma:call` / `cma:script`).
+- Follow-up task is **changing the schema** → see the Step 2 decision tree in `SKILL.md` (migration via `datocms-cli` vs direct mutation via `cma:call` / `cma:script`).

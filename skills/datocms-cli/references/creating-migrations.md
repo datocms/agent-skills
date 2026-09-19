@@ -6,7 +6,7 @@ For Structured Text backfills, load [document model](../../datocms-structured-te
 
 ## Inputs to confirm before running commands
 
-Only enter this sub-task once the user has chosen the migration approach (see "Schema changes" in Step 2.5 of SKILL.md). Confirm these inputs when they are not already clear:
+Only enter this sub-task once the user has chosen the migration approach (see "Schema changes" in Step 2 of SKILL.md). Confirm these inputs when they are not already clear:
 
 - manual migration vs `--autogenerate`
 - sandbox/source environment if `--autogenerate` is requested
@@ -22,6 +22,18 @@ npx datocms migrations:new <NAME> [flags]
 ```
 
 Creates a new migration script in the migrations directory.
+
+Let the CLI name the file (`{unix_timestamp}_{camelCaseName}.ts|.js`); do not create migration filenames manually. Keep the generated function signature:
+
+```ts
+import type { Client } from 'datocms/lib/cma-client-node';
+
+export default async function (client: Client): Promise<void> {
+  // CMA operations using the supplied client
+}
+```
+
+For JavaScript, use `module.exports = async (client) => {}`. The supplied client is the CMA client; load `datocms-cma` references for operation bodies.
 
 Run `npx datocms migrations:new --help` for all available flags.
 

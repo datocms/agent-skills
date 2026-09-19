@@ -142,14 +142,14 @@ Value must be stega-encoded string (any text field from API works). Library deco
 
 Expand clickable area to parent element. Default: immediate parent of text node is clickable. Adding this to ancestor makes that ancestor the clickable target instead:
 
-```html
+```tsx
 <article data-datocms-content-link-group>
-  <h2>Title with stega</h2>
-  <p>Description with no stega</p>
+  <h2>{record.title}</h2>
+  <p>{stripStega(record.statusLabel)}</p>
 </article>
 ```
 
-Clicking anywhere in `<article>` opens editor. **Group should contain only one stega source** — multiple resolving to same group logs collision warning, last URL wins.
+Here the title owns the group; the status label is intentionally not editable. Preserve the owner's stega. Keep other editable fields independent with nested groups or boundaries, and strip intentionally non-editable text at each use: cleaning a filter attribute does not clean the separately rendered text. Multiple sources resolving to the same group collide: the last URL wins.
 
 #### `data-datocms-content-link-boundary`
 
@@ -164,7 +164,7 @@ Stop upward DOM traversal for `data-datocms-content-link-group`, making element 
 </div>
 ```
 
-Without boundary: clicking "Text with stega" opens URL A (outer group). With boundary: `<span>` becomes clickable opening URL B.
+Without the boundary, both sources compete for the outer group. With it, `<span>` opens URL B independently and the outer group keeps URL A.
 
 Boundary can be on element containing stega:
 
@@ -369,7 +369,7 @@ Use it to answer questions like: _is this field stega-encoded?_, _which fields c
 
 ### When to Strip Stega
 
-General rule: stega-encoded values safe to render directly into text/HTML (invisible characters survive intact, power click-to-edit overlay), but **not safe to use in any other code path**. If value crosses out of "render this as final content" into _any_ other use, wrap in `stripStega()`.
+Preserve stega when rendering editable content, following the group ownership rules above. Strip intentionally non-editable display text and values used outside rendering with `stripStega()`. Decide per use; cleaning an entire response would remove the editing metadata from fields that still need it.
 
 Non-render uses:
 
