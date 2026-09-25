@@ -165,7 +165,8 @@ function loadPreviewEndpoint(framework, kind, secretApiToken, token, options = {
     recordToWebsiteRoute: async () => { effects.push('recordToWebsiteRoute'); return options.recordUrl ?? '/article'; },
   };
   const imports = {
-    '~/lib/api/draftMode': { enableDraftMode, disableDraftMode },
+    // Nuxt server helper, imported via the rootDir alias (nuxt.md `server/utils/draftMode.ts`).
+    '~~/server/utils/draftMode': { enableDraftMode, disableDraftMode },
     '~/lib/draftMode': { enableDraftMode, disableDraftMode },
     '$lib/draftMode.server': { enableDraftMode, disableDraftMode },
     'next/headers': { draftMode: async () => ({ enable: enableDraftMode, disable: disableDraftMode }) },
