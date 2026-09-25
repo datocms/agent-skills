@@ -14,7 +14,7 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 
 1. **Node project** — Check for `package.json`
 2. **CLI migrations baseline** — Check for the `datocms` npm package, `datocms.config.json`, and a `migrations/` directory or existing migration scripts
-3. **Migration format convention** — Check whether the repo currently defaults to TypeScript or JavaScript migrations
+3. **Migration format convention** — Check whether existing migrations in the active profile's `migrations.directory` (else `migrations/`) are TypeScript or JavaScript
 4. **Existing helper** — Check for `scripts/datocms-autogenerate-migration.mjs`
 5. **Existing scripts** — Check `package.json` for `datocms:migrations:diff`
 
@@ -59,7 +59,7 @@ The helper script must:
 1. Accept a migration name
 2. Accept `--from=<env>` and optional `--to=<env>`
 3. Map those inputs to `migrations:new --autogenerate=<env>` or `migrations:new --autogenerate=<from>:<to>`
-4. Preserve the repo's existing TS or JS convention by default
+4. Preserve the TS or JS format of existing migrations in the directory the CLI writes to (`--config-file`/`--profile` or `DATOCMS_*` env, profile `migrations.directory`, else `./migrations`); otherwise leave inference to the CLI
 5. Allow passthrough `--ts`, `--js`, `--schema`, and `--profile`
 6. Never run the generated migration automatically
 7. Treat the generated migration as schema-only output, not as a records or uploads importer

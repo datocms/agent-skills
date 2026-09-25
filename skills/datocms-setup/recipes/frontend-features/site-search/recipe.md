@@ -82,16 +82,17 @@ If CMA-capable token exists, attempt remote setup in order:
 
 1. inspect existing search indexes
 2. inspect roles and access tokens
-3. create or update one least-privilege search role with `can_perform_site_search: true`
-4. create or update one access token bound to that role
-5. create or update search indexes using selected topology:
+3. echo planned role/token/index writes; confirm before executing — writes to live DatoCMS project
+4. create or update one least-privilege search role with `can_perform_site_search: true`
+5. create or update one access token bound to that role
+6. create or update search indexes using selected topology:
    - preserve multiple existing indexes if Dato project already uses them intentionally
    - default new setups to one shared index
    - only create multiple new indexes when repo or user decision clearly requires separate crawling boundaries
    - when multiple indexes used, make distinction explicit in naming and any `user_agent_suffix` strategy
-6. trigger indexing after creating or materially updating an index
+7. trigger indexing after creating or materially updating an index
 
-Remote automation blocked by missing permissions like `can_manage_search_indexes` or `can_manage_access_tokens`? Continue with local scaffolding, mark result `scaffolded`.
+Declined, or blocked by missing permissions like `can_manage_search_indexes` / `can_manage_access_tokens`? Continue with local scaffolding, mark result `scaffolded`.
 
 ### Local project changes
 

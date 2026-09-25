@@ -103,7 +103,7 @@ Use semantic Canvas tokens directly for plugin UI. Do not introduce custom prope
 
 Prefer full semantic families:
 
-- helper text -> `--color--ink-subtle`; muted copy -> `--color--ink-muted`; placeholders -> `--color--ink-placeholder`; disabled copy -> `--color--disabled--ink`
+- helper text -> `--color--ink-subtle`; muted copy -> `--color--ink-muted`; placeholders -> `--color--ink-placeholder`; disabled copy on neutral surfaces -> `--color--ink-disabled`
 - neutral hover -> `--color--surface-hover`
 - selected options -> `--color--selected--surface`, `--color--selected--surface-hover`, `--color--selected--border`, `--color--selected--ink`
 - disabled controls -> `--color--disabled--surface` + `--color--disabled--ink`; use `--color--border` when a disabled control still needs a boundary

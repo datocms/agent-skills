@@ -1,0 +1,707 @@
+{
+  "date": "2026-09-25",
+  "model": "gpt-6-luna",
+  "reasoningEffort": "medium",
+  "baselineSkills": "master @ 07f335b",
+  "droppedCases": {
+    "modeling-code-highlight": "Fixed-skill sessions failed on editor configuration and the DAST wrapper, unrelated to the guarded `highlight` attribute; the attribute is guarded by dev/tests/modeling-facts.test.mjs with the real validator."
+  },
+  "sessions": [
+    {
+      "case": "cda-existing-token-env-names",
+      "skills": "baseline",
+      "run": "cda/baseline-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [],
+      "commandCount": 4,
+      "elapsedMs": 24507,
+      "dropped": false
+    },
+    {
+      "case": "cda-existing-token-env-names",
+      "skills": "candidate",
+      "run": "cda/candidate-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cda/SKILL.md",
+        "datocms-cda/references/client-and-config.md",
+        "datocms-cda/references/draft-caching-environments.md"
+      ],
+      "commandCount": 5,
+      "elapsedMs": 33055,
+      "dropped": false
+    },
+    {
+      "case": "cli-fast-fork-destination",
+      "skills": "baseline",
+      "run": "cma-cli/baseline-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cli/SKILL.md",
+        "datocms-cli/references/environment-commands.md",
+        "datocms-cli/references/running-migrations.md"
+      ],
+      "commandCount": 4,
+      "elapsedMs": 23774,
+      "dropped": false
+    },
+    {
+      "case": "cli-fast-fork-destination",
+      "skills": "candidate",
+      "run": "cma-cli/candidate-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cli/SKILL.md",
+        "datocms-cli/references/environment-commands.md",
+        "datocms-cli/references/running-migrations.md"
+      ],
+      "commandCount": 4,
+      "elapsedMs": 39473,
+      "dropped": false
+    },
+    {
+      "case": "cli-fast-fork-destination",
+      "skills": "baseline",
+      "run": "cma-cli/verify-recheck-baseline-01",
+      "recheckOf": "round2/cma-cli/baseline-01",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "cli-fast-fork-destination",
+      "skills": "baseline",
+      "run": "cma-cli/verify-recheck-baseline-02",
+      "recheckOf": "round2/cma-cli/baseline-01",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "cli-fast-fork-destination",
+      "skills": "candidate",
+      "run": "cma-cli/verify-recheck-candidate-01",
+      "recheckOf": "round2/cma-cli/candidate-01",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "cli-fast-fork-destination",
+      "skills": "candidate",
+      "run": "cma-cli/verify-recheck-candidate-02",
+      "recheckOf": "round2/cma-cli/candidate-01",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "react-router-post-seo",
+      "skills": "baseline",
+      "run": "frontend/baseline-01",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: post <head> lacks the DatoCMS SEO title",
+      "skillReads": [
+        "datocms-frontend-integrations/SKILL.md",
+        "datocms-frontend-integrations/references/react-seo.md",
+        "datocms-frontend-integrations/references/seo-concepts.md"
+      ],
+      "commandCount": 9,
+      "elapsedMs": 66243,
+      "dropped": false
+    },
+    {
+      "case": "next15-webhook-revalidation",
+      "skills": "baseline",
+      "run": "frontend/baseline-02",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [],
+      "commandCount": 5,
+      "elapsedMs": 96763,
+      "dropped": false
+    },
+    {
+      "case": "react-router-post-seo",
+      "skills": "candidate",
+      "run": "frontend/candidate-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cda/references/seo-and-meta.md",
+        "datocms-frontend-integrations/SKILL.md",
+        "datocms-frontend-integrations/references/react-seo.md",
+        "datocms-frontend-integrations/references/seo-concepts.md"
+      ],
+      "commandCount": 9,
+      "elapsedMs": 55334,
+      "dropped": false
+    },
+    {
+      "case": "next15-webhook-revalidation",
+      "skills": "candidate",
+      "run": "frontend/candidate-02",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-frontend-integrations/SKILL.md",
+        "datocms-frontend-integrations/references/nextjs.md",
+        "datocms-frontend-integrations/references/verification-checklists.md"
+      ],
+      "commandCount": 7,
+      "elapsedMs": 103111,
+      "dropped": false
+    },
+    {
+      "case": "next15-webhook-revalidation",
+      "skills": "candidate",
+      "run": "frontend/candidate-03",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [],
+      "commandCount": 5,
+      "elapsedMs": 39316,
+      "dropped": false
+    },
+    {
+      "case": "next15-webhook-revalidation",
+      "skills": "candidate",
+      "run": "frontend/candidate-04",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [],
+      "commandCount": 7,
+      "elapsedMs": 44759,
+      "dropped": false
+    },
+    {
+      "case": "modeling-blog-publish-order",
+      "skills": "baseline",
+      "run": "modeling/baseline-01",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Newest posts must come first",
+      "skillReads": [
+        "datocms-cma/SKILL.md",
+        "datocms-cma/references/client-setup-and-errors.md",
+        "datocms-cma/references/schema.md"
+      ],
+      "commandCount": 10,
+      "elapsedMs": 63725,
+      "dropped": false
+    },
+    {
+      "case": "modeling-code-highlight",
+      "skills": "baseline",
+      "run": "modeling/baseline-code-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cma/SKILL.md",
+        "datocms-cma/references/schema.md",
+        "datocms-content-modeling/SKILL.md",
+        "datocms-structured-text/SKILL.md",
+        "datocms-structured-text/references/document-model.md",
+        "datocms-structured-text/references/editing.md"
+      ],
+      "commandCount": 10,
+      "elapsedMs": 94629,
+      "dropped": true
+    },
+    {
+      "case": "modeling-blog-publish-order",
+      "skills": "candidate",
+      "run": "modeling/candidate-01-recheck",
+      "recheckOf": "round2/modeling/candidate-01",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "modeling-blog-publish-order",
+      "skills": "candidate",
+      "run": "modeling/candidate-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cma/SKILL.md"
+      ],
+      "commandCount": 11,
+      "elapsedMs": 66255,
+      "dropped": false
+    },
+    {
+      "case": "modeling-blog-publish-order",
+      "skills": "candidate",
+      "run": "modeling/candidate-02-recheck",
+      "recheckOf": "round2/modeling/candidate-02",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "modeling-blog-publish-order",
+      "skills": "candidate",
+      "run": "modeling/candidate-02",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [],
+      "commandCount": 16,
+      "elapsedMs": 76200,
+      "dropped": false
+    },
+    {
+      "case": "modeling-code-highlight",
+      "skills": "candidate",
+      "run": "modeling/candidate-code-01-recheck",
+      "recheckOf": "round2/modeling/candidate-code-01",
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Existing body nodes were removed",
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": true
+    },
+    {
+      "case": "modeling-code-highlight",
+      "skills": "candidate",
+      "run": "modeling/candidate-code-01-recheck2",
+      "recheckOf": "round2/modeling/candidate-code-01",
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Existing body nodes were removed",
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": true
+    },
+    {
+      "case": "modeling-code-highlight",
+      "skills": "candidate",
+      "run": "modeling/candidate-code-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [],
+      "commandCount": 11,
+      "elapsedMs": 64338,
+      "dropped": true
+    },
+    {
+      "case": "modeling-code-highlight",
+      "skills": "candidate",
+      "run": "modeling/candidate-code-02-recheck2",
+      "recheckOf": "round2/modeling/candidate-code-02",
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Body must contain exactly one code node",
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": true
+    },
+    {
+      "case": "modeling-code-highlight",
+      "skills": "candidate",
+      "run": "modeling/candidate-code-02",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Tutorial body editor still does not allow code nodes",
+      "skillReads": [
+        "datocms-cma/SKILL.md",
+        "datocms-cma/references/editing-records.md",
+        "datocms-cma/references/schema.md",
+        "datocms-structured-text/SKILL.md",
+        "datocms-structured-text/references/document-model.md",
+        "datocms-structured-text/references/editing.md"
+      ],
+      "commandCount": 12,
+      "elapsedMs": 91413,
+      "dropped": true
+    },
+    {
+      "case": "modeling-code-highlight",
+      "skills": "candidate",
+      "run": "modeling/candidate-code-03-recheck2",
+      "recheckOf": "round2/modeling/candidate-code-03",
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Tutorial body editor still does not allow code nodes",
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": true
+    },
+    {
+      "case": "modeling-code-highlight",
+      "skills": "candidate",
+      "run": "modeling/candidate-code-03",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Tutorial body editor still does not allow code nodes",
+      "skillReads": [
+        "datocms-cma/SKILL.md",
+        "datocms-cma/references/client-setup-and-errors.md",
+        "datocms-cma/references/editing-records.md",
+        "datocms-cma/references/schema.md",
+        "datocms-structured-text/SKILL.md",
+        "datocms-structured-text/references/document-model.md"
+      ],
+      "commandCount": 8,
+      "elapsedMs": 77420,
+      "dropped": true
+    },
+    {
+      "case": "modeling-code-highlight",
+      "skills": "baseline",
+      "run": "modeling/verify-baseline-code-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [],
+      "commandCount": 5,
+      "elapsedMs": 33757,
+      "dropped": true
+    },
+    {
+      "case": "modeling-code-highlight",
+      "skills": "candidate",
+      "run": "modeling/verify-candidate-code-01",
+      "recheckOf": null,
+      "passed": false,
+      "error": "ApiError: POST https://site-api.datocms.com/items: 422 ",
+      "skillReads": [],
+      "commandCount": 5,
+      "elapsedMs": 35648,
+      "dropped": true
+    },
+    {
+      "case": "plugin-asset-source-default-metadata",
+      "skills": "baseline",
+      "run": "plugin/baseline-01-asset",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: default_field_metadata is not the current NewUploadDefaultFieldMetadata shape: local/regressions/round2/plugin/baseline-01-asset/plugin-asset-source-default-metadata-1/check/metadata/metadata.ts(3,3): error T",
+      "skillReads": [
+        "datocms-plugin/SKILL.md",
+        "datocms-plugin/references/asset-sources.md"
+      ],
+      "commandCount": 7,
+      "elapsedMs": 40390,
+      "dropped": false
+    },
+    {
+      "case": "plugin-top-nav-page-path",
+      "skills": "baseline",
+      "run": "plugin/baseline-01-nav",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: navigateTo path matches no DatoCMS plugin page route: /admin/plugins/plugin-1/pages/reports?year=2025",
+      "skillReads": [],
+      "commandCount": 8,
+      "elapsedMs": 59848,
+      "dropped": false
+    },
+    {
+      "case": "plugin-single-block-addon",
+      "skills": "baseline",
+      "run": "plugin/baseline-01-single-block",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-plugin/SKILL.md",
+        "datocms-plugin/references/field-extensions.md"
+      ],
+      "commandCount": 5,
+      "elapsedMs": 35284,
+      "dropped": false
+    },
+    {
+      "case": "plugin-asset-source-default-metadata",
+      "skills": "candidate",
+      "run": "plugin/candidate-01-asset",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-plugin/SKILL.md",
+        "datocms-plugin/references/asset-sources.md"
+      ],
+      "commandCount": 11,
+      "elapsedMs": 51701,
+      "dropped": false
+    },
+    {
+      "case": "plugin-top-nav-page-link",
+      "skills": "candidate",
+      "run": "plugin/candidate-01-nav",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [],
+      "commandCount": 6,
+      "elapsedMs": 59989,
+      "dropped": false
+    },
+    {
+      "case": "plugin-single-block-addon",
+      "skills": "candidate",
+      "run": "plugin/candidate-01-single-block",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-plugin/SKILL.md",
+        "datocms-plugin/references/connect-conventions.md",
+        "datocms-plugin/references/field-extensions.md"
+      ],
+      "commandCount": 5,
+      "elapsedMs": 26409,
+      "dropped": false
+    },
+    {
+      "case": "plugin-top-nav-page-path",
+      "skills": "candidate",
+      "run": "plugin/candidate-02-nav",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-plugin/SKILL.md",
+        "datocms-plugin/references/config-screen.md",
+        "datocms-plugin/references/connect-conventions.md",
+        "datocms-plugin/references/custom-pages.md"
+      ],
+      "commandCount": 5,
+      "elapsedMs": 32734,
+      "dropped": false
+    },
+    {
+      "case": "plugin-new-scaffold-strict",
+      "skills": "candidate",
+      "run": "plugin/verify-candidate-03-copy",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-plugin/SKILL.md",
+        "datocms-plugin/references/config-screen.md",
+        "datocms-plugin/references/design-forms-and-controls.md",
+        "datocms-plugin/references/design-foundations.md",
+        "datocms-plugin/references/field-extensions.md",
+        "datocms-plugin/references/project-scaffold.md",
+        "datocms-plugin/references/surface-starters.md"
+      ],
+      "commandCount": 8,
+      "elapsedMs": 79420,
+      "dropped": false
+    },
+    {
+      "case": "plugin-asset-source-default-metadata",
+      "skills": "baseline",
+      "run": "plugin/verify-recheck-baseline-01-asset",
+      "recheckOf": "round2/plugin/baseline-01-asset",
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: default_field_metadata is not the current NewUploadDefaultFieldMetadata shape: local/regressions/round2/plugin/verify-recheck-baseline-01-asset/plugin-asset-source-default-metadata-1/check/metadata/metadata.t",
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "plugin-top-nav-page-path",
+      "skills": "baseline",
+      "run": "plugin/verify-recheck-baseline-01-nav",
+      "recheckOf": "round2/plugin/baseline-01-nav",
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: navigateTo path matches no DatoCMS plugin page route: /admin/plugins/plugin-1/pages/reports?year=2025",
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "plugin-single-block-addon",
+      "skills": "baseline",
+      "run": "plugin/verify-recheck-baseline-01-single-block",
+      "recheckOf": "round2/plugin/baseline-01-single-block",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "plugin-asset-source-default-metadata",
+      "skills": "candidate",
+      "run": "plugin/verify-recheck-candidate-01-asset",
+      "recheckOf": "round2/plugin/candidate-01-asset",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "plugin-single-block-addon",
+      "skills": "candidate",
+      "run": "plugin/verify-recheck-candidate-01-single-block",
+      "recheckOf": "round2/plugin/candidate-01-single-block",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "plugin-top-nav-page-path",
+      "skills": "candidate",
+      "run": "plugin/verify-recheck-candidate-02-nav",
+      "recheckOf": "round2/plugin/candidate-02-nav",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "plugin-new-scaffold-strict",
+      "skills": "candidate",
+      "run": "plugin/verify-recheck-scaffold-candidate-03-relinked",
+      "recheckOf": "round2/plugin/verify-candidate-03-copy",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "plugin-new-scaffold-strict",
+      "skills": "candidate",
+      "run": "plugin/verify-recheck-scaffold-candidate-03",
+      "recheckOf": "plugin/candidate-03",
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: npm run build failed | Scaffold strict typecheck failed: local/regressions/plugin/candidate-03/plugin-new-scaffold-strict-1/workspace/src/ConfigScreen.tsx(1,44): error TS2307: Cannot find module 'datocms-plug",
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "plugin-single-block-addon",
+      "skills": "baseline",
+      "run": "plugin/verify-recheck2-baseline-01-single-block",
+      "recheckOf": "round2/plugin/baseline-01-single-block",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "plugin-single-block-addon",
+      "skills": "candidate",
+      "run": "plugin/verify-recheck2-candidate-01-single-block",
+      "recheckOf": "round2/plugin/candidate-01-single-block",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null,
+      "dropped": false
+    },
+    {
+      "case": "setup-web-previews-migration-secret",
+      "skills": "baseline",
+      "run": "setup/baseline-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cli",
+        "datocms-cli/references/cli-setup.md",
+        "datocms-cli/references/creating-migrations.md",
+        "datocms-frontend-integrations/references/nextjs.md",
+        "datocms-frontend-integrations/references/web-previews-concepts.md",
+        "datocms-setup",
+        "datocms-setup/SKILL.md",
+        "datocms-setup/patterns/MANDATORY_RULES.md",
+        "datocms-setup/recipes/frontend-foundation/web-previews/recipe.md",
+        "datocms-setup/recipes/migrations/migrations/recipe.md",
+        "datocms-setup/references/recipe-manifest.json",
+        "datocms-setup/references/repo-conventions.md",
+        "datocms-setup/references/router.md"
+      ],
+      "commandCount": 12,
+      "elapsedMs": 54246,
+      "dropped": false
+    },
+    {
+      "case": "setup-web-previews-migration-secret",
+      "skills": "candidate",
+      "run": "setup/candidate-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cli/SKILL.md",
+        "datocms-cli/references/creating-migrations.md",
+        "datocms-cma/SKILL.md",
+        "datocms-cma/references/migration-patterns.md",
+        "datocms-cma/references/resource-gotchas.md",
+        "datocms-frontend-integrations/references/nextjs.md",
+        "datocms-frontend-integrations/references/visual-editing-concepts.md",
+        "datocms-frontend-integrations/references/web-previews-concepts.md",
+        "datocms-setup/SKILL.md",
+        "datocms-setup/patterns/MANDATORY_RULES.md",
+        "datocms-setup/patterns/OUTPUT_STATUS.md",
+        "datocms-setup/recipes/frontend-foundation/web-previews/recipe.md",
+        "datocms-setup/references/recipe-manifest.json",
+        "datocms-setup/references/repo-conventions.md",
+        "datocms-setup/references/router.md"
+      ],
+      "commandCount": 8,
+      "elapsedMs": 92620,
+      "dropped": false
+    }
+  ]
+}

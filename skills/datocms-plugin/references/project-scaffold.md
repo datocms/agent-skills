@@ -77,8 +77,8 @@ dist/
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "datocms-plugin-sdk": "^2.2.2",
-    "datocms-react-ui": "^2.2.4",
+    "datocms-plugin-sdk": "^2.5.0",
+    "datocms-react-ui": "^2.5.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
@@ -108,7 +108,7 @@ Add as needed:
 ```json
 {
   "dependencies": {
-    "@datocms/cma-client-browser": "^5.4.22",
+    "@datocms/cma-client-browser": "^6.1.0",
     "lodash-es": "^4.18.1",
     "classnames": "^2.5.1",
     "datocms-structured-text-slate-utils": "^6.0.0",

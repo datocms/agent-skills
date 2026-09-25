@@ -2,7 +2,7 @@
 
 Each case guards a skill statement that was proven wrong against package source, CLI source or API behavior. The actor receives an ordinary task without skill names or expected answers, and an independent oracle runs the result against the real SDK, CLI or build tooling with the network boundary mocked. No live CMS credentials are needed.
 
-Run from the repository root. Install the dependencies first: `npm ci --ignore-scripts --prefix dev`, then the same with `--prefix` for `dev/e2e/catalog/plugin`, `web`, `web-astro` and `web-sveltekit`. Chrome is required for browser checks; the CDA case installs its pinned fixture under ignored `local/` on first use, and the importer case needs npm registry access.
+Run from the repository root. Install the dependencies first: `npm ci --ignore-scripts --prefix dev`, then the same with `--prefix` for `dev/e2e/catalog/plugin`, `web`, `web-astro` and `web-sveltekit`. Chrome is required for browser checks; cases that need other package versions (CDA, React Router, Next.js 15) install pinned fixtures under ignored `local/` on first use, which needs npm registry access, as does the importer case.
 
 Every case also carries model-free controls: a correct reference must pass, and a reproduction of the previously documented wrong fact must fail. Run the controls whenever an oracle changes:
 

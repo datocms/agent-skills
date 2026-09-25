@@ -4,10 +4,11 @@ Convert local Markdown/HTML to DAST, or render a document to another representat
 
 ## Local conversion helper
 
-Use Node **>=20.19.0**, the minimum required by the locked dependencies. Copy the runtime into task-local scratch, then install once and reuse it. Replace `/absolute/path/to/datocms-structured-text` with this installed skill's actual path and use absolute input/output paths.
+Use Node **>=20.19.0**, the minimum required by the locked dependencies. Copy the runtime into task-local scratch and install once per task; later commands reuse the printed path (shell variables do not persist). Replace `/absolute/path/to/datocms-structured-text` with this installed skill's actual path and use absolute input/output paths.
 
 ```bash
 runtime_dir="$(mktemp -d "${TMPDIR:-/tmp}/structured-text.XXXXXX")"
+echo "$runtime_dir"
 cp /absolute/path/to/datocms-structured-text/scripts/convert.mjs "$runtime_dir/"
 cp /absolute/path/to/datocms-structured-text/scripts/package.json "$runtime_dir/"
 cp /absolute/path/to/datocms-structured-text/scripts/package-lock.json "$runtime_dir/"
@@ -21,7 +22,7 @@ node "$runtime_dir/convert.mjs" \
 
 Use `--format html` for HTML. Never install dependencies into the shipped skill directory or package `node_modules`. Installation needs the npm registry; conversion itself reads/writes local files and makes no network requests.
 
-Exit `0`: audited supported source, structurally valid DAST written atomically, JSON report written. Exit `1`: inspect diagnostics; requested DAST output remains unchanged. Reports use `{version: 1, ok, format, diagnostics, normalizations}`; each diagnostic includes `code`, `message`, `action`, and a source position when available. Invalid/aliased file paths produce JSON on stderr instead of risking an input/output overwrite. Use distinct input, output, and report files.
+Exit `0`: audited supported source, structurally valid DAST written atomically, JSON report written. Exit `1`: inspect diagnostics; requested DAST output remains unchanged. Reports use `{version: 1, ok, format, diagnostics, normalizations}`; each diagnostic includes `code`, `message`, `action`, and a source position when available. Console gets a summary (`reportPath`, `diagnosticCounts`, first 10 diagnostics); read the rest from the report. Missing/invalid/aliased file paths produce full JSON on stderr instead of risking an input/output overwrite. Use distinct input, output, and report files.
 
 The helper recognizes supported prose, not every document accepted by its parsers:
 

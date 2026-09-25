@@ -111,3 +111,23 @@ test('helpers keep local OAuth runs token-free and never print the token on fail
     } finally { box.cleanup(); }
   }
 });
+
+test('sync helper only emits migrations:run flag combinations the real CLI accepts', () => {
+  // datocms 4.2.0 migrations:run: --force dependsOn --fast-fork, --fast-fork dependsOn --destination.
+  for (const flags of [['--force'], ['--fast-fork'], ['--fast-fork', '--force']]) {
+    const box = sandbox(['client_a']);
+    try {
+      const env = {...box.env, DATOCMS_CLIENT_A_PROFILE_API_TOKEN: 'token-a'};
+      const run = spawnSync(process.execPath, [join(recipes, 'blueprint-sync/scripts/datocms-sync-projects.mjs'), 'client_a', ...flags], {cwd: box.directory, env, encoding: 'utf8'});
+      if (run.status !== 0) {
+        assert.deepEqual(box.calls(), [], `${flags}: refused after running commands`);
+        assert.match(run.stderr, /--force requires --fast-fork/);
+        continue;
+      }
+      for (const argv of box.calls()) {
+        const resolved = resolveWithRealCli({...box, env}, argv);
+        assert.equal(resolved.error, undefined, `${flags.join(' ')}: ${resolved.error}`);
+      }
+    } finally { box.cleanup(); }
+  }
+});

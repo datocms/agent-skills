@@ -426,7 +426,7 @@ const isLocalized = ctx.field.attributes.localized;
 
 - **`toggleField()` destroys plugin iframes**: When field is hidden via `ctx.toggleField(path, false)`, its plugin iframes are **completely destroyed**. When field is shown again, iframes are recreated from scratch — all React state is lost. If you need to persist state across visibility changes, store it in plugin parameters or outside React tree.
 
-- **Avoid Editor extensions for Modular Content, Single Block, and Structured Text fields**: Use Addon extensions instead. Editor extensions for these field types require reimplementing rendering and update logic for all contained fields and blocks. See `form-values.md` for working with these field types programmatically.
+- **Avoid Editor extensions for Modular Content, Single Block, and Structured Text fields**: Use Addon extensions instead (`FieldType` lacks `single_block`: reach it via `overrideFieldExtensions`, or `fieldTypes: 'all'` if every field type may offer the addon). Editor extensions for these field types require reimplementing rendering and update logic for all contained fields and blocks. See `form-values.md` for working with these field types programmatically.
 
 - **`formValuesToItem()` returns `undefined`**: If required nested blocks aren't loaded, this method returns `undefined` rather than throwing. Always check return value.
 

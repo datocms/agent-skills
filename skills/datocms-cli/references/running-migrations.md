@@ -43,7 +43,7 @@ Runs migration scripts that have not been executed yet.
 | `--in-place` | boolean | Run in the source environment without forking (exclusive with `--destination`) |
 | `--allow-primary` | boolean | Required for `--in-place` on primary (requires `--in-place`); additive-only, no rollback |
 | `--dry-run` | boolean | Simulate execution without making actual changes |
-| `--fast-fork` | boolean | Use fast fork (prevents writes to source during fork) |
+| `--fast-fork` | boolean | Fast fork (requires `--destination`; blocks source writes during fork) |
 | `--force` | boolean | Force fast fork even with active editing sessions (requires `--fast-fork`) |
 | `--migrations-dir=<path>` | string | Directory where migration scripts are stored |
 | `--migrations-model=<key>` | string | API key of the model used to track migration data |

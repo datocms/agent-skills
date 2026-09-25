@@ -22,11 +22,11 @@ Use this workflow for CMA operations and scripts. For advice or code explanation
 
 ## 1. Select execution before setup
 
-**Retired MCP request: no execution.** If the user requests a retired/legacy MCP or reports that their old local integration no longer works, reply: "That integration is retired. Use the [current DatoCMS MCP setup](https://www.datocms.com/docs/mcp-server)." Keep that link in the final answer. End that task without calling either legacy or current DatoCMS tools: the available current connection is not permission to substitute routes. Do not probe, repair, reinstall, or reconfigure the retired integration. Apply this stop condition before the normal route rules below. A connection/authentication error alone does not establish that an integration is retired.
+**Retired MCP request: no execution.** If the user requests a retired/legacy MCP or reports that their old local integration no longer works, reply: "That integration is retired. Use the [current DatoCMS MCP setup](https://www.datocms.com/docs/mcp-server)." Keep that link in the final answer. End that task without calling either legacy or current DatoCMS tools: the available current connection is not permission to substitute routes. Do not probe, repair, reinstall, or reconfigure the retired integration. Apply this stop condition before the normal route rules below, unless the user asks for the CLI or current MCP instead. A connection/authentication error alone does not establish that an integration is retired.
 
 **CLI is the default whenever usable, even with MCP connected.** Override this only for the user's explicit tool choice or a route already used in this task. An installed or authenticated connection is availability, not an established workflow.
 
-Inspect only task-relevant exposed capabilities. Available means usable now, not merely installable; don't run startup connection checks or scan client configuration.
+Inspect only task-relevant exposed capabilities. Available means usable now, not merely installable; don't run startup connection checks or scan MCP client configuration.
 
 - **Explicit route:** honor the user's choice of current MCP or CLI, including MCP when CLI is available. A follow-up keeps its established route unless the user changes it.
 - **No preference or established route:** when both CLI and current MCP are usable, select CLI. A connected MCP alone is not a request to use it. If only current MCP is usable, select MCP without package installation, CLI login, or project linking. If only CLI is usable, select CLI.

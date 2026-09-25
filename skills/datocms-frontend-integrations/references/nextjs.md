@@ -250,7 +250,7 @@ type ExecuteQueryOptions<Variables> = {
 };
 ```
 
-`force-cache` holds published responses until `cacheTag` is revalidated; Core alone never does (Vercel Data Cache survives deploys). New wrapper: add bearer-`SECRET_API_TOKEN` POST route (e.g. `src/app/api/invalidate-cache/route.ts`) calling `revalidateTag(cacheTag, { expire: 0 })`, hit by a DatoCMS webhook (`cda_cache_tags` → `invalidate`, `Authorization: Bearer` header) — Cache Tags handler minus DB lookup. Patching: keep existing cache policy. `includeDrafts` picks draft/published token.
+`force-cache` holds published responses until `cacheTag` is revalidated; Core alone never does (Vercel Data Cache survives deploys). New wrapper: add bearer-`SECRET_API_TOKEN` POST route (e.g. `src/app/api/invalidate-cache/route.ts`) calling `revalidateTag(cacheTag, { expire: 0 })` on Next 16+, `revalidateTag(cacheTag)` on Next ≤15 (check installed `next`), hit by a DatoCMS webhook (`cda_cache_tags` → `invalidate`, `Authorization: Bearer` header) — Cache Tags handler minus DB lookup. Patching: keep existing cache policy. `includeDrafts` picks draft/published token.
 
 ### Core Environment Variables
 
@@ -343,7 +343,7 @@ Web Previews sends a raw JSON:API `item`, plus `itemType` and `locale`. The inco
 
 **File:** `src/lib/datocms/recordInfo.ts`
 
-Requires `cma-types` — generated types expose `Schema.X.ID` (literal-typed model id) and the `AnyModel` union, which discriminates `item.attributes` per branch.
+Requires generated `cma-types` ([how](./web-previews-concepts.md#recordtowebsiteroute-pattern)).
 
 ```ts
 import type { RawApiTypes } from '@datocms/cma-client';
@@ -955,7 +955,8 @@ export async function POST(request: Request) {
   if (tags.length === 0) return NextResponse.json({ revalidated: false });
 
   // Always revalidate the global "datocms" tag for queries that don't use queryId
-  // `{ expire: 0 }` = immediate expiration (required for webhook-driven invalidation)
+  // Next 16+: `{ expire: 0 }` = immediate expiration (required for webhook-driven invalidation)
+  // Next ≤15: revalidateTag(tag) accepts no second argument
   revalidateTag(cacheTag, { expire: 0 });
 
   // Look up which Query IDs are affected by the invalidated tags

@@ -170,7 +170,7 @@ Default path: programmatic install via CMA (CLI link assumed from Step 1).
 1. Echo resolved `frontends[]` config from "Plugin-side configuration" back to user.
 2. Confirm before executing — writes to live DatoCMS project.
 3. Pick execution surface based on repo:
-   - **Repo has `migrations/`** → scaffold `npx datocms migrations:new "install web previews plugin" --ts` and write the install body into the generated file. User runs `npx datocms migrations:run` to apply. CLI tracks the run, so reruns are safe.
+   - **Repo has `migrations/`** → scaffold `npx datocms migrations:new "install web previews plugin" --ts` and write the install body into the generated file; read secret + base URL from `process.env` at run time (CLI loads `.env.local`/`.env`), never inline values. User runs `npx datocms migrations:run` to apply. CLI tracks the run, so reruns are safe.
    - **No migrations setup** → one-off via `npx datocms cma:script` stdin.
 4. Install body: two CMA calls — `client.plugins.create({ package_name: 'datocms-plugin-web-previews' })` then `client.plugins.update(plugin.id, { parameters: { frontends, startOpen: true } })`. See `../../../../datocms-frontend-integrations/references/web-previews-concepts.md` § Programmatic install.
 5. Before `create`, call `client.plugins.list()` and reuse existing instance via `update` if `package_name` already matches (keeps `cma:script` reruns safe; the migration surface gets idempotency from the CLI tracker).

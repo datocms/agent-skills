@@ -40,7 +40,7 @@ Skip if context established. Only re-inspect when question can't be answered fro
 
 Silently examine:
 
-1. **Framework** — `package.json`: `next` → Next.js App Router, `nuxt` → Nuxt, `@sveltejs/kit` → SvelteKit, `astro` → Astro, `@remix-run/` → Remix, or infer React/Vue/other
+1. **Framework** — `package.json`: `next` → Next.js App Router, `nuxt` → Nuxt, `@sveltejs/kit` → SvelteKit, `astro` → Astro, `@remix-run/*` or `@react-router/dev` → Remix / React Router framework mode (React references; patch existing loaders/route modules), or infer React/Vue/other
 2. **UI stack** — Dato rendering lib: React (`react-datocms`), Vue (`vue-datocms`), SvelteKit/Svelte (`@datocms/svelte`), Astro without React (`@datocms/astro`)
 3. **Existing Dato helpers** — `@datocms/cda-client`, query wrappers, image/Structured Text helpers, env vars
 4. **Existing integration markers** — draft mode endpoints, preview-links, Content Link, real-time subscriptions, cache-tag forwarding, search routes, robots/sitemap
@@ -135,7 +135,6 @@ Load these for mixed-feature setup work:
   - `references/nuxt.md`
   - `references/sveltekit.md`
   - `references/astro.md`
-  - `references/remix.md`
 - optional concept references:
   - `references/web-previews-concepts.md`
   - `references/content-link-concepts.md`
