@@ -4,6 +4,20 @@ Models define structure. Fields define attributes. Fieldsets group fields visual
 
 > In CLI mode, endpoint shapes / payloads / TS signatures: `npx datocms cma:docs {itemTypes|fields|fieldsets} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
 
+## Contents
+
+- Build order: model → fields → meta-relationships
+- Block models: a constrained subset
+- Singletons auto-create their record
+- Validator payload gotchas
+- Reference-cascade strategies (the non-obvious part of link/structured-text validators)
+- Structured-text: three overlapping validators, three roles
+- Slug auto-fill
+- Localized defaults take a locale-keyed object
+- Schema mutations are async jobs
+- Impact analysis before deleting
+- Editor appearance — defaults vs explicit
+
 ## Build order: model → fields → meta-relationships
 
 Many model attributes are **field references**: `title_field`, `image_preview_field`, `excerpt_field`, `presentation_title_field`, `presentation_image_field`, `ordering_field`. Can't set on `itemTypes.create` — fields don't exist yet. Order that always works:
@@ -13,6 +27,8 @@ Many model attributes are **field references**: `title_field`, `image_preview_fi
 3. `itemTypes.update(model.id, { title_field: { id: titleField.id, type: "field" }, ... })` — wire up relationships now that field IDs exist.
 
 Skipping step 3 is common mistake when scripting migrations: model created and populated but editor UI lacks title preview / SEO fallbacks because nothing wired.
+
+Automatic order: `ordering_field` or `ordering_meta` requires `ordering_direction` (`"asc"` / `"desc"`; newest first = `"desc"`) in the same call — API rejects either without the other and reports the error on the ordering attribute, not the direction.
 
 Display order: `fields.update(fieldId, { position, fieldset: { id, type: "fieldset" } | null })` (also on `fields.create`; `fieldset` moves field in/out of fieldset, `null` = top level) and `fieldsets.update(fieldsetId, { position })`. No `itemTypes.reorderFieldsAndFieldsets` (only private, deprecated `rawReorderFieldsAndFieldsets`).
 
@@ -53,6 +69,8 @@ Pick deliberately — omitted delete strategy silently unlinks. `"fail"` safe fo
 - **`structured_text_blocks`** — allowlist for **block** nodes (block-level, between paragraphs).
 - **`structured_text_inline_blocks`** — allowlist for **inlineBlock** nodes (inline within paragraphs/headings; mid-flow content like badges, mentions, equations).
 - **`structured_text_links`** — allowlist for **itemLink** / **inlineItem** nodes (record references rendered as link or chip), and where cascade-strategy fields live.
+
+Native nodes (`heading`, `list`, `code`, `blockquote`, `link`, `thematicBreak`) and marks are editor settings, not validators: `appearance.parameters.nodes` / `marks` (omitted = all). To enable one, update appearance with the current list plus the new entry — never replace the list or model it as a block.
 
 Setting `structured_text_blocks` does not implicitly authorize inline blocks or links — wire each to models that should be permitted. For "no embedded blocks" structured text, set `structured_text_blocks: { item_types: [] }` (and same for inline / links). For DAST construction and node rules, load [document model](../../datocms-structured-text/references/document-model.md); for Markdown/HTML sources, load [conversion](../../datocms-structured-text/references/conversion.md).
 

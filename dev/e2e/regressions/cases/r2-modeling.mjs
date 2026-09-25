@@ -70,6 +70,8 @@ function cmaApi(seed) {
     if (m.ordering_direction != null && !['asc', 'desc'].includes(m.ordering_direction)) invalid('ordering_direction', 'VALIDATION_INCLUSION');
     // item-type.md: ordering_meta "Cannot be set in concurrency with ordering_field".
     if (m.ordering_meta != null && m.ordering_field) invalid('ordering_meta');
+    // datocms/api item_type.rb avoid_ordering_without_direction: ordering and direction come together.
+    if ((m.ordering_meta != null || !!m.ordering_field) !== (m.ordering_direction != null)) invalid(m.ordering_meta != null ? 'ordering_meta' : 'ordering_field');
     for (const r of MODEL_RELS) if (m[r] && field(m[r])?.item_type !== m.id) invalid(r);
   };
   const checkField = (f) => {

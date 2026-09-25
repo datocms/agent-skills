@@ -54,7 +54,7 @@ Generate only the standalone CMA type-generation setup.
    - Next.js / Astro / SvelteKit with `src/`: `src/lib/datocms/cma-types.ts`
    - Next.js / Astro / SvelteKit without `src/`: `lib/datocms/cma-types.ts`
    - Nuxt: `lib/datocms/cma-types.ts`
-3. **Run the initial generation** via the new script. With the default profile linked via OAuth, no token prompt or env lookup is needed.
+3. **Run the initial generation** via the new script, after creating the output directory if missing (`schema:generate` doesn't create it). With the default profile linked via OAuth, no token prompt or env lookup is needed.
 
 ### Mandatory rules
 
