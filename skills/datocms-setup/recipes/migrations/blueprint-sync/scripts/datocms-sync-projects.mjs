@@ -1,13 +1,20 @@
 import { spawnSync } from 'node:child_process';
 
-function run(args) {
-  const result = spawnSync('npx', ['datocms', ...args], {
+// Linked profiles (siteId) never read token env vars, so CI passes the token as a flag.
+function tokenArgs(profile = process.env.DATOCMS_PROFILE || 'default') {
+  const name = profile === 'default' ? 'DATOCMS_API_TOKEN' : `DATOCMS_${profile.toUpperCase()}_PROFILE_API_TOKEN`;
+  return process.env[name] ? [`--api-token=${process.env[name]}`] : [];
+}
+
+function run(args, profile) {
+  const result = spawnSync('npx', ['datocms', ...args, ...tokenArgs(profile)], {
     stdio: 'inherit',
     shell: process.platform === 'win32',
   });
 
   if (result.status !== 0) {
-    throw new Error(`Command failed: npx datocms ${args.join(' ')}`);
+    // Never echo args: they carry the API token.
+    throw new Error(`Command failed: npx datocms ${args[0]}`);
   }
 }
 
@@ -142,5 +149,5 @@ for (const profile of options.profiles) {
   runArgs.push(...options.extraArgs);
 
   console.log(`\n==> ${profile} -> ${destination}`);
-  run(runArgs);
+  run(runArgs, profile);
 }

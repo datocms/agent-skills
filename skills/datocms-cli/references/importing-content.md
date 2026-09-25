@@ -32,7 +32,7 @@ If the target is existing or unclear, prefer a staged approach:
 ### Installation
 
 ```bash
-npm install --save-dev @datocms/cli-plugin-wordpress
+npx datocms plugins:install @datocms/cli-plugin-wordpress
 ```
 
 ### Command
@@ -75,7 +75,7 @@ Add `--autoconfirm` only when the operator intentionally wants a non-interactive
 ### Installation
 
 ```bash
-npm install --save-dev @datocms/cli-plugin-contentful
+npx datocms plugins:install @datocms/cli-plugin-contentful
 ```
 
 ### Command

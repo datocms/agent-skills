@@ -138,7 +138,7 @@ executeItemsDropdownAction(
 
 ```tsx
 connect({
-  itemsDropdownActions(itemType) {
+  itemsDropdownActions() {
     return [
       {
         id: 'tag-featured',
@@ -310,7 +310,7 @@ connect({
 
 ```tsx
 connect({
-  itemsDropdownActions(itemType) {
+  itemsDropdownActions() {
     return [
       {
         label: 'Translations',

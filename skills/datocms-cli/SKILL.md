@@ -95,7 +95,7 @@ If context missing, ask for explicit confirmation before proposing final command
 - `environments:destroy`
 - `environments:promote`
 - imports into non-obviously disposable target
-- `migrations:run --in-place` on primary-like environment
+- `migrations:run --in-place` on primary-like environment (`--in-place --allow-primary` on primary)
 - `maintenance:on --force`
 - `environments:fork --fast --force`
 - `cma:call` with `destroy`, `bulk_destroy`, or `promote` methods

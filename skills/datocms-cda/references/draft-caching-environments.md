@@ -160,23 +160,22 @@ See `client-and-config.md` → "Technical Limits" for diagnostics and the distin
 
 **Note:** Content Link / Visual Editing requires a plan that supports it. Projects on plans without this feature will receive an `INVALID_X_VISUAL_EDITING_HEADER` error. Check your DatoCMS plan for availability.
 
-Enable Content Link to embed editing metadata in responses, allowing visual editing integrations (e.g., Vercel Visual Editing):
+Draft only — stega metadata in string fields powers click-to-edit overlays (`@datocms/content-link`) but breaks production strings (comparisons, layout, SEO):
 
 ```ts
 const data = await executeQuery(query, {
   token: process.env.DATOCMS_CDA_TOKEN!,
-  contentLink: "vercel-v1",
+  includeDrafts,
+  contentLink: includeDrafts ? "v1" : undefined,
   baseEditingUrl: "https://your-project.admin.datocms.com",
 });
 ```
 
 | Option | Description |
 | - | - |
-| `contentLink: 'vercel-v1'` | Embed Vercel Visual Editing metadata |
-| `contentLink: 'v1'` | Embed generic Content Link metadata |
-| `baseEditingUrl` | The DatoCMS admin URL for your project |
-
-When enabled, string fields in the response include additional metadata that Vercel's Visual Editing toolbar uses to create direct links to the DatoCMS editor.
+| `contentLink: 'v1'` | Content Link metadata (`X-Visual-Editing: v1`) |
+| `contentLink: 'vercel-v1'` | Legacy alias of `v1`; prefer `v1` |
+| `baseEditingUrl` | Project admin URL (`X-Base-Editing-Url`); required with `contentLink` |
 
 Setting `baseEditingUrl` alone (without `contentLink`) enables the `_editingUrl` field on records, which returns a direct URL to edit that record in the DatoCMS admin:
 

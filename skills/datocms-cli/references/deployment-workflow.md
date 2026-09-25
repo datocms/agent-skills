@@ -55,8 +55,8 @@ npx datocms maintenance:on
 # 2. Run migrations (fork primary -> new sandbox, apply changes)
 npx datocms migrations:run --destination=release-v2
 
-# 3. Verify the migration succeeded (check the new environment)
-npx datocms environments:list
+# 3. Verify each changed model in the fork (environments:list shows no schema)
+npx datocms schema:inspect <changed_model> --environment=release-v2
 
 # 4. Promote the migrated environment to primary
 npx datocms environments:promote release-v2
@@ -129,22 +129,22 @@ jobs:
       - run: npm ci
 
       - name: Enable maintenance mode
-        run: npx datocms maintenance:on
+        run: npx datocms maintenance:on --api-token="$DATOCMS_API_TOKEN"
         env:
           DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
 
       - name: Run migrations
-        run: npx datocms migrations:run --destination=${{ github.sha }}
+        run: npx datocms migrations:run --destination=${{ github.sha }} --api-token="$DATOCMS_API_TOKEN"
         env:
           DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
 
       - name: Promote environment
-        run: npx datocms environments:promote ${{ github.sha }}
+        run: npx datocms environments:promote ${{ github.sha }} --api-token="$DATOCMS_API_TOKEN"
         env:
           DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
 
       - name: Disable maintenance mode
-        run: npx datocms maintenance:off
+        run: npx datocms maintenance:off --api-token="$DATOCMS_API_TOKEN"
         env:
           DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
         if: always()
@@ -156,5 +156,5 @@ Add `--force` to the maintenance step only when the release process explicitly a
 
 - **Always** run `maintenance:off` in an `if: always()` step to avoid leaving the project locked if a step fails
 - Use the git SHA or a build ID as the `--destination` name for traceability
-- Store `DATOCMS_API_TOKEN` as a repository secret
+- Store `DATOCMS_API_TOKEN` as repo secret, pass via `--api-token` — linked profile (`siteId`) never reads env var, errors without OAuth login
 - Trigger only on changes to the `migrations/` directory to avoid unnecessary runs

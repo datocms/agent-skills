@@ -30,8 +30,6 @@ if (rawArgs.includes('--help')) {
   process.exit(0);
 }
 
-requireEnv('DATOCMS_API_TOKEN');
-
 const args = [
   'contentful:import',
   `--contentful-space-id=${requireEnv('CONTENTFUL_SPACE_ID')}`,

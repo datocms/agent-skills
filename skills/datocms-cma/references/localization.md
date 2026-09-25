@@ -16,7 +16,6 @@ This file covers the per-locale value shape, `all_locales_required` semantics, a
 - Localized File Fields
 - Checking if a Field is Localized
 - Normalized Field Value Utilities
-- Complete Example: Migrate Content to a New Locale
 
 ## Localized vs Non-Localized Values
 
@@ -66,14 +65,14 @@ const record = await client.items.create({
 
 ## Updating Localized Fields
 
-When updating a localized field, you provide the full object with every locale you want to keep — there is no "partial locale update", and omitting a locale deletes it:
+When updating a localized field, you provide the full object with every locale you want to keep — there is no "partial locale update":
 
 ```ts
 // First, read the current record
-const record = await client.items.find("record-id");
+const record = await client.items.find<Schema.Article>("record-id");
 
 // Update only the Italian translation
-await client.items.update("record-id", {
+await client.items.update<Schema.Article>("record-id", {
   title: {
     ...record.title, // Preserve other locales
     it: "Nuovo Titolo",
@@ -293,64 +292,3 @@ Every function above has an async counterpart:
 - `someNormalizedFieldValuesAsync()`
 - `everyNormalizedFieldValueAsync()`
 - `visitNormalizedFieldValuesAsync()`
-
-## Complete Example: Migrate Content to a New Locale
-
-Standalone Node.js example. When the selected runtime supplies `client` or helper exports, reuse them and omit the corresponding setup below.
-
-```ts
-import {
-  buildClient,
-  toNormalizedFieldValueEntries,
-  fromNormalizedFieldValueEntries,
-} from "@datocms/cma-client-node";
-
-const client = buildClient({
-  apiToken: process.env.DATOCMS_API_TOKEN!,
-});
-
-async function addFrenchLocale() {
-  const model = (await client.itemTypes.list()).find(
-    (m) => m.api_key === "blog_post",
-  );
-  if (!model) throw new Error("Model not found");
-
-  const fields = await client.fields.list(model.id);
-  const localizedFields = fields.filter((f) => f.localized);
-
-  let count = 0;
-
-  for await (const record of client.items.listPagedIterator<Schema.BlogPost>({
-    filter: { type: "blog_post" },
-  })) {
-    const updates: Record<string, unknown> = {};
-
-    for (const field of localizedFields) {
-      const fieldValue = record[field.api_key];
-      if (!fieldValue) continue;
-
-      const entries = toNormalizedFieldValueEntries(fieldValue, field);
-      const enEntry = entries.find((e) => e.locale === "en");
-
-      if (enEntry && !entries.find((e) => e.locale === "fr")) {
-        // Copy English value as placeholder for French
-        entries.push({ locale: "fr", value: enEntry.value });
-        updates[field.api_key] = fromNormalizedFieldValueEntries(
-          entries,
-          field,
-        );
-      }
-    }
-
-    if (Object.keys(updates).length > 0) {
-      await client.items.update(record.id, updates);
-      count++;
-      console.log(`Updated record ${record.id} (${count})`);
-    }
-  }
-
-  console.log(`Done. Updated ${count} records.`);
-}
-
-addFrenchLocale().catch(console.error);
-```

@@ -2,7 +2,7 @@
 
 The maintained evaluation track exercises the repository's actual skills through a native agent session, then checks the resulting CMS state or application independently. It does not force a skill load, suppress the agent's verification, substitute another model, or treat a completed answer as a passing result.
 
-Use Node 24+, `npm ci`, and an authenticated native CLI. Set `CODEX_BIN` to its executable if it is not on PATH. The current validation baseline is `gpt-5.6-luna` with `model_reasoning_effort=medium`. Model and reasoning effort are pinned in `lib/nativeSession.ts`; a conflicting per-case model is rejected. Reports retain those settings so results can be reproduced and attributed to the tested configuration.
+Use Node 24+, `npm ci`, and an authenticated native CLI. Set `CODEX_BIN` to its executable if it is not on PATH. The current validation baseline is `gpt-6-luna` with `model_reasoning_effort=medium`. Model and reasoning effort are pinned in `lib/nativeSession.ts`; a conflicting per-case model is rejected. Reports retain those settings so results can be reproduced and attributed to the tested configuration.
 
 ## Live CMS cases
 
@@ -41,7 +41,7 @@ The [catalog scenarios](catalog/README.md) add real CDA reads and rendering, mig
 
 ```bash
 node evals/coexistence/run.mjs \
-  --model gpt-5.6-luna --effort medium \
+  --model gpt-6-luna --effort medium \
   --baseline <baseline-commit> --arms base,candidate \
   --repetitions 3 --jobs 2 --output local/coexistence/run-01
 ```
@@ -70,6 +70,8 @@ The [hosted validation report](reports/2026-09-18-hosted-mcp.md) records the ini
 ## Evidence and iteration
 
 The [reading-cost comparisons](ablation/README.md) evaluate deletion candidates against a frozen release, then run a combined candidate on tasks reserved from tuning. These focused cases explicitly name the intended skill; they measure behavior after activation, not automatic skill discovery. They preserve baseline failures, rejected attempts, actual context usage, and independent browser/build results. A shorter document is not automatically a better skill, and one successful pair is not proof of non-inferiority.
+
+The [fact regressions](regressions/README.md) guard corrected skill statements with model-free controls and pinned actor sessions against mocked API boundaries; see the [fact regression report](reports/2026-09-25-fact-regressions.md).
 
 The [deployed website harness](deployed/README.md) adds explicitly scoped Vercel deployment, real search crawling and Next.js cache-tag checks. Its [validation report](reports/2026-09-19-deployed-workflows.md) separates evaluated implementations from operator deployments and independent browser/API verification.
 

@@ -69,7 +69,7 @@ DatoCMS supports **all** imgix URL API parameters. Common ones:
 | `auto` | `ImgixParamsAuto` | Automatic optimizations. Pass a single value (`auto: format`) or an array (`auto: [format, compress]`) |
 | `fm` | `ImgixParamsFm` | Output format: `jpg`, `png`, `webp`, `gif`, `avif` |
 | `q` | `Int` | Quality (1-100) |
-| `crop` | `ImgixParamsCrop` | Crop mode: `focalpoint`, `faces`, `entropy`, `edges`, `top`, `bottom`, `left`, `right`, `center` |
+| `crop` | `ImgixParamsCrop` | Crop mode: `focalpoint`, `faces`, `entropy`, `edges`, `top`, `bottom`, `left`, `right` (no `center`: omitted = center, unless Focal Point applies) |
 | `ar` | `String` | Aspect ratio (e.g., `"16:9"`) |
 | `dpr` | `Int` | Device pixel ratio |
 | `blur` | `Int` | Gaussian blur (0-2000) |
@@ -126,31 +126,7 @@ query {
 
 ## Focal Point
 
-Images can have a focal point set in the DatoCMS admin. Query it and use with imgix's `crop: focalpoint` mode:
-
-```graphql
-query {
-  blogPost(filter: { slug: { eq: "hello-world" } }) {
-    coverImage {
-      focalPoint {
-        x
-        y
-      }
-      responsiveImage(
-        imgixParams: { w: 800, h: 400, fit: crop, crop: focalpoint }
-      ) {
-        src
-        srcSet
-        width
-        height
-        alt
-      }
-    }
-  }
-}
-```
-
-`focalPoint.x` and `focalPoint.y` are floats from 0 to 1 representing the relative position. When `crop: focalpoint` is used in imgix params, the focal point is automatically applied — you do not need to pass `fp-x` and `fp-y` manually.
+Editor-set focal point auto-applies to `responsiveImage` and `url` when `imgixParams` has `fit: crop` plus `w` + `h` or `ar` — DatoCMS injects `crop=focalpoint&fp-x=…&fp-y=…`. Skipped when `crop` is anything but `focalpoint` (`faces`, `entropy`, `top`…), `fpX`/`fpY` are passed (sent as-is; imgix applies them only with `crop: focalpoint`), or point is default center (0.5, 0.5). Force center crop: `fpX: 0.5, fpY: 0.5`. Debug: `fpDebug: true`. Select `focalPoint { x y }` (0-1 floats) only when frontend needs coordinates.
 
 ## Upload / File Field Properties
 

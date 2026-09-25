@@ -51,7 +51,7 @@ Fall back to raw code when:
 | - | - |
 | Tabs / tabbed navigation | Use `ButtonGroup` for tab-like selection, or build a custom tab bar with Canvas CSS variables |
 | Data table | Build with raw `<table>` using Canvas spacing and border tokens |
-| Toast / notification | Build with local component using Canvas color tokens |
+| Toast / notification | Host toast via SDK: `ctx.notice()`, `ctx.alert()`, `ctx.customToast()`; in-iframe toasts clip to the frame |
 
 ### Hooks
 

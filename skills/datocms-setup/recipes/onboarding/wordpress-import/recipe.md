@@ -24,7 +24,7 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 1. **Node project** — Check for `package.json`
 2. **Package manager** — See `../../../patterns/MANDATORY_RULES.md`.
 3. **Bootstrap state** — Confirm the `datocms` npm package is installed and the active profile has a `siteId` (owned by `cli-bootstrap`). If missing, surface `cli-bootstrap` as an unmet prerequisite and stop.
-4. **WordPress plugin** — Check `package.json` for `@datocms/cli-plugin-wordpress`
+4. **WordPress plugin** — Check `npx datocms plugins --json` for `@datocms/cli-plugin-wordpress` (CLI plugin in the CLI data dir, not `package.json`)
 5. **Environment files** — Check `.env.example`, `.env`, and `.env.local`
 6. **Existing helper** — Check for `scripts/datocms-import-wordpress.mjs`
 7. **Existing scripts** — Check `package.json` for `datocms:import:wordpress`
@@ -62,8 +62,7 @@ Also inspect this bundled asset only when generating files:
 
 Generate only these project changes:
 
-1. **Install missing packages**:
-   - `@datocms/cli-plugin-wordpress` (the `datocms` npm package is installed by `cli-bootstrap`.)
+1. **Install the plugin if missing**: `npx datocms plugins:install @datocms/cli-plugin-wordpress` — not `npm install`; a project dependency never registers `wordpress:import`. (The `datocms` npm package is installed by `cli-bootstrap`.)
 
 2. **Patch `.env.example`** so it includes the WordPress provider credentials only (no DatoCMS token — `wordpress:import` authenticates through the linked default profile):
 
@@ -103,7 +102,7 @@ After generating the files, tell the user:
 
 Before presenting the result, verify:
 
-1. `@datocms/cli-plugin-wordpress` is installed or added
+1. `npx datocms plugins --json` lists `@datocms/cli-plugin-wordpress`
 2. `.env.example` contains the WordPress placeholders and no new `DATOCMS_API_TOKEN` placeholder was added by this recipe
 3. `scripts/datocms-import-wordpress.mjs` exists
 4. `package.json` contains `datocms:import:wordpress`

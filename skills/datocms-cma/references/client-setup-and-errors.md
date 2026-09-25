@@ -141,7 +141,7 @@ try {
 
 ### Error codes
 
-Each error entity carries a top-level `code` (e.g. `INVALID_FIELD`, `INSUFFICIENT_PERMISSIONS`, `MISSING_LOCALES`, `STALE_ITEM_VERSION`) plus an `attributes.details` object that often nests a more specific `details.code` (e.g. `INVALID_FORMAT`, `INVALID_LOCALES`, `VALIDATION_UNIQUENESS`) and the offending `field`. Pass the top-level code as the first argument to `error.findError()` and match nested details with its second filter argument, as in the uniqueness example above. These are part of the HTTP response contract, so prefer branching on them over message strings. Full catalogue with meanings and fixes: <https://www.datocms.com/docs/content-management-api/errors.md>.
+Each error entity carries `attributes.code` (e.g. `INVALID_FIELD`, `INSUFFICIENT_PERMISSIONS`, `MISSING_LOCALES`, `STALE_ITEM_VERSION`) plus an `attributes.details` object that often nests a more specific `details.code` (e.g. `INVALID_FORMAT`, `INVALID_LOCALES`, `VALIDATION_UNIQUENESS`) and the offending `field`. Pass that code as the first argument to `error.findError()` and match nested details with its second filter argument, as in the uniqueness example above. These are part of the HTTP response contract, so prefer branching on them over message strings. Full catalogue with meanings and fixes: <https://www.datocms.com/docs/content-management-api/errors.md>.
 
 ### `TimeoutError`
 

@@ -30,8 +30,6 @@ if (rawArgs.includes('--help')) {
   process.exit(0);
 }
 
-requireEnv('DATOCMS_API_TOKEN');
-
 const jsonApiUrl = process.env.WORDPRESS_JSON_API_URL;
 const wpUrl = process.env.WORDPRESS_URL;
 

@@ -25,7 +25,7 @@ Operational notes:
 - **Timeouts:** 2s connection, 8s execution per delivery. Heavy work must be deferred — return 200 fast, process async.
 - **Auto-retry** (`auto_retry: true`): up to 7 retries — 2 min, 6 min, 30 min, 1 hr, 5 hrs, 1 day, 2 days.
 - **Event lifecycle on draft/published:** create → `create`, publish → `publish`, edit-published → `update`, re-publish → `publish`, unpublish → `unpublish`, delete-published → `unpublish` + `delete`. On models without draft/published: create → `create` + `publish`, update → `update` + `publish`, delete → `unpublish` + `delete`.
-- **Cache-tag invalidation** (`entity_type: "cda_cache_tags"`, `event_types: ["invalidate"]`): does **not** support filters — always fires for all cache tag changes; cannot narrow to specific models/records. Payload carries `entity.attributes.tags: string[]`. For architectural patterns, see `skills/datocms-cda/references/draft-caching-environments.md`.
+- **Cache-tag invalidation** (`entity_type: "cda_cache_tags"`, `event_types: ["invalidate"]`): does **not** support filters — always fires for all cache tag changes; cannot narrow to specific models/records. Payload carries `entity.attributes.tags: string[]`. For architectural patterns, see `../../datocms-cda/references/draft-caching-environments.md`.
 - **Webhook history:** `client.webhookCalls.listPagedIterator({ filter: { webhook_id } })` lists past deliveries; `client.webhookCalls.resendWebhook(callId)` re-delivers failed call.
 
 ## Build triggers (`buildTriggers`)
@@ -35,7 +35,6 @@ CLI lookup: `cma:docs buildTriggers` covers create/update/list/find/destroy, ada
 Operational notes:
 
 - `autotrigger_on_scheduled_publications: true` bridges scheduling and deploys — without it, scheduled publish/unpublish does **not** trigger build.
-- Indexed CMA search requires build trigger with `indexing_enabled: true` configured before `searchResults.list()` returns anything (see "CMA search results" below).
 
 ## Scheduling (`scheduledPublication`, `scheduledUnpublishing`)
 
@@ -45,7 +44,7 @@ Operational notes:
 
 - `publication_scheduled_at` / `unpublishing_scheduled_at` must be ISO 8601 **in the future** — past timestamps rejected.
 - Single record can carry both scheduled publication and scheduled unpublishing simultaneously — time-limited visibility window (publish on Christmas, unpublish on New Year's).
-- Scheduled publication triggers deploy only if relevant build trigger has `autotrigger_on_scheduledPublications: true`.
+- Scheduled publication triggers deploy only if relevant build trigger has `autotrigger_on_scheduled_publications: true`.
 
 ## Workflows (`workflows`)
 
@@ -136,7 +135,7 @@ CLI lookup: `cma:docs auditLogEvents` covers `query` / `rawQuery`, filter parame
 
 Operational notes:
 
-- **Cursor pagination.** Audit log is the **only** resource that does not use offset/limit. `query()` returns single page; for full traversal use `rawQuery()`, feed `result.meta.next_token` back as `page.token` until it stops appearing.
+- **Cursor pagination.** Audit log is the **only** resource that does not use offset/limit. `query()` returns single page, no `meta`; for full traversal use `rawQuery()`, send previous `result.meta.next_token` as `data.attributes.next_token` (no `page` param) until it returns `null`.
 - `rawQuery()` returns raw JSON:API — event data sits under `result.data[].attributes`, not flattened like `query()`.
 - **Action name prefix matters.** Single-record operations log under `items.*` (`items.create`, `items.publish`, `items.destroy`, …). Bulk operations log under `item_bulk_operations.*` (`item_bulk_operations.publish`, `item_bulk_operations.destroy`, …), emit **single event** with all affected record ids in `request.payload.data.relationships.items` — filtering by request path misses them.
 - `detailed_log: true` on `rawQuery` returns full request/response payloads (heavier, useful for forensic debugging).

@@ -80,7 +80,7 @@ Method documentation supplies API shapes; these references supply DatoCMS editin
 | Local generated CMA types | `references/type-generation.md` |
 | Raw methods, advanced client behavior, platform limits | `references/client-types-and-behaviors.md` |
 | Project settings, maintenance mode, subscription limits, usage | `references/project-settings-and-usage.md` |
-| Webhooks/build triggers, scheduling/workflows, menus, plugins, saved filters, upload tracks/tags, audit logs/async jobs/search | Matching section of `references/resource-gotchas.md` |
+| Webhooks/build triggers, scheduling/workflows, menus, plugins, saved filters, upload tracks/tags, audit logs | Matching section of `references/resource-gotchas.md` |
 
 Combine references only when the task spans their subjects: for example, a localized Structured Text edit needs localization and editing guidance. Don't load migration or type-generation guidance merely because a content operation uses a script.
 

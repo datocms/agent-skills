@@ -172,13 +172,17 @@ import ColorPickerModal from './entrypoints/ColorPickerModal';
 import 'datocms-react-ui/styles.css';
 
 connect({
-  itemFormSidebarPanels(itemType) {
+  itemFormSidebarPanels() {
     return [
       { id: 'theme-panel', label: 'Theme Settings', startOpen: true },
     ];
   },
   renderItemFormSidebarPanel(id, ctx) {
-    render(<SidebarPanel ctx={ctx} />);
+    switch (id) {
+      case 'theme-panel':
+        render(<SidebarPanel ctx={ctx} />);
+        break;
+    }
   },
   renderModal(modalId, ctx) {
     switch (modalId) {

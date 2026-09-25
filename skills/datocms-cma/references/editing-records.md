@@ -182,7 +182,7 @@ Every read endpoint returning records accepts `nested: true` (`items.find`, `ite
 | Default mode | Nested mode (`nested: true`) |
 | - | - |
 | Block fields return ID strings | Block fields return full objects with `.attributes` |
-| Max page size 500 | Max page size 30 (iterators auto-adjust → \~16× more page fetches) |
+| Max page size 500 | Max page size 30 (iterators don't lower `perPage` — keep ≤ 30 → \~16× more page fetches) |
 | Counting, listing, "do these exist?" | Any read you intend to mutate or display |
 
 Forgetting `nested: true` is #1 cause of broken update payloads — mapping over array of strings produces garbage. Block fields are the field type that changes shape between these modes. Asset fields retain file-value objects (`upload_id`, alt/title, custom data, focal point, poster time), or `null`; record-link fields retain record IDs. Infer asset snapshot types from the fetched value instead of declaring them as strings.
@@ -243,7 +243,7 @@ Prefer dastdown for text-shaped edits after the unedited round-trip check below.
 
 `isBlockWithItemOfType` / `isInlineBlockWithItemOfType` narrow `node.item` to `BlockInNestedResponse<Schema.X>` automatically — no manual cast, no runtime id check. Work inside `mapNodes`/`findFirstNode` callbacks as long as `currentItem.content` carries schema generic (i.e. you called `client.items.find<Schema.M>`).
 
-Two call styles, same narrowing: curried `isBlockWithItemOfType(ID)` returns predicate (use w/ `findFirstNode` / `findAllNodes` / `Array#filter`); direct `isBlockWithItemOfType(ID, node)` checks node inline (use inside `if`).
+Two call styles, same narrowing: curried `isBlockWithItemOfType(ID)` returns predicate (use w/ `findFirstNode` / `collectNodes` / `Array#filter`); direct `isBlockWithItemOfType(ID, node)` checks node inline (use inside `if`).
 
 Rule: write typed-guard branch ONLY for block/inline-block IDs you actually need to mutate. Everything else — including untouched blocks/inline-blocks — falls through to bare `return node`. Update accepts original nested-response shape unchanged; rewrite to id string (`{ ...node, item: node.item.id }`) is payload-size optimization, never correctness requirement.
 

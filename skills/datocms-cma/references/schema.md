@@ -14,7 +14,7 @@ Many model attributes are **field references**: `title_field`, `image_preview_fi
 
 Skipping step 3 is common mistake when scripting migrations: model created and populated but editor UI lacks title preview / SEO fallbacks because nothing wired.
 
-`itemTypes.reorderFieldsAndFieldsets(modelId, { data: [...] })` is migration-friendly way to control field display order. Each `data` entry is either `{ id, type: "field", position, fieldset: { id, type: "fieldset" } | null }` (`fieldset` slot moves field in/out of fieldset, `null` puts at top level) or `{ id, type: "fieldset", position }`.
+Display order: `fields.update(fieldId, { position, fieldset: { id, type: "fieldset" } | null })` (also on `fields.create`; `fieldset` moves field in/out of fieldset, `null` = top level) and `fieldsets.update(fieldsetId, { position })`. No `itemTypes.reorderFieldsAndFieldsets` (only private, deprecated `rawReorderFieldsAndFieldsets`).
 
 ## Block models: a constrained subset
 
@@ -42,9 +42,9 @@ The names most often confused are `length` (characters on string/text/slug/struc
 
 - **`on_publish_with_unpublished_references_strategy`** — `"fail"` (refuse publish; default) | `"publish_references"` (auto-publish dependencies). Use latter only when model graph genuinely cascades top-down ("Page" publishing should publish embedded "Author").
 - **`on_reference_unpublish_strategy`** — `"fail"` | `"unpublish"` | `"delete_references"`. Behavior when upstream record unpublished while referrer still published. `"delete_references"` removes reference from referrer (`null` for single, dropped from array for multiple).
-- **`on_reference_delete_strategy`** — `"fail"` | `"delete_references"` | `"set_to_null"`. Behavior when upstream record hard-deleted.
+- **`on_reference_delete_strategy`** — `"fail"` | `"delete_references"` (default). On upstream delete: `"fail"` blocks it; `"delete_references"` unlinks referrers (never deletes them; fails if field `required`).
 
-These don't auto-document — pick deliberately. `"fail"` everywhere is safe default for editorial content; `"set_to_null"` / `"delete_references"` make sense only when referrer meant to gracefully degrade.
+Pick deliberately — omitted delete strategy silently unlinks. `"fail"` safe for editorial content; `"delete_references"` when referrer should gracefully degrade.
 
 ## Structured-text: three overlapping validators, three roles
 

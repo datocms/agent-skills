@@ -581,26 +581,11 @@ export default defineConfig({
 
 ### ContentLink Component Setup
 
-Create Astro component that initializes Content Link. Astro uses MPA routing by default, client-side routing via `onNavigateTo` / `setCurrentPath` typically not needed. Use inline `<script>` to initialize controller:
-
-**File:** `src/components/ContentLink.astro`
-
-```astro
-<div id="content-link-init"></div>
-
-<script>
-  import { createController } from '@datocms/content-link';
-
-  const controller = createController();
-  controller.enableClickToEdit();
-</script>
-```
-
-Add to layout, only render when draft mode enabled:
+Use `<ContentLink />` from `@datocms/astro/ContentLink` (props: `astro-content-link.md`) — don't hand-roll `createController()`: bare controller ignores Web Previews Visual-tab navigation requests (no `onNavigateTo`); component wires `onNavigateTo` → `navigate()` plus `setCurrentPath` on `astro:page-load`. Render in layout only when draft mode enabled:
 
 ```astro
 ---
-import ContentLink from '~/components/ContentLink.astro';
+import { ContentLink } from '@datocms/astro/ContentLink';
 import { isDraftModeEnabled } from '~/lib/draftMode';
 
 const draftMode = isDraftModeEnabled(Astro.cookies);
@@ -613,8 +598,6 @@ const draftMode = isDraftModeEnabled(Astro.cookies);
   </body>
 </html>
 ```
-
-**Note:** If using Astro with View Transitions or client-side router (e.g., `@astrojs/react` with React Router), add `onNavigateTo` and `setCurrentPath` routing support similar to Next.js pattern. See `content-link-concepts.md` for `createController()` API details.
 
 ### Structured Text with Content Link
 
@@ -721,7 +704,7 @@ DATOCMS_BASE_EDITING_URL=             # For Content Link, e.g. https://your-proj
 
 ### Content Link Dependencies
 
-- `@datocms/content-link` — For click-to-edit overlays and stega utilities
+- `@datocms/astro` — `<ContentLink />`; `@datocms/content-link` — stega utilities
 
 ## Real-Time Updates (Optional)
 

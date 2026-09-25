@@ -99,7 +99,7 @@ DATOCMS_CLIENT_A_PROFILE_API_TOKEN=...
 DATOCMS_CLIENT_B_PROFILE_API_TOKEN=...
 ```
 
-The token must have CMA access enabled.
+Token needs CMA access. Linked profiles (`siteId`) never read these vars — CI must pass `--api-token`.
 
 ## Daily Workflow
 

@@ -26,7 +26,7 @@ Default is `1` (sequential). Higher values fetch pages in parallel — great for
 
 ### Page size cap with `nested: true`
 
-`perPage` defaults to 30, max 500. **But** when the query includes `nested: true` (Modular Content / Structured Text / Single Block returned as full payloads), the API caps page size at **30**. The iterator handles this transparently — but it means a 5,000-record nested scan does \~167 round-trips instead of 10. Plan timeouts and progress logging accordingly.
+`perPage` defaults to 30, max 500. **But** when the query includes `nested: true` (Modular Content / Structured Text / Single Block returned as full payloads), the API rejects page size > **30** (`INVALID_PARAMS`). The iterator doesn't lower `perPage` — keep default or ≤ 30. A 5,000-record nested scan does \~167 round-trips instead of 10. Plan timeouts and progress logging accordingly.
 
 ### Audit log is the exception
 

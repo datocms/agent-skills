@@ -1,13 +1,20 @@
 import { spawnSync } from 'node:child_process';
 
-function run(args) {
-  const result = spawnSync('npx', ['datocms', ...args], {
+// Linked profiles (siteId) never read token env vars, so CI passes the token as a flag.
+function tokenArgs(profile = process.env.DATOCMS_PROFILE || 'default') {
+  const name = profile === 'default' ? 'DATOCMS_API_TOKEN' : `DATOCMS_${profile.toUpperCase()}_PROFILE_API_TOKEN`;
+  return process.env[name] ? [`--api-token=${process.env[name]}`] : [];
+}
+
+function run(args, profile) {
+  const result = spawnSync('npx', ['datocms', ...args, ...tokenArgs(profile)], {
     stdio: 'inherit',
     shell: process.platform === 'win32',
   });
 
   if (result.status !== 0) {
-    throw new Error(`Command failed: npx datocms ${args.join(' ')}`);
+    // Never echo args: they carry the API token.
+    throw new Error(`Command failed: npx datocms ${args[0]}`);
   }
 }
 
@@ -117,7 +124,7 @@ if (args.dryRun) {
     ...(args.fastFork ? ['--fast-fork'] : []),
     '--dry-run',
     ...args.extraArgs,
-  ]);
+  ], args.profile);
   process.exit(0);
 }
 
@@ -132,7 +139,7 @@ try {
     maintenanceArgs.push('--force');
   }
 
-  run(maintenanceArgs);
+  run(maintenanceArgs, args.profile);
 
   const migrationArgs = [
     'migrations:run',
@@ -153,7 +160,7 @@ try {
 
   migrationArgs.push(...args.extraArgs);
 
-  run(migrationArgs);
+  run(migrationArgs, args.profile);
 
   if (!args.skipPromote) {
     const promoteArgs = ['environments:promote', args.destination];
@@ -162,14 +169,14 @@ try {
       promoteArgs.push(`--profile=${args.profile}`);
     }
 
-    run(promoteArgs);
+    run(promoteArgs, args.profile);
   }
 } finally {
   try {
     run([
       'maintenance:off',
       ...(args.profile ? [`--profile=${args.profile}`] : []),
-    ]);
+    ], args.profile);
   } catch (error) {
     console.error('Failed to disable maintenance mode.');
     console.error(error);

@@ -174,13 +174,12 @@ import type {
 
 Entity exports include `Account`, `Field`, `Item`, `ItemType`, `Plugin`, `Role`, `Site`, `SsoUser`, `Upload`, and `User`. Import `Fieldset` from `@datocms/cma-client` if needed.
 
-Field extension `fieldTypes` values:
+Field extension `fieldTypes`: `'all'` or `FieldType[]` (no `single_block`):
 
 ```ts
-'all' | 'boolean' | 'color' | 'date_time' | 'date' | 'file' | 'float' |
+'boolean' | 'color' | 'date_time' | 'date' | 'file' | 'float' |
 'gallery' | 'integer' | 'json' | 'lat_lon' | 'link' | 'links' |
-'rich_text' | 'seo' | 'single_block' | 'slug' | 'string' |
-'structured_text' | 'text' | 'video'
+'rich_text' | 'seo' | 'slug' | 'string' | 'structured_text' | 'text' | 'video'
 ```
 
 Do not create editor field extensions for modular content, single block, or Structured Text. Use addon extensions for those cases.
