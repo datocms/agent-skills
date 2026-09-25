@@ -115,6 +115,15 @@ Inside a Codex session from this repo, open the plugin picker:
 
 Choose the **DatoCMS Local Plugins** marketplace and install `datocms`. The shipped skills are bundled into the plugin automatically. If the repo marketplace is not visible yet, restart Codex and open `/plugins` again.
 
+To install from GitHub without cloning the repo, add it as a Git marketplace and install the plugin from it:
+
+```bash
+codex plugin marketplace add datocms/agent-skills
+codex plugin add datocms@datocms-local
+```
+
+Codex refreshes Git marketplaces in the background, so installs from GitHub pick up new releases without reinstalling. Run `codex plugin marketplace upgrade datocms-local` to refresh immediately.
+
 ### Updates
 
 The repo marketplace points to the local repo for development. After changing plugin files, restart Codex and reinstall or refresh the local plugin if the cached copy has not updated yet.

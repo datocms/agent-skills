@@ -8,7 +8,7 @@
       "name": "datocms",
       "source": {
         "source": "local",
-        "path": "./plugins/datocms"
+        "path": "./"
       },
       "policy": {
         "installation": "AVAILABLE",
