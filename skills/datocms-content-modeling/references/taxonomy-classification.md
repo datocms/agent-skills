@@ -95,13 +95,13 @@ Design for 10× growth. _"Will this work with 10,000 items and 500 categories?"_
 
 ## Cascade strategies on taxonomy links
 
-Link validators (`item_item_type`, `items_item_type`, `structured_text_links`) carry three cascade-strategy fields governing linked record state changes. For taxonomies these matter because deleting category should **not** silently delete every product in it.
+Link validators (`item_item_type`, `items_item_type`, `structured_text_links`) carry three cascade-strategy fields governing linked record state changes. For taxonomies they decide whether deleting used category is **blocked** or silently unlinked from every product.
 
 | Strategy field | Safe taxonomy default | Why |
 | - | - | - |
 | `on_publish_with_unpublished_references_strategy` | `"fail"` | Don't accidentally publish product whose category still draft |
 | `on_reference_unpublish_strategy` | `"fail"` | Unpublishing category requires explicit handling, not silent breakage |
-| `on_reference_delete_strategy` | `"fail"` or `"set_to_null"` | Almost never `"delete_references"` for taxonomy — would delete the products |
+| `on_reference_delete_strategy` | `"fail"` (set explicitly) | Default `"delete_references"` only unlinks products (fails if field `required`); OK for tags |
 
 Full validator/cascade reference: `../../datocms-cma/references/schema.md`. Configuring on link / links / structured_text_links validators: `field-configuration.md` § Constrain links between records.
 

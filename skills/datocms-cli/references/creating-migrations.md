@@ -37,7 +37,7 @@ For JavaScript, use `module.exports = async (client) => {}`. The supplied client
 
 Run `npx datocms migrations:new --help` for all available flags.
 
-> **Precondition:** any mode that inspects the live DatoCMS project (especially `--autogenerate`) needs a CMA-enabled token via a linked project (`datocms link`), `--api-token` flag, or environment variable.
+> **Precondition:** every `migrations:new` (plain scaffolding too) needs a resolvable CMA token via a linked project (`datocms link`), `--api-token` flag, or environment variable.
 
 ## Format Detection
 

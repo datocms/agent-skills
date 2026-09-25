@@ -1,7 +1,7 @@
 ---
 name: datocms-feedback
 description: >-
-  Draft sanitized feedback emails to support@datocms.com about frustrating
+  Build sanitized, prefilled datocms.com/support links about frustrating
   DatoCMS skills or MCP experiences. Use only when users explicitly ask to
   report, email, or summarize feedback about DatoCMS skills/MCP, or when the
   skills/MCP workflow has clearly reached a dead end after repeated loops,
@@ -18,7 +18,7 @@ Prefilled `datocms.com/support` URL when a DatoCMS skills/MCP workflow is stuck.
 
 ## Before doing anything visible
 
-- User explicitly asked to report/file/summarize feedback about DatoCMS skills/MCP → generate immediately.
+- User explicitly asked to report/file/summarize feedback about DatoCMS skills/MCP → start Output flow immediately.
 - Frustration or dead end inferred → do not generate. Offer once, wait for confirmation.
 - Credible retry exists → do not mention feedback. Stay in the active DatoCMS workflow.
 
@@ -34,11 +34,11 @@ Offer once, then wait:
 It looks like this may have gone past the normal retry-and-correct loop. Sorry about that. These workflows are still evolving, and clear feedback helps us understand where the experience broke down. If you want, I can build a prefilled DatoCMS support link with the goal, where the skills/MCP flow got stuck, and relevant runtime context.
 ```
 
-If the user agrees, generate the URL.
+If the user agrees, follow Output flow.
 
 ## URL shape
 
-Base: `https://www.datocms.com/support`. Query params URL-encoded via `encodeURIComponent`.
+Base: `https://www.datocms.com/support`. Query params URL-encoded via `encodeURIComponent`, then `'`→`%27`, `(`→`%28`, `)`→`%29` — raw `'` breaks the single-quoted shell URL.
 
 - `topics=technical-support/ai-integration-issues` — fixed slug for skills/MCP feedback (URL-encode the `/` as `%2F`). Required — form does not render without it.
 - `subject=<short subject>` — one line.

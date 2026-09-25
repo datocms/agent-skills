@@ -27,7 +27,7 @@ const nested  = await client.items.find<Schema.BlogPost>("id", { nested: true })
 Two consequences:
 
 - Without `nested: true`, you only have block ids — must re-fetch parent with nested to read contents.
-- With `nested: true`, iterator max page size drops from 500 to 30 (see `references/filtering-and-pagination.md`). Plan for round-trip cost on large scans.
+- With `nested: true`, API max page size drops from 500 to 30; iterator won't lower `perPage` for you (see `references/filtering-and-pagination.md`). Plan for round-trip cost on large scans.
 
 For ordinary `find`, `list`, and paged reads, `version: "current"` (the default) returns the latest edits, including drafts; `version: "published"` reads the published versions. Use `current` when inspecting preview content. A record with unpublished edits can have different current and published values.
 
@@ -147,7 +147,7 @@ Rules that bite:
 
 ## Typed records via generated `Schema.X`
 
-Every method that returns or accepts a record (`find`, `list`, `create`, `update`, `publish`, etc.) takes a generic `Shape.X`. Pass a generated `Schema.BlogPost` marker and TypeScript knows the per-field shape — `record.title` is `string`, `record.cover_image` is the file shape, etc. — instead of `unknown`.
+Every method that returns or accepts a record (`find`, `list`, `create`, `update`, `publish`, etc.) takes a generic `Schema.X`. Pass a generated `Schema.BlogPost` marker and TypeScript knows the per-field shape — `record.title` is `string | null`, `record.cover_image` is the file shape, etc. — instead of `unknown`.
 
 ```ts
 const post = await client.items.find<Schema.BlogPost>(id);          // blocks as ID strings

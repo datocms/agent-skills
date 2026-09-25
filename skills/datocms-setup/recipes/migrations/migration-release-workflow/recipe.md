@@ -73,6 +73,7 @@ The local helper script must:
 5. Run `environments:promote <env>` unless `--skip-promote` is set
 6. In `--dry-run` mode, run only `migrations:run --dry-run` and skip maintenance mode plus promotion
 7. Always run `maintenance:off`, even after failures in the non-dry-run path
+8. Append `--api-token` from the profile's token env var when set (linked profiles never read it) and never echo CLI args in errors
 
 ### Mandatory rules
 

@@ -24,7 +24,11 @@ connect({
     return [{ id: 'seo-score', name: 'SEO score', type: 'addon', fieldTypes: ['text'] }];
   },
   renderFieldExtension(fieldExtensionId, ctx) {
-    render(<FieldExtension ctx={ctx} />);
+    switch (fieldExtensionId) {
+      case 'seo-score':
+        render(<FieldExtension ctx={ctx} />);
+        break;
+    }
   },
 });
 ```

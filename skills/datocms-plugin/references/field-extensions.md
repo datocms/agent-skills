@@ -486,19 +486,27 @@ connect({
   },
 
   renderManualFieldExtensionConfigScreen(id, ctx) {
-    render(<FieldExtensionConfig ctx={ctx} />);
+    switch (id) {
+      case 'constrained-input':
+        render(<FieldExtensionConfig ctx={ctx} />);
+        break;
+    }
   },
 
   validateManualFieldExtensionParameters(id, parameters) {
     const errors: Record<string, string> = {};
-    if (!parameters.maxLength) {
+    if (id === 'constrained-input' && !parameters.maxLength) {
       errors.maxLength = 'Max length is required';
     }
     return errors;
   },
 
   renderFieldExtension(id, ctx) {
-    render(<ConstrainedInput ctx={ctx} />);
+    switch (id) {
+      case 'constrained-input':
+        render(<ConstrainedInput ctx={ctx} />);
+        break;
+    }
   },
 });
 ```

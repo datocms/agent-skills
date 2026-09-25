@@ -80,7 +80,7 @@ initialLocationQueryForItemSelector(
 
 ```ts
 connect({
-  initialLocationQueryForItemSelector(openerField, itemType) {
+  initialLocationQueryForItemSelector(_openerField, itemType) {
     if (itemType.attributes.api_key === 'product') {
       return {
         locationQuery: {

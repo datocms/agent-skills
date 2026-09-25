@@ -41,6 +41,7 @@ Runs migration scripts that have not been executed yet.
 | `--source=<env>` | string | Environment to fork from (defaults to primary) |
 | `--destination=<env>` | string | Name for the new forked environment (exclusive with `--in-place`) |
 | `--in-place` | boolean | Run in the source environment without forking (exclusive with `--destination`) |
+| `--allow-primary` | boolean | Required for `--in-place` on primary (requires `--in-place`); additive-only, no rollback |
 | `--dry-run` | boolean | Simulate execution without making actual changes |
 | `--fast-fork` | boolean | Use fast fork (prevents writes to source during fork) |
 | `--force` | boolean | Force fast fork even with active editing sessions (requires `--fast-fork`) |
@@ -72,8 +73,8 @@ This is the safest approach: if migrations fail, the source environment is untou
 Run migrations directly on an environment without forking:
 
 ```bash
-# Run on primary environment (use with caution)
-npx datocms migrations:run --in-place
+# Primary: only after explicit user confirmation
+npx datocms migrations:run --in-place --allow-primary
 
 # Run on a specific sandbox
 npx datocms migrations:run --source=staging --in-place
@@ -139,11 +140,11 @@ New projects should always use the standard migrations directory.
 
 ## Return Value
 
-The command returns the environment ID where migrations ran and the list of executed migration scripts:
+The command returns the environment ID where migrations ran and absolute paths of executed scripts:
 
 ```json
 {
   "environmentId": "release-v2",
-  "runMigrationScripts": ["1709312400_addBlogModel.ts", "1709312500_seedContent.ts"]
+  "runMigrationScripts": ["/app/migrations/1709312400_addBlogModel.ts", "/app/migrations/1709312500_seedContent.ts"]
 }
 ```

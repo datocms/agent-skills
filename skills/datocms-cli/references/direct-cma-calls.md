@@ -211,7 +211,7 @@ npx datocms cma:call items create --data '{item_type: {type: "item_type", id: "b
 
 ## Core Patterns by Example
 
-Four patterns cover most `cma:call` usage. Resources/fields change, shapes consistent across all 44.
+Four patterns cover most `cma:call` usage. Resources/fields vary; shapes consistent across resources.
 
 ### Pattern 1: List + filter + paginate (read-only)
 
@@ -272,7 +272,7 @@ Bulk payloads use relationship arrays: `{items: [{type: "item", id: "..."}]}`.
 
 ## Commonly Used Resources
 
-44 resources available. Run `npx datocms cma:call --help` for current list. Most frequent:
+Run `npx datocms cma:call --help` for current list. Most frequent:
 
 | Resource | Key methods | Path args |
 | - | - | - |
@@ -289,7 +289,7 @@ Bulk payloads use relationship arrays: `{items: [{type: "item", id: "..."}]}`.
 | `environments` | list, find, fork, promote, rename, destroy | environmentId |
 | `site` | find, update | (none) |
 | `maintenanceMode` | find, activate, deactivate | (none) |
-| `scheduledPublications` | create, destroy | itemId |
+| `scheduledPublication` | create, destroy | itemId |
 | `workflows` | list, find, create, update, destroy | workflowId |
 | `uploadTracks` | list, create, destroy, generateSubtitles | uploadId + uploadTrackId |
 

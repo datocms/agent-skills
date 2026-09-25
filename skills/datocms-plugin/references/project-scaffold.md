@@ -300,7 +300,11 @@ connect({
     ];
   },
   renderFieldExtension(id, ctx) {
-    render(<FieldExtension ctx={ctx} />);
+    switch (id) {
+      case 'my-extension':
+        render(<FieldExtension ctx={ctx} />);
+        break;
+    }
   },
 });
 ```
@@ -317,7 +321,11 @@ import 'datocms-react-ui/styles.css';
 connect({
   manualFieldExtensions() { /* ... */ },
   renderFieldExtension(id, ctx) {
-    render(<FieldExtension ctx={ctx} />);
+    switch (id) {
+      case 'my-extension':
+        render(<FieldExtension ctx={ctx} />);
+        break;
+    }
   },
   renderConfigScreen(ctx) {
     render(<ConfigScreen ctx={ctx} />);
@@ -342,11 +350,15 @@ connect({
     return [{ label: 'My Page', icon: 'cog', pointsTo: { pageId: 'main' } }];
   },
   renderPage(pageId, ctx) {
-    render(
-      <Suspense fallback={<Spinner size={60} placement="centered" />}>
-        <LazyPage ctx={ctx} />
-      </Suspense>,
-    );
+    switch (pageId) {
+      case 'main':
+        render(
+          <Suspense fallback={<Spinner size={60} placement="centered" />}>
+            <LazyPage ctx={ctx} />
+          </Suspense>,
+        );
+        break;
+    }
   },
   renderConfigScreen(ctx) {
     render(

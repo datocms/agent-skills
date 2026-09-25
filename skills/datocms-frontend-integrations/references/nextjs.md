@@ -250,7 +250,7 @@ type ExecuteQueryOptions<Variables> = {
 };
 ```
 
-Uses Next.js `force-cache` with tag-based invalidation. Switches between published/draft tokens based on `includeDrafts`.
+`force-cache` holds published responses until `cacheTag` is revalidated; Core alone never does (Vercel Data Cache survives deploys). New wrapper: add bearer-`SECRET_API_TOKEN` POST route (e.g. `src/app/api/invalidate-cache/route.ts`) calling `revalidateTag(cacheTag, { expire: 0 })`, hit by a DatoCMS webhook (`cda_cache_tags` → `invalidate`, `Authorization: Bearer` header) — Cache Tags handler minus DB lookup. Patching: keep existing cache policy. `includeDrafts` picks draft/published token.
 
 ### Core Environment Variables
 
@@ -763,7 +763,7 @@ A production build does not exercise server-side CDA requests. Start the built a
 
 ## Cache Tags (Optional)
 
-Granular per-record cache invalidation using DatoCMS cache tags. Replaces Core's simple `cacheTag = 'datocms'` approach (revalidates **all** DatoCMS content) with targeted invalidation.
+Granular per-record cache invalidation using DatoCMS cache tags. Replaces Core's single `cacheTag = 'datocms'` (webhook revalidates **all** DatoCMS content) with targeted invalidation.
 
 ### When to Use
 

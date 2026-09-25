@@ -74,7 +74,7 @@ Generate only these project changes:
 
 4. **Patch `package.json`** with `datocms:sync:projects`
 
-5. **Optional GitHub Actions workflow** — If the user opted in, copy and adapt `assets/datocms-sync.github-actions.yml` to `.github/workflows/datocms-sync-projects.yml`
+5. **Optional GitHub Actions workflow** — If the user opted in, copy and adapt `assets/datocms-sync.github-actions.yml` to `.github/workflows/datocms-sync-projects.yml`, mapping one `DATOCMS_<PROFILE>_PROFILE_API_TOKEN` secret per destination profile
 
 ### Mandatory rules
 

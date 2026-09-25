@@ -55,7 +55,7 @@ Use stdin-mode when:
 
 ### file-mode — default-export async function in `.ts` file
 
-Same throwaway scenario as stdin-mode, but script lives in file because heredoc would be too fragile or too long. File runs in **your** TypeScript context: CLI does not spawn workspace, does not run `tsc --noEmit`, does not inject ambient globals. Validation comes from your editor's LSP (using your own `tsconfig.json`) in real time, or from explicit `tsc --noEmit` you run yourself — both sit in same TS project as script, so they see same imports and types that will resolve at runtime.
+Same throwaway scenario as stdin-mode, but script lives in file because heredoc would be too fragile or too long. File runs in **your** TypeScript context: no workspace, no CLI `tsc --noEmit`, no ambient globals. CLI structural checks (see Type Safety) still apply; type errors surface via your editor's LSP or explicit `tsc --noEmit` against your own `tsconfig.json` — same imports and types that resolve at runtime.
 
 ```ts
 // tmp/scripts/publish-drafts.ts
@@ -94,7 +94,7 @@ Use file-mode when:
 
 ## Type Safety
 
-**stdin-mode** scripts type-checked with `tsc --noEmit` inside CLI workspace **before execution**. `any` and `unknown` rejected — use `Schema.*` types for record operations:
+**Both modes** (unless `--skip-validation`) reject explicit `any`/`unknown` (incl. `catch (e: unknown)`), `as never`, and `@ts-ignore`/`@ts-expect-error`/`@ts-nocheck` before execution. **stdin-mode** also type-checks with `tsc --noEmit` inside CLI workspace. Use `Schema.*` types for record operations:
 
 CLI 4.2.0's stdin workspace targets ES2020. Use array indexing rather than newer APIs such as `.at()`; the host Node version does not determine the validation library.
 
@@ -108,7 +108,7 @@ await client.items.create<Schema.Article>({
 - `--skip-validation` is only for a confirmed workspace validation defect. Never bypass script type errors: fix field names, `Schema.X` generics, and guards first.
 - `--rebuild-workspace` wipes and rebuilds internal workspace (`node_modules`, `tsconfig`). Use after CLI upgrade if stdin-mode scripts start failing with module resolution errors.
 
-**file-mode** does not run CLI-side typecheck. Type safety comes from your own project: your editor's LSP continuously against your `tsconfig.json`, or explicit `tsc --noEmit` you invoke yourself. This matches how `migrations:run` loads single file — no CLI-side typecheck there either. Malformed `Schema.Article` or missing field will surface in editor before you run script, or at runtime if you skip validation entirely.
+**file-mode** runs no CLI `tsc` (like `migrations:run`); structural checks above still apply. Malformed `Schema.Article` or missing field surfaces in your editor's LSP or own `tsc --noEmit`, else at runtime.
 
 ## Ambient globals (stdin-mode only)
 

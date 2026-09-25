@@ -224,9 +224,9 @@ Use `DATOCMS_PROFILE` when multiple commands in same shell should share same non
 
 Once active profile known, CLI resolves API token in this order:
 
-1. **`--api-token` flag** — passed directly on command line
-2. **Linked project** — if profile has `siteId` (set by `link`), CLI uses OAuth credentials to fetch project's API token via Dashboard API. Requires prior `datocms login`.
-3. **Environment variable for active profile** — uses `apiTokenEnvName` from profile config, or falls back to default naming:
+1. **`--api-token` flag** — passed directly on command line (no env binding)
+2. **Linked project** — if profile has `siteId` (set by `link`), CLI uses OAuth credentials to fetch project's API token via Dashboard API. Requires prior `datocms login`; no OAuth session (e.g. CI) → hard error, step 3 never checked — pass `--api-token`.
+3. **Environment variable for active profile** (unlinked profiles only) — uses `apiTokenEnvName` from profile config, or falls back to default naming:
    - default profile: `DATOCMS_API_TOKEN`
    - named profile `client_a`: `DATOCMS_CLIENT_A_PROFILE_API_TOKEN`
 

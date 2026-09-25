@@ -20,12 +20,12 @@ CMA upload surface looks large because same operation has different ergonomics p
 | Runtime | What you have | Use |
 | - | - | - |
 | Node.js (`@datocms/cma-client-node`) | Local path or HTTP URL | `createFromLocalFile({ localPath })` / `createFromUrl({ url })` |
-| Browser (`@datocms/cma-client-browser`) | `File` or `Blob` | `createFromFileOrBlob({ file })` |
+| Browser (`@datocms/cma-client-browser`) | `File` or `Blob` | `createFromFileOrBlob({ fileOrBlob })` |
 | Edge / no convenience | Anything | 3-step raw flow (below) |
 
 _FromLocalFile / FromUrl / FromFileOrBlob_ helpers do all three steps in one call (request signed URL, PUT to S3, create upload record). Use by default; fall back to raw flow when runtime's helper unavailable.
 
-`updateFromLocalFile(id, { localPath })` / `updateFromUrl(id, { url })` / `updateFromFileOrBlob(id, { file })` replace underlying file of existing upload while keeping id and metadata — useful for in-place asset rotation. Replacement generates a new URL by default; preserving the ID does not preserve the URL.
+`updateFromLocalFile(id, { localPath })` / `updateFromUrl(id, { url })` / `updateFromFileOrBlob(id, { fileOrBlob })` replace underlying file of existing upload while keeping id and metadata — useful for in-place asset rotation. Replacement generates a new URL by default; preserving the ID does not preserve the URL.
 
 ## Replace a file while keeping its URL
 
@@ -63,7 +63,7 @@ Step 2 must succeed before step 3, and step 3 references path (`id` from step 1,
 
 `createFromLocalFile` / `createFromUrl` / `createFromFileOrBlob` schemas extend base `UploadCreateSchema` with three properties that don't exist in raw `uploads.create`:
 
-- **`skipCreationIfAlreadyExists: true`** — computes file's MD5 and, if upload with that hash already exists in project, returns existing one instead of creating duplicate. Hashing is content-based, so renames and metadata changes don't defeat dedup. Essential when migration scripts may re-run.
+- **`skipCreationIfAlreadyExists: true`** (Node `createFromLocalFile` / `createFromUrl` only) — computes file's MD5 and, if upload with that hash already exists in project, returns existing one instead of creating duplicate. Hashing is content-based, so renames and metadata changes don't defeat dedup. Essential when migration scripts may re-run.
 - **`onProgress(info)`** — receives tagged-union event stream during upload. Sequence (skipping fields specific to `createFromUrl`):
   - `REQUESTING_UPLOAD_URL` (one-shot): fetching signed URL.
   - `DOWNLOADING_FILE` (only `createFromUrl`, repeated with `progress` 0–100): downloading source URL locally before pushing to S3.
