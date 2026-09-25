@@ -119,7 +119,7 @@ const preservedWorkflows = {
   ],
 };
 
-function withReviewedDastdownPreflight(source) {
+function withReviewedEditingCorrections(source) {
   const corrections = [
     ["Marks: `'strong' | 'emphasis' | 'code' | 'underline' | 'strikethrough' | 'highlight'`.", "Default marks include `strong`, `emphasis`, `code`, `underline`, `strikethrough`, and `highlight`. Custom marks are possible: preserve the fetched `string[]` instead of narrowing snapshots to a union of defaults."],
     [
@@ -138,13 +138,20 @@ function withReviewedDastdownPreflight(source) {
       '  const text = serialize(currentItem.content);\n  const edited',
       '  const text = serialize(currentItem.content);\n  const unedited = parse(text, currentItem.content);\n  const originalText = reduceNodes(currentItem.content, (text, node) => text + (isSpan(node) ? node.value : ""), "");\n  const roundTripText = reduceNodes(unedited, (text, node) => text + (isSpan(node) ? node.value : ""), "");\n  if (originalText !== roundTripText) {\n    throw new Error("Dastdown changes existing text; use mapNodes on the original document.");\n  }\n  const edited',
     ],
+    // #41 API corrections: the paged iterator never lowers perPage (nested reads above 30
+    // are rejected), and datocms-structured-text-utils exports collectNodes, not findAllNodes.
+    [
+      '| Max page size 500 | Max page size 30 (iterators auto-adjust → \\~16× more page fetches) |',
+      "| Max page size 500 | Max page size 30 (iterators don't lower `perPage` — keep ≤ 30 → \\~16× more page fetches) |",
+    ],
+    ['(use w/ `findFirstNode` / `findAllNodes` / `Array#filter`)', '(use w/ `findFirstNode` / `collectNodes` / `Array#filter`)'],
     [
       'Creating brand new structured text content,',
       'Dastdown 6.0.0 changes newlines inside code-marked spans into literal `<br/>` text. This pre-write check catches that while tolerating span merging and mark normalization; it supplements the structure, marks, links, and reference checks, not the saved-content verification. If it fails, transform the original AST instead. Omit the imports when the selected runtime already supplies these helpers.\n\nCreating brand new structured text content,',
     ],
   ];
   for (const [before, after] of corrections) {
-    assert.equal(source.split(before).length, 2, 'apply each reviewed Dastdown correction exactly once');
+    assert.equal(source.split(before).length, 2, 'apply each reviewed correction exactly once');
     source = source.replace(before, after);
   }
   return source;
@@ -174,7 +181,7 @@ for (const [name, workflows] of Object.entries(preservedWorkflows)) {
   const source = readFileSync(path, 'utf8');
   const baseline = execFileSync('git', ['show', `${retentionBase}:${path}`], { encoding: 'utf8' });
   const previous = markdown.parse(name === 'editing-records'
-    ? withReviewedDastdownPreflight(baseline)
+    ? withReviewedEditingCorrections(baseline)
     : withReviewedRestoreGuidance(baseline));
 
   test(`${name}: exact MCP filter preserves the full Markdown structure and shared content`, () => {
