@@ -1,6 +1,6 @@
 # Evals
 
-For native `gpt-6-luna` medium task execution, live CMS verification, and built-application checks, see [the end-to-end suite](../e2e/README.md). Trigger classification below is a separate signal and does not count as end-to-end task success.
+For native `gpt-6-luna` medium task execution, live CMS verification, and built-application checks, see [the end-to-end suite](../dev/e2e/README.md). Trigger classification below is a separate signal and does not count as end-to-end task success.
 
 This directory holds the evaluation framework for the skills shipped in this repo. Its single purpose is to **measure whether the skills are effective at being invoked on the right kind of prompt** — both correctly (precision) and reliably (recall).
 

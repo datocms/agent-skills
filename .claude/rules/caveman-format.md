@@ -6,7 +6,7 @@ paths:
 
 # Caveman Format
 
-All prose in `skills/*/SKILL.md` and `skills/*/references/*.md` must be **caveman** — terse, dense, token-efficient. `scripts/caveman.ts` re-compresses these files; write caveman from the start so re-compression is a no-op.
+All prose in `skills/*/SKILL.md` and `skills/*/references/*.md` must be **caveman** — terse, dense, token-efficient. `dev/scripts/caveman.ts` re-compresses these files; write caveman from the start so re-compression is a no-op.
 
 ## What caveman is
 

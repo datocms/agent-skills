@@ -17,6 +17,7 @@ DatoCMS skills repository — public skills that provide focused guidance for co
 - `skills/datocms-setup/` — special orchestrator skill that routes to 25 internal recipes via `references/recipe-manifest.json`
 - `evals/` — trigger evaluation framework (Python scripts, JSON fixtures, result snapshots)
 - `docs/` — longer reference material
+- `dev/` — Node dev tooling (e2e and regression harness, coexistence evaluator, offline tests, formatting, release scripts) with its own `package.json`; install with `npm ci --prefix dev`. Never put a `package.json` plus lockfile at the repo root: plugin installs would install them for every user
 - `local/` — local-only scratch (gitignored)
 
 ## Key Commands
