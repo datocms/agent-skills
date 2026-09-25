@@ -91,7 +91,7 @@ export default function RootLayout({ children }) {
 
 ```jsx
 import { ContentLink as DatoContentLink } from 'react-datocms/content-link';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router'; // v6 apps with only react-router-dom: import from there
 
 export function ContentLink() {
   const navigate = useNavigate();

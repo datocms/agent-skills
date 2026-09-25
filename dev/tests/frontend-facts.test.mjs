@@ -32,6 +32,16 @@ globalThis.fetch = async (input) => {
   return new Response('{}', { status: 404 });
 };`;
 
+function generate(project, target) {
+  const home = join(project, '.home');
+  mkdirSync(home, { recursive: true });
+  writeFileSync(join(project, 'mock.cjs'), MOCK);
+  return spawnSync(process.execPath, ['-r', join(project, 'mock.cjs'), join(dev, 'node_modules/datocms/bin/run'), 'schema:generate', target], {
+    cwd: project, encoding: 'utf8', timeout: 60000,
+    env: { PATH: process.env.PATH, HOME: home, XDG_CONFIG_HOME: join(home, 'c'), XDG_DATA_HOME: join(home, 'd'), XDG_CACHE_HOME: join(home, 'k'), NO_COLOR: '1', DATOCMS_SKIP_NEW_VERSION_CHECK: 'true', DATOCMS_API_TOKEN: 'test-token' },
+  });
+}
+
 // frontend-10: the recordToWebsiteRoute snippets import a generated `cma-types` module. The
 // documented command must run on the real datocms CLI (dev/node_modules/datocms,
 // lib/commands/schema/generate.js: `schema:generate FILENAME`) and emit the module the
@@ -46,14 +56,8 @@ test('web previews document the cma-types generation command, and it produces th
   }
 
   const project = mkdtempSync(join(tmpdir(), 'cma-types-'));
-  const home = join(project, '.home');
-  mkdirSync(home);
   mkdirSync(dirname(join(project, command[2])), { recursive: true }); // the CLI does not create parent dirs; recordInfo.ts lives there
-  writeFileSync(join(project, 'mock.cjs'), MOCK);
-  const cli = spawnSync(process.execPath, ['-r', join(project, 'mock.cjs'), join(dev, 'node_modules/datocms/bin/run'), command[1], command[2]], {
-    cwd: project, encoding: 'utf8', timeout: 60000,
-    env: { PATH: process.env.PATH, HOME: home, XDG_CONFIG_HOME: join(home, 'c'), XDG_DATA_HOME: join(home, 'd'), XDG_CACHE_HOME: join(home, 'k'), NO_COLOR: '1', DATOCMS_SKIP_NEW_VERSION_CHECK: 'true', DATOCMS_API_TOKEN: 'test-token' },
-  });
+  const cli = generate(project, command[2]);
   assert.equal(cli.status, 0, cli.stdout + cli.stderr);
   const generated = join(project, command[2]);
   assert.ok(existsSync(generated), `command did not write ${command[2]}`);
@@ -71,6 +75,18 @@ test('web previews document the cma-types generation command, and it produces th
   });
   const errors = ts.getPreEmitDiagnostics(program).map((d) => ts.flattenDiagnosticMessageText(d.messageText, '\n'));
   assert.deepEqual(errors, []);
+});
+
+// datocms 4.2.0 lib/commands/schema/generate.js writes with writeFileSync and never creates the
+// parent directory, so a fresh project fails with ENOENT. The CLI reference and the cma-types
+// recipe (which runs the command) must say to create it first.
+test('schema:generate needs an existing output directory, and the docs say so', () => {
+  const project = mkdtempSync(join(tmpdir(), 'cma-types-missing-'));
+  const cli = generate(project, 'src/lib/datocms/cma-types.ts');
+  assert.notEqual(cli.status, 0);
+  assert.match(cli.stdout + cli.stderr, /ENOENT/);
+  const docs = [join(repoRoot, 'skills/datocms-cli/references/schema-generate.md'), join(repoRoot, 'skills/datocms-setup/recipes/platform/cma-types/recipe.md')];
+  for (const path of docs) assert.match(readFileSync(path, 'utf8'), /(creat\w* (the )?(output )?(directory|folders)|mkdir -p)[^\n]*|directory must exist/i, path);
 });
 
 // frontend-8: next@15.5.26 dist/server/web/spec-extension/revalidate.d.ts declares
@@ -101,6 +117,9 @@ test('Remix / React Router guidance uses live packages and detects framework mod
   assert.doesNotMatch(seo, /from ['"]remix['"]/);
   assert.match(seo, /import type \{ MetaFunction \} from '@remix-run\/node';/);
   assert.match(seo, /`loaderData`/);
+  // react-router 7.18.4 and 8.4.0 export useNavigate/useLocation; react-router-dom stops at 7.x
+  // (a re-export of react-router), so v8 apps don't have it installed.
+  assert.match(read('references/react-content-link.md'), /import \{ useNavigate, useLocation \} from 'react-router';[^\n]*react-router-dom/);
   const main = read('SKILL.md');
   assert.match(main.split('\n').find((l) => l.includes('**Framework**')), /`@react-router\/dev`/);
   for (const [, path] of main.matchAll(/`(references\/[\w-]+\.md)`/g)) assert.ok(existsSync(join(skill, path)), path);

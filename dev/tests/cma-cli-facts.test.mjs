@@ -54,3 +54,21 @@ test('CMA route selection keeps the CLI config readable and honors a requested r
   assert.ok(!cma.includes('scan client configuration'), 'unscoped configuration ban is back');
   assert.ok(cma.includes('Apply this stop condition before the normal route rules below, unless the user asks for the CLI or current MCP instead.'), 'stop rule must yield to a requested route');
 });
+
+// Native DAST nodes are an editor setting: @datocms/cma-client fieldTypes/appearance/structured_text.d.ts
+// `nodes?: Array<...>` (default: all). Enabling one means extending the current list.
+test('schema reference enables native structured text nodes through editor appearance', () => {
+  const nodes = [...installed('@datocms/cma-client/dist/types/fieldTypes/appearance/structured_text.d.ts').match(/nodes\?: Array<([^>]+)>/)[1].matchAll(/'(\w+)'/g)].map((m) => m[1]).sort();
+  const line = skill('datocms-cma/references/schema.md').split('\n').find((l) => l.includes('appearance.parameters.nodes'));
+  assert.ok(line, 'schema.md never names appearance.parameters.nodes');
+  assert.deepEqual([...line.split(' and marks')[0].matchAll(/`(\w+)`/g)].map((m) => m[1]).sort(), nodes);
+  assert.match(line, /current list plus/);
+});
+
+// datocms/api app/models/item_type.rb `avoid_ordering_without_direction`: ordering_field or
+// ordering_meta without ordering_direction (or the reverse) is invalid, and the error is added to
+// ordering_meta / ordering_field. The SDK type allows null, so nothing else warns agents.
+test('schema reference requires ordering_direction with automatic ordering', () => {
+  assert.match(installed('@datocms/cma-client/dist/types/generated/ApiTypes.d.ts'), /ordering_direction\?: null \| 'asc' \| 'desc'/);
+  assert.match(skill('datocms-cma/references/schema.md'), /`ordering_field` or `ordering_meta` requires `ordering_direction`[^\n]*reports the error on the ordering attribute/);
+});

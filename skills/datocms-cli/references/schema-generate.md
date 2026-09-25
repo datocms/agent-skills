@@ -16,6 +16,8 @@ Confirm these inputs when they are not already clear:
 npx datocms schema:generate src/lib/datocms/cma-types.ts
 ```
 
+Parent directory must exist — CLI writes the file without creating folders (`ENOENT` otherwise; `mkdir -p` first).
+
 ## Useful flags
 
 - `--environment <name>` — Generate the file from a sandbox or staging environment instead of the primary environment
