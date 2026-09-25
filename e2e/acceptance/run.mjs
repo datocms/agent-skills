@@ -3,14 +3,14 @@ import { execFileSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync, symlinkSync } from 'node:fs';
 import { resolve, join, dirname } from 'node:path';
 import { parseArgs } from 'node:util';
-import { nativeSession, sourceHashes, MODEL, EFFORT } from '../lib/nativeSession.ts';
+import { nativeSession, sourceHashes, MODEL, COMPARISON_MODEL, EFFORT } from '../lib/nativeSession.ts';
 import { cases } from './cases.mjs';
 import { checkCli, checkLinks, checkDocument, checkCounter, checkNotice, productionBuild } from './checks.mjs';
 
 const root = resolve(import.meta.dirname, '../..');
 const { values } = parseArgs({ options: { 'skills-root': { type: 'string' }, fixtures: { type: 'string' }, dependencies: { type: 'string' }, output: { type: 'string' }, cases: { type: 'string', default: cases.map(c => c.id).join(',') }, recheck: { type: 'string' }, model: { type: 'string', default: MODEL } } });
 if (!values['skills-root'] || !values.fixtures || !values.output) throw Error('Specify --skills-root, --fixtures and a fresh --output');
-if (![MODEL, 'gpt-5.6-sol'].includes(values.model)) throw Error('Choose gpt-5.6-luna or gpt-5.6-sol');
+if (![MODEL, COMPARISON_MODEL].includes(values.model)) throw Error(`Choose ${MODEL} or ${COMPARISON_MODEL}`);
 const output = resolve(values.output), fixtures = resolve(values.fixtures);
 if (existsSync(output)) throw Error('Preserve evidence: choose a fresh output');
 mkdirSync(output, { recursive: true });

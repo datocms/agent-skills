@@ -4,7 +4,7 @@ import { join, resolve } from "node:path";
 import { createServer } from "node:net";
 import { parseArgs } from "node:util";
 import assert from "node:assert/strict";
-import { nativeSession } from "../lib/nativeSession.ts";
+import { nativeSession, MODEL, EFFORT } from "../lib/nativeSession.ts";
 import { specifications } from "./specifications.mjs";
 
 const root = resolve(import.meta.dirname, "../..");
@@ -286,8 +286,8 @@ suite: for (let repetition = 1; repetition <= repetitions; repetition++)
     const result = {
       case: `preview-${framework}`,
       repetition,
-      model: "gpt-5.6-luna",
-      reasoningEffort: "medium",
+      model: MODEL,
+      reasoningEffort: EFFORT,
       passed: false,
     };
     try {
@@ -362,8 +362,8 @@ suite: for (let repetition = 1; repetition <= repetitions; repetition++)
             !original.capped,
           "Original native session did not complete",
         );
-        assert.equal(original.model, "gpt-5.6-luna");
-        assert.equal(original.reasoningEffort, "medium");
+        assert.equal(original.model, MODEL);
+        assert.equal(original.reasoningEffort, EFFORT);
         result.recheckedFrom = resolve(values.recheck);
       }
       command(["npm", "run", "build"], workspace, join(directory, "build.log"));

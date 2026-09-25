@@ -16,7 +16,8 @@ import {
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 
-export const MODEL = "gpt-5.6-luna";
+export const MODEL = "gpt-6-luna";
+export const COMPARISON_MODEL = "gpt-6-sol";
 export const EFFORT = "medium";
 
 // Only inspect runtime errors, never command output: an application API's 429
@@ -86,7 +87,7 @@ export function sourceHashes(
 const harnessHashesAtLoad = sourceHashes(resolve(import.meta.dirname, "../.."), "e2e");
 
 export type NativeOptions = {
-  model?: typeof MODEL | "gpt-5.6-sol";
+  model?: typeof MODEL | typeof COMPARISON_MODEL;
   workspace: string;
   output: string;
   prompt: string;
@@ -104,7 +105,7 @@ export type NativeOptions = {
 export async function nativeSession(options: NativeOptions) {
   const { workspace, output, repoRoot } = options;
   const model = options.model ?? MODEL;
-  if (![MODEL, "gpt-5.6-sol"].includes(model))
+  if (![MODEL, COMPARISON_MODEL].includes(model))
     throw Error(`Unsupported evaluation model: ${model}`);
   mkdirSync(workspace, { recursive: true });
   mkdirSync(output, { recursive: true });

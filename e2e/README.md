@@ -2,7 +2,7 @@
 
 The maintained evaluation track exercises the repository's actual skills through a native agent session, then checks the resulting CMS state or application independently. It does not force a skill load, suppress the agent's verification, substitute another model, or treat a completed answer as a passing result.
 
-Use Node 24+, `npm ci`, and an authenticated native CLI. Set `CODEX_BIN` to its executable if it is not on PATH. The current validation baseline is `gpt-5.6-luna` with `model_reasoning_effort=medium`. Model and reasoning effort are pinned in `lib/nativeSession.ts`; a conflicting per-case model is rejected. Reports retain those settings so results can be reproduced and attributed to the tested configuration.
+Use Node 24+, `npm ci`, and an authenticated native CLI. Set `CODEX_BIN` to its executable if it is not on PATH. The current validation baseline is `gpt-6-luna` with `model_reasoning_effort=medium`. Model and reasoning effort are pinned in `lib/nativeSession.ts`; a conflicting per-case model is rejected. Reports retain those settings so results can be reproduced and attributed to the tested configuration.
 
 ## Live CMS cases
 
@@ -41,7 +41,7 @@ The [catalog scenarios](catalog/README.md) add real CDA reads and rendering, mig
 
 ```bash
 node evals/coexistence/run.mjs \
-  --model gpt-5.6-luna --effort medium \
+  --model gpt-6-luna --effort medium \
   --baseline <baseline-commit> --arms base,candidate \
   --repetitions 3 --jobs 2 --output local/coexistence/run-01
 ```

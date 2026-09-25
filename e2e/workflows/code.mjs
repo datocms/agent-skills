@@ -11,7 +11,7 @@ import assert from "node:assert/strict";
 import { pathToFileURL } from "node:url";
 import { build } from "esbuild";
 import { buildClient } from "@datocms/cma-client-node";
-import { nativeSession } from "../lib/nativeSession.ts";
+import { nativeSession, MODEL, EFFORT } from "../lib/nativeSession.ts";
 const root = resolve(import.meta.dirname, "../..");
 const { values } = parseArgs({
   options: {
@@ -414,8 +414,8 @@ for (let repetition = 1; repetition <= repetitions; repetition++)
     const result = {
       case: c.id,
       repetition,
-      model: "gpt-5.6-luna",
-      reasoningEffort: "medium",
+      model: MODEL,
+      reasoningEffort: EFFORT,
       passed: false,
     };
     try {
@@ -453,8 +453,8 @@ for (let repetition = 1; repetition <= repetitions; repetition++)
             !original.capped,
           "Original native session did not complete",
         );
-        assert.equal(original.model, "gpt-5.6-luna");
-        assert.equal(original.reasoningEffort, "medium");
+        assert.equal(original.model, MODEL);
+        assert.equal(original.reasoningEffort, EFFORT);
         result.recheckedFrom = resolve(values.recheck);
       }
       await c.check(workspace);
