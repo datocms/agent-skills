@@ -104,6 +104,11 @@ export type NativeOptions = {
   maxScriptAttempts?: number;
   hostedMcp?: { name: string; url: string };
   maxMcpCalls?: number;
+  // Later user messages, each sent by resuming the same native session after
+  // the previous turn completes. onTurnComplete runs between turns (and after
+  // the last), e.g. to snapshot the workspace a turn left behind.
+  followUps?: string[];
+  onTurnComplete?: (turn: number) => void | Promise<void>;
 };
 
 export async function nativeSession(options: NativeOptions) {
@@ -124,10 +129,11 @@ export async function nativeSession(options: NativeOptions) {
     filter: (path) => !path.split(/[\\/]/).includes("node_modules"),
   });
   const secrets = (options.secrets ?? []).filter(Boolean);
+  const prompts = [options.prompt, ...(options.followUps ?? [])];
   if (
     secrets.some(
       (secret) =>
-        options.prompt.includes(secret) ||
+        prompts.some((prompt) => prompt.includes(secret)) ||
         (options.instructions ?? "").includes(secret),
     )
   )
@@ -183,11 +189,18 @@ export async function nativeSession(options: NativeOptions) {
   const version = spawnSync(binary, ["--version"], { encoding: "utf8" });
   if (version.status !== 0)
     throw Error("Selected native agent executable is unavailable");
+  // Multi-turn sessions must persist (in the throwaway CODEX_HOME) so they can
+  // be resumed; `exec resume` takes the sandbox as config and keeps the cwd.
+  const multiTurn = prompts.length > 1;
+  const overrides = Object.entries(config).flatMap(([key, value]) => [
+    "-c",
+    `${key}=${toml(value)}`,
+  ]);
   const args = [
     "exec",
     "--ignore-user-config",
     "--ignore-rules",
-    "--ephemeral",
+    ...(multiTurn ? [] : ["--ephemeral"]),
     "--skip-git-repo-check",
     "--sandbox",
     "danger-full-access",
@@ -196,10 +209,22 @@ export async function nativeSession(options: NativeOptions) {
     "never",
     "--cd",
     workspace,
+    ...overrides,
+    "-",
   ];
-  for (const [key, value] of Object.entries(config))
-    args.push("-c", `${key}=${toml(value)}`);
-  args.push("-");
+  const resumeArgs = (thread: string) => [
+    "exec",
+    "resume",
+    "--ignore-user-config",
+    "--ignore-rules",
+    "--skip-git-repo-check",
+    "--json",
+    ...overrides,
+    "-c",
+    'sandbox_mode="danger-full-access"',
+    thread,
+    "-",
+  ];
   const environment: NodeJS.ProcessEnv = Object.fromEntries(
     [
       "HOME",
@@ -251,6 +276,7 @@ export async function nativeSession(options: NativeOptions) {
     },
     startedAt: new Date().toISOString(),
     prompt: options.prompt,
+    followUps: options.followUps ?? [],
     instructions,
   };
   writeFileSync(
@@ -258,17 +284,9 @@ export async function nativeSession(options: NativeOptions) {
     redact(JSON.stringify(provenance, null, 2)),
     { mode: 0o600 },
   );
-  const child = spawn(binary, args, {
-    cwd: workspace,
-    env: environment,
-    detached: true,
-    stdio: ["pipe", "pipe", "pipe"],
-  });
-  child.stdin.end(options.prompt);
   const events: Record<string, any>[] = [];
   const mcpCallIds = new Set<string>();
-  let buffer = "",
-    stderr = "",
+  let stderr = "",
     timedOut = false,
     capped = false,
     usageLimitReached = false,
@@ -280,80 +298,121 @@ export async function nativeSession(options: NativeOptions) {
       command: string;
       exit_code?: number;
       aggregated_output?: string;
+      turn: number;
     }
   >();
-  function stop() {
-    if (child.pid) {
-      try {
-        process.kill(-child.pid, "SIGKILL");
-      } catch {
-        /* already exited */
-      }
-    }
-  }
-  function line(raw: string) {
-    if (secrets.some((secret) => raw.includes(secret))) credentialLeak = true;
-    const clean = redact(raw);
-    appendFileSync(transcriptPath, clean + "\n", { mode: 0o600 });
-    let event;
-    try {
-      event = JSON.parse(clean);
-    } catch {
-      return;
-    }
-    events.push(event);
-    if (isUsageLimitError(event)) {
-      usageLimitReached = true;
-      stop();
-    }
-    if (event.item?.type === "mcp_tool_call") {
-      mcpCallIds.add(event.item.id);
-      if (mcpCallIds.size > (options.maxMcpCalls ?? Infinity)) {
-        capped = true;
-        stop();
-      }
-    }
-    if (event.item?.type === "command_execution") {
-      commands.set(event.item.id, event.item);
-      if (commands.size > (options.maxCommands ?? 100)) {
-        capped = true;
-        stop();
-      }
-      const scripts = [...commands.values()].filter((c) =>
-        /\bdatocms\b[^\n]*\bcma:script\b/.test(c.command),
-      ).length;
-      if (scripts > (options.maxScriptAttempts ?? Infinity)) {
-        capped = true;
-        stop();
-      }
-    }
-  }
-  child.stdout.on("data", (chunk) => {
-    buffer += chunk.toString();
-    let i;
-    while ((i = buffer.indexOf("\n")) >= 0) {
-      line(buffer.slice(0, i));
-      buffer = buffer.slice(i + 1);
-    }
-  });
-  child.stderr.on("data", (chunk) => {
-    stderr += chunk.toString();
-  });
-  const timer = setTimeout(() => {
-    timedOut = true;
-    stop();
-  }, options.timeoutMs ?? 420_000);
-  let exitCode: number | null;
-  try {
-    exitCode = await new Promise<number | null>((done, reject) => {
-      child.on("error", reject);
-      child.on("close", done);
+  const turns: { finalText: string; messages: string[]; completed: boolean; exitCode: number | null }[] = [];
+  const exitCodes: (number | null)[] = [];
+  async function runTurn(turnArgs: string[], prompt: string) {
+    const turnStart = events.length;
+    const child = spawn(binary, turnArgs, {
+      cwd: workspace,
+      env: environment,
+      detached: true,
+      stdio: ["pipe", "pipe", "pipe"],
     });
+    child.stdin.end(prompt);
+    let buffer = "";
+    function stop() {
+      if (child.pid) {
+        try {
+          process.kill(-child.pid, "SIGKILL");
+        } catch {
+          /* already exited */
+        }
+      }
+    }
+    function line(raw: string) {
+      if (secrets.some((secret) => raw.includes(secret))) credentialLeak = true;
+      const clean = redact(raw);
+      appendFileSync(transcriptPath, clean + "\n", { mode: 0o600 });
+      let event;
+      try {
+        event = JSON.parse(clean);
+      } catch {
+        return;
+      }
+      events.push(event);
+      if (isUsageLimitError(event)) {
+        usageLimitReached = true;
+        stop();
+      }
+      if (event.item?.type === "mcp_tool_call") {
+        mcpCallIds.add(event.item.id);
+        if (mcpCallIds.size > (options.maxMcpCalls ?? Infinity)) {
+          capped = true;
+          stop();
+        }
+      }
+      if (event.item?.type === "command_execution") {
+        commands.set(`${turns.length}:${event.item.id}`, { ...event.item, turn: turns.length });
+        if (commands.size > (options.maxCommands ?? 100)) {
+          capped = true;
+          stop();
+        }
+        const scripts = [...commands.values()].filter((c) =>
+          /\bdatocms\b[^\n]*\bcma:script\b/.test(c.command),
+        ).length;
+        if (scripts > (options.maxScriptAttempts ?? Infinity)) {
+          capped = true;
+          stop();
+        }
+      }
+    }
+    child.stdout.on("data", (chunk) => {
+      buffer += chunk.toString();
+      let i;
+      while ((i = buffer.indexOf("\n")) >= 0) {
+        line(buffer.slice(0, i));
+        buffer = buffer.slice(i + 1);
+      }
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk.toString();
+    });
+    const timer = setTimeout(() => {
+      timedOut = true;
+      stop();
+    }, options.timeoutMs ?? 420_000);
+    let exitCode: number | null;
+    try {
+      exitCode = await new Promise<number | null>((done, reject) => {
+        child.on("error", reject);
+        child.on("close", done);
+      });
+    } finally {
+      clearTimeout(timer);
+    }
+    if (buffer) line(buffer);
+    const turnEvents = events.slice(turnStart);
+    // Every message the user sees in this turn; plans often precede a short closing message.
+    const messages = turnEvents
+      .filter((e) => e.type === "item.completed" && e.item?.type === "agent_message")
+      .map((e) => String(e.item.text ?? ""));
+    turns.push({
+      finalText: messages.at(-1) ?? "",
+      messages,
+      completed: turnEvents.some((e) => e.type === "turn.completed"),
+      exitCode,
+    });
+    exitCodes.push(exitCode);
+  }
+  let thread: string | undefined;
+  try {
+    for (const [index, prompt] of prompts.entries()) {
+      if (index > 0) {
+        thread ??= events.find((e) => e.type === "thread.started")?.thread_id;
+        if (!thread) throw Error("Cannot resume: the native session reported no thread id");
+      }
+      await runTurn(index === 0 ? args : resumeArgs(thread!), prompt);
+      const turn = turns.at(-1)!;
+      await options.onTurnComplete?.(index);
+      if (timedOut || capped || usageLimitReached || credentialLeak || !turn.completed || turn.exitCode !== 0) break;
+    }
   } finally {
-    clearTimeout(timer);
     rmSync(nativeHome, { recursive: true, force: true });
   }
-  if (buffer) line(buffer);
+  const exitCode = exitCodes.find((code) => code !== 0) ?? exitCodes.at(-1) ?? null;
   writeFileSync(join(output, "stderr.log"), redact(stderr), { mode: 0o600 });
   if (secrets.some((secret) => stderr.includes(secret))) credentialLeak = true;
   const result = {
@@ -375,7 +434,9 @@ export async function nativeSession(options: NativeOptions) {
             e.type === "item.completed" && e.item?.type === "agent_message",
         )
         .at(-1)?.item.text ?? "",
-    completed: events.some((e) => e.type === "turn.completed"),
+    turns,
+    threadId: thread ?? events.find((e) => e.type === "thread.started")?.thread_id ?? null,
+    completed: turns.length === prompts.length && turns.every((t) => t.completed),
     errors: events.filter(
       (e) =>
         e.type === "error" ||

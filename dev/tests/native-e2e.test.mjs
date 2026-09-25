@@ -172,3 +172,46 @@ test("MCP call budget counts distinct calls and stops excessive execution", asyn
     assert.equal(result.capped, true);
     assert.equal(result.timedOut, false);
   }));
+test("follow-up turns resume the persisted thread and run a hook after every turn", async () =>
+  fixture(async ({ root, options, writeBinary }) => {
+    // Records each invocation; the first turn announces a thread, later turns echo their stdin prompt.
+    writeBinary(
+      `const fs=require('node:fs');const args=process.argv.slice(2);let input='';process.stdin.on('data',d=>input+=d).on('end',()=>{fs.appendFileSync(process.env.CALLS_PATH,JSON.stringify({args,input})+'\\n');if(!args.includes('resume'))console.log(JSON.stringify({type:'thread.started',thread_id:'thread-7'}));console.log(JSON.stringify({type:'item.completed',item:{id:'c1',type:'command_execution',command:'ls',exit_code:0}}));console.log(JSON.stringify({type:'item.completed',item:{id:'m1',type:'agent_message',text:'reply to '+input.trim()}}));console.log(JSON.stringify({type:'turn.completed'}));});`,
+    );
+    const hooks = [];
+    const result = await nativeSession({
+      ...options,
+      followUps: ["Go ahead."],
+      onTurnComplete: (turn) => hooks.push(turn),
+      environment: { CALLS_PATH: join(root, "calls.jsonl") },
+    });
+    const calls = readFileSync(join(root, "calls.jsonl"), "utf8").trim().split("\n").map((line) => JSON.parse(line));
+    assert.equal(calls.length, 2);
+    assert.equal(calls[0].args.includes("--ephemeral"), false, "a resumable session must persist");
+    assert.deepEqual(calls[1].args.slice(0, 2), ["exec", "resume"]);
+    assert.equal(calls[1].args.at(-2), "thread-7");
+    assert.ok(calls[1].args.includes('model="gpt-6-luna"'));
+    assert.ok(calls[1].args.includes('sandbox_mode="danger-full-access"'));
+    assert.equal(calls[1].input, "Go ahead.");
+    assert.deepEqual(hooks, [0, 1]);
+    assert.deepEqual(result.turns.map((t) => t.finalText), ["reply to Do the fixture task.", "reply to Go ahead."]);
+    assert.equal(result.finalText, "reply to Go ahead.");
+    // Item ids restart per turn; commands from both turns are kept and attributed.
+    assert.deepEqual(result.commands.map((c) => c.turn), [0, 1]);
+    assert.equal(result.completed, true);
+    assert.equal(result.threadId, "thread-7");
+    assert.equal(existsSync(join(options.output, "native-home")), false);
+  }));
+test("single-turn sessions stay ephemeral and stop before follow-ups when a turn fails", async () =>
+  fixture(async ({ root, options, writeBinary }) => {
+    writeBinary(
+      `require('node:fs').appendFileSync(process.env.CALLS_PATH,JSON.stringify(process.argv.slice(2))+'\\n');console.log(JSON.stringify({type:'thread.started',thread_id:'t'}));console.log(JSON.stringify({type:'turn.failed',error:{message:'boom'}}));`,
+    );
+    const single = await nativeSession({ ...options, environment: { CALLS_PATH: join(root, "single.jsonl") } });
+    assert.ok(JSON.parse(readFileSync(join(root, "single.jsonl"), "utf8")).includes("--ephemeral"));
+    assert.equal(single.completed, false);
+    const multi = await nativeSession({ ...options, output: join(root, "evidence-2"), followUps: ["Go ahead."], environment: { CALLS_PATH: join(root, "multi.jsonl") } });
+    assert.equal(readFileSync(join(root, "multi.jsonl"), "utf8").trim().split("\n").length, 1, "a failed turn must not be resumed");
+    assert.equal(multi.completed, false);
+    assert.equal(multi.turns.length, 1);
+  }));
