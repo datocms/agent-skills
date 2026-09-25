@@ -1,6 +1,6 @@
 # Working with Form Values Reference
 
-The `ctx.formValues` object contains the internal form state for the record being edited. This reference covers the internal data formats, which differ from the API/DAST formats in important ways.
+The `ctx.formValues` object contains the internal form state for the record being edited.
 
 ## Contents
 

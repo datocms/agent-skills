@@ -2,37 +2,20 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 # DatoCMS CMA Type Generation Setup
 
-You are an expert at setting up standalone CMA schema type generation on top of an already-linked project. This skill configures only the `schema:generate` workflow and does not overlap with GraphQL query type-generation setup.
-
 `schema:generate` authenticates via the OAuth-linked default profile from `cli-bootstrap` — no CMA token in `.env`, no `dotenv-cli` wrapper.
-
-Follow these steps in order. Do not skip steps.
 
 ## Step 1: Detect Context (silent)
 
-Silently examine the project:
-
-Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
-
-1. **Framework and file layout** — use `../../../references/repo-conventions.md` for supported framework detection and `src/` usage.
-2. **Node project** — Confirm `package.json` exists.
-3. **Bootstrap state** — Confirm the `datocms` npm package is installed and the active profile has a `siteId` (owned by `cli-bootstrap`). If missing, surface `cli-bootstrap` as an unmet prerequisite and stop.
-4. **Existing script** — Check `package.json` for `generate-cma-types`.
-5. **Existing output** — Check for `src/lib/datocms/cma-types.ts` or `lib/datocms/cma-types.ts`.
+1. **Node project** — Confirm `package.json` exists.
+2. **Bootstrap state** — Confirm the `datocms` npm package is installed and the active profile has a `siteId` (owned by `cli-bootstrap`). If missing, surface `cli-bootstrap` as an unmet prerequisite and stop.
+3. **Existing script** — Check `package.json` for `generate-cma-types`.
+4. **Existing output** — Check for `src/lib/datocms/cma-types.ts` or `lib/datocms/cma-types.ts`.
 
 ### Stop conditions
 
-- If the framework cannot be determined, ask the user.
 - If `datocms` is not installed or the active profile has no `siteId`, stop and route back to `cli-bootstrap`.
-- If the repo already has a materially different schema-type generation setup, inspect and patch it in place by default instead of replacing it.
 
 ## Step 2: Ask Questions
-
-Infer first from the repo.
-
-Follow the zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
-
-If you do ask, make it one concise question, put the recommended/default path first, and explain whether skipping it will leave placeholders, ownership, or project-specific values unresolved.
 
 Only ask if the project already has a conflicting CMA type-generation flow and patching it safely is unclear.
 

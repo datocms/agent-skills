@@ -2,8 +2,6 @@
 
 Reference for DatoCMS Canvas variables available inside `<Canvas>`: `ctx.cssDesignTokens` colors and shadows, plus Canvas typography, spacing, motion, and runtime theme values.
 
-Use Canvas variables directly for plugin UI. Add custom variables or concrete values only for user-requested styling, vendor widgets, media treatments, data visualization, or effects the Canvas vocabulary cannot express.
-
 ## Contents
 
 - Usage rules
@@ -23,10 +21,9 @@ Use Canvas variables directly for plugin UI. Add custom variables or concrete va
 - Do not define local aliases that only rename Canvas tokens or variables, such as `--plugin-border: var(--color--border)`, `--text-light: var(--color--ink-subtle)`, or `--gap: var(--spacing-m)`.
 - Do not use `color-mix(...)` to simulate text hierarchy, selected states, disabled states, borders, focus rings, status panels, or standard shadows.
 - Keep context families together: when a surface comes from one family, use that same family's ink, border, and outline when available.
+- Selected/current/active choices (rows, image cards, chips, tabs, dropdown options, model filters, icon or picker choices) use the selected family for surface, ink, and border; reserve primary tokens for the main submit/action button or an intentional brand accent.
 - Use custom variables, hardcoded values, or `color-mix(...)` only for real customization outside Canvas semantics: user-requested product styling, media overlays, data visualization, vendor widgets, artwork, or effects the Canvas vocabulary cannot express.
 - If a third-party library hoists styles or portals outside `<Canvas>`, pass concrete values from `ctx.cssDesignTokens`; otherwise prefer CSS `var(--color--...)` inside `<Canvas>`.
-
-The main catalog covers the color/shadow vocabulary supplied through `ctx.cssDesignTokens`; the final section lists other Canvas variables available in plugin CSS.
 
 ## Neutral text, surface, and border
 
@@ -82,8 +79,6 @@ Use for brand actions, selected choices, disabled controls, and focus affordance
 | `--color--selected--surface-hover` | Hover on an entry that is already selected |
 
 ## Danger and soft signal states
-
-Use context families together: surface with its matching ink, border, and outline.
 
 | Token | Use |
 | - | - |
@@ -203,27 +198,15 @@ Use directly in `box-shadow`; avoid rebuilding standard elevation with `color-mi
 
 ## Other Canvas variables
 
-These variables are available inside `<Canvas>` but are not part of `ctx.cssDesignTokens`. They are still the default Canvas design vocabulary for typography, spacing, and motion; use them directly before inventing local values.
+These variables are available inside `<Canvas>` but are not part of `ctx.cssDesignTokens`.
 
 | Variable | Use |
 | - | - |
 | `--base-font-family` | Default DatoCMS UI font family. |
 | `--monospaced-font-family` | DatoCMS monospace font family for code, JSON, logs, and technical values. |
 | `--font-weight-bold` | DatoCMS bold weight, currently `500`, for emphasis that matches DatoCMS text weight. |
-| `--font-size-xxs` | Tiny badges and compact metadata. |
-| `--font-size-xs` | Field meta, small labels, and compact helper text. |
-| `--font-size-s` | Hints and secondary metadata. |
-| `--font-size-m` | Default body, controls, and inputs. |
-| `--font-size-l` | Toolbar titles and emphasized row labels. |
-| `--font-size-xl` | Section and modal titles. |
-| `--font-size-xxl` | Large page headings. |
-| `--font-size-xxxl` | Largest page titles. |
-| `--spacing-s` | Small gaps and compact inline separation. |
-| `--spacing-m` | Default inner spacing and toolbar gaps. |
-| `--spacing-l` | Standard form and card spacing. |
-| `--spacing-xl` | Large section or panel spacing. |
-| `--spacing-xxl` | Major empty-state or page spacing. |
-| `--spacing-xxxl` | Very large isolation spacing. |
+| `--font-size-xxs` … `--font-size-xxxl` | Type scale; px and typical use: `design-foundations.md` § Canonical font sizes. |
+| `--spacing-s` … `--spacing-xxxl` | Spacing scale; px and typical use: `design-foundations.md` § Spacing scale. |
 | `--negative-spacing-s` | Negative counterpart to `--spacing-s`. |
 | `--negative-spacing-m` | Negative counterpart to `--spacing-m`. |
 | `--negative-spacing-l` | Negative counterpart to `--spacing-l`. |

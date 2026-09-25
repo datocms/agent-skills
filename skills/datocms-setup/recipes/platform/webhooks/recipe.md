@@ -2,12 +2,6 @@ _Recipe for `datocms-setup`. Use after parent skill selects `webhooks` recipe an
 
 # DatoCMS Webhooks Setup
 
-Expert at lean, repeatable DatoCMS webhook management. Adds declarative webhook config, sync helper, and minimal authenticated receiver endpoint when supported.
-
-See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
-
-Follow steps in order. Do not skip.
-
 ## Contents
 
 - Step 1: Detect Context (silent)
@@ -19,36 +13,26 @@ Follow steps in order. Do not skip.
 
 ## Step 1: Detect Context (silent)
 
-Silently examine project:
-
-Follow shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect recipe-specific signals below.
-
 1. **Node project** — Confirm `package.json` exists
-2. **Framework and file layout** — use `../../../references/repo-conventions.md` for supported framework detection and `src/` usage when local receiver in scope
-3. **CMA client package** — Check for `@datocms/cma-client`, `@datocms/cma-client-node`, or `@datocms/cma-client-browser`
-4. **Existing webhook setup**
+2. **CMA client package** — Check for `@datocms/cma-client`, `@datocms/cma-client-node`, or `@datocms/cma-client-browser`
+3. **Existing webhook setup**
    - `scripts/datocms-webhooks.config.mjs`
    - `scripts/datocms-sync-webhooks.mjs`
    - `package.json` script `datocms:webhooks:sync`
-5. **Existing receiver endpoint**
+4. **Existing receiver endpoint**
    - Next.js: `src/app/api/datocms/webhook/route.ts` or `app/api/datocms/webhook/route.ts`
    - Nuxt: `server/api/datocms/webhook.post.ts`
    - SvelteKit: `src/routes/api/datocms/webhook/+server.ts`
    - Astro: `src/pages/api/datocms/webhook.ts`
-6. **Public frontend URL** — Inspect env files or existing project config for usable site URL
-7. **Existing Dato config** — Inspect env files for CMA-capable `DATOCMS_API_TOKEN`
+5. **Public frontend URL** — Inspect env files or existing project config for usable site URL
+6. **Existing Dato config** — Inspect env files for CMA-capable `DATOCMS_API_TOKEN`
 
 ### Stop conditions
 
 - If `package.json` missing, stop: setup expects Node project for local sync helper
-- If existing webhook-management setup differs materially, inspect first then patch in place by default instead of replacing wholesale
 - If no supported framework detected, continue with CMA-side webhook setup only; explicitly say receiver scaffolding out of scope for this repo
 
 ## Step 2: Ask Questions
-
-Infer first from repo.
-
-Follow zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
 
 Only ask one explicit question if no `scripts/datocms-webhooks.config.mjs` exists yet.
 
@@ -179,8 +163,6 @@ After generating files, tell user:
 3. How to run `datocms:webhooks:sync`
 4. Whether any generated local receiver is still generic stub
 5. Whether result is still `scaffolded`
-
-Follow shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including explicit `Unresolved placeholders` section.
 
 ## Verification Checklist
 

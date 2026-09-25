@@ -73,9 +73,3 @@ Editors say "click here" or "this article" → `itemLink`. Rendering reflects ta
 ## Container choice and the limits
 
 Block-bearing fields bounded by per-record limits (size, block count, nesting depth) — see `models-vs-blocks.md` § Hard limits, locale multiplier for numbers, mitigations.
-
-Container choice effects:
-
-- **Localized prose, shared structure.** Structure same across locales, only prose differs → localize `structured_text` for prose, non-localized siblings for structural blocks. Drops block count vs localizing whole `rich_text` page builder.
-- **Single block vs one-element rich_text.** `single_block` = one block. `rich_text` `max_items: 1` = array ≤ 1 — same shape, more block budget weight, worse UX. Pick `single_block` for "exactly one."
-- **Audit blocks for over-decomposition.** `spacer_block`, `divider_block`, `callout_block` with one text field — each paid from 500 budget. Consolidate before limit increases.

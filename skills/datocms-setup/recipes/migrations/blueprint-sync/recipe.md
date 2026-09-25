@@ -2,34 +2,15 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 # DatoCMS Blueprint Sync Setup
 
-You are an expert at configuring one shared DatoCMS migration history across multiple projects by using CLI profiles. This recipe adds the minimum profile and helper-script scaffolding needed for repeatable multi-project rollout.
-
-Follow these steps in order. Do not skip steps.
-
-## Contents
-
-- Step 1: Detect Context (silent)
-- Step 2: Ask Questions
-- Step 3: Load References
-- Step 4: Generate Code
-- Step 5: Install Dependencies
-- Step 6: Next Steps
-- Verification Checklist
-
 ## Step 1: Detect Context (silent)
 
-Silently examine the project:
-
-Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
-
 1. **Node project** — Check for `package.json`
-2. **Package manager** — See `../../../patterns/MANDATORY_RULES.md`.
-3. **CLI setup** — Check for the `datocms` npm package, `datocms.config.json`, and a `migrations/` directory or existing migration scripts
-4. **Existing profiles** — Inspect `datocms.config.json` for named profiles and their migrations directories
-5. **Environment files** — Check `.env.example`, `.env`, and `.env.local`
-6. **Existing helper** — Check for `scripts/datocms-sync-projects.mjs`
-7. **Existing workflow** — Check for `.github/workflows/datocms-sync-projects.yml`
-8. **Existing scripts** — Check `package.json` for `datocms:sync:projects`
+2. **CLI setup** — Check for the `datocms` npm package, `datocms.config.json`, and a `migrations/` directory or existing migration scripts
+3. **Existing profiles** — Inspect `datocms.config.json` for named profiles and their migrations directories
+4. **Environment files** — Check `.env.example`, `.env`, and `.env.local`
+5. **Existing helper** — Check for `scripts/datocms-sync-projects.mjs`
+6. **Existing workflow** — Check for `.github/workflows/datocms-sync-projects.yml`
+7. **Existing scripts** — Check `package.json` for `datocms:sync:projects`
 
 ### Stop conditions
 
@@ -99,8 +80,6 @@ After generating the files, tell the user:
 4. Promote destination environments manually after review
 5. Whether the result is `scaffolded` or `production-ready`
 6. Optional follow-up recipe id: `migration-release-workflow` when they want a promote-included release helper for a single project
-
-Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including an explicit `Unresolved placeholders` section.
 
 ## Verification Checklist
 

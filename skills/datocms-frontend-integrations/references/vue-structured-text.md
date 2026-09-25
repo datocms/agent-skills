@@ -322,75 +322,7 @@ For framework-independent plain-text, HTML-string, or DOM-node export, load [con
 
 ## Content Link Integration
 
-When using Visual Editing (Content Link), Structured Text fields require special data attributes. See the `vue-content-link.md` reference for details:
-
-**Rule 1:** Always wrap `<StructuredText>` in a `data-datocms-content-link-group`:
-
-```vue
-<template>
-  <div data-datocms-content-link-group>
-    <StructuredText :data="page.content" />
-  </div>
-</template>
-```
-
-**Rule 2:** Add `data-datocms-content-link-boundary` on `renderBlock`, `renderInlineRecord`, and `renderInlineBlock` — but **NOT** on `renderLinkToRecord`:
-
-```js
-function renderBlock({ record }) {
-  switch (record.__typename) {
-    case 'ImageBlockRecord':
-      return h(
-        'div',
-        { 'data-datocms-content-link-boundary': '' },
-        [h(Image, { data: record.image.responsiveImage })],
-      );
-    default:
-      return null;
-  }
-}
-
-function renderInlineRecord({ record }) {
-  switch (record.__typename) {
-    case 'TeamMemberRecord':
-      return h(
-        'span',
-        { 'data-datocms-content-link-boundary': '' },
-        [h('a', { href: `/team/${record.slug}` }, record.firstName)],
-      );
-    default:
-      return null;
-  }
-}
-
-function renderLinkToRecord({ record, children, transformedMeta }) {
-  switch (record.__typename) {
-    case 'TeamMemberRecord':
-      return h(
-        'a',
-        { ...transformedMeta, href: `/team/${record.slug}` },
-        children,
-      );
-    default:
-      return null;
-  }
-}
-
-function renderInlineBlock({ record }) {
-  switch (record.__typename) {
-    case 'MentionRecord':
-      return h(
-        'span',
-        { 'data-datocms-content-link-boundary': '' },
-        [h('code', `@${record.username}`)],
-      );
-    default:
-      return null;
-  }
-}
-```
-
-**Why `renderLinkToRecord` doesn't need a boundary:** Record links are `<a>` tags wrapping text that belongs to the surrounding structured text. They don't introduce a separate editing target, so no URL collision occurs.
+Group/boundary rules and example: [vue-content-link.md § Structured Text Integration](./vue-content-link.md#structured-text-integration).
 
 ## Project Wrapper Component
 

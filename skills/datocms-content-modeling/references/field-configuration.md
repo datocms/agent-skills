@@ -11,7 +11,6 @@ Every field has two settings beyond `field_type`: **validators** (accepted value
 - Validators worth remembering
 - Appearance — when defaults aren't enough
 - Cross-cutting field attributes
-- Common mistakes
 
 ## Defaults are usually right
 
@@ -306,7 +305,7 @@ Hide unused sub-fields = declutter editor. Show only previews matching channels 
 
 ### `default_value`
 
-Per-type default. Localized fields = locale-keyed object, not bare value:
+Per-type default. Localized fields = object keyed by every environment locale — API rejects bare value or missing/extra locale:
 
 ```ts
 // non-localized
@@ -337,15 +336,3 @@ Boolean, default `true`. Only settable on `string`, `text`, `structured_text` (t
 **Set `false` when** the field's value is consumed verbatim — keys, codes, class names, slugs-in-text, IDs, `<input>` values, or anything piped to external systems — where invisible stega chars break exact-match/validation. Opts the field out at the source instead of wrapping every downstream read in `stripStega()` (see frontend-integrations `content-link-concepts.md`).
 
 **Leave `true`** for prose-style fields rendered directly — default preserves click-to-edit overlays.
-
-## Common mistakes
-
-- **`enum` without `string_select`/`string_radio_group`.** Validator catches at save; UI shows free-text. Pair them.
-- **`extension: { predefined_list: 'image' }` for hero images.** Some formats can't be transformed by `responsiveImage`. Use `'transformable_image'`.
-- **Skipping `required_alt_title`.** Editors forget alt; accessibility/SEO suffer. Wire on user-facing images.
-- **Skipping `slug_title_field` on slugs.** Editors hand-type, slugs drift. Always bind.
-- **Skipping `title_length` / `description_length` on SEO.** Editors write truncated copy. Counter prevents.
-- **`text` + `wysiwyg` for new editorial.** Prefer `structured_text` — typed, queryable, embeds blocks, configurable. `text` for legacy/plain text.
-- **`json` field with raw `json` editor for fixed tag set.** Use `string_multi_select` / `string_checkbox_group` — curated UI, data still JSON array.
-- **Defaulting to `link_select` where editors need visual cue.** Compact chips = tag-like fields (lots of short identifiers). Curated picks (featured Author, chosen Project) = `link_embed` shows thumbnail + status.
-- **Bare-value `default_value` on localized field.** Silently ignored. Pass locale-keyed object.

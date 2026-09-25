@@ -18,8 +18,6 @@ description: >-
 
 Use this workflow for CMA operations and scripts. For advice or code explanations, skip execution and setup. Short follow-ups such as “publish them” retain the earlier DatoCMS task, selected route, project, environment, and scope.
 
-**Structured Text boundary.** Pure DAST construction, inspection, editing, or conversion belongs to **datocms-structured-text** before project setup. For CMA create, update, import, or backfill involving a Structured Text field, use its document-model guidance and its editing or conversion workflow together with this skill's project access, typed record payloads, locales, version checks, persistence, and verification. Routine record operations do not require the companion skill.
-
 ## 1. Select execution before setup
 
 **Retired MCP request: no execution.** If the user requests a retired/legacy MCP or reports that their old local integration no longer works, reply: "That integration is retired. Use the [current DatoCMS MCP setup](https://www.datocms.com/docs/mcp-server)." Keep that link in the final answer. End that task without calling either legacy or current DatoCMS tools: the available current connection is not permission to substitute routes. Do not probe, repair, reinstall, or reconfigure the retired integration. Apply this stop condition before the normal route rules below, unless the user asks for the CLI or current MCP instead. A connection/authentication error alone does not establish that an integration is retired.
@@ -91,7 +89,7 @@ Combine references only when the task spans their subjects: for example, a local
 - For localized, block, or Structured Text edits, use one script that reads then transforms the current record (`cma:script` in CLI mode). Fetch nested blocks when needed and use typed block helpers. Preserve unrelated fields, locales, blocks, links, and upload metadata; avoid reconstructing whole records from partial reads.
 - For Structured Text, follow the editing reference's text round-trip, typed node/block mutation, then root-append order. Preserve existing block identities and references unless replacement is requested.
 - Use precise project types on record calls and helpers. Prefer inference and type guards; never use `any`, `unknown`, or casts that hide a mismatch. Supplied project types need no local generation step. Only local code that needs its own type module follows type-generation guidance.
-- Handle API errors at the operation boundary using the selected runtime's facilities, including `ApiError` and `TimeoutError` when exposed. Report authentication and permission failures accurately; do not bypass them through another route. A timeout or missing write response has an uncertain outcome: inspect resulting state before any retry, and never silently replay that write through another tool.
+- Handle API errors at the operation boundary using the selected runtime's facilities, including `ApiError` and `TimeoutError` when exposed. Report authentication and permission failures accurately; do not bypass them through another route. A timeout or missing write response has an uncertain outcome: inspect resulting state before any retry, and never replay that write through another route or tool.
 - For long-running scripts, report progress and final totals using the selected runtime's output facilities.
 
 ## 5. Verify and report
@@ -102,4 +100,4 @@ Report what was actually executed and verified, including partial or uncertain o
 
 ## Other tasks
 
-Use **datocms-cli** for CLI configuration, migrations, schema generation, CLI environment workflows, onboarding imports, plugin management, multi-project sync, and CI/CD. Use **datocms-structured-text** for pure DAST construction, inspection, editing, and conversion; combine it with this skill when a CMA operation persists the document. Use **datocms-cda** for GraphQL content reads, **datocms-frontend-integrations** for framework code, **datocms-plugin** for plugin development, and **datocms-content-modeling** for modeling decisions without implementation.
+Use **datocms-cli** for CLI configuration, migrations, schema generation, CLI environment workflows, onboarding imports, plugin management, multi-project sync, and CI/CD. Use **datocms-structured-text** for pure DAST construction, inspection, editing, and conversion, before any project setup; combine it with this skill when a CMA operation persists the document (routine record operations don't need it). Use **datocms-cda** for GraphQL content reads, **datocms-frontend-integrations** for framework code, **datocms-plugin** for plugin development, and **datocms-content-modeling** for modeling decisions without implementation.

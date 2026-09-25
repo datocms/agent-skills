@@ -12,8 +12,6 @@ Models in DatoCMS carry many attributes beyond fields. Most decisions made once 
 - Behaviour — GraphQL surface
 - UI — how editors see model
 - Data — SEO fallbacks for `_seoMetaTags`
-- Block model constraints (recap)
-- Common mistakes
 
 ## Three camps, not two
 
@@ -50,7 +48,7 @@ Before going through camps: many attributes (`title_field`, `image_preview_field
 
 1. `itemTypes.create` — without any field-relationship attributes
 2. `fields.create` for each field
-3. `itemTypes.update` — wire `title_field`, `presentation_title_field`, etc. to now-existing field IDs
+3. `itemTypes.update` — wire `title_field`, `presentation_title_field`, etc. to now-existing field IDs. Skipped → first `string` / `file` field auto-wired or guessed (often wrong one); `excerpt_field` gets no guess.
 
 For full mechanic and ordering rules, see `../../datocms-cma/references/schema.md` § "Build order: model → fields → meta-relationships."
 
@@ -64,7 +62,7 @@ Marks model as single-instance. DatoCMS lazily auto-creates record on first UI v
 
 **Don't use for:** anything where team might want second one later. Once model has fields, undoing `singleton` and adding more records is friction. If in doubt, leave singleton off and seed one record manually.
 
-Block models can't be singletons (API enforces `singleton: false` for `modular_block: true`).
+Block models can't be singletons (attribute applies to models only).
 
 ### `draft_mode_active`
 
@@ -113,7 +111,7 @@ Model can use exactly one ordering strategy at time. Setting two of these togeth
 ### Decision shortcuts
 
 - _"Do editors care about order?"_ → no → leave it default.
-- _"Is order editorial / curated?"_ → yes → `sortable` (flat) or `tree` (hierarchical).
+- _"Is order editorial / curated?"_ → yes → `sortable` (flat) or `tree` (hierarchical). Not `sortable` on thousands of records — drag-and-drop doesn't scale; use `ordering_field` / `ordering_meta`.
 - _"Is there domain field that defines order?"_ → `ordering_field`.
 - _"Order is purely chronological and model has no date field?"_ → `ordering_meta`.
 
@@ -159,8 +157,9 @@ What editors see when this model's records appear in:
 - Reference / link picker dialogs
 - "Recent records" widgets and search results
 - Visual editing references
+- Block instances inside Modular Content / Structured Text fields — block models use these too; unset → first `string` / `text` and `file` / `gallery` field guessed, so wire when that isn't the identifying one
 
-Wire `presentation_title_field` to field that _editors_ can use to identify record at glance — usually human name, sometimes internal codename. Wire `presentation_image_field` to whichever image field gives clearest preview.
+Wire `presentation_title_field` to field that _editors_ can use to identify record at glance — usually human name, sometimes internal codename; not an SEO-title field (written for search engines, not editor recognition). Wire `presentation_image_field` to whichever image field gives clearest preview.
 
 **Allowed field types** (API rejects anything else):
 
@@ -194,7 +193,7 @@ Either `'table'` or `'compact'`. These are **two very different layouts**, not j
 | `image_preview_field` | `og:image`, `twitter:image` | `file`, `gallery` | SEO field has no image set |
 | `excerpt_field` | `<meta name="description">`, `og:description`, `twitter:description` | `string`, `text`, `structured_text` | SEO field has no description set |
 
-Type allowlists are stricter than for `presentation_*_field` because these values feed real `<meta>` tags — `title_field` must be plain text (no `slug`, no `text`, no `structured_text`), and `excerpt_field` must be something that can be serialized to string description.
+Type allowlists are stricter than for `presentation_*_field` because these values feed real `<meta>` tags — `title_field` must be plain text (no `slug`, no `text`, no `structured_text`), and `excerpt_field` must be something that can be serialized to string description. API rejects all three on block models.
 
 ### Always wire these on user-facing models
 
@@ -223,34 +222,3 @@ image_preview_field       → cover_image
 ```
 
 Editors browsing admin see "Project Apollo" everywhere — fast identification. Public site, when SEO is unfilled, falls back to "Apollo Lunar Module Restoration" — name visitors should see.
-
-## Block model constraints (recap)
-
-When `modular_block: true`, API enforces these flags as `false`:
-
-- `singleton`
-- `sortable`
-- `tree`
-- `draft_mode_active`
-- `draft_saving_active`
-- `inverse_relationships_enabled`
-
-`ordering_field`, `ordering_meta`, `ordering_direction` and `title_field` / `image_preview_field` / `excerpt_field` SEO fallbacks also don't apply meaningfully to blocks (block records aren't queried from `_seoMetaTags`; live inside parent records).
-
-`presentation_title_field` and `presentation_image_field` _do_ apply to blocks — control how block instances appear in editor's block picker and inside Modular Content / Structured Text fields. Wire them when block has more than two or three fields, otherwise picker shows generic placeholders.
-
-For model-vs-block decision itself, see `models-vs-blocks.md`.
-
-## Common mistakes
-
-- **Plural model `api_key`.** `articles`, `site_settings`, `categories`, `news_items` all rejected. Use singular (`article`, `site_setting`, `category`, `news_item`). Display `name` can stay plural — only `api_key` is checked.
-- **`api_key` with uppercase, leading `_`, trailing `_`, double `__`, or `_<digit>`.** Rejected by format regex. `Hero`, `hero_`, `image_2_block` all fail; use `hero`, `hero_block`, `image2_block`.
-- **Setting `singleton: true` and then needing two records.** Hard to walk back. Default to non-singleton; promote later only if "exactly one" constraint is genuinely permanent.
-- **Skipping `title_field` / `image_preview_field` / `excerpt_field` on user-facing models.** Site ships with empty meta tags whenever editor forgets SEO field. Wire fallbacks.
-- **Wiring `presentation_title_field` to SEO title field.** SEO title optimized for search engines, not for editor recognition. Use separate human-friendly field for admin preview.
-- **Setting `sortable: true` on model with thousands of records.** Manual drag-and-drop doesn't scale. Use `ordering_field` or `ordering_meta` for high-cardinality models.
-- **Omitting `collection_appearance` on a regular model.** API defaults to `'compact'` (sidebar layout) — editors lose filters, saved views, image previews, column sort. Set `'table'` explicitly unless model is a small reference / taxonomy collection.
-- **Leaving `draft_mode_active: false` on non-block model.** Always on by default — unused draft mode costs nothing, retrofitting it later does.
-- **Setting `draft_saving_active: true` without `draft_mode_active`.** No effect — drafts don't exist without draft mode.
-- **`all_locales_required: true` on editorial content.** Editors stop being able to publish until every translation is in. Almost always wrong outside of legal/structured-data contexts.
-- **Forgetting that field-reference attributes need second `itemTypes.update` after fields are created.** Model is created fine but editor sees placeholders instead of titles, and CDA's `_seoMetaTags` fallback chain has nothing to fall back to.

@@ -231,15 +231,7 @@ Use the shared [data attributes](./content-link-concepts.md#data-attributes-refe
 
 ## Structured Text Integration
 
-Structured Text fields need special handling:
-
-**Rule 1:** Always wrap `<StructuredText>` in a group:
-
-```vue
-<div data-datocms-content-link-group>
-  <StructuredText :data="page.content" />
-</div>
-```
+**Rule 1:** Always wrap `<StructuredText>` in a group.
 
 **Rule 2:** Add boundary on `renderBlock`, `renderInlineRecord`, and `renderInlineBlock` — but **NOT** on `renderLinkToRecord`:
 
@@ -339,11 +331,6 @@ See the shared [utility APIs](./content-link-concepts.md#stega-stripping-utiliti
 
 1. Provide both `on-navigate-to` and `current-path` props
 2. Verify `current-path` updates on route changes
-
-### StructuredText blocks not clickable
-
-1. Wrap with `data-datocms-content-link-group`
-2. Add `data-datocms-content-link-boundary` to `renderBlock` and `renderInlineBlock`
 
 ### Layout issues from stega encoding
 

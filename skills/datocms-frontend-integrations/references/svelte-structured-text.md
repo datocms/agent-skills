@@ -296,64 +296,7 @@ For framework-independent plain-text, HTML-string, or DOM-node export, load [con
 
 ## Content Link Integration
 
-When using Visual Editing (Content Link), Structured Text fields require special data attributes to make click-to-edit work correctly:
-
-**Rule 1:** Always wrap `<StructuredText>` in a `data-datocms-content-link-group`:
-
-```svelte
-<div data-datocms-content-link-group>
-  <StructuredText data={page.content} />
-</div>
-```
-
-**Rule 2:** Add `data-datocms-content-link-boundary` on block, inline block, and inline item components — but **NOT** on item link components:
-
-```svelte
-<!-- Block.svelte -->
-<script>
-  const { block } = $props();
-</script>
-
-<div data-datocms-content-link-boundary>
-  <h2>{block.title}</h2>
-  <p>{block.description}</p>
-</div>
-```
-
-```svelte
-<!-- InlineBlock.svelte -->
-<script>
-  const { block } = $props();
-</script>
-
-<span data-datocms-content-link-boundary>
-  <em>{block.username}</em>
-</span>
-```
-
-```svelte
-<!-- InlineItem.svelte -->
-<script>
-  const { link } = $props();
-</script>
-
-<span data-datocms-content-link-boundary>
-  {link.title}
-</span>
-```
-
-```svelte
-<!-- ItemLink.svelte (NO boundary needed) -->
-<script>
-  const { link } = $props();
-</script>
-
-<a href={`/posts/${link.slug}`}>
-  <slot />
-</a>
-```
-
-**Why item link components don't need a boundary:** Record links are `<a>` tags wrapping text that belongs to the surrounding structured text. They don't introduce a separate editing target, so no URL collision occurs.
+Group/boundary rules and example: [svelte-content-link.md § Structured Text Integration](./svelte-content-link.md#structured-text-integration).
 
 ## Project Wrapper Component
 

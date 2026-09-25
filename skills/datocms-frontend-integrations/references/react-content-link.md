@@ -214,19 +214,13 @@ Use the shared [data attributes](./content-link-concepts.md#data-attributes-refe
 
 ## Structured Text Integration
 
-Structured Text fields need special handling:
-
-**Rule 1:** Always wrap `<StructuredText>` in a group:
-
-```jsx
-<div data-datocms-content-link-group>
-  <StructuredText data={page.content} />
-</div>
-```
+**Rule 1:** Always wrap `<StructuredText>` in a group.
 
 **Rule 2:** Add boundary on `renderBlock`, `renderInlineRecord`, and `renderInlineBlock` — but **NOT** on `renderLinkToRecord`:
 
 ```jsx
+import { StructuredText } from 'react-datocms/structured-text';
+
 <div data-datocms-content-link-group>
   <StructuredText
     data={page.content}
@@ -277,11 +271,6 @@ See the shared [utility APIs](./content-link-concepts.md#stega-stripping-utiliti
 
 1. Provide both `onNavigateTo` and `currentPath` props
 2. Verify `currentPath` updates on navigation
-
-### StructuredText blocks not clickable
-
-1. Wrap with `data-datocms-content-link-group`
-2. Add `data-datocms-content-link-boundary` to `renderBlock` and `renderInlineBlock`
 
 ### Layout issues from stega encoding
 

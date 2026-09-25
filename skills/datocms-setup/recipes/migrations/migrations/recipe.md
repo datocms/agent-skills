@@ -2,25 +2,7 @@ _Recipe for `datocms-setup`. Use only after parent skill selects `migrations` re
 
 # DatoCMS Migrations Setup
 
-Expert at setting up DatoCMS CLI migrations in existing projects. Creates minimum migrations baseline on already-linked project. Does **not** install CLI or link project — `cli-bootstrap` prerequisite handles that.
-
-Follow steps in order. Don't skip.
-
-## Contents
-
-- Step 1: Detect Context (silent)
-- Step 2: Ask Questions
-- Step 3: Load References
-- Step 4: Generate Code
-- Step 5: Install Dependencies
-- Step 6: Next Steps
-- Verification Checklist
-
 ## Step 1: Detect Context (silent)
-
-Examine project:
-
-Follow shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect recipe-specific signals below.
 
 1. **Node project** — Check `package.json`. If missing, stop: skill expects JS/TS project with package manifest.
 2. **Bootstrap state** — Check `datocms` npm package installed and `datocms.config.json` exists with `siteId` in active profile. If either missing, surface `cli-bootstrap` as unmet prerequisite and stop — don't install CLI or touch `datocms.config.json` from this recipe.
@@ -35,12 +17,6 @@ Follow shared repo inspection conventions in `../../../references/repo-conventio
 - `datocms` not installed or active profile has no `siteId`: stop and route back to `cli-bootstrap` recipe.
 
 ## Step 2: Ask Questions
-
-Infer from repo first.
-
-Follow zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
-
-If you do ask, make it one concise question, put recommended/default path first, explain whether skipping leaves placeholders, ownership, or project-specific values unresolved.
 
 Only ask if existing `datocms.config.json` clearly uses multiple profiles, custom migration directories, custom migration template, custom migrations tsconfig, or other working conventions that single-project baseline would change.
 

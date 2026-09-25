@@ -83,7 +83,7 @@ Choose the token by what the rule means, not by color similarity.
 
 Keep context pairs together. If a panel uses `--color--danger-soft--surface`, its text should usually use `--color--danger-soft--ink`, not primary or neutral ink.
 
-For exact semantic token names and descriptions, load `design-tokens.md`; it covers `ctx.cssDesignTokens` color/shadow tokens plus Canvas typography, spacing, easing/motion, and runtime theme variables available inside `<Canvas>`. Use those Canvas tokens and variables by default for plugin UI; customize beyond them only when the user asks for a specific look or an effect they cannot express.
+For exact semantic token names and descriptions, load `design-tokens.md`; it covers `ctx.cssDesignTokens` color/shadow tokens plus Canvas typography, spacing, easing/motion, and runtime theme variables available inside `<Canvas>`.
 
 ## Replace hardcoded colors
 
@@ -107,10 +107,7 @@ Prefer full semantic families:
 - neutral hover -> `--color--surface-hover`
 - selected options -> `--color--selected--surface`, `--color--selected--surface-hover`, `--color--selected--border`, `--color--selected--ink`
 - disabled controls -> `--color--disabled--surface` + `--color--disabled--ink`; use `--color--border` when a disabled control still needs a boundary
-- danger, warning, success, and diff UI -> keep `surface`, `ink`, and `border` from the same context family
 - standard elevation -> `--shadow--raised`, `--shadow--lifted`, `--shadow--floating`, or `--shadow--ambient`
-
-Keep `color-mix(...)` or local custom variables only for real customization outside default Canvas semantics, such as media overlays, data visualization, vendor widgets, artwork, or user-requested product colors.
 
 Treat selected/current/active UI as a strict semantic state. Selected image cards, selected chips, active suggestions, active tabs, checked cards, selected rows, dropdown options, icon choices, model filters, and viewport choices must use the selected family together. Do not use primary or primary-soft tokens as a substitute for selection; those tokens are for primary actions and intentional branded accents.
 

@@ -47,12 +47,6 @@ Page titles in the CMS often go larger than the token scale with custom CSS. Plu
 
 ## Spacing scale
 
-`--space-unit` is `12px` in the CMS but is **not injected by Canvas** into plugin iframes. Plugins receive the computed tokens (`--spacing-s` through `--spacing-xxxl`) but not `--space-unit` itself. If you need it in raw CSS, define it locally:
-
-```css
-:root { --space-unit: 12px; }
-```
-
 Most plugin-safe spacing is built from the token scale below.
 
 | Token | Approx px | Typical use |
@@ -67,7 +61,7 @@ Most plugin-safe spacing is built from the token scale below.
 ### Default rhythm rules
 
 - Standard form field stack: `var(--spacing-l)` between fields
-- Section-to-section distance in full pages: about `calc(4 * var(--space-unit))`
+- Section-to-section distance in full pages: about `48px`
 - Toolbar internal gap: `var(--spacing-m)` or `var(--spacing-l)`
 - Sidebar panel content padding: around `20px`
 
@@ -95,7 +89,7 @@ Most plugin-safe spacing is built from the token scale below.
 
 ### Easing curves
 
-- Default easing: `var(--material-ease)` = `cubic-bezier(0.55, 0, 0.1, 1)` — used across 50+ CMS files
+- Default easing: `var(--material-ease)` = `cubic-bezier(0.55, 0, 0.1, 1)`
 - Secondary easing: `var(--inertial-ease)` = `cubic-bezier(0.19, 1, 0.22, 1)` — fast entrance/exit
 
 ### Duration and patterns
@@ -124,8 +118,6 @@ Prefer the semantic `--color--...` tokens exposed by `<Canvas>`.
 - `--color--surface-raised` for dropdowns, modals, and popovers
 - `--color--border` and `--color--border-hover` for structure
 
-Use these tokens directly in normal plugin CSS. Do not create local aliases that only rename Canvas tokens, such as `--plugin-border: var(--color--border)` or `--text-light: var(--color--ink-subtle)`. Local custom properties are fine for real product customization, component sizing, spacing, or non-Canvas values.
-
 ### State colors
 
 Use context pairs together:
@@ -135,13 +127,9 @@ Use context pairs together:
 - `--color--success-soft--surface`, `--color--success-soft--ink`, `--color--success-soft--border` for success
 - `--color--primary--surface`, `--color--primary--ink`, `--color--primary--border` for the main action
 - `--color--primary-soft--surface`, `--color--primary-soft--ink`, `--color--primary-soft--border` for quiet branded accents
-- `--color--selected--surface`, `--color--selected--surface-hover`, `--color--selected--ink`, `--color--selected--border` for selected rows, cards, and choices
+- `--color--selected--surface`, `--color--selected--surface-hover`, `--color--selected--ink`, `--color--selected--border` for selected/current/active rows, cards, tabs, and choices (never primary tokens)
 - `--color--disabled--surface` and `--color--disabled--ink` for disabled controls
 - `--color--focus--outline` and `--color--focus--border` for focus rings
-
-Do not mix ink from one context with surface from another. Context pairs are contrast-balanced together, especially in dark mode.
-
-Selected/current/active choices are not primary actions. If a row, image card, chip, tab, dropdown option, model filter, icon choice, or picker option is chosen or currently active, use the selected family for its surface, ink, and border. Reserve primary tokens for the main submit/action button or an intentional brand accent, not for selection state.
 
 ### Project theme colors
 
@@ -149,7 +137,7 @@ The SDK still exposes legacy theme variables and `ctx.theme`, but new plugin CSS
 
 ### OKLCH and derived colors
 
-DatoCMS uses OKLCH internally for color manipulation, but plugins should not recreate normal UI hierarchy with derived colors. Prefer semantic Canvas tokens for text hierarchy, selected states, disabled states, focus rings, borders, status surfaces, and standard elevation.
+DatoCMS uses OKLCH internally for color manipulation, but plugins should not recreate normal UI hierarchy with derived colors.
 
 ```css
 .focusRing {
@@ -171,17 +159,15 @@ DatoCMS uses OKLCH internally for color manipulation, but plugins should not rec
 }
 ```
 
-Use `color-mix(...)` only for intentional effects outside the default design system, such as media overlays, data visualization, vendor widgets, artwork, or a user-requested custom tint that cannot be expressed by semantic Canvas tokens.
-
 ## What Canvas actually injects
 
 Source: `datocms-react-ui/src/generateStyleFromCtx/index.ts` and `datocms-react-ui/src/Canvas/index.tsx`.
 
-`<Canvas>` applies `ctx.cssDesignTokens` verbatim and also keeps legacy theme variables for older plugins. Use semantic Canvas tokens by default.
+`<Canvas>` applies `ctx.cssDesignTokens` verbatim and also keeps legacy theme variables for older plugins.
 
 ### Available inside Canvas
 
-For exact token names and descriptions, load `design-tokens.md`; it catalogs `ctx.cssDesignTokens` color/shadow tokens plus Canvas typography, spacing, easing/motion, and runtime theme variables available inside `<Canvas>`. These Canvas tokens and variables are the default variables for plugin UI; customize beyond them only for an explicit custom look or an effect they cannot express.
+For exact token names, descriptions, and usage rules, load `design-tokens.md`; it catalogs `ctx.cssDesignTokens` color/shadow tokens plus Canvas typography, spacing, easing/motion, and runtime theme variables available inside `<Canvas>`.
 
 Quick selection guide:
 
@@ -191,17 +177,11 @@ Quick selection guide:
 - danger, warning, success, diff, and status: keep each context family together
 - overlay, backdrop, stacked, tooltip, code, progress, scrollbar, and field-group tokens: use only for their named surface type
 
-**Typography:** `--base-font-family`, `--monospaced-font-family`, `--font-weight-bold`, all `--font-size-*` tokens
-
 **Spacing:** all `--spacing-*` and `--negative-spacing-*` tokens
-
-**Easing:** `--material-ease`, `--inertial-ease`
 
 **Runtime theme:** `ctx.colorScheme` is `'light'` or `'dark'`; the SDK also sets `data-color-scheme` and CSS `color-scheme` on the document element.
 
 ## Theme bridging pattern
-
-Use Canvas variables first. Do not bridge ordinary plugin UI through local aliases when the CSS can use `var(--color--...)` or `var(--shadow--...)` directly.
 
 Only mirror runtime values into custom vars when a third-party component, vendor widget, or data visualization requires a local token name or concrete value.
 
@@ -231,7 +211,7 @@ return (
 }
 ```
 
-If a third-party library hoists portals or generated styles outside the `<Canvas>` scope, pass concrete values from `ctx.cssDesignTokens`. Use `ctx.colorScheme` only for non-CSS choices such as library mode flags, external widget presets, alternate assets, or syntax-highlighting themes.
+If a third-party library hoists portals or generated styles outside the `<Canvas>` scope, pass concrete values from `ctx.cssDesignTokens`.
 
 ## UI checks
 
@@ -248,8 +228,3 @@ Before changing components, check:
 ## Default implementation choices
 
 - Use CSS Modules or plugin-local CSS files, not imported CMS class names
-- Use `var(--font-size-m)` and `var(--spacing-l)` as the default body rhythm
-- Use `var(--color--ink-subtle)` for helper copy
-- Use `var(--color--border)` for most structural boundaries
-- Use `var(--color--focus--outline)` for focus rings
-- Use paired state context tokens for destructive, warning, success, selected, or primary UI

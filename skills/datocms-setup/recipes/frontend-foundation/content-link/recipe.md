@@ -2,10 +2,6 @@ _Internal recipe for `datocms-setup`. Use after parent skill selects `content-li
 
 # DatoCMS Content Link Setup
 
-Expert at setting up DatoCMS Content Link — click-to-edit overlays for editors to jump from draft site to DatoCMS fields.
-
-Follow steps in order. Do not skip.
-
 ## Contents
 
 - Step 1: Detect Context (silent)
@@ -23,44 +19,38 @@ Follow steps in order. Do not skip.
 
 ## Step 1: Detect Context (silent)
 
-Silently examine project:
-
-Follow shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect recipe-specific signals.
-
-1. **Framework/file layout** — use `../../../references/repo-conventions.md` for framework detection, `src/` usage, and standard layout/route locations.
-
-2. **Prerequisite: Draft mode** — Check draft mode enable endpoint exists:
+1. **Prerequisite: Draft mode** — Check draft mode enable endpoint exists:
    - Next.js: `src/app/api/draft-mode/enable/route.ts` or `app/api/draft-mode/enable/route.ts`
    - Nuxt: `server/api/draft-mode/enable.ts`
    - SvelteKit: `src/routes/api/draft-mode/enable/+server.ts`
    - Astro: `src/pages/api/draft-mode/enable/index.ts` or `src/pages/api/draft-mode/enable.ts`
 
-3. **Existing executeQuery wrapper** — Find shared `executeQuery`. Check if it passes `contentLink` and `baseEditingUrl` options.
+2. **Existing executeQuery wrapper** — Find shared `executeQuery`. Check if it passes `contentLink` and `baseEditingUrl` options.
 
-4. **Root layout file** — Find root layout:
+3. **Root layout file** — Find root layout:
    - Next.js: `src/app/layout.tsx` or `app/layout.tsx`
    - Nuxt: `app.vue` or `layouts/default.vue`
    - SvelteKit: `src/routes/+layout.svelte`
    - Astro: `src/layouts/Layout.astro` or similar
 
-5. **Existing preview/editor wiring** — Inspect for:
+4. **Existing preview/editor wiring** — Inspect for:
    - Web Previews endpoints/helpers
    - real-time preview wiring
    - existing visual-editing/stega helpers
 
-6. **Vercel conflict signals** — Look for Vercel Content Link / Edit Mode:
+5. **Vercel conflict signals** — Look for Vercel Content Link / Edit Mode:
    - `@vercel/stega`, `@vercel/toolbar`, or related
    - Vercel preview-specific visual-editing headers
    - `data-vercel-edit-target` usage
    - existing Edit Mode helpers
 
-7. **Structured Text renderers** — Check if repo renders Structured Text with `react-datocms`, `vue-datocms`, `@datocms/svelte`, or `@datocms/astro`.
+6. **Structured Text renderers** — Check if repo renders Structured Text with `react-datocms`, `vue-datocms`, `@datocms/svelte`, or `@datocms/astro`.
 
-8. **Non-text Dato field rendering** — Check if repo renders Dato-backed numbers, booleans, dates, or JSON values needing explicit edit URLs.
+7. **Non-text Dato field rendering** — Check if repo renders Dato-backed numbers, booleans, dates, or JSON values needing explicit edit URLs.
 
-9. **Existing CSP config** — Check if `frame-ancestors` CSP configured.
+8. **Existing CSP config** — Check if `frame-ancestors` CSP configured.
 
-10. **Installed deps** — Check `package.json` for: `@datocms/content-link`, `react-datocms`, `vue-datocms`, `@datocms/svelte`, `@datocms/astro`.
+9. **Installed deps** — Check `package.json` for: `@datocms/content-link`, `react-datocms`, `vue-datocms`, `@datocms/svelte`, `@datocms/astro`.
 
 ### Stop conditions
 
@@ -69,8 +59,6 @@ Follow shared repo inspection conventions in `../../../references/repo-conventio
 - Repo has Vercel overlay wiring: do NOT layer Dato overlays without resolving conflict first.
 
 ## Step 2: Ask Questions
-
-Follow zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
 
 Only ask if high-impact ambiguities remain after inspection:
 
@@ -89,8 +77,6 @@ Only ask if high-impact ambiguities remain after inspection:
 Proceed directly if neither applies.
 
 ## Step 3: Load References
-
-Read relevant reference files. Load only what needed.
 
 **Always load:**
 
@@ -130,8 +116,6 @@ Modify existing `executeQuery` wrapper to add DatoCMS Content Link support when 
 - Nuxt: `NUXT_PUBLIC_DATOCMS_BASE_EDITING_URL`
 - SvelteKit: `PRIVATE_DATOCMS_BASE_EDITING_URL`
 - Astro: `DATOCMS_BASE_EDITING_URL`
-
-Read existing `executeQuery` file first, then make targeted modifications.
 
 ## Step 5: Generate or Patch Content Link shell
 
@@ -205,8 +189,6 @@ Install missing packages:
 
 Framework-specific component library (`react-datocms`, `vue-datocms`, `@datocms/svelte`, `@datocms/astro`) should already be installed or will be installed here if missing.
 
-Use project's package manager (see `../../../patterns/MANDATORY_RULES.md`).
-
 ## Step 9: Environment variables
 
 Add base editing URL placeholder to env files when missing:
@@ -227,17 +209,7 @@ After generating files, tell user:
 3. whether repo kept existing Vercel overlay flow or switched fully to DatoCMS Content Link
 4. optional follow-up recipe ids that still make sense: `web-previews`, `realtime`, or `visual-editing`
 
-Follow shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including explicit `Unresolved placeholders` section.
-
 ## Mandatory rules for all generated code
-
-### TypeScript
-
-Follow TypeScript rules in `../../../patterns/MANDATORY_RULES.md`.
-
-### File conflicts
-
-Follow file conflict rules in `../../../patterns/MANDATORY_RULES.md`.
 
 ### Overlay exclusivity
 

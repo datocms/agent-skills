@@ -2,37 +2,17 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 # DatoCMS Migration Release Workflow Setup
 
-You are an expert at turning a working DatoCMS CLI migration setup into a repeatable production release workflow. This recipe adds one local helper and, only when requested, one GitHub Actions workflow.
-
-Follow these steps in order. Do not skip steps.
-
-## Contents
-
-- Step 1: Detect Context (silent)
-- Step 2: Ask Questions
-- Step 3: Load References
-- Step 4: Generate Code
-- Step 5: Install Dependencies
-- Step 6: Next Steps
-- Verification Checklist
-
 ## Step 1: Detect Context (silent)
 
-Silently examine the project:
-
-Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
-
 1. **Node project** — Check for `package.json`
-2. **Package manager** — See `../../../patterns/MANDATORY_RULES.md`.
-3. **CLI setup** — Check for the `datocms` npm package, `datocms.config.json`, and a `migrations/` directory or existing migration scripts
-4. **Existing helper** — Check for `scripts/datocms-release.mjs`
-5. **Existing workflow** — Check for `.github/workflows/datocms-release.yml`
-6. **Existing scripts** — Check `package.json` for `datocms:release`
+2. **CLI setup** — Check for the `datocms` npm package, `datocms.config.json`, and a `migrations/` directory or existing migration scripts
+3. **Existing helper** — Check for `scripts/datocms-release.mjs`
+4. **Existing workflow** — Check for `.github/workflows/datocms-release.yml`
+5. **Existing scripts** — Check `package.json` for `datocms:release`
 
 ### Stop conditions
 
 - If the project does not already have working CLI migration setup, stop and record `migrations` as a prerequisite and continue after it is applied.
-- If a release helper already exists, patch it in place by default instead of replacing it wholesale.
 
 ## Step 2: Ask Questions
 
@@ -99,8 +79,6 @@ After generating the files, tell the user:
 4. Set the required DatoCMS token in their env file
 5. Review the generated GitHub workflow secrets mapping if CI scaffolding was enabled
 6. Whether the result is `scaffolded` or `production-ready`
-
-Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including an explicit `Unresolved placeholders` section.
 
 ## Verification Checklist
 

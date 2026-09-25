@@ -31,8 +31,8 @@ Platform rules, not preferences. Follow early, avoid dead-ends.
 - **Blocks don't count toward record limit.** Blocks right for content that inflates counts (dozens of sections per page).
 - **Blocks can't be link targets.** Link `item_item_type` / `items_item_type` accept models only. Need pointing? = model.
 - **Delete parent = delete blocks.** No orphan blocks. Content outlives parent? = model.
-- **Block fields not localized at block level.** Localization one level up: containing field `localized: true`. Each locale has own blocks. See `block-fields-and-structured-text.md`.
-- **Block models = subset of model flags.** `sortable`, `tree`, `draft_mode_active`, `draft_saving_active`, `singleton`, `inverse_relationships_enabled` must be `false`. API enforces. Need flags? = model. See `model-configuration.md` § Behaviour.
+- **Block fields not localized at block level.** Localization one level up: containing field `localized: true`. Each locale has own blocks.
+- **Block models = subset of model flags.** `sortable`, `tree`, `draft_mode_active`, `draft_saving_active`, `inverse_relationships_enabled` must be `false` — API enforces; `singleton` models-only. Need flags? = model. See `model-configuration.md` § Behaviour.
 
 ## Hard limits — they force the model decision
 
@@ -63,7 +63,7 @@ First three = model-vs-block reframes. Blocks → linked models.
 
 1. **Move repeating compositions to linked records.** `rich_text` with 50 sections → `Section` model, link to list. Links don't count toward budget.
 2. **Promote page to parent + children.** `Page` record with `links` to `PageSection` records. Each section has own localized fields. Scoped edits, per-section limits.
-3. **Localize coarser.** Only prose needs locale, not whole composition. Localized `structured_text` + non-localized structural blocks = drop multiplier. See `block-fields-and-structured-text.md`.
+3. **Localize coarser.** Only prose needs locale, not whole composition. Localized `structured_text` + non-localized structural blocks = drop multiplier.
 4. **Audit over-decomposition.** `callout_block` (one text), `spacer_block`, `divider_block` — each costs 500 budget. Consolidate. See `content-reuse.md`.
 
 ### Diagnosing existing limit failures
@@ -130,5 +130,3 @@ Frontend: `coalesce(override_title, product.title)`. Product canonical; tweak lo
 
 - **Reusable as block** "editor sees on page." Result: edits don't propagate, library fills with near-duplicates.
 - **Page-specific as model** "feel reusable later." Result: model used once, extra Link field, editor navigates two records for one page.
-- **Forcing tree/sortable/singleton on block.** API rejects. Need flags? = model. See `model-configuration.md`.
-- **Reference block from another record.** Blocks not link targets. Need pointing? Promote to model.

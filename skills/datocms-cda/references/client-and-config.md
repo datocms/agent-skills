@@ -1,21 +1,17 @@
 # Client Setup and Configuration
 
-This reference is always loaded. It covers the `@datocms/cda-client` package, core functions, options, error handling, technical limits, and custom scalar types.
-
 ## Contents
 
 - Package
 - Core Exports
 - `executeQuery()` Options
 - Basic Usage
-- `rawExecuteQuery()` — Accessing Response Headers
 - TypedDocumentNode Support
 - Error Handling
 - Rate Limit Auto-Retry
 - Technical Limits
 - Custom Scalar Types
 - Custom Enum Types
-- Complexity Awareness
 
 ## Package
 
@@ -72,19 +68,6 @@ const query = `query { allBlogPosts(first: 10) { id title slug } }`;
 const data = await executeQuery(query, { ... });
 
 console.log(data.allBlogPosts);
-```
-
-## `rawExecuteQuery()` — Accessing Response Headers
-
-Returns a `[Result, Response]` tuple. Use this when you need response headers (e.g., cache tags).
-
-```ts
-const [data, response] = await rawExecuteQuery(query, {
-  returnCacheTags: true,
-  // ...
-});
-
-const cacheTags = response.headers.get("x-cache-tags");
 ```
 
 ## TypedDocumentNode Support
@@ -175,7 +158,7 @@ When `autoRetry` is `true` (the default), the client automatically retries 429 r
 
 | Limit | Value |
 | - | - |
-| Max query complexity | 10,000,000 per query |
+| Max query complexity | 10,000,000 per query (costs, `X-Complexity` headers, strategies: `pagination-and-ordering.md` § Complexity Cost Reference) |
 | Rate limit | 40 requests/second, 1,000 requests/minute **per API token** (applies only to non-cached requests — CDN cache hits are not rate-limited) |
 | Max records per page | 500 (use `first` argument) |
 | Default records per page | 20 |
@@ -189,10 +172,10 @@ When `autoRetry` is `true` (the default), the client automatically retries 429 r
 **CDN monitoring headers**, when present:
 
 - `X-Cacheable-On-Cdn` — whether the request fits the CDN eligibility limit, not proof of a cache hit.
-- `X-Cacheable-On-Cdn-Query-Length-Limit` — `encoded URL length/maximum URL length`; use this pair instead of estimating compressed body size.
+- `X-Cacheable-On-Cdn-Query-Length-Limit` — `encoded URL length/maximum URL length` (over the limit: never CDN-cached, always rate-limited); use this pair instead of estimating compressed body size.
 - `CF-Cache-Status: HIT` — an actual CDN cache hit.
 
-**Concurrency:** Uncached requests also share a project-wide concurrency cap across API tokens. A burst of slow queries can reach it without exceeding a token's per-second rate. Bound parallel work across build workers and processes targeting the same project; adding tokens does not increase this shared cap. SDK retries can retry an individual request but do not coordinate workers. Inspect the 429 response and rate-limit reset headers, reduce concurrency, and simplify oversized or expensive queries where needed.
+**Concurrency:** Uncached requests also share a cap of 40 concurrent requests per project across API tokens. A burst of slow queries can reach it without exceeding a token's per-second rate. Bound parallel work across build workers and processes targeting the same project; adding tokens does not increase this shared cap. SDK retries can retry an individual request but do not coordinate workers. Inspect the 429 response and rate-limit reset headers, reduce concurrency, and simplify oversized or expensive queries where needed.
 
 ## Custom Scalar Types
 
@@ -219,17 +202,3 @@ In addition to scalars, DatoCMS defines enum types used in query arguments and r
 | - | - |
 | `SiteLocale` | Locale argument values (e.g., `$locale: SiteLocale!`). Values are the project's configured locale codes (e.g., `en`, `it`, `fr`). |
 | `ItemStatus` | Record publication status. Values: `draft`, `published`, `updated` (see `draft-caching-environments.md` for details). |
-
-## Complexity Awareness
-
-Every query has a complexity cost. The limit is 10,000,000 per query. Response headers `X-Complexity` and `X-Max-Complexity` report the actual cost and your plan's limit.
-
-**Strategies to stay under the limit:**
-
-- Request only the fields you need
-- Use small `first` values when possible
-- Avoid deep filtering unless necessary (each block type adds 1,000,000)
-- Split complex queries into multiple simpler queries
-- Use `_allXXXMeta { count }` instead of fetching full records just to count
-
-See `references/pagination-and-ordering.md` for the full complexity cost reference with per-field-type costs.

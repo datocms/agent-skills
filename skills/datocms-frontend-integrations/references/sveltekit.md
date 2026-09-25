@@ -494,38 +494,7 @@ export async function performQuery<Result, Variables>(
 
 ### ContentLink Component Setup
 
-Create a Svelte component that initializes Content Link with routing support for the Web Previews Visual tab:
-
-**File:** `src/lib/components/ContentLink.svelte`
-
-```svelte
-<script lang="ts">
-  import { createController } from '@datocms/content-link';
-  import { goto } from '$app/navigation';
-  import { page } from '$app/state';
-  import { onMount } from 'svelte';
-
-  let controller: ReturnType<typeof createController> | null = null;
-
-  onMount(() => {
-    controller = createController({
-      onNavigateTo: (path) => {
-        goto(path);
-      },
-    });
-    controller.enableClickToEdit();
-
-    return () => {
-      controller?.dispose();
-      controller = null;
-    };
-  });
-
-  $effect(() => {
-    controller?.setCurrentPath(page.url.pathname);
-  });
-</script>
-```
+**File:** `src/lib/components/ContentLink.svelte` — the `@datocms/svelte` `<ContentLink>` from [svelte-content-link.md § SvelteKit Integration](./svelte-content-link.md#sveltekit-integration), plus `enableClickToEdit={true}`.
 
 Then add it to your root layout (`src/routes/+layout.svelte`), only rendering when draft mode is enabled:
 
@@ -557,56 +526,7 @@ export async function load(event) {
 
 ### Structured Text with Content Link
 
-When rendering Structured Text fields with `@datocms/svelte`, wrap the component in a group and add boundaries to embedded blocks and inline records:
-
-```svelte
-<script lang="ts">
-  import { StructuredText } from '@datocms/svelte';
-  import { stripStega } from '@datocms/content-link';
-  import BlockComponent from './BlockComponent.svelte';
-  import InlineRecordComponent from './InlineRecordComponent.svelte';
-
-  let { page } = $props();
-</script>
-
-<div data-datocms-content-link-group>
-  <StructuredText
-    data={page.content}
-    components={[
-      [isBlock, BlockComponent],
-      [isInlineItem, InlineRecordComponent],
-    ]}
-  />
-</div>
-```
-
-For the block and inline record components, add the boundary attribute at the component level:
-
-**`BlockComponent.svelte`:**
-
-```svelte
-<script lang="ts">
-  let { record } = $props();
-</script>
-
-<div data-datocms-content-link-boundary>
-  <!-- Block content here -->
-</div>
-```
-
-**`InlineRecordComponent.svelte`:**
-
-```svelte
-<script lang="ts">
-  let { record } = $props();
-</script>
-
-<span data-datocms-content-link-boundary>
-  <!-- Inline record content here -->
-</span>
-```
-
-Note: `renderLinkToRecord` does **not** need a boundary — record links wrap text that belongs to the structured text field, so clicking them correctly opens the structured text field editor.
+Group/boundary rules and example: [svelte-content-link.md § Structured Text Integration](./svelte-content-link.md#structured-text-integration).
 
 ### Non-Text Field Example
 
@@ -661,7 +581,8 @@ PRIVATE_DATOCMS_BASE_EDITING_URL=              # For Content Link
 
 ### Content Link Dependencies
 
-- `@datocms/content-link` — For click-to-edit overlays and stega utilities
+- `@datocms/svelte` — `<ContentLink />`
+- `@datocms/content-link` — stega utilities
 
 ## Real-Time Updates (Optional)
 

@@ -2,12 +2,6 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 # DatoCMS SEO Setup
 
-You are an expert at wiring DatoCMS SEO metadata into existing frontend projects. This recipe focuses on data-layer and head-rendering integration. It does not create or edit Dato schema in v1.
-
-See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
-
-Follow these steps in order. Do not skip steps.
-
 ## Contents
 
 - Step 1: Detect Context (silent)
@@ -19,10 +13,6 @@ Follow these steps in order. Do not skip steps.
 
 ## Step 1: Detect Context (silent)
 
-Silently examine the project:
-
-Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
-
 1. **Framework** — detect Next.js, Nuxt, SvelteKit, or Astro
 2. **Dato query layer** — inspect any shared `executeQuery` wrapper, GraphQL query files, generated GraphQL helpers, or page-level data loaders
 3. **Head integration** — inspect `generateMetadata`, `useHead`, layout head components, or existing SEO utilities
@@ -31,18 +21,7 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 6. **Content Link state** — detect whether Content Link / stega encoding is already configured, because SEO string logic may need `stripStega()`
 7. **Shared lib folder** — determine the correct place for reusable URL helpers
 
-### Stop conditions
-
-- If the framework cannot be determined, ask the user.
-- If the repo already has a strong SEO abstraction, patch it in place by default instead of replacing it.
-
 ## Step 2: Ask Questions
-
-Infer first from the repo.
-
-Follow the zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
-
-If you do ask, make it one concise question, put the recommended/default path first, and explain whether skipping it will leave placeholders, ownership, or project-specific values unresolved.
 
 Only ask if the project already has multiple competing metadata systems and it is unclear which one owns the final page head output.
 

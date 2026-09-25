@@ -2,12 +2,6 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 # DatoCMS Build Triggers Setup
 
-You are an expert at setting up lean, repeatable DatoCMS build-trigger management. This recipe replaces older one-off build-trigger helpers with a single declarative config plus sync and smoke-check scripts.
-
-See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
-
-Follow these steps in order. Do not skip steps.
-
 ## Contents
 
 - Step 1: Detect Context (silent)
@@ -18,10 +12,6 @@ Follow these steps in order. Do not skip steps.
 - Verification Checklist
 
 ## Step 1: Detect Context (silent)
-
-Silently examine the project:
-
-Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
 
 1. **Node project** — Confirm `package.json` exists
 2. **CMA client package** — Check for `@datocms/cma-client`, `@datocms/cma-client-node`, or `@datocms/cma-client-browser`
@@ -40,13 +30,8 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 ### Stop conditions
 
 - If `package.json` is missing, stop and explain that this setup expects a Node project so it can add local sync and smoke-check scripts.
-- If an existing trigger-management setup is materially different, inspect it first and patch it in place by default instead of replacing it wholesale.
 
 ## Step 2: Ask Questions
-
-Infer first from the repo.
-
-Follow the zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
 
 Only ask one explicit question if no `scripts/datocms-build-triggers.config.mjs` exists yet and the repo does not clearly indicate one adapter choice.
 
@@ -189,8 +174,6 @@ After generating the files, tell the user:
 3. How to run `datocms:build-triggers:sync`
 4. How to run `datocms:build-triggers:smoke`
 5. Whether the result is still `scaffolded`
-
-Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including an explicit `Unresolved placeholders` section.
 
 ## Verification Checklist
 

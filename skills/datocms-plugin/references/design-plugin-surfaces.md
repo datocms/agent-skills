@@ -17,9 +17,6 @@ Use this file after `design-foundations.md` when the plugin hook determines the 
 
 ## Shared rules
 
-- Wrap every rendered surface in `<Canvas ctx={ctx}>`
-- Import `datocms-react-ui/styles.css` once in the plugin entry file
-- Use `noAutoResizer` only for imposed-size surfaces
 - Use `ctx.updateHeight()` only when async or expanding content defeats the default auto-resizer
 - Use semantic Canvas tokens for colors; use `ctx.colorScheme` only for non-CSS theme branching
 
@@ -39,12 +36,6 @@ Best fit:
 
 Choose a normal page rhythm before inventing a custom settings dashboard.
 
-### Sizing
-
-- `renderConfigScreen` uses a self-resizing frame
-- normal `<Canvas ctx={ctx}>`
-- no `noAutoResizer`
-
 ## Page
 
 Best fit:
@@ -54,11 +45,6 @@ Best fit:
 - broader operational screens
 
 Use either a page shell or a full-height shell depending on content type. If the page needs a real two-pane work area, prefer `VerticalSplit` from the public design system when available; otherwise use a local flex/grid shell.
-
-### Sizing
-
-- `renderPage` uses an imposed-size frame
-- use `<Canvas ctx={ctx} noAutoResizer>`
 
 ## Sidebar panel
 
@@ -70,11 +56,6 @@ Best fit:
 
 Sidebar panels should stay compact. If they turn into a whole app, move to a full sidebar or a page.
 
-### Sizing
-
-- `renderItemFormSidebarPanel` and `renderUploadSidebarPanel` are self-resizing
-- normal `<Canvas ctx={ctx}>`
-
 ## Full sidebar
 
 Best fit:
@@ -85,11 +66,6 @@ Best fit:
 
 Full sidebars are side work, not separate dashboards. If the sidebar needs a real split layout, prefer `VerticalSplit` before building a custom divider shell.
 
-### Sizing
-
-- `renderItemFormSidebar` and `renderUploadSidebar` use imposed-size frames
-- use `<Canvas ctx={ctx} noAutoResizer>`
-
 ## Modal
 
 Best fit:
@@ -99,12 +75,6 @@ Best fit:
 - one-step auxiliary flows
 
 Keep modals narrow in scope and limited in vertical complexity.
-
-### Sizing
-
-- `renderModal` is self-resizing
-- normal `<Canvas ctx={ctx}>`
-- call `ctx.updateHeight()` only when results arrive asynchronously and the initial layout height is clearly wrong
 
 ### Backdrops
 
@@ -120,11 +90,6 @@ Best fit:
 
 Outlets must visually defer to the surrounding CMS screen.
 
-### Sizing
-
-- `renderItemFormOutlet` is self-resizing
-- normal `<Canvas ctx={ctx}>`
-
 ## Inspector
 
 Best fit:
@@ -135,11 +100,6 @@ Best fit:
 
 Use `VerticalSplit` when it reads naturally for the interaction and the installed `datocms-react-ui` version supports it.
 
-### Sizing
-
-- inspectors use imposed-size frames
-- use `<Canvas ctx={ctx} noAutoResizer>`
-
 ## Asset source
 
 Best fit:
@@ -149,11 +109,6 @@ Best fit:
 - source-specific metadata steps
 
 Asset sources should prioritize compact search, filters, results, and one clear selection path.
-
-### Sizing
-
-- asset sources are self-resizing
-- normal `<Canvas ctx={ctx}>`
 
 ## Surface-specific design defaults
 

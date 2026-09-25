@@ -323,3 +323,4 @@ Use `normalizeParameters` anywhere you read plugin settings (config screen, fiel
 
 - When `updatePluginParameters()` is called, the new values propagate **in real-time** to all connected users.
 - `ctx.plugin.attributes.parameters` reflects the last **saved** state — it does not update as you modify component state. It only changes after `updatePluginParameters()` completes.
+- Keep read-only permission branches simple; do not fork the screen into a second design.

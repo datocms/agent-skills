@@ -1,16 +1,5 @@
 # Navigation, Feedback, and Data Display
 
-## Contents
-
-- Dropdowns
-- Tabs
-- Tables
-- Lists and summary rows
-- Blank slates
-- Notices and info blocks
-- Badges and tags
-- Data-display checks
-
 ## Dropdowns
 
 Official doc: <https://www.datocms.com/docs/plugin-sdk/dropdown>
@@ -65,18 +54,6 @@ Common ingredients:
 
 Blank slates in the CMS are centered but still restrained.
 
-Good blank slate content:
-
-- one short title
-- one sentence of context
-- one action if the next step is obvious
-
-Bad blank slate content:
-
-- big illustration first, meaning later
-- three paragraphs of explanation
-- multiple equal actions
-
 ## Notices and info blocks
 
 Use a notice or info block when users need contextual guidance that should stay attached to the screen.
@@ -94,14 +71,6 @@ Keep both compact. If the message becomes a tutorial, move it elsewhere.
 ## Badges and tags
 
 CMS badges are tiny, uppercase, and used for real status or classification.
-
-Use them for:
-
-- state labels
-- environment markers
-- compact category indicators
-
-Do not turn every metadata point into a badge.
 
 ## Data-display checks
 

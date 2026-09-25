@@ -28,18 +28,6 @@ Keep labels aligned and predictable. Do not switch between left labels, top labe
 
 Labels should be short and concrete. Use helper text only when the field needs clarification.
 
-### Good helper text
-
-- expected format
-- side effect of a toggle
-- when a field is optional but recommended
-
-### Bad helper text
-
-- restating the label
-- sales copy
-- vague reassurance
-
 Secondary text should usually use `var(--color--ink-subtle)` and `var(--font-size-s)`.
 
 ## Validation
@@ -127,22 +115,6 @@ Raw fallback path:
 
 - Inputs: opacity `0.5`–`0.6`, `cursor: not-allowed`, `var(--color--disabled--surface)` background
 - Buttons: `var(--color--disabled--surface)` background, `var(--color--disabled--ink)` text, `cursor: not-allowed`
-
-```css
-.input:disabled,
-.textarea:disabled,
-.select:disabled {
-  background: var(--color--disabled--surface);
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.buttonDisabled {
-  background: var(--color--disabled--surface);
-  color: var(--color--disabled--ink);
-  cursor: not-allowed;
-}
-```
 
 ### Accessibility
 

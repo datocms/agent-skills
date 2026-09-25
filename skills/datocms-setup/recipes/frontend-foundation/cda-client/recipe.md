@@ -2,10 +2,6 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 # DatoCMS CDA Client Setup
 
-You are an expert at setting up the thinnest useful DatoCMS Content Delivery API baseline for frontend frameworks. This recipe only installs `@datocms/cda-client`, wires one published-content token placeholder, and creates or patches the framework's shared query utility.
-
-Follow these steps in order. Do not skip steps.
-
 ## Contents
 
 - Step 1: Detect Context (silent)
@@ -19,32 +15,16 @@ Follow these steps in order. Do not skip steps.
 
 ## Step 1: Detect Context (silent)
 
-Silently examine the project:
-
-Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
-
-1. **Framework and file layout** — use `../../../references/repo-conventions.md` for supported framework detection and `src/` usage.
-2. **Existing query utility** — Check for a shared DatoCMS query wrapper:
+1. **Existing query utility** — Check for a shared DatoCMS query wrapper:
    - Next.js / Astro: `src/lib/datocms/executeQuery.ts`, `lib/datocms/executeQuery.ts`
    - SvelteKit: `src/lib/datocms/queries.ts`
    - Nuxt: `composables/useQuery.ts`
-3. **Existing draft mode** — Check whether draft mode is already set up so the shared query utility can be patched toward the published-only baseline without fighting later preview upgrades
-4. **Installed deps** — Check `package.json` for `@datocms/cda-client`
-5. **Env files** — Check `.env`, `.env.local`, and `.env.example` for the published CDA token
-6. **Typed-query context** — Check for existing gql.tada or GraphQL Code Generator usage so the query utility can preserve the repo's current typed document style without configuring it here
-
-### Stop conditions
-
-- If the framework cannot be determined, ask the user which supported framework they are using.
-- If the repo already has a materially different shared query utility, inspect and patch it in place by default instead of replacing it wholesale.
+2. **Existing draft mode** — Check whether draft mode is already set up so the shared query utility can be patched toward the published-only baseline without fighting later preview upgrades
+3. **Installed deps** — Check `package.json` for `@datocms/cda-client`
+4. **Env files** — Check `.env`, `.env.local`, and `.env.example` for the published CDA token
+5. **Typed-query context** — Check for existing gql.tada or GraphQL Code Generator usage so the query utility can preserve the repo's current typed document style without configuring it here
 
 ## Step 2: Ask Questions
-
-Infer first from the repo.
-
-Follow the zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
-
-If you do ask, make it one concise question, put the recommended/default path first, and explain whether skipping it will leave placeholders, ownership, or project-specific values unresolved.
 
 Only ask if framework detection fails or the existing shared query utility is materially different enough that patching it safely is unclear.
 
@@ -92,7 +72,6 @@ The generated query utility must:
 - Do not add cache-tag or revalidation behavior
 - Do not add gql.tada or GraphQL Code Generator config
 - Do not add routes, cookies, JWT helpers, webhook handlers, or realtime code
-- Make targeted additions instead of full rewrites
 - Preserve working existing behavior where possible and patch toward the thin baseline
 
 ### Framework defaults
@@ -105,8 +84,6 @@ The generated query utility must:
 Install only this package when missing:
 
 - `@datocms/cda-client`
-
-Use the detected package manager.
 
 ## Step 6: Environment Variables
 

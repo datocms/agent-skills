@@ -137,7 +137,7 @@ Use `<Canvas ctx={ctx} noAutoResizer>` for imposed-size surfaces:
 - `renderInspector`
 - `renderInspectorPanel`
 
-Use Canvas auto-resizing first. Add `initialHeight`, `ctx.updateHeight()`, or custom `ResizeObserver` logic only when async content or custom layout defeats it.
+Use Canvas auto-resizing first. Add `initialHeight`, `ctx.updateHeight()`, or a `ResizeObserver` that calls `ctx.updateHeight()` only when async content or custom layout defeats it.
 
 ## Hook wiring guardrails
 

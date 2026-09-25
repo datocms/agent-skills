@@ -120,7 +120,7 @@ Only safe to auto-pick `.[0]` when agent has high confidence query matches singl
 
 Use `link` to connect current directory to DatoCMS project and configure profile.
 
-Profiles map to **separate projects or auth contexts**, not to environments of the same project. Staging/production environments of one project use `--environment=<id>` (see environment-commands.md). Multi-project workflows (one repo managing several DatoCMS projects) use named profiles (see blueprint-sync.md).
+Profiles map to **separate projects or auth contexts**, not to environments of the same project. Staging/production environments of one project use per-command `--environment=<id>` (`migrations:run`: `--source`/`--destination`). Multi-project workflows (one repo managing several DatoCMS projects) use named profiles (see blueprint-sync.md).
 
 ```bash
 # Interactive: pick workspace + project, configure profile

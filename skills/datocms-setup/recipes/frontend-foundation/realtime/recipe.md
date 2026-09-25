@@ -2,10 +2,6 @@ Internal recipe for `datocms-setup`. Use after parent skill selects `realtime` r
 
 # DatoCMS Real-Time Updates Setup
 
-Setup DatoCMS real-time updates. Generate components for live content streaming in draft mode.
-
-Follow steps in order.
-
 ## Contents
 
 - Step 1: Detect Context (silent)
@@ -18,39 +14,23 @@ Follow steps in order.
 
 ## Step 1: Detect Context (silent)
 
-Examine project:
-
-Follow shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect recipe-specific signals below.
-
-1. **Framework** — Read `package.json` and check for:
-   - `next` → Next.js (App Router)
-   - `nuxt` → Nuxt
-   - `@sveltejs/kit` → SvelteKit
-   - `astro` → Astro
-   - If none match, stop and ask the user which framework they are using.
-
-2. **Prerequisite: Draft mode** — Check if the draft mode enable endpoint exists:
+1. **Prerequisite: Draft mode** — Check if the draft mode enable endpoint exists:
    - Next.js: `src/app/api/draft-mode/enable/route.ts` or `app/api/draft-mode/enable/route.ts`
    - Nuxt: `server/api/draft-mode/enable.ts`
    - SvelteKit: `src/routes/api/draft-mode/enable/+server.ts`
    - Astro: `src/pages/api/draft-mode/enable/index.ts` or `src/pages/api/draft-mode/enable.ts`
 
-3. **Content Link setup** — Check if Content Link is configured (look for `contentLink: 'v1'` in the `executeQuery` wrapper). If Content Link is set up, the real-time subscription options should include `contentLink` and `baseEditingUrl` as well.
+2. **Content Link setup** — Check if Content Link is configured (look for `contentLink: 'v1'` in the `executeQuery` wrapper). If Content Link is set up, the real-time subscription options should include `contentLink` and `baseEditingUrl` as well.
 
-4. **Existing realtime utilities** — Check for existing subscription components or patterns
+3. **Existing realtime utilities** — Check for existing subscription components or patterns
 
-5. **Installed deps** — Check `package.json` for: `react-datocms`, `datocms-listen` (Nuxt), `vue-datocms`, `@datocms/svelte`, `@datocms/astro`
+4. **Installed deps** — Check `package.json` for: `react-datocms`, `datocms-listen` (Nuxt), `vue-datocms`, `@datocms/svelte`, `@datocms/astro`
 
 ### Stop conditions
 
 - If draft mode does not exist, record `draft-mode` as a prerequisite and continue after it is applied.
-- If realtime components already exist, inspect them first and update them in place by default. Only ask about full replacement if the current implementation is materially incompatible or the user explicitly wants a rewrite.
 
 ## Step 2: Ask Questions
-
-Infer first from the repo.
-
-Follow the zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
 
 Only ask if one of these high-impact ambiguities remains after inspection:
 
@@ -69,8 +49,6 @@ Only ask if one of these high-impact ambiguities remains after inspection:
 Otherwise, proceed directly.
 
 ## Step 3: Load References
-
-Read the relevant reference files. Load only what is needed.
 
 **Always load:**
 
@@ -151,13 +129,7 @@ Generate a usage pattern/example showing how to use `<QueryListener />` from `@d
 - Always include `includeDrafts: true` and `excludeInvalid: true`
 - If Content Link is configured, include `contentLink: 'v1'` and `baseEditingUrl`
 
-#### TypeScript
-
-Follow the TypeScript rules in `../../../patterns/MANDATORY_RULES.md`.
-
 #### Env var conventions
-
-Follow the env conventions in `../../../patterns/MANDATORY_RULES.md`.
 
 Recipe-specific env var names:
 
@@ -165,10 +137,6 @@ Recipe-specific env var names:
 - Nuxt: `useRuntimeConfig().datocms.draftContentCdaToken`
 - SvelteKit: `PRIVATE_DATOCMS_DRAFT_CONTENT_CDA_TOKEN`
 - Astro: draft CDA token from `astro:env/server`
-
-#### File conflicts
-
-Follow the file conflict rules in `../../../patterns/MANDATORY_RULES.md`.
 
 ## Step 5: Install Dependencies
 
@@ -181,8 +149,6 @@ Install missing packages:
 | `@datocms/svelte` | SvelteKit (if not already installed) |
 | `@datocms/astro` | Astro (if not already installed) |
 
-Use the project's package manager (see `../../../patterns/MANDATORY_RULES.md`).
-
 ## Step 6: Final handoff
 
 After generating all files, tell the user:
@@ -194,8 +160,6 @@ After generating all files, tell the user:
 5. the optional follow-up recipe id `visual-editing` if the user still wants Web Previews plus click-to-edit orchestration on top of realtime
 
 Treat the result as `scaffolded` if the repo still depends on placeholder page-integration steps, missing draft-token values, or unresolved ownership of the realtime wrapper. Report `production-ready` only when at least one real page or reusable wrapper is wired end to end with intentional repo values.
-
-Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including an explicit `Unresolved placeholders` section.
 
 ## Verification Checklist
 

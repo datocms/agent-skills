@@ -2,15 +2,11 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 # DatoCMS Cache Tags Setup
 
-You are an expert at setting up DatoCMS cache tag invalidation. This recipe generates the files needed for granular cache invalidation — only pages affected by a content change are purged, instead of revalidating all DatoCMS content on every change.
-
 Choose the applicable path:
 
 - **Next.js:** `rawExecuteQuery` with `queryId` → store tags in DB → `revalidateTag()` on webhook
 - **Astro 7+ with a compatible provider:** `rawExecuteQuery` → native request cache tags → `cache.invalidate()` on webhook
 - **Nuxt / SvelteKit / older Astro:** `rawExecuteQuery` → CDN response headers → webhook calls CDN purge API
-
-See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
 
 For provider header formats, see the [CDA cache-tag table](../../../../datocms-cda/references/draft-caching-environments.md#architectural-patterns).
 
@@ -27,11 +23,8 @@ For provider header formats, see the [CDA cache-tag table](../../../../datocms-c
 
 ## Step 1: Detect Context (silent)
 
-Follow `../../../references/repo-conventions.md`, then inspect:
-
-1. **Framework and file layout** — use `../../../references/repo-conventions.md`
-2. **Prerequisite: executeQuery wrapper** — search for existing `executeQuery` wrapping `@datocms/cda-client`. If missing, record `cda-client` as prerequisite and continue after wrapper is applied.
-3. **Existing cache tag setup** — check for:
+1. **Prerequisite: executeQuery wrapper** — search for existing `executeQuery` wrapping `@datocms/cda-client`. If missing, record `cda-client` as prerequisite and continue after wrapper is applied.
+2. **Existing cache tag setup** — check for:
 
    - Next.js: `executeQuery` using `rawExecuteQuery` with `queryId`, or `cache-tags-db` module
    - Nuxt: `useQueryWithCacheTags` or `fetchWithCacheTags`
@@ -40,8 +33,8 @@ Follow `../../../references/repo-conventions.md`, then inspect:
    - Any framework: webhook handler for cache invalidation
 
    If configured, inspect and update in place. Only ask for replacement if incompatible or user requests rewrite.
-4. **Astro rendering and provider support** — inspect the installed Astro/adapter versions and on-demand routes (`output: 'server'` or `prerender = false` with an adapter). Use the native Astro 7 path when supported; preserve older working integrations. Prerendered pages need their existing rebuild strategy.
-5. **Installed deps** — check `package.json` for `@datocms/cda-client`
+3. **Astro rendering and provider support** — inspect the installed Astro/adapter versions and on-demand routes (`output: 'server'` or `prerender = false` with an adapter). Use the native Astro 7 path when supported; preserve older working integrations. Prerendered pages need their existing rebuild strategy.
+4. **Installed deps** — check `package.json` for `@datocms/cda-client`
 
 **Stop conditions:**
 
@@ -50,7 +43,7 @@ Follow `../../../references/repo-conventions.md`, then inspect:
 
 ## Step 2: Ask Questions
 
-Infer from repo first. Follow `../../../patterns/MANDATORY_RULES.md`. Ask zero questions only when hosting choice is obvious.
+Ask zero questions only when hosting choice is obvious.
 
 **Next.js:** No clear cache-tag database signal:
 
@@ -115,18 +108,12 @@ Collect all contributing queries per response, apply the actual provider's forma
 - Validate webhook secret
 - Return 401 for invalid secrets
 
-**TypeScript:** Follow `../../../patterns/MANDATORY_RULES.md`
-
-**Env var naming:** Follow `../../../patterns/MANDATORY_RULES.md`
-
-Recipe-specific names:
+**Env var naming:**
 
 - Next.js: `CACHE_INVALIDATION_WEBHOOK_SECRET`, `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`
 - Nuxt: `NUXT_CACHE_INVALIDATION_WEBHOOK_SECRET`, `NUXT_FASTLY_SERVICE_ID`
 - SvelteKit: `PRIVATE_CACHE_INVALIDATION_WEBHOOK_SECRET`, `PRIVATE_FASTLY_SERVICE_ID`
 - Astro: `CACHE_INVALIDATION_WEBHOOK_SECRET`, `FASTLY_SERVICE_ID`
-
-**File conflicts:** Follow `../../../patterns/MANDATORY_RULES.md`
 
 **Output status:**
 
@@ -141,8 +128,6 @@ Recipe-specific names:
 | `@vercel/postgres` | Next.js with Vercel Postgres |
 
 Nuxt/SvelteKit/older Astro manual integrations need no additional dependencies for `rawExecuteQuery`. For Astro native caching, use the installed adapter's compatible cache provider as described in the Astro reference.
-
-Use project's package manager (see `../../../patterns/MANDATORY_RULES.md`).
 
 ## Step 6: Environment Variables
 
@@ -196,8 +181,6 @@ CACHE_INVALIDATION_WEBHOOK_SECRET=
 3. **If `scaffolded`:** list exact missing database/CDN/purge-adapter work for production-ready.
 
 4. **Testing:** Deploy site, make content change in DatoCMS, verify only affected pages purged (check CDN logs or response headers).
-
-Follow `../../../patterns/OUTPUT_STATUS.md` for final handoff, including explicit `Unresolved placeholders` section.
 
 ## Verification Checklist
 

@@ -1,7 +1,5 @@
 # Type Generation Setup
 
-This reference covers setting up TypeScript type generation for fully typed DatoCMS CDA queries using **gql.tada** or **GraphQL Code Generator**. Both produce `TypedDocumentNode` that `executeQuery` accepts directly (see `client-and-config.md` for TypedDocumentNode support).
-
 ## Contents
 
 - Which Approach?

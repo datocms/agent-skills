@@ -25,15 +25,6 @@ Structured Text components and renderer callbacks are covered here, including th
 
 Report `scaffolded` when placeholders remain, `production-ready` only when implementation no longer depends on unresolved project-specific values.
 
-## Contents
-
-- [Step 1: Detect Context](#step-1-detect-context-silent)
-- [Step 2: Classify and Route](#step-2-classify-and-route)
-- [Step 3: Load References](#step-3-load-references)
-- [Step 4: Generate or Patch Code](#step-4-generate-or-patch-code)
-- [Step 5: Verify](#step-5-verify)
-- [Cross-Skill Routing](#cross-skill-routing)
-
 ## Step 1: Detect Context (silent)
 
 Skip if context established. Only re-inspect when question can't be answered from prior context.
@@ -204,12 +195,6 @@ Load for framework-agnostic, non-widget-based, or crawler-specific:
 
 - `references/site-search-api.md`
 - `references/robots-and-sitemaps.md`
-
-### Verification reference
-
-When implementation work is involved, load:
-
-- `references/verification-checklists.md`
 
 ## Step 4: Generate or Patch Code
 

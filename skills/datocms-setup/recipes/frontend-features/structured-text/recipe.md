@@ -2,12 +2,6 @@ _Internal recipe for `datocms-setup`. Use after parent skill selects `structured
 
 # DatoCMS Structured Text Setup
 
-Expert Structured Text rendering in existing frontends. Creates shared `DatoStructuredText` renderer, patches query shapes to full DAST payload, integrates Content Link boundaries when visual editing configured.
-
-See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
-
-Follow steps in order. Don't skip.
-
 ## Contents
 
 - Step 1: Detect Context (silent)
@@ -19,10 +13,6 @@ Follow steps in order. Don't skip.
 
 ## Step 1: Detect Context (silent)
 
-Examine project:
-
-Follow repo inspection in `../../../references/repo-conventions.md`, then inspect:
-
 1. **Framework** — detect Next.js, Nuxt, SvelteKit, Astro
 2. **UI package** — inspect `package.json` for `react-datocms`, `vue-datocms`, `@datocms/svelte`, `@datocms/astro`
 3. **Existing Dato query utility** — inspect shared query wrapper and Dato helper folder
@@ -31,18 +21,7 @@ Follow repo inspection in `../../../references/repo-conventions.md`, then inspec
 6. **Content Link state** — detect whether stega / Content Link configured so boundaries/groups added correctly
 7. **Typed query context** — preserve gql.tada or GraphQL Code Generator usage if present
 
-### Stop conditions
-
-- If framework undetermined, ask user which supported stack they use.
-- If repo has materially different Structured Text abstraction, patch in place by default instead of replacing wholesale.
-
 ## Step 2: Ask Questions
-
-Infer from repo first.
-
-Follow zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
-
-If you ask, make one concise question, put recommended/default path first, explain whether skipping leaves placeholders, ownership, or project-specific values unresolved.
 
 Only ask if repo exposes multiple incompatible Structured Text renderers and genuinely unclear which one owns production rendering.
 

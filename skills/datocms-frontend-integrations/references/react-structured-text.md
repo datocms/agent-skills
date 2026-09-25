@@ -274,47 +274,7 @@ For framework-independent plain-text, HTML-string, or DOM-node export, load [con
 
 ## Content Link Integration
 
-When using Visual Editing (Content Link), Structured Text fields require special data attributes to make click-to-edit work correctly:
-
-**Rule 1:** Always wrap `<StructuredText>` in a `data-datocms-content-link-group`:
-
-```jsx
-<div data-datocms-content-link-group>
-  <StructuredText data={page.content} />
-</div>
-```
-
-**Rule 2:** Add `data-datocms-content-link-boundary` on `renderBlock`, `renderInlineRecord`, and `renderInlineBlock` — but **NOT** on `renderLinkToRecord`:
-
-```jsx
-<div data-datocms-content-link-group>
-  <StructuredText
-    data={page.content}
-    renderBlock={({ record }) => (
-      <div data-datocms-content-link-boundary>
-        <BlockComponent block={record} />
-      </div>
-    )}
-    renderInlineRecord={({ record }) => (
-      <span data-datocms-content-link-boundary>
-        <InlineComponent record={record} />
-      </span>
-    )}
-    renderLinkToRecord={({ record, children, transformedMeta }) => (
-      <a {...transformedMeta} href={`/resources/${record.slug}`}>
-        {children}
-      </a>
-    )}
-    renderInlineBlock={({ record }) => (
-      <span data-datocms-content-link-boundary>
-        <InlineBlockComponent record={record} />
-      </span>
-    )}
-  />
-</div>
-```
-
-**Why `renderLinkToRecord` doesn't need a boundary:** Record links are `<a>` tags wrapping text that belongs to the surrounding structured text. They don't introduce a separate editing target, so no URL collision occurs.
+Group/boundary rules and example: [react-content-link.md § Structured Text Integration](./react-content-link.md#structured-text-integration).
 
 ## Project Wrapper Component
 

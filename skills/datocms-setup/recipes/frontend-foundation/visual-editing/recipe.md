@@ -4,13 +4,7 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 This recipe is the orchestration layer for the full editorial preview experience. It coordinates the focused implementation recipes so the repo ends up with one coherent visual-editing workflow instead of disconnected preview pieces.
 
-See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
-
 ## Step 1: Detect Context (silent)
-
-Silently examine the project:
-
-Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
 
 1. **Framework and UI stack** — detect the supported framework and any installed DatoCMS rendering packages.
 2. **Existing preview foundations** — inspect whether the repo already has:
@@ -23,8 +17,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 5. **Frontend count** — inspect whether the repo clearly serves one frontend or multiple frontends/environments.
 
 ## Step 2: Ask Questions
-
-Follow the zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
 
 Only ask the grouped visual-editing follow-up when the repo inspection does not already answer the decisions safely:
 
@@ -91,5 +83,3 @@ Summarize:
 - whether the repo kept an existing Vercel overlay flow or switched fully to DatoCMS visual editing
 - the exact Web Previews handoff values, if Web Previews is part of the bundle
 - whether the final result is `scaffolded` or `production-ready`
-
-Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including an explicit `Unresolved placeholders` section.

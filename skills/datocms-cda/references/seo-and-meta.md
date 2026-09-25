@@ -1,7 +1,5 @@
 # SEO and Meta Tags
 
-Covers `_seoMetaTags`, `faviconMetaTags`, `globalSeo`, and SEO field values.
-
 ## Contents
 
 - `_seoMetaTags`

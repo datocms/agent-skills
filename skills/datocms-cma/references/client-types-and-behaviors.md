@@ -110,17 +110,6 @@ const rawUpdated = await client.items.rawUpdate("record_123", {
 **`rawList()` — accessing `meta.total_count` and pagination metadata:**
 
 ```ts
-const rawListResponse = await client.items.rawList({
-  filter: { type: "model_123" },
-  page: { limit: 0 },
-});
-
-const totalRecords = rawListResponse.meta.total_count;
-```
-
-**Important:** Setting `page.limit: 0` returns zero records but still includes `meta.total_count`, which is useful for counting without fetching data.
-
-```ts
 const rawPage = await client.items.rawList({
   filter: { type: "model_123" },
   page: { offset: 0, limit: 30 },
@@ -129,6 +118,8 @@ const rawPage = await client.items.rawList({
 const records = rawPage.data;
 const totalCount = rawPage.meta.total_count;
 ```
+
+Count only (`page.limit: 0`): see `references/filtering-and-pagination.md` § Counting without fetching.
 
 **`rawFind()` — with query params:**
 

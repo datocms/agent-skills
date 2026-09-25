@@ -2,10 +2,6 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 # DatoCMS GraphQL Type Generation Setup
 
-You are an expert at setting up TypeScript type generation for DatoCMS GraphQL queries. This recipe configures only CDA query typing. It does not configure CMA schema types.
-
-Follow these steps in order. Do not skip steps.
-
 ## Contents
 
 - Step 1: Detect Context (silent)
@@ -18,34 +14,17 @@ Follow these steps in order. Do not skip steps.
 
 ## Step 1: Detect Context (silent)
 
-Silently examine the project:
-
-Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
-
-1. **Framework** — Read `package.json` and check for:
-   - `next` -> Next.js
-   - `nuxt` -> Nuxt
-   - `@sveltejs/kit` -> SvelteKit
-   - `astro` -> Astro
-2. **Existing typegen** — Check for:
+1. **Existing typegen** — Check for:
    - `gql.tada` in `package.json`
    - `@graphql-codegen/cli` in `package.json`
    - `graphql.config.ts`
    - `schema.graphql`
    - an existing `graphql.ts` init file
    - generated GraphQL outputs already committed in the repo
-3. **Existing scripts** — Check `package.json` for `generate-schema` and `generate-ts-types`
-4. **Env files** — Check `.env`, `.env.local`, and `.env.example` for the published CDA token
-5. **File structure** — Determine whether the project uses `src/`
-
-### Stop conditions
-
-- If the framework cannot be determined, ask the user.
-- If the project already has a materially different type-generation setup, inspect and patch it in place by default instead of replacing it.
+2. **Existing scripts** — Check `package.json` for `generate-schema` and `generate-ts-types`
+3. **Env files** — Check `.env`, `.env.local`, and `.env.example` for the published CDA token
 
 ## Step 2: Ask Questions
-
-Follow the zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
 
 Decision rules:
 
@@ -93,7 +72,6 @@ Create or patch:
 
 ### Mandatory rules
 
-- Make targeted additions instead of full rewrites
 - Preserve working existing scripts and config where possible
 - Do not add CMA schema generation here
 - Do not add `generate-cma-types` here
@@ -116,8 +94,6 @@ Install only the dependencies required by the selected approach:
 - `@graphql-codegen/cli`
 - the supporting codegen packages required by the reference
 
-Use the detected package manager.
-
 ## Step 6: Final handoff
 
 After generating the files, tell the user:
@@ -125,8 +101,6 @@ After generating the files, tell the user:
 1. which approach now owns GraphQL query typing
 2. whether any schema or generated output still depends on local tokens or missing documents
 3. the optional follow-up recipe id `cma-types` if they also want CMA schema types
-
-Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including an explicit `Unresolved placeholders` section.
 
 ## Verification checklist
 

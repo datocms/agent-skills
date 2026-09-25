@@ -2,12 +2,6 @@ _Internal recipe for `datocms-setup`. Use only after parent skill selects `respo
 
 # DatoCMS Responsive Images Setup
 
-Expert at wiring DatoCMS responsive images into existing frontend projects. Recipe creates/patches one shared Dato image wrapper, normalizes `responsiveImage(...)` query shapes, patches real usage site when repo already exposes image field.
-
-See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
-
-Follow steps in order. Do not skip.
-
 ## Contents
 
 - Step 1: Detect Context (silent)
@@ -19,10 +13,6 @@ Follow steps in order. Do not skip.
 
 ## Step 1: Detect Context (silent)
 
-Silently examine project:
-
-Follow shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect recipe-specific signals below.
-
 1. **Framework** — detect Next.js, Nuxt, SvelteKit, or Astro
 2. **UI package** — inspect `package.json` for `react-datocms`, `vue-datocms`, `@datocms/svelte`, and `@datocms/astro`
 3. **Existing Dato query utility** — inspect shared query wrapper and Dato helper folder
@@ -30,18 +20,7 @@ Follow shared repo inspection conventions in `../../../references/repo-conventio
 5. **File layout** — detect `src/` vs non-`src/`, plus any existing `lib/datocms`, `components/datocms`, or similar shared area
 6. **Typed query context** — preserve gql.tada or GraphQL Code Generator usage if repo already has it
 
-### Stop conditions
-
-- If framework cannot be determined, ask user which supported stack they are using.
-- If repo already has materially different image abstraction, patch it in place by default instead of replacing wholesale.
-
 ## Step 2: Ask Questions
-
-Infer first from repo.
-
-Follow zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
-
-If you do ask, make one concise question, put recommended/default path first, explain whether skipping it will leave placeholders, ownership, or project-specific values unresolved.
 
 Only ask if repo exposes multiple competing image abstractions and unclear which one owns rendered output.
 

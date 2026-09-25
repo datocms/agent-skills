@@ -601,53 +601,7 @@ const draftMode = isDraftModeEnabled(Astro.cookies);
 
 ### Structured Text with Content Link
 
-When rendering Structured Text fields with `@datocms/astro`, wrap component in group and add boundaries to embedded blocks and inline records. `@datocms/astro` `StructuredText` component uses named props for custom renderers:
-
-```astro
----
-import { StructuredText, ensureValidStructuredTextProps } from '@datocms/astro/StructuredText';
-import BlockComponent from './BlockComponent.astro';
-import InlineRecordComponent from './InlineRecordComponent.astro';
----
-
-<div data-datocms-content-link-group>
-  <StructuredText
-    {...ensureValidStructuredTextProps({
-      data: page.content,
-      blockComponents: { my_block: BlockComponent },
-      inlineBlockComponents: { my_inline_block: InlineRecordComponent },
-    })}
-  />
-</div>
-```
-
-For block and inline record components, add boundary attribute at component level:
-
-**`BlockComponent.astro`:**
-
-```astro
----
-const { record } = Astro.props;
----
-
-<div data-datocms-content-link-boundary>
-  <!-- Block content here -->
-</div>
-```
-
-**`InlineRecordComponent.astro`:**
-
-```astro
----
-const { record } = Astro.props;
----
-
-<span data-datocms-content-link-boundary>
-  <!-- Inline record content here -->
-</span>
-```
-
-Note: `renderLinkToRecord` does **not** need boundary — record links wrap text belonging to structured text field, clicking them opens structured text field editor.
+Group/boundary rules and example: [astro-content-link.md § Structured Text Integration](./astro-content-link.md#structured-text-integration).
 
 ### Non-Text Field Example
 

@@ -50,7 +50,7 @@ npx datocms link --site-id=<ID> [--organization-id=<ID>] # agent links
 
 `datocms link` without `--site-id` requires terminal. In non-TTY it now exits cleanly with suggestion to pass `--site-id`; don't retry without it. Same when credentials missing — ask user to run `datocms login` first.
 
-For CLI work, use `npx datocms schema:inspect` on selected project/environment before schema-dependent code or mutations. Filter by model API key, id, or name as needed. See `references/schema-inspect.md`.
+For CLI work, use `npx datocms schema:inspect` (not manually joined model and field calls) on selected project/environment before schema-dependent code or mutations. Filter by model API key, id, or name as needed. See `references/schema-inspect.md`.
 
 ### Authentication policy
 
@@ -69,22 +69,17 @@ Each category reference loaded in Step 3 opens with **"Inputs to confirm before 
 
 ### Schema changes — decide approach with user
 
-DatoCMS schema operations fall into four buckets. Choice of approach is not automatic — ask user when bucket is not obvious from request, because reversibility and workflow preference matter more than which tool performs mutation.
+Ask user when row is not obvious from request — reversibility and workflow preference matter more than which tool mutates.
 
-| Situation | What it covers | Approach |
-| - | - | - |
-| **Destructive schema change** | DROP field, DROP model, `bulk_destroy` records, lossy `field_type` changes (e.g. `string → json`, `json → string`, anything that discards stored values) | **Migration** via `datocms-cli` (`migrations:new`), against forked sandbox first. Never run these against primary environment without explicit, repeated user confirmation. |
-| **Reversible schema change** | Add field, add model or block, rename field, toggle `required`, add or tighten validation, reorder fieldsets | **Ask user.** Both approaches safe; pick by preference and context. Lean to migration (`datocms-cli`) when repo already uses migrations workflow or user is on secondary branch — reviewable, reproducible. Direct mutation (`cma:call`, `cma:script` stdin-mode, or `cma:script` file-mode) fine for quick iteration on sandbox. Default to migration only when user has no preference AND repo shows migration conventions (`migrations/` directory, prior migration commits). |
-| **User-requested one-off** | Phrases like "quickly, without migrations workflow", "just patch this", "one-off", "don't scaffold migrations for this" | **Honor opt-out.** Use direct mutation via `cma:call` (single call with shape from `cma:docs`) or `cma:script` (stdin-mode for loops/multi-step, file-mode when script is long enough that heredoc hurts). Don't re-suggest migrations unless change turns out to be destructive schema change. |
-| **Content operation** | Publish, unpublish, delete individual records, fix slugs, bulk update field value, re-tag uploads | No migration needed. Prefer `cma:call` for single call; `cma:script` stdin-mode for loops, pagination, or multi-step logic; `cma:script` file-mode only when heredoc becomes painful. Code that needs to be committed and replayed across environments is migration (`datocms-cli`), not **datocms-cma**. |
+| Task | Approach |
+| - | - |
+| Destructive schema change: drop fields/models, `bulk_destroy` records, lossy `field_type` changes (e.g. `string → json`; anything discarding stored values) | Migration (`migrations:new`) against forked sandbox first. Never against primary without explicit, repeated user confirmation. |
+| Reversible schema change: add field/model/block, rename field, toggle `required`, add/tighten validation, reorder fieldsets | Ask _"Do you want this as reviewable migration, or direct mutation against sandbox?"_ — answer, not first-loaded skill, decides owner. Lean to migration when repo uses migrations or user is on secondary branch; direct mutation fine for quick sandbox iteration. Default to migration only when user has no preference AND repo shows migration conventions (`migrations/` directory, prior migration commits). |
+| Explicit one-off or opt-out ("just patch this", "without migrations workflow", "don't scaffold migrations") | Honor direct mutation. Don't re-suggest migrations unless change turns out destructive. |
+| Content operation: publish/unpublish, delete individual records, fix slugs, bulk field value updates, re-tag uploads | No migration needed. |
+| Code to commit and replay across environments | Migration, not **datocms-cma**. |
 
-Regardless of which skill is loaded, **question to ask user is same** for reversible schema change: _"Do you want this as reviewable migration, or direct mutation against sandbox?"_ Answer determines which skill owns follow-up — not which skill was loaded first.
-
-**Cross-skill routing:**
-
-- Destructive schema changes and migration branch of reversible schema change are this skill's core: `migrations:new`, `migrations:run`, fork-and-run, safe deployment. Stay here and load `creating-migrations.md` + `running-migrations.md`.
-- User-requested one-offs, content operations, and direct-mutation branch of reversible schema change are better covered by **datocms-cma**. Switch when user has opted out of migrations, when task is content mutation (publish, delete, fix), or when user wants `cma:script` or checked-in `buildClient()` script. Handoff is loading sibling skill's references — don't bounce user.
-- Unattended runtime code (CI, app server, webhook, long-lived automation) is separate scenario — that is where checked-in `buildClient()` script belongs, and **datocms-cma** owns that pattern.
+Destructive + migration branch stay here: load `creating-migrations.md` + `running-migrations.md`. One-offs, content operations, direct-mutation branch, `cma:script` or checked-in `buildClient()` requests → **datocms-cma**; load its references yourself, don't bounce user. Unattended runtime code (CI, app server, webhook, long-lived automation) → checked-in `buildClient()` script, owned by **datocms-cma**.
 
 ### Destructive and production-sensitive confirmations
 
@@ -139,7 +134,6 @@ Based on task classification, read appropriate reference files from `references/
 Use the selected reference for command syntax, required inputs, templates and verification. Keep the repo's package-manager runner; otherwise use `npx datocms`.
 
 - Scaffold migrations with `migrations:new`, not hand-named files. Use the reference's exact function signature; load **datocms-cma** for API calls inside the body.
-- Inspect the selected project/environment schema before schema-dependent code or mutations. Prefer `schema:inspect` over manually joining model and field calls.
 - For migrations, specify `--source`, dry-run first, and prefer fork-and-run over primary `--in-place`. Treat `--force` as an explicit override.
 - For direct calls, load `direct-cma-calls.md` or `cma-script.md` before choosing positional arguments, stdin or file mode. Keep schema-approach and environment authorization from Step 2.
 - Before execution, verify the selected authentication route, profile, environment and output paths. Reuse established OAuth or unattended token authentication; don't require both.
@@ -151,7 +145,7 @@ This skill covers **CLI commands, flags, configuration, workflows, and migration
 
 | Condition | Route to |
 | - | - |
-| DAST inside scripts or migrations | **datocms-structured-text** — [document model](../datocms-structured-text/references/document-model.md), [editing](../datocms-structured-text/references/editing.md), or [conversion](../datocms-structured-text/references/conversion.md); **datocms-cma** for record persistence |
+| DAST inside scripts or migrations | **datocms-structured-text**; **datocms-cma** for record persistence |
 | CMA API calls inside migration script bodies (records, schema, uploads) | **datocms-cma** |
 | Programmatic environment management via `client.environments.*` in code | **datocms-cma** |
 | Consuming generated schema types inside application code or reusable scripts | **datocms-cma** |

@@ -2,23 +2,14 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 # DatoCMS Contentful Import Setup
 
-You are an expert at setting up the minimum repeatable workflow for importing Contentful content into DatoCMS through the CLI. This recipe keeps the setup provider-specific and lightweight: one plugin, one helper, one package script.
-
-Follow these steps in order. Do not skip steps.
-
 ## Step 1: Detect Context (silent)
 
-Silently examine the project:
-
-Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
-
 1. **Node project** — Check for `package.json`
-2. **Package manager** — See `../../../patterns/MANDATORY_RULES.md`.
-3. **Bootstrap state** — Confirm the `datocms` npm package is installed and the active profile has a `siteId` (owned by `cli-bootstrap`). If missing, surface `cli-bootstrap` as an unmet prerequisite and stop.
-4. **Contentful plugin** — Check `npx datocms plugins --json` for `@datocms/cli-plugin-contentful` (CLI plugin in the CLI data dir, not `package.json`)
-5. **Environment files** — Check `.env.example`, `.env`, and `.env.local`
-6. **Existing helper** — Check for `scripts/datocms-import-contentful.mjs`
-7. **Existing scripts** — Check `package.json` for `datocms:import:contentful`
+2. **Bootstrap state** — Confirm the `datocms` npm package is installed and the active profile has a `siteId` (owned by `cli-bootstrap`). If missing, surface `cli-bootstrap` as an unmet prerequisite and stop.
+3. **Contentful plugin** — Check `npx datocms plugins --json` for `@datocms/cli-plugin-contentful` (CLI plugin in the CLI data dir, not `package.json`)
+4. **Environment files** — Check `.env.example`, `.env`, and `.env.local`
+5. **Existing helper** — Check for `scripts/datocms-import-contentful.mjs`
+6. **Existing scripts** — Check `package.json` for `datocms:import:contentful`
 
 ### Stop conditions
 
@@ -27,12 +18,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 - If an existing Contentful import helper follows a materially different flow, patch it in place by default and only ask if a rewrite would replace working behavior.
 
 ## Step 2: Ask Questions
-
-Infer first from the repo.
-
-Follow the zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
-
-If you do ask, make it one concise question, put the recommended/default path first, and explain whether skipping it will leave placeholders, ownership, or project-specific values unresolved.
 
 Only ask if an existing Contentful import helper materially conflicts with the lean onboarding flow.
 

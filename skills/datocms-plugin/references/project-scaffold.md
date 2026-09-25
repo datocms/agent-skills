@@ -1,7 +1,5 @@
 # Project Scaffold Reference
 
-This reference provides the standard project structure and configuration files for creating a new DatoCMS plugin from scratch.
-
 ## Contents
 
 - Recommended Directory Structure

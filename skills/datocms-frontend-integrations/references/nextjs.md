@@ -426,46 +426,7 @@ type ExecuteQueryOptions<Variables> = {
 
 ### ContentLink Component Setup
 
-Create a client component that initializes Content Link with routing support for the Web Previews Visual tab.
-
-> **Alternative:** The `react-datocms` package also exports a declarative `<ContentLink>` component (see `react-content-link.md`). The imperative `createController` approach below gives more control over lifecycle and routing; the `<ContentLink>` component is simpler for basic setups.
-
-**File:** `src/components/ContentLink.tsx`
-
-```tsx
-'use client';
-
-import { createController } from '@datocms/content-link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
-
-export function ContentLink() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const controllerRef = useRef<ReturnType<typeof createController> | null>(null);
-
-  useEffect(() => {
-    const controller = createController({
-      onNavigateTo: (path) => {
-        router.push(path);
-      },
-    });
-    controller.enableClickToEdit();
-    controllerRef.current = controller;
-
-    return () => {
-      controller.dispose();
-      controllerRef.current = null;
-    };
-  }, [router]);
-
-  useEffect(() => {
-    controllerRef.current?.setCurrentPath(pathname);
-  }, [pathname]);
-
-  return null;
-}
-```
+**File:** `src/components/ContentLink.tsx` — the Next.js App Router client component from [react-content-link.md § Next.js App Router](./react-content-link.md#nextjs-app-router), plus `enableClickToEdit={{ hoverOnly: true }}`.
 
 Add to root layout, render only when draft mode enabled:
 
@@ -489,38 +450,7 @@ export default async function RootLayout({ children }) {
 
 ### Structured Text with Content Link
 
-Wrap Structured Text component in a group, add boundaries to embedded blocks and inline records:
-
-```tsx
-import { StructuredText } from 'react-datocms/structured-text';
-
-function PageContent({ page }) {
-  return (
-    <div data-datocms-content-link-group>
-      <StructuredText
-        data={page.content}
-        renderBlock={({ record }) => (
-          <div data-datocms-content-link-boundary>
-            <BlockComponent block={record} />
-          </div>
-        )}
-        renderInlineRecord={({ record }) => (
-          <span data-datocms-content-link-boundary>
-            <InlineRecordComponent record={record} />
-          </span>
-        )}
-        renderLinkToRecord={({ record, children, transformedMeta }) => (
-          <a {...transformedMeta} href={`/posts/${record.slug}`}>
-            {children}
-          </a>
-        )}
-      />
-    </div>
-  );
-}
-```
-
-`renderLinkToRecord` doesn't need a boundary — record links wrap text belonging to the structured text field.
+Group/boundary rules and example: [react-content-link.md § Structured Text Integration](./react-content-link.md#structured-text-integration).
 
 ### Non-Text Field Example
 
@@ -580,7 +510,7 @@ DATOCMS_BASE_EDITING_URL=              # For Content Link, e.g. https://your-pro
 
 ### Content Link Dependencies
 
-Required: `@datocms/content-link`
+Required: `react-datocms` (`<ContentLink />`), `@datocms/content-link`
 
 ## Real-Time Updates (Optional)
 

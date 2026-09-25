@@ -39,7 +39,6 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
 ## Local section shell
 
 ```css
-/* --space-unit is NOT injected by Canvas; define :root { --space-unit: 12px; } locally */
 .section {
   margin-block: calc(4 * var(--space-unit));
 }
@@ -78,7 +77,7 @@ Use these patterns when `datocms-react-ui` does not expose the exact shell you n
   display: flex;
   align-items: center;
   gap: var(--spacing-m);
-  margin-bottom: calc(4 * var(--space-unit)); /* requires local --space-unit: 12px */
+  margin-bottom: calc(4 * var(--space-unit));
 }
 
 .pageTitle {
@@ -328,5 +327,3 @@ Use `0.2s` and `var(--material-ease)` as the default transition for interactive 
 - use primary or primary-soft tokens for selected/current/active rows, cards, chips, tabs, images, dropdown options, or picker choices
 - mix context families, such as danger ink on a primary surface or selected ink on a warning surface
 - bring in a generic dashboard template when a local wrapper is enough
-
-Reach for `color-mix(...)` or local color variables only for real customization outside standard Canvas semantics: media overlays, charts, vendor widgets, artwork, or user-requested product colors.

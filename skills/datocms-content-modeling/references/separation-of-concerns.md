@@ -84,7 +84,7 @@ fields.create(modelId, {
 
 Frontend maps `tone: "warning"` to current visual style. Content stays semantic across redesigns.
 
-For validator + appearance pairing making enum show as real dropdown, see `field-configuration.md` § "Constrain a string to a fixed set of values — enum".
+For validator + appearance pairing making enum show as real dropdown, see `field-configuration.md` § "Constrain string to fixed set — `enum`".
 
 ## Don't recreate built-in record meta
 
@@ -161,16 +161,7 @@ Same logic applies to upload-level attributes in Media Area (`copyright`, `autho
 
 ## Don't recreate `position` either — use model ordering
 
-Same trap, different field. To order records in list, **don't add `position` integer field**. Model owns ordering:
-
-| What you want | Model attribute | Editor experience |
-| - | - | - |
-| Editors drag records into curated order | `sortable: true` | Drag-and-drop handle in collection |
-| Hierarchical parent → children with order inside each level | `tree: true` | Drag-and-drop with indenting; `parent` and `position` managed for you |
-| Automatic order by domain field (e.g. `priority`, `event_date`) | `ordering_field: { id, type: "field" }` + `ordering_direction` | Records sort automatically |
-| Automatic order by meta timestamp | `ordering_meta: 'created_at' \| 'updated_at' \| 'first_published_at' \| 'published_at'` + `ordering_direction` | Pure chronological feeds |
-
-Four strategies mutually exclusive — pick one. See `model-configuration.md` § Behaviour — ordering for full decision shortcuts and constraints on block models.
+Same trap, different field. To order records in list, **don't add `position` integer field**. Model owns ordering — `sortable`, `tree`, `ordering_field` or `ordering_meta` (+ `ordering_direction`), mutually exclusive. See `model-configuration.md` § Behaviour — ordering.
 
 ## Hints — the schema's running commentary
 
@@ -214,15 +205,4 @@ Same applies to model and fieldset hints: write while designing, not as retroact
 
 ## The same trap, applied to blocks
 
-Block model names suffer same problem more visibly because they end up in project's Blocks Library where editors see them.
-
-- `homepage_hero_block` → ❌ ties block to page
-- `hero_block` → ✅ hero is hero on any page
-- `three_card_grid_block` → ❌ layout description, not content shape
-- `card_grid_block` (with `cards` array) → ✅ frontend chooses 2/3/4 columns
-- `blue_callout_block`, `yellow_callout_block`, `red_callout_block` → ❌ three near-duplicate blocks
-- one `callout_block` with `tone` enum → ✅ one shape, frontend maps tone → color
-
-(All block `api_key`s in examples carry `_block` suffix — see `models-vs-blocks.md` § "Naming convention" for why.)
-
-See `content-reuse.md` for more on block-library hygiene.
+Block names too — `hero_block` not `homepage_hero_block`, `card_grid_block` not `three_card_grid_block`, one `callout_block` + `tone` enum not per-color blocks. See `content-reuse.md` § Block-library hygiene anti-patterns.

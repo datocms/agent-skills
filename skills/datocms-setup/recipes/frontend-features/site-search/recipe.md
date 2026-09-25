@@ -2,12 +2,6 @@ _Internal recipe for `datocms-setup`. Use only after parent skill selects `site-
 
 # DatoCMS Site Search Setup
 
-Expert at DatoCMS Site Search. Combines Dato provisioning + local frontend wiring for working search route, explicit index wiring, least-privilege tokens.
-
-See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
-
-Follow steps in order. No skipping.
-
 ## Contents
 
 - Step 1: Detect Context (silent)
@@ -19,11 +13,7 @@ Follow steps in order. No skipping.
 
 ## Step 1: Detect Context (silent)
 
-Silently examine project:
-
-Follow shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect recipe-specific signals:
-
-1. **Framework and UI stack** — use `../../../references/repo-conventions.md` for framework detection, then inspect whether `react-datocms`, `vue-datocms`, `@datocms/svelte`, or `@datocms/astro` installed. If none match, infer React-based, Vue-based, or other.
+1. **Framework and UI stack** — inspect whether `react-datocms`, `vue-datocms`, `@datocms/svelte`, or `@datocms/astro` installed. If none match, infer React-based, Vue-based, or other.
 2. **CMA client packages** — Check `@datocms/cma-client`, `@datocms/cma-client-node`, `@datocms/cma-client-browser`
 3. **Existing search UI** — Search `/search` routes, `useSiteSearch`, `searchResults.rawList`, existing search components
 4. **Existing Dato helpers** — Search shared `executeQuery` wrapper, Dato lib folder, existing env helpers
@@ -31,14 +21,7 @@ Follow shared repo inspection conventions in `../../../references/repo-conventio
 6. **Public route structure** — Inspect repo for distinct top-level public sections like `/blog`, `/docs`, `/help`
 7. **Existing search topology** — If repo has Site Search wiring, inspect whether one shared index or multiple
 
-### Stop conditions
-
-- Framework undetermined? Ask user which stack.
-- Repo has materially different search integration? Patch in place by default, don't replace wholesale.
-
 ## Step 2: Ask Questions
-
-Follow zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
 
 Ask only if unresolved decision after inspection:
 
@@ -147,8 +130,6 @@ After generating files, tell user:
 2. whether Site Search now uses one index or multiple
 3. which env vars still need real values, if any
 4. how to trigger fresh indexing pass if content hasn't been crawled yet
-
-Follow shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including explicit `Unresolved placeholders` section.
 
 ## Verification checklist
 

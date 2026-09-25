@@ -1,6 +1,6 @@
 # Mandatory Rules
 
-These rules apply to every datocms-setup recipe. They are not repeated in individual recipe files.
+These rules apply to every datocms-setup recipe. They are not repeated in individual recipe files. Run each recipe's steps in order; skip none.
 
 ## Contents
 

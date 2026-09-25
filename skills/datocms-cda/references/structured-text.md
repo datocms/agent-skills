@@ -148,40 +148,6 @@ DatoCMS provides `<StructuredText>` components for popular frameworks that handl
 
 For framework-independent plain-text, HTML-string, or DOM-node export, load [conversion](../../datocms-structured-text/references/conversion.md). For framework rendering APIs, load the matching [frontend reference](../../datocms-frontend-integrations/SKILL.md).
 
-The framework components accept custom renderers for blocks, inline records, inline blocks, and record links:
-
-```tsx
-import { StructuredText } from "react-datocms/structured-text";
-
-<StructuredText
-  data={post.content}
-  renderBlock={({ record }) => {
-    switch (record._modelApiKey) {
-      case "image_block":
-        return <img src={record.image.url} alt={record.image.alt} />;
-      case "cta_block":
-        return <a href={record.url}>{record.label}</a>;
-      default:
-        return null;
-    }
-  }}
-  renderInlineRecord={({ record }) => {
-    return <a href={`/posts/${record.slug}`}>{record.title}</a>;
-  }}
-  renderLinkToRecord={({ record, children }) => {
-    return <a href={`/posts/${record.slug}`}>{children}</a>;
-  }}
-  renderInlineBlock={({ record }) => {
-    switch (record._modelApiKey) {
-      case "mention_block":
-        return <span className="mention">@{record.username}</span>;
-      default:
-        return null;
-    }
-  }}
-/>
-```
-
 ## Complete Example
 
 ```ts

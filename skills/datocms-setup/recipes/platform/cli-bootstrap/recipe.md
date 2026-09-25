@@ -2,27 +2,9 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 # DatoCMS CLI Bootstrap
 
-You wire repos to DatoCMS projects so CLI commands and CMA operations authenticate via OAuth.
-
 This is the canonical "CLI + link" bootstrap. Recipes needing CLI (`migrations`, `cma-types`, `contentful-import`, `wordpress-import`, `cli-profiles`, and dependents) declare this as prerequisite. Keep it single-purpose: install CLI, ensure OAuth session, link directory to DatoCMS project. No migration directories, `.env` placeholders, or package scripts here — downstream recipes handle those.
 
-Follow these steps in order. Do not skip.
-
-## Contents
-
-- Step 1: Detect Context (silent)
-- Step 2: Ask Questions
-- Step 3: Load References
-- Step 4: Drive the bootstrap
-- Step 5: Install Dependencies
-- Step 6: Next Steps
-- Verification Checklist
-
 ## Step 1: Detect Context (silent)
-
-Silently examine project:
-
-Follow shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect recipe-specific signals below.
 
 1. **Node project** — Check `package.json`. If missing, stop: Node projects only.
 2. **CLI installation** — Check `package.json` for `datocms` in `devDependencies` or `dependencies`.
@@ -37,8 +19,6 @@ Follow shared repo inspection conventions in `../../../references/repo-conventio
 - Active profile has valid `siteId` AND `npx datocms whoami` succeeds → already bootstrapped. Report and exit without changes.
 
 ## Step 2: Ask Questions
-
-Follow zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
 
 Ask only when `npx datocms projects:list` returns multiple candidates and user intent does not clearly identify single project. Never silently pick fuzzy-match winner — wiring repo to wrong DatoCMS project = hard to detect, causes silent corruption.
 
@@ -62,7 +42,7 @@ Unlike feature recipes, this "generate" step = CLI invocations, not file writes.
 
 ### Required actions
 
-1. **Install `datocms`** if missing. Use project package manager (see `../../../patterns/MANDATORY_RULES.md`). Install as `devDependency` — CLI is development-time tool.
+1. **Install `datocms`** if missing. Install as `devDependency` — CLI is development-time tool.
 2. **Ensure OAuth session exists.** If `npx datocms whoami` fails, instruct user to run `npx datocms login` themselves. Agent cannot drive this step: opens browser for OAuth, requires interactive terminal. Wait for user confirmation before continuing.
 3. **Discover accessible projects.** Run `npx datocms projects:list [hint] --json`, using best hint from conversation context (project name, domain). Parse JSON output.
 4. **Pick the right project.**
@@ -99,8 +79,6 @@ After project linked, report to user:
 5. Optional follow-up recipe ids:
    - `migrations` — add CLI migrations workflow on top of bootstrap.
    - `cli-profiles` — add extra named profiles when repo manages multiple DatoCMS projects (e.g. blueprint + client projects).
-
-Follow shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including explicit `Unresolved placeholders` section.
 
 ## Verification Checklist
 

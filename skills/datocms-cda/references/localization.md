@@ -1,7 +1,5 @@
 # Localization
 
-Covers querying localized content: site locales, query-level and field-level locale arguments, fallback locales, fetching all locale values, and filtering by locale availability.
-
 ## Contents
 
 - Get Site Locales

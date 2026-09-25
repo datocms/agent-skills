@@ -2,10 +2,6 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 # DatoCMS Draft Mode Setup
 
-You are an expert at setting up DatoCMS draft mode for frontend frameworks. This recipe generates all files needed for draft mode: enable/disable endpoints, utilities, and an `executeQuery` wrapper with dual-token switching.
-
-Follow these steps in order. Do not skip steps.
-
 ## Contents
 
 - Step 1: Detect Context (silent)
@@ -19,42 +15,29 @@ Follow these steps in order. Do not skip steps.
 
 ## Step 1: Detect Context (silent)
 
-Silently examine the project:
-
-Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
-
-1. **Framework and file layout** — use `../../../references/repo-conventions.md` for supported framework detection, `src/` usage, and the standard draft-mode route locations.
-
-2. **Existing draft mode** — Check if draft endpoints already exist:
+1. **Existing draft mode** — Check if draft endpoints already exist:
    - Next.js: `src/app/api/draft-mode/enable/route.ts` or `app/api/draft-mode/enable/route.ts`
    - Nuxt: `server/api/draft-mode/enable.ts`
    - SvelteKit: `src/routes/api/draft-mode/enable/+server.ts`
    - Astro: `src/pages/api/draft-mode/enable/index.ts` or `src/pages/api/draft-mode/enable.ts`
 
-3. **Existing executeQuery wrapper** — Search for an existing `executeQuery` function that wraps `@datocms/cda-client`
+2. **Existing executeQuery wrapper** — Search for an existing `executeQuery` function that wraps `@datocms/cda-client`
 
-4. **Installed deps** — Check `package.json` against the selected framework reference's Core Dependencies before installing missing packages
+3. **Installed deps** — Check `package.json` against the selected framework reference's Core Dependencies before installing missing packages
 
-5. **Env files** — Check `.env`, `.env.local`, `.env.example` for existing DatoCMS tokens
+4. **Env files** — Check `.env`, `.env.local`, `.env.example` for existing DatoCMS tokens
 
 ### Stop conditions
 
-- If the framework cannot be determined, ask the user.
 - If draft endpoints already exist, inspect the current implementation first and update it in place by default. Only ask about full replacement if the existing setup is materially different, clearly broken, or the user requested a clean rewrite.
 
 ## Step 2: Ask Questions
 
-Infer first from the repo.
-
-Follow the zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
-
 Only ask if inspecting an existing draft-mode setup leaves one high-impact ambiguity around which existing endpoint, cookie helper, or shared query wrapper should remain the source of truth.
 
-If you do ask, make it one concise question, put the recommended/default path first, and explain what happens if the user skips it. Recommended default: preserve the most central working draft-aware wrapper or endpoint already used by the live preview flow. If the user skips, patch that strongest existing owner in place and list any alternative owners under `Unresolved placeholders`.
+Recommended default: preserve the most central working draft-aware wrapper or endpoint already used by the live preview flow. If the user skips, patch that strongest existing owner in place and list any alternative owners under `Unresolved placeholders`.
 
 ## Step 3: Load References
-
-Read the relevant reference files. Load only what is needed.
 
 **Always load:**
 
@@ -108,19 +91,9 @@ Create all files following the patterns in the loaded references. Generate:
 - Use the framework's native redirect and response mechanisms
 - Non-Next.js frameworks: keep the reference's JWT signing/verification helper server-only. Nuxt Vue components use `useDraftMode` with `jwt-decode`; they must not import the Node-only signing helper
 
-#### TypeScript
-
-Follow the TypeScript rules in `../../../patterns/MANDATORY_RULES.md`.
-
 #### Env var naming conventions
 
-Follow the env conventions in `../../../patterns/MANDATORY_RULES.md`.
-
 Use the exact names in Step 6 and the selected framework reference's runtime configuration. Next.js uses built-in draft mode and does not need a JWT signing secret. Keep draft-token configuration, signing secrets, and endpoint authentication secrets out of public runtime configuration; Nuxt exposes only the published CDA token there.
-
-#### File conflicts
-
-Follow the file conflict rules in `../../../patterns/MANDATORY_RULES.md`.
 
 ## Step 5: Install Dependencies
 
@@ -133,8 +106,6 @@ Install missing packages from the selected framework reference's Core Dependenci
 | `jsonwebtoken` | Non-Next.js reference cookie helpers (for JWT signing/verification) |
 | `@types/jsonwebtoken` | Non-Next.js reference cookie helpers (dev dependency) |
 | `jwt-decode` | Nuxt's client-side `useDraftMode` composable |
-
-Use the project's package manager (see `../../../patterns/MANDATORY_RULES.md`).
 
 ## Step 6: Environment Variables
 
@@ -194,8 +165,6 @@ After generating all files, tell the user:
    - `realtime` for live draft-session updates
 
 Treat the result as `scaffolded` if any token or secret still uses placeholders or if wrapper ownership stayed ambiguous. Report `production-ready` only when the generated or patched draft-mode flow uses intentional repo values and no ownership ambiguity remains.
-
-Follow the shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including an explicit `Unresolved placeholders` section.
 
 ## Verification Checklist
 

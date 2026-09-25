@@ -2,17 +2,11 @@ _Internal recipe for `datocms-setup`. Use after parent skill selects `cli-profil
 
 # DatoCMS CLI Profiles Setup
 
-Expert at adding named DatoCMS CLI profiles on top of OAuth-linked default from `cli-bootstrap`. Named profiles = managing **multiple DatoCMS projects from same repo**, typically blueprint + client projects (see `blueprint-sync`).
+Named profiles = managing **multiple DatoCMS projects from same repo**, typically blueprint + client projects (see `blueprint-sync`).
 
 Same-project env separation (staging vs production) = DatoCMS environments (`--environment=<id>`, `--source` / `--destination`), NOT profiles. Parallel profiles at same `siteId` duplicate work + invite drift.
 
-Follow steps in order. Don't skip.
-
 ## Step 1: Detect Context (silent)
-
-Silently examine:
-
-Follow shared repo inspection in `../../../references/repo-conventions.md`, then inspect:
 
 1. **Node project** — Check `package.json`
 2. **Bootstrap state** — Confirm `datocms` npm package installed + active profile has `siteId` (owned by `cli-bootstrap`). If missing, surface `cli-bootstrap` as prerequisite + stop.
@@ -83,8 +77,6 @@ After generating files, tell user:
 2. Test each new profile with `npx datocms environments:list --profile=<id>`
 3. Whether result is `scaffolded` or `production-ready`
 4. Optional follow-up: `blueprint-sync` for shared multi-project rollout
-
-Follow shared final handoff in `../../../patterns/OUTPUT_STATUS.md`, including explicit `Unresolved placeholders` section.
 
 ## Verification Checklist
 

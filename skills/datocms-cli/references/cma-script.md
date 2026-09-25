@@ -155,17 +155,6 @@ console.log(itemTypes.map((t) => t.api_key));
 EOF
 ```
 
-### stdin-mode heredoc with typed `Schema.*`
-
-```bash
-npx datocms cma:script <<'EOF'
-await client.items.create<Schema.Article>({
-  item_type: { id: 'ABC123', type: 'item_type' },
-  title: 'Hello world',
-});
-EOF
-```
-
 ### stdin-mode one-liner
 
 ```bash
@@ -178,12 +167,6 @@ echo 'console.log((await client.itemTypes.list()).map(t => t.api_key))' \
 ```bash
 npx datocms cma:script tmp/scripts/backfill-slugs.ts --environment=staging
 ```
-
-File must:
-
-- `export default async function(client: Client)`,
-- import `Client` from `datocms/lib/cma-client-node`,
-- sit in directory with `datocms` resolvable via `node_modules`.
 
 ## Picking right tool
 

@@ -1,7 +1,5 @@
 # Images and Videos
 
-Covers `responsiveImage` queries, imgix parameters, placeholder images, focal points, upload/asset fields, and Mux video integration.
-
 ## Contents
 
 - `responsiveImage` Query

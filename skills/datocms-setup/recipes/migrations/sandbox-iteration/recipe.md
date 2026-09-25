@@ -2,21 +2,12 @@ _Internal recipe for `datocms-setup`. Use this file only after the parent skill 
 
 # DatoCMS Sandbox Iteration Setup
 
-You are an expert at setting up a lean local sandbox-reset workflow for DatoCMS CLI migrations. This recipe adds one helper script and one package wrapper for the common destroy, refork, rerun loop used during migration development.
-
-Follow these steps in order. Do not skip steps.
-
 ## Step 1: Detect Context (silent)
 
-Silently examine the project:
-
-Follow the shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect the recipe-specific signals below.
-
 1. **Node project** — Check for `package.json`
-2. **Package manager** — See `../../../patterns/MANDATORY_RULES.md`.
-3. **CLI migrations baseline** — Check for the `datocms` npm package, `datocms.config.json`, and a `migrations/` directory or existing migration scripts
-4. **Existing helper** — Check for `scripts/datocms-reset-sandbox.mjs`
-5. **Existing scripts** — Check `package.json` for `datocms:sandbox:reset`
+2. **CLI migrations baseline** — Check for the `datocms` npm package, `datocms.config.json`, and a `migrations/` directory or existing migration scripts
+3. **Existing helper** — Check for `scripts/datocms-reset-sandbox.mjs`
+4. **Existing scripts** — Check `package.json` for `datocms:sandbox:reset`
 
 ### Stop conditions
 
@@ -24,12 +15,6 @@ Follow the shared repo inspection conventions in `../../../references/repo-conve
 - If an existing sandbox-reset helper follows a materially different workflow, patch it in place by default and only ask if a rewrite would replace working behavior.
 
 ## Step 2: Ask Questions
-
-Infer first from the repo.
-
-Follow the zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
-
-If you do ask, make it one concise question, put the recommended/default path first, and explain whether skipping it will leave placeholders, ownership, or project-specific values unresolved.
 
 Only ask if an existing sandbox-reset helper materially conflicts with the lean reset-and-rerun flow.
 

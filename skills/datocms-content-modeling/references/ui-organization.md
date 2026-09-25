@@ -99,7 +99,7 @@ Models and blocks = **two separate trees** in schema settings. `schema_menu_item
 Every `itemTypes.create` auto-creates menu entries:
 
 - Regular model → `menu_item` in **Content tab** **and** `schema_menu_item` (`kind: "item_type"`) in **Schema tab**
-- Block model → only `schema_menu_item` (`kind: "modular_block"`) in **Schema tab** blocks tree — no Content tab entry
+- Block model → only `schema_menu_item` (`kind: "modular_block"`) in **Schema tab** blocks tree — no Content tab entry, can't add one; editors reach block instances through parent record
 
 `schema_menu_item` **always** created — no skip flag. Can only redirect placement. Content tab `menu_item` = only one that can skip outright.
 
@@ -188,9 +188,6 @@ Corresponding model/block names match: `🗞️ Article`, `🏷️ Tag`, `🏠 H
 
 ## Common mistakes
 
-- **Leaving default flat list.** Inertia = most common bad menus cause. Fix = 30 minutes work, pays back daily for project life.
-- **Grouping by data shape.** "Singletons," "Trees," "Collections" — meaningless to editors, barely useful to devs. Group by purpose.
-- **Trying to surface block models in Content tab.** Not possible: Content tab menu only lists item types editors open as standalone records. Block models live in Schema tab blocks tree (`schema_menu_item.kind = "modular_block"`), editors reach block instances through parent record embedding them.
 - **Using menu items as documentation.** Long labels, all-caps prefixes ("ADMIN ONLY!!"), emoji warnings. Menu = navigation. Put guidance in role descriptions, model hints, or pinned external-URL link to style guide.
 - **Saved views that go stale.** "Q3 launch content" filter still in menu six months later. Treat saved views like ephemeral resource — schedule cleanup pass.
 - **Ignoring schema menu.** Teams polish content menu, leave schema menu as-is. Devs also benefit from organization — clean schema menu makes onboarding new schema owners much faster.

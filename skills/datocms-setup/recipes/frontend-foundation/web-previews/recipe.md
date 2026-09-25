@@ -2,12 +2,6 @@ _Internal recipe for `datocms-setup`. Use only after parent skill selects `web-p
 
 # DatoCMS Web Previews Setup
 
-Expert at DatoCMS Web Previews plugin integration. Recipe generates preview-links endpoint returning draft/published URLs for records, enabling editors preview content from DatoCMS UI.
-
-See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
-
-Follow steps in order. No skipping.
-
 ## Contents
 
 - Step 1: Detect Context (silent)
@@ -20,47 +14,38 @@ Follow steps in order. No skipping.
 
 ## Step 1: Detect Context (silent)
 
-Silently examine project:
-
-Follow shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect recipe-specific signals below.
-
-1. **Framework and file layout** — use `../../../references/repo-conventions.md` for framework detection, `src/` usage, standard draft-mode or preview route locations.
-
-2. **Prerequisite: Draft mode** — Check draft mode enable endpoint exists:
+1. **Prerequisite: Draft mode** — Check draft mode enable endpoint exists:
    - Next.js: `src/app/api/draft-mode/enable/route.ts` or `app/api/draft-mode/enable/route.ts`
    - Nuxt: `server/api/draft-mode/enable.ts`
    - SvelteKit: `src/routes/api/draft-mode/enable/+server.ts`
    - Astro: `src/pages/api/draft-mode/enable/index.ts` or `src/pages/api/draft-mode/enable.ts`
 
-3. **Existing preview-links endpoint** — Check preview-links endpoint exists:
+2. **Existing preview-links endpoint** — Check preview-links endpoint exists:
    - Next.js: `src/app/api/preview-links/route.ts` or `app/api/preview-links/route.ts`
    - Nuxt: `server/api/preview-links.ts`
    - SvelteKit: `src/routes/api/preview-links/+server.ts`
    - Astro: `src/pages/api/preview-links/index.ts` or `src/pages/api/preview-links.ts`
 
-4. **Existing utilities** — Check CORS helpers, error handling utilities, URL helpers created by draft mode or other preview features.
+3. **Existing utilities** — Check CORS helpers, error handling utilities, URL helpers created by draft mode or other preview features.
 
-5. **Existing route helpers** — Search helpers mapping content to public URLs:
+4. **Existing route helpers** — Search helpers mapping content to public URLs:
    - sitemap / robots helpers
    - SEO/public URL utilities
    - `recordToWebsiteRoute`-style helpers
    - page-level route builders based on model api keys or slugs
 
-6. **Frontend count** — Inspect env files, site URL helpers, hosting config for one vs multiple frontend targets.
+5. **Frontend count** — Inspect env files, site URL helpers, hosting config for one vs multiple frontend targets.
 
-7. **Installed deps** — Check `package.json` for `@datocms/rest-client-utils` and `@datocms/cma-client`.
+6. **Installed deps** — Check `package.json` for `@datocms/rest-client-utils` and `@datocms/cma-client`.
 
-8. **CLI link state** — Check for `datocms.config.json` at repo root. Baseline assumption: present (repo linked via `npx datocms link`). If missing, Step 6 falls back to manual handoff.
+7. **CLI link state** — Check for `datocms.config.json` at repo root. Baseline assumption: present (repo linked via `npx datocms link`). If missing, Step 6 falls back to manual handoff.
 
 ### Stop conditions
 
 - If draft mode missing, record `draft-mode` as prerequisite and continue after applied. Don't tell user to run another recipe manually.
-- If preview-links endpoint exists, inspect first and update in place by default.
 - If `datocms.config.json` missing, ask user to run `npx datocms link` before proceeding so Step 6 can auto-install. If user declines, continue with manual-handoff fallback.
 
 ## Step 2: Ask Questions
-
-Follow zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
 
 Only ask if unresolved decision remains after inspection:
 
@@ -79,8 +64,6 @@ Only ask if unresolved decision remains after inspection:
 If neither ambiguity applies, proceed directly.
 
 ## Step 3: Load References
-
-Read relevant reference files. Load only what needed.
 
 **Always load:**
 
@@ -159,8 +142,6 @@ Install missing packages only when selected framework pattern needs them:
 | `@datocms/rest-client-utils` | Next.js only |
 | `@datocms/cma-client` | Only when route generation needs CMA record info types or helper lookups |
 
-Use project's package manager (see `../../../patterns/MANDATORY_RULES.md`).
-
 ## Step 6: Install plugin and final handoff
 
 Default path: programmatic install via CMA (CLI link assumed from Step 1).
@@ -188,8 +169,6 @@ After install or manual handoff, tell user:
 2. resolved plugin configuration values (and whether auto-installed or manual-paste required)
 3. whether result `scaffolded` or `production-ready`
 4. optional follow-up recipe ids still making sense: `content-link`, `realtime`, or `visual-editing`
-
-Follow shared final handoff rules in `../../../patterns/OUTPUT_STATUS.md`, including explicit `Unresolved placeholders` section.
 
 ## Verification checklist
 

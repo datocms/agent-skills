@@ -88,7 +88,7 @@ const { meta } = await client.items.rawList({
 const total = meta.total_count;
 ```
 
-This is the canonical zero-read count — no records fetched, just the count header. See `references/client-types-and-behaviors.md` § Raw vs Simplified.
+This is the canonical zero-read count — no records fetched, just the count header. See `references/client-types-and-behaviors.md` § When to Use Raw vs Simplified.
 
 ## Filtering with typed schemas
 

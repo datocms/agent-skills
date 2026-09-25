@@ -133,9 +133,7 @@ ProductReview
 
 ## Pattern 5 — Tree-model taxonomies
 
-Hierarchical classification (Electronics > Phones > Smartphones)? Use model with `tree: true`. DatoCMS gives parent/child and sortable position—no need to model `parent` as self-reference manually.
-
-See `taxonomy-classification.md` for full taxonomy guide, `model-configuration.md` § Behaviour — ordering for how `tree` interacts with `sortable` / `ordering_field` / `ordering_meta`.
+Hierarchy → `tree: true` model, not manual `parent` self-reference — see `taxonomy-classification.md` § Hierarchical taxonomy.
 
 ## Pattern 6 — Fieldsets for grouping
 

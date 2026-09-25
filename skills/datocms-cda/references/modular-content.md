@@ -1,7 +1,5 @@
 # Modular Content
 
-Covers querying modular content fields: GraphQL union types, inline fragments, RecordInterface, single vs multiple block variants, and nested blocks.
-
 ## Contents
 
 - How Modular Content Works in GraphQL

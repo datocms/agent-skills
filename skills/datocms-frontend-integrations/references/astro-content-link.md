@@ -109,15 +109,7 @@ Use the shared [data attributes](./content-link-concepts.md#data-attributes-refe
 
 ## Structured Text Integration
 
-Structured Text fields need special handling:
-
-**Rule 1:** Always wrap `<StructuredText>` in a group:
-
-```astro
-<div data-datocms-content-link-group>
-  <StructuredText data={page.content} />
-</div>
-```
+**Rule 1:** Always wrap `<StructuredText>` in a group.
 
 **Rule 2:** Add boundary on block, inline block, and inline record components — but **NOT** on link-to-record components:
 
@@ -162,7 +154,7 @@ Full example:
 
 ```astro
 ---
-import { StructuredText } from '@datocms/astro/StructuredText';
+import { StructuredText, ensureValidStructuredTextProps } from '@datocms/astro/StructuredText';
 import Cta from '~/components/Cta.astro';
 import NewsletterSignup from '~/components/NewsletterSignup.astro';
 import InlineTeamMember from '~/components/InlineTeamMember.astro';
@@ -170,16 +162,18 @@ import InlineTeamMember from '~/components/InlineTeamMember.astro';
 
 <div data-datocms-content-link-group>
   <StructuredText
-    data={page.content}
-    blockComponents={{
-      CtaRecord: Cta,
-    }}
-    inlineBlockComponents={{
-      NewsletterSignupRecord: NewsletterSignup,
-    }}
-    inlineRecordComponents={{
-      TeamMemberRecord: InlineTeamMember,
-    }}
+    {...ensureValidStructuredTextProps({
+      data: page.content,
+      blockComponents: {
+        CtaRecord: Cta,
+      },
+      inlineBlockComponents: {
+        NewsletterSignupRecord: NewsletterSignup,
+      },
+      inlineRecordComponents: {
+        TeamMemberRecord: InlineTeamMember,
+      },
+    })}
   />
 </div>
 ```
@@ -209,11 +203,6 @@ See the shared [utility APIs](./content-link-concepts.md#stega-stripping-utiliti
 1. Verify you're running inside the plugin's iframe
 2. Ensure `<ContentLink />` is in a layout that persists across page navigations
 3. Check browser console for iframe communication errors
-
-### StructuredText blocks not clickable
-
-1. Wrap with `data-datocms-content-link-group`
-2. Add `data-datocms-content-link-boundary` to block, inline block, and inline record components
 
 ### Layout issues from stega encoding
 

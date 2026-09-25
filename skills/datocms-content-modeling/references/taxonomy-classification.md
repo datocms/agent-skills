@@ -42,7 +42,7 @@ Product.category   (link → Category)
 
 Tree managed in DatoCMS UI as actual tree — drag-and-drop reordering, indenting, collapsing. `parent_id` and `position` first-class on tree records. For how `tree: true` relates to other ordering strategies (`sortable`, `ordering_field`, `ordering_meta`) and why they're mutually exclusive, see `model-configuration.md` § Behaviour — ordering.
 
-**Self-referencing models without `tree: true` are an anti-pattern** when intent is hierarchy. Editor UX much worse, position isn't tracked, reinventing what platform already provides. Only do manually when hierarchy isn't really hierarchy (e.g. "see also" graph using same model).
+**Self-referencing models without `tree: true` are an anti-pattern** when intent is hierarchy. Editor UX much worse, position isn't tracked, reinventing what platform already provides. Existing one (self-`parent` link + manual `position` integer) → rebuild as tree model; one-time migration. Only do manually when hierarchy isn't really hierarchy (e.g. "see also" graph using same model).
 
 ### Faceted classification
 
@@ -122,10 +122,6 @@ Some categories broad (`Technology`), others narrow (`React 18 Server Components
 ### No governance
 
 If anyone can create taxonomy records → duplicates (`JavaScript`, `Javascript`, `JS`, `javascript`). **Fix:** restrict who can create/edit taxonomy records via roles, validate slugs against duplicates.
-
-### Hierarchy modeled without `tree: true`
-
-Category model with `parent` link to itself, manually-managed `position` integer, editor UI unaware any of this is tree. **Fix:** rebuild as tree model. One-time migration cost.
 
 ### Tag values stored as free-text string field
 

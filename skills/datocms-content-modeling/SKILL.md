@@ -22,19 +22,6 @@ description: >-
 
 Design reusable, editor-friendly DatoCMS schemas. Advice needs no CLI, MCP, login, or setup. Use supplied requirements/schema; inspect live schema through an available authorized route only when needed. Decide shape here; route implementation below.
 
-## When to apply
-
-- New project content model layout
-- Model vs block decisions
-- Choosing `single_block`, `rich_text`, `structured_text` for block fields
-- Reusable model link vs embedded block
-- Taxonomy design: categories, tags, hierarchies, facets
-- Refactor page-shaped, redesign-fragile, duplication-heavy schemas
-- Diagnose record-size/block-count/nesting-depth limits; design around locale-multiplied block volume
-- Admin UI organization: Content tab menu (editors), Schema tab menu (devs), saved views via `item_type_filter`
-- Model behavior/presentation config: singleton, sortable, tree, draft-mode, all-locales-required; `presentation_title_field` vs `title_field`; `collection_appearance`; ordering
-- Field config: validators, `appearance` choices (`string_select`+`enum`, `framed` vs `frameless` `single_block`, `link_select` vs `link_embed`); editor parameters (slug auto-fill, `structured_text` nodes/marks, SEO previews, `required_alt_title`)
-
 ## Core principles
 
 1. **Content is data, not pages.** Structure for meaning, not presentation.
@@ -60,8 +47,8 @@ Match decision → file:
 
 - `references/separation-of-concerns.md` — naming/shaping for meaning, not appearance; redesign test; record-meta + file/gallery-meta + position duplication anti-patterns.
 - `references/models-vs-blocks.md` — model vs block; structural rules (no orphans, no link-field references, locale inheritance); per-record limits (300 KB / 500 blocks / 5 levels); locale multiplier.
-- `references/block-fields-and-structured-text.md` — `single_block` vs `rich_text` (Modular Content) vs `structured_text`; inline-vs-block-vs-itemLink-vs-inlineItem matrix; native-node modeling choices; **native nodes (`blockquote`, `code`, `list`, `heading`, `thematicBreak`, `link`) — never recreate as blocks**; image/gallery/video block shape (no `caption` sibling); container-shape effects on limits.
-- `references/content-reuse.md` — link fields, project-level Blocks Library, built-in `seo`, frameless single-block, tree taxonomies, fieldset grouping, block-library hygiene.
+- `references/block-fields-and-structured-text.md` — `single_block` vs `rich_text` (Modular Content) vs `structured_text`; inline-vs-block-vs-itemLink-vs-inlineItem matrix; native-node modeling choices; **native nodes (`blockquote`, `code`, `list`, `heading`, `thematicBreak`, `link`) — never recreate as blocks**; image/gallery/video block shape (no `caption` sibling).
+- `references/content-reuse.md` — link fields, project-level Blocks Library, built-in `seo`, frameless single-block, fieldset grouping, block-library hygiene.
 - `references/taxonomy-classification.md` — flat tags, tree models, faceted classification via multiple links, cascade strategies.
 - `references/ui-organization.md` — Content tab `menu_item` (editors), Schema tab `schema_menu_item` (devs), saved views via `item_type_filter`, emoji conventions, IA heuristics.
 - `references/model-configuration.md` — singleton, draft mode, `all_locales_required`, sortable/tree/ordering, `inverse_relationships_enabled`, `presentation_title_field`, `presentation_image_field`, `collection_appearance`, CDA SEO fallbacks; create-then-wire mechanic.

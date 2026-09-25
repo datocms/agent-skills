@@ -614,40 +614,7 @@ const draftMode = useDraftMode();
 
 ### Structured Text with Content Link
 
-Render Structured Text with `vue-datocms`. Wrap in group, add boundaries to embedded blocks/inline records:
-
-```vue
-<script setup lang="ts">
-import { StructuredText } from 'vue-datocms';
-import { stripStega } from '@datocms/content-link';
-import { h } from 'vue';
-
-const props = defineProps<{ page: any }>();
-</script>
-
-<template>
-  <div data-datocms-content-link-group>
-    <StructuredText
-      :data="page.content"
-      :render-block="({ record }) =>
-        h('div', { 'data-datocms-content-link-boundary': '' }, [
-          h(BlockComponent, { block: record }),
-        ])
-      "
-      :render-inline-record="({ record }) =>
-        h('span', { 'data-datocms-content-link-boundary': '' }, [
-          h(InlineRecordComponent, { record }),
-        ])
-      "
-      :render-link-to-record="({ record, children, transformedMeta }) =>
-        h('a', { ...transformedMeta, href: `/posts/${stripStega(record.slug)}` }, children)
-      "
-    />
-  </div>
-</template>
-```
-
-Note: `renderLinkToRecord` doesn't need boundary — record links wrap text in the structured text field, so clicking opens that field editor.
+Group/boundary rules and example: [vue-content-link.md § Structured Text Integration](./vue-content-link.md#structured-text-integration).
 
 ### Non-Text Field Example
 

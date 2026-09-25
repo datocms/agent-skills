@@ -2,12 +2,6 @@ _Internal recipe for `datocms-setup`. After parent skill selects `video-player` 
 
 # DatoCMS Video Player Setup
 
-Expert: wire DatoCMS streaming video into frontend. Create shared `DatoVideoPlayer` wrapper, normalize Dato video query shape, patch real usage site when repo exposes video field.
-
-See `../../../patterns/OUTPUT_STATUS.md` for output status definitions.
-
-Follow steps in order. Do not skip.
-
 ## Contents
 
 - Step 1: Detect Context (silent)
@@ -19,10 +13,6 @@ Follow steps in order. Do not skip.
 
 ## Step 1: Detect Context (silent)
 
-Examine project silently:
-
-Follow shared repo inspection conventions in `../../../references/repo-conventions.md`, then inspect recipe-specific signals.
-
 1. **Framework** — detect Next.js, Nuxt, SvelteKit, Astro
 2. **UI package** — inspect `package.json` for `react-datocms`, `vue-datocms`, `@datocms/svelte`, `@datocms/astro`, any Astro React integration
 3. **Existing Dato query utility** — inspect shared query wrapper and Dato helper folder
@@ -32,17 +22,9 @@ Follow shared repo inspection conventions in `../../../references/repo-conventio
 
 ### Stop conditions
 
-- If framework cannot be determined, ask user which supported stack they are using.
-- If repo already has materially different video abstraction, patch it in place by default instead of replacing it wholesale.
 - If project is Astro without React integration and relies only on `@datocms/astro`, stop with explicit explanation: no native `@datocms/astro` video player component in v1.
 
 ## Step 2: Ask Questions
-
-Infer first from repo.
-
-Follow zero-question default and question-format rules in `../../../patterns/MANDATORY_RULES.md`.
-
-If you do ask, make one concise question, put recommended/default path first, explain whether skipping it will leave placeholders, ownership, or project-specific values unresolved.
 
 Only ask if Astro project appears to have partial React integration and it is unclear whether reusing that path is safe.
 

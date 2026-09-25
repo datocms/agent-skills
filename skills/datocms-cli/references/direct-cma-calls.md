@@ -18,7 +18,6 @@ Command surface **dynamic**: resources/methods match installed `@datocms/cma-cli
 - Commonly Used Resources
 - Pagination
 - Output and Scripting
-- When to Escalate
 
 ## Inputs to confirm before running commands
 
@@ -30,7 +29,7 @@ Pick tool:
 - **`cma:script` stdin-mode** — one-off needs loops/branching/dependent calls/typed `Schema.*`. Piped/heredoc, ambient `client`/`Schema`, zero setup. See `cma-script.md`.
 - **`cma:script` file-mode** — throwaway but too long for heredoc, needs imports, or rerunnable by filename. Gitignored scratch dir.
 - **Migration** — commit/version/replay across environments? `migrations:new`.
-- **Checked-in `buildClient()` script (datocms-cma)** — unattended runtime (CI/app server/webhook/automation) needs env token.
+- **Checked-in `buildClient()` script (datocms-cma)** — unattended runtime (CI/app server/webhook/automation) needs env token; also tests/custom error handling/retries/progress reporting.
 
 Confirm:
 
@@ -316,15 +315,3 @@ Pipe the default JSON output directly:
 npx datocms cma:call items create --data '{...}' | jq '.id'
 npx datocms cma:call itemTypes list | jq '.[].api_key'
 ```
-
-## When to Escalate
-
-`cma:call` ideal for single CMA call. Task needs loops/branching/dependent calls/typed payloads? Escalate to **`cma:script`** (see `cma-script.md`) — stdin-mode for heredocs/pipes, file-mode for longer scratch scripts.
-
-Escalate past `cma:script` when:
-
-- **Code should be committed/versioned/replayed across environments** → **migration** (`migrations:new`), not `cma:script`. File-mode script can become migration with `mv` — imports/signature already match.
-- **Code runs unattended** (CI/app server/webhook/automation) needs env CMA token → checked-in `buildClient()` script via **datocms-cma**.
-- **Need tests/custom error handling/retries/progress reporting** → repo script, **datocms-cma**.
-
-> **Tip:** Use `npx datocms cma:docs <resource> <action>` to look up exact request body shape/params before writing `cma:call` command or CMA client code.

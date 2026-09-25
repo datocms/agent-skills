@@ -1,7 +1,5 @@
 # Pagination and Ordering
 
-Covers offset pagination, auto-pagination for large collections, ordering, tree/hierarchical models, and query complexity costs.
-
 ## Contents
 
 - Offset Pagination
@@ -176,7 +174,7 @@ Default page size for collections is 20. Page size = `first` argument value.
 | Field Type | Cost |
 | - | - |
 | Standard scalar (string, number, boolean, etc.) | 1 |
-| Single asset field | 5 |
+| Single asset field | 5 + inner field costs |
 | Asset gallery | 5 x inner field costs |
 | Multi-paragraph text (Markdown → HTML) | 5 |
 | JSON field | 5 |
@@ -215,19 +213,6 @@ Default page size for collections is 20. Page size = `first` argument value.
 
 ### Complexity Calculation Examples
 
-**Simple collection query (cost: 140):**
-
-```graphql
-query {
-  allArtists {
-    id
-    name
-  }
-}
-```
-
-Breakdown: 100 (collection base) + 20 (default page size) x 2 (inner fields) = 140
-
 **Collection with filters, sorting, and custom page size (cost: 1,175):**
 
 ```graphql
@@ -248,36 +233,6 @@ query {
 ```
 
 Breakdown: 100 (base) + 750 (3 filter conditions x 250) + 250 (1 sort x 250) + 25 x 3 (page size x inner fields) = 1,175
-
-**Single record with relational fields (cost: 351):**
-
-```graphql
-query {
-  artist(filter: { id: { eq: "123" } }) {
-    photo {
-      url
-      blurUpThumb
-    }
-    content {
-      value
-      links {
-        id
-      }
-      blocks {
-        id
-        text
-      }
-    }
-    movies {
-      id
-      title
-      releaseDate
-    }
-  }
-}
-```
-
-Breakdown: 50 (single record base) + 250 (filter) + 5 + 1 + 5 (photo: asset + url + blurUpThumb) + 10 + 5x1 + 5x2 (structured text: value + links + blocks) + 5x3 (multiple links: movies) = 351
 
 **Deep filtering query (cost: 2,000,890):**
 

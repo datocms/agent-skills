@@ -1,7 +1,5 @@
 # Filtering
 
-Covers all filter operators by field type, AND/OR logic, meta field filters, deep filtering for modular content and structured text, and upload filtering.
-
 ## Contents
 
 - Critical Filter Behaviors
@@ -143,83 +141,45 @@ filter: {
 | `isPresent` | `BooleanType` | Has content |
 | `exists` | `BooleanType` | **Deprecated** |
 
-### Date
+### Date / DateTime
 
-Format: `"YYYY-MM-DD"`
-
-| Operator | Value Type | Description |
-| - | - | - |
-| `eq` | `Date` | Exact match |
-| `neq` | `Date` | Not equal |
-| `lt` | `Date` | Before |
-| `lte` | `Date` | Before or on |
-| `gt` | `Date` | After |
-| `gte` | `Date` | On or after |
-| `exists` | `BooleanType` | Field has a value |
-
-### DateTime
-
-Format: `"YYYY-MM-DDTHH:MM:SS+HH:MM"` (ISO 8601 with timezone)
+Format: Date `"YYYY-MM-DD"`; DateTime `"YYYY-MM-DDTHH:MM:SS+HH:MM"` (ISO 8601 with timezone)
 
 | Operator | Value Type | Description |
 | - | - | - |
-| `eq` | `DateTime` | Exact match |
-| `neq` | `DateTime` | Not equal |
-| `lt` | `DateTime` | Before |
-| `lte` | `DateTime` | Before or on |
-| `gt` | `DateTime` | After |
-| `gte` | `DateTime` | On or after |
+| `eq` | `Date` / `DateTime` | Exact match |
+| `neq` | `Date` / `DateTime` | Not equal |
+| `lt` | `Date` / `DateTime` | Before |
+| `lte` | `Date` / `DateTime` | Before or on |
+| `gt` | `Date` / `DateTime` | After |
+| `gte` | `Date` / `DateTime` | On or after |
 | `exists` | `BooleanType` | Field has a value |
 
 **Critical gotcha — DateTime truncation:** Seconds and milliseconds are silently truncated to the nearest minute. `gt: "2025-01-01T10:30:45Z"` becomes `gt: "2025-01-01T10:30:00Z"`. This can cause unintended matches. **Mitigation:** add a secondary filter (e.g., `id: { neq: $id }` or `slug: { neq: $slug }`) when querying adjacent records by datetime.
 
-### Single File
+### Single File / Single Link
 
-Values are Upload IDs (strings).
-
-| Operator | Value Type | Description |
-| - | - | - |
-| `eq` | `UploadId` | Exact match |
-| `neq` | `UploadId` | Not equal |
-| `in` | `[UploadId]` | One of specified uploads |
-| `notIn` | `[UploadId]` | None of specified uploads |
-| `exists` | `BooleanType` | Field has a file |
-
-### Multiple Files (Gallery)
-
-Values are Upload IDs (strings).
+Values are string IDs: `UploadId` for files, `ItemId` for links.
 
 | Operator | Value Type | Description |
 | - | - | - |
-| `eq` | `[UploadId]` | Exact array match |
-| `allIn` | `[UploadId]` | Contains ALL specified uploads |
-| `anyIn` | `[UploadId]` | Contains at least one specified upload |
-| `notIn` | `[UploadId]` | Contains NONE of specified uploads |
-| `exists` | `BooleanType` | Field has files |
+| `eq` | `UploadId` / `ItemId` | Exact match |
+| `neq` | `UploadId` / `ItemId` | Not equal |
+| `in` | `[UploadId]` / `[ItemId]` | One of specified uploads/records |
+| `notIn` | `[UploadId]` / `[ItemId]` | None of specified uploads/records |
+| `exists` | `BooleanType` | Field has a file/link |
 
-### Single Link
+### Multiple Files (Gallery) / Multiple Links
 
-Values are Record IDs (strings).
-
-| Operator | Value Type | Description |
-| - | - | - |
-| `eq` | `ItemId` | Exact match |
-| `neq` | `ItemId` | Not equal |
-| `in` | `[ItemId]` | One of specified records |
-| `notIn` | `[ItemId]` | None of specified records |
-| `exists` | `BooleanType` | Field has a link |
-
-### Multiple Links
-
-Values are Record IDs (strings).
+Values are string IDs: `UploadId` for galleries, `ItemId` for links.
 
 | Operator | Value Type | Description |
 | - | - | - |
-| `eq` | `[ItemId]` | Exact array match |
-| `allIn` | `[ItemId]` | Linked to ALL specified records |
-| `anyIn` | `[ItemId]` | Linked to at least one specified record |
-| `notIn` | `[ItemId]` | Linked to NONE of specified records |
-| `exists` | `BooleanType` | Field has links |
+| `eq` | `[UploadId]` / `[ItemId]` | Exact array match |
+| `allIn` | `[UploadId]` / `[ItemId]` | Contains/linked to ALL specified |
+| `anyIn` | `[UploadId]` / `[ItemId]` | Contains/linked to at least one specified |
+| `notIn` | `[UploadId]` / `[ItemId]` | Contains/linked to NONE of specified |
+| `exists` | `BooleanType` | Field has files/links |
 
 ### Geolocation (Lat/Lon)
 
@@ -236,29 +196,9 @@ filter: {
 }
 ```
 
-### Color
+### Color / JSON / SEO / Video
 
-| Operator | Value Type | Description |
-| - | - | - |
-| `exists` | `BooleanType` | Field has a color value |
-
-### JSON
-
-| Operator | Value Type | Description |
-| - | - | - |
-| `exists` | `BooleanType` | Field has a value |
-
-### SEO
-
-| Operator | Value Type | Description |
-| - | - | - |
-| `exists` | `BooleanType` | Field has SEO data |
-
-### Video
-
-| Operator | Value Type | Description |
-| - | - | - |
-| `exists` | `BooleanType` | Field has a video |
+`exists` (`BooleanType`) only — field has a value.
 
 ### Structured Text
 

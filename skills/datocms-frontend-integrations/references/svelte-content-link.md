@@ -121,15 +121,7 @@ Use the shared [data attributes](./content-link-concepts.md#data-attributes-refe
 
 ## Structured Text Integration
 
-Structured Text fields need special handling:
-
-**Rule 1:** Always wrap `<StructuredText>` in a group:
-
-```svelte
-<div data-datocms-content-link-group>
-  <StructuredText data={page.content} />
-</div>
-```
+**Rule 1:** Always wrap `<StructuredText>` in a group.
 
 **Rule 2:** Add boundary on block, inline block, and inline item components — but **NOT** on item link components:
 
@@ -205,8 +197,6 @@ Item link components don't need a boundary — their content belongs to the surr
 </a>
 ```
 
-**Why item link components don't need a boundary:** Record links are `<a>` tags wrapping text that belongs to the surrounding structured text — no separate editing target, no collision.
-
 ## Low-Level Utilities
 
 ```ts
@@ -228,11 +218,6 @@ See the shared [utility APIs](./content-link-concepts.md#stega-stripping-utiliti
 
 1. Provide both `onNavigateTo` and `currentPath` props
 2. Verify `currentPath` updates on navigation (use `page.url.pathname` in SvelteKit)
-
-### StructuredText blocks not clickable
-
-1. Wrap with `data-datocms-content-link-group`
-2. Add `data-datocms-content-link-boundary` to block, inline block, and inline item components
 
 ### Layout issues from stega encoding
 

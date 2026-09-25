@@ -267,40 +267,11 @@ Special attention needed for them! API encodes stega only in the **last text spa
 
 ### Rule 1: Always wrap Structured Text component in group
 
-Makes entire structured text area clickable, not just tiny stega span:
-
-```tsx
-<div data-datocms-content-link-group>
-  <StructuredText data={page.content} />
-</div>
-```
+`data-datocms-content-link-group` makes entire structured text area clickable, not just tiny stega span.
 
 ### Rule 2: Wrap embedded blocks and inline records in boundary
 
-Embedded blocks and inline records have own edit URL. Without boundary, clicking them bubbles to parent group and opens structured text field editor instead. Add `data-datocms-content-link-boundary`:
-
-```tsx
-<div data-datocms-content-link-group>
-  <StructuredText
-    data={page.content}
-    renderBlock={({ record }) => (
-      <div data-datocms-content-link-boundary>
-        <BlockComponent block={record} />
-      </div>
-    )}
-    renderInlineRecord={({ record }) => (
-      <span data-datocms-content-link-boundary>
-        <InlineRecordComponent record={record} />
-      </span>
-    )}
-    renderLinkToRecord={({ record, children, transformedMeta }) => (
-      <a {...transformedMeta} href={`/posts/${record.slug}`}>
-        {children}
-      </a>
-    )}
-  />
-</div>
-```
+Embedded blocks and inline records have own edit URL. Without boundary, clicking them bubbles to parent group and opens structured text field editor instead. Add `data-datocms-content-link-boundary`. Per-framework example: `react-`, `vue-`, `svelte-` or `astro-content-link.md` § Structured Text Integration.
 
 ### Why `renderLinkToRecord` does NOT need boundary
 

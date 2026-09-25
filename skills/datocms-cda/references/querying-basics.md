@@ -1,7 +1,5 @@
 # Querying Basics
 
-Covers the GraphQL endpoint, query naming conventions, single/collection/meta queries, GraphQL variables, record meta fields, and inverse relationships.
-
 ## Contents
 
 - GraphQL Endpoint

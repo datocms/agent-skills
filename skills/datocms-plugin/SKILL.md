@@ -49,8 +49,7 @@ For package changes, installation settings, or development copies, use `datocms-
 | Need | Load |
 | - | - |
 | Follow-up maintenance shortcuts | `references/rapid-patterns.md` |
-| Hook pairs, render conventions, sizing reminder | `references/connect-conventions.md` |
-| Exact `connect()`, render helper, Canvas, frame sizing | `references/sdk-connect-and-frames.md` |
+| Exact `connect()`, hook pairs, render helper, Canvas, frame sizing | `references/sdk-connect-and-frames.md` |
 | Base `ctx`, entity repos, form values, browser CMA, endpoints, async errors | `references/sdk-context-and-cma.md` |
 | Target code has no clear precedent | `references/current-plugin-patterns.md` |
 | Plugin permission changes | `references/permissions.md` |
