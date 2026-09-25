@@ -1,0 +1,991 @@
+{
+  "date": "2026-09-25",
+  "model": "gpt-6-luna",
+  "reasoningEffort": "medium",
+  "baselineSkills": "master @ d1c53f7",
+  "controls": {
+    "output": "local/regressions/final/controls-all-01",
+    "rows": 49,
+    "passed": 49,
+    "variants": [
+      {
+        "case": "cda-draft-editing-client",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "cda-draft-editing-client",
+        "variant": "fail-ungated-vercel-v1",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: published read embeds Content Link metadata"
+      },
+      {
+        "case": "cda-centered-square-thumbnail",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "cda-centered-square-thumbnail",
+        "variant": "fail-crop-center",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: query is invalid against the DatoCMS schema"
+      },
+      {
+        "case": "cda-centered-square-thumbnail",
+        "variant": "fail-old-focal-rule",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: square thumbnail is not center-cropped when the photo has a focal point"
+      },
+      {
+        "case": "cli-ci-linked-auth",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "cli-ci-linked-auth",
+        "variant": "fail-old-env-only-example",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: datocms maintenance:on cannot authenticate on the CI runner: Project is linked but no OAuth credentials found."
+      },
+      {
+        "case": "cli-primary-in-place",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "cli-primary-in-place",
+        "variant": "fail-old-in-place-only",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: CLI refuses in-place primary run: --in-place --profile=production"
+      },
+      {
+        "case": "cli-cma-script-file",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "cli-cma-script-file",
+        "variant": "fail-unknown-catch",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: cma:script file-mode validation rejects the script: Explicit 'unknown' type \u2014 use a specific type instead at line 12, column 21."
+      },
+      {
+        "case": "cli-cma-script-file",
+        "variant": "fail-any-cast",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: cma:script file-mode validation rejects the script: Explicit 'any' type \u2014 use a specific type instead at line 9, column 22."
+      },
+      {
+        "case": "cli-schedule-publication-call",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "cli-schedule-publication-call",
+        "variant": "fail-old-plural-resource",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: cma:call failed:  \u203a   Error: Resource \"scheduledPublications\" not found."
+      },
+      {
+        "case": "cma-audit-log-export",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "cma-audit-log-export",
+        "variant": "fail-page-token-in-body",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "ApiError: POST https://site-api.datocms.com/audit-log-events/query: 422 "
+      },
+      {
+        "case": "cma-audit-log-export",
+        "variant": "fail-page-token-query-param",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "Error: oracle: more than 40 API requests (repeating pages?)"
+      },
+      {
+        "case": "cma-nested-export",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "cma-nested-export",
+        "variant": "fail-nested-perpage-100",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "ApiError: GET https://site-api.datocms.com/items?filter%5Btype%5D=landing_page&nested=true&page%5Blimit%5D=100&page%5Boffset%5D=0: 422 "
+      },
+      {
+        "case": "cma-add-locale-backfill",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "cma-add-locale-backfill",
+        "variant": "fail-complete-example-without-site-locale",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "ApiError: PUT https://site-api.datocms.com/items/article-00: 422 "
+      },
+      {
+        "case": "cma-add-locale-backfill",
+        "variant": "fail-skip-empty-english",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "ApiError: PUT https://site-api.datocms.com/items/article-00: 422 "
+      },
+      {
+        "case": "cma-link-delete-blocked",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "cma-link-delete-blocked",
+        "variant": "fail-reorder-fields-and-fieldsets",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "TypeError: client.itemTypes.reorderFieldsAndFieldsets is not a function"
+      },
+      {
+        "case": "cma-link-delete-blocked",
+        "variant": "fail-raw-reorder-flat-body",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "ApiError: POST /item-types/model-product/reorder-fields-and-fieldsets: 422 Unprocessable Entity"
+      },
+      {
+        "case": "cma-link-delete-blocked",
+        "variant": "fail-set-to-null",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "ApiError: POST /item-types/model-product/fields: 422 Unprocessable Entity"
+      },
+      {
+        "case": "cma-link-delete-drops-reference",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "cma-link-delete-drops-reference",
+        "variant": "fail-set-to-null",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "ApiError: POST /item-types/model-article/fields: 422 Unprocessable Entity"
+      },
+      {
+        "case": "cma-link-delete-drops-reference",
+        "variant": "fail-fail-strategy",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: Deleting a tag used by articles would be blocked"
+      },
+      {
+        "case": "feedback-apostrophe-url",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "feedback-apostrophe-url",
+        "variant": "fail-encodeURIComponent-unbalanced-quote",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: Shell rejected an opener command"
+      },
+      {
+        "case": "feedback-apostrophe-url",
+        "variant": "fail-encodeURIComponent-body-dropped",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: Form body lost the approved message: null from https://www.datocms.com/support?topics=technical-support%2Fai-integration-issues&subject=Skills%20migration%20loop"
+      },
+      {
+        "case": "svelte-stega-debug",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "svelte-stega-debug",
+        "variant": "fail-svelte-reexport",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: Build failed: No matching export in \"e2e/catalog/web-sveltekit/node_modules/@datocms/svelte/package/index.js\" for import \"revealStega\""
+      },
+      {
+        "case": "astro-content-link-navigation",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "astro-content-link-navigation",
+        "variant": "fail-bare-controller",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: Visual tab navigation request did not move the preview (still at http://127.0.0.1:55068/articles/first)"
+      },
+      {
+        "case": "astro-content-link-navigation",
+        "variant": "fail-ungated",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: Content Link controller is mounted without draft mode"
+      },
+      {
+        "case": "next-published-cache-refresh",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "next-published-cache-refresh",
+        "variant": "fail-core-wrapper-without-invalidation-route",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: Publishing never reached the live page. Routes: []; unauthenticated statuses: {}"
+      },
+      {
+        "case": "next-published-cache-refresh",
+        "variant": "fail-uncached-reads",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: Published content is not cached: page changed without invalidation"
+      },
+      {
+        "case": "next-published-cache-refresh",
+        "variant": "fail-unauthenticated-route",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: Unauthenticated webhook calls changed the site: {\"/api/invalidate-cache cacheTags\":[200,200],\"/api/invalidate-cache publish\":[200,200]}"
+      },
+      {
+        "case": "cli-importer-install",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "cli-importer-install",
+        "variant": "fail-project-dev-dependency",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: wordpress:import --help failed:  \u203a   Error: Command wordpress:import not found."
+      },
+      {
+        "case": "plugin-new-scaffold-strict",
+        "variant": "pass",
+        "expected": "pass",
+        "ok": true,
+        "rejectedWith": null
+      },
+      {
+        "case": "plugin-new-scaffold-strict",
+        "variant": "fail-old-template-unused-id",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: npm run build failed | Scaffold strict typecheck failed: local/regressions/final/controls-all-01/plugin-new-scaffold-strict/fail-old-template-unused-id/workspace/src/main.tsx(10,24): error TS6133: 'id' is declared but its value is never read."
+      },
+      {
+        "case": "plugin-new-scaffold-strict",
+        "variant": "fail-old-template-loosened-tsconfig",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: Scaffold strict typecheck failed: local/regressions/final/controls-all-01/plugin-new-scaffold-strict/fail-old-template-loosened-tsconfig/workspace/src/main.tsx(10,24): error TS6133: 'id' is declared but its value is never read."
+      },
+      {
+        "case": "plugin-new-scaffold-strict",
+        "variant": "fail-single-block-field-type",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: npm run build failed | Scaffold strict typecheck failed: local/regressions/final/controls-all-01/plugin-new-scaffold-strict/fail-single-block-field-type/workspace/src/main.tsx(7,3): error TS2322: Type '() => { id: string; name: string; type: \"addon\"; fieldTypes: (\"string\" | \"text\" | \"rich_text\" | \"single_block\")[]; }[]' is not assignable to type '(ctx: ManualFieldExtensionsCtx) => ManualFieldExtension[]'."
+      },
+      {
+        "case": "plugin-new-scaffold-strict",
+        "variant": "fail-single-block-asserted",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: fieldTypes not accepted by the installed SDK: single_block"
+      },
+      {
+        "case": "plugin-new-scaffold-strict",
+        "variant": "fail-in-iframe-toast",
+        "expected": "fail",
+        "ok": true,
+        "rejectedWith": "AssertionError [ERR_ASSERTION]: Save did not trigger a host toast (ctx.notice/customToast)"
+      }
+    ]
+  },
+  "sessions": [
+    {
+      "case": "cda-draft-editing-client",
+      "skills": "baseline",
+      "run": "cda/baseline-01",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: published read embeds Content Link metadata",
+      "skillReads": [
+        "datocms-cda/SKILL.md",
+        "datocms-cda/references/client-and-config.md",
+        "datocms-cda/references/draft-caching-environments.md"
+      ],
+      "commandCount": 3,
+      "elapsedMs": 29246
+    },
+    {
+      "case": "cda-centered-square-thumbnail",
+      "skills": "baseline",
+      "run": "cda/baseline-02",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: query is invalid against the DatoCMS schema",
+      "skillReads": [
+        "datocms-cda/SKILL.md",
+        "datocms-cda/references/images-and-videos.md",
+        "datocms-cda/references/querying-basics.md"
+      ],
+      "commandCount": 4,
+      "elapsedMs": 25523
+    },
+    {
+      "case": "cda-draft-editing-client",
+      "skills": "candidate",
+      "run": "cda/candidate-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cda/SKILL.md",
+        "datocms-cda/references/client-and-config.md",
+        "datocms-cda/references/draft-caching-environments.md"
+      ],
+      "commandCount": 5,
+      "elapsedMs": 34326
+    },
+    {
+      "case": "cda-centered-square-thumbnail",
+      "skills": "candidate",
+      "run": "cda/candidate-02",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cda/SKILL.md",
+        "datocms-cda/references/images-and-videos.md",
+        "datocms-cda/references/querying-basics.md"
+      ],
+      "commandCount": 4,
+      "elapsedMs": 41608
+    },
+    {
+      "case": "cli-ci-linked-auth",
+      "skills": "baseline",
+      "run": "cli-ci/baseline-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cli/SKILL.md",
+        "datocms-cli/references/cli-setup.md",
+        "datocms-cli/references/deployment-workflow.md",
+        "datocms-cli/references/environment-commands.md",
+        "datocms-cli/references/running-migrations.md"
+      ],
+      "commandCount": 7,
+      "elapsedMs": 38942
+    },
+    {
+      "case": "cli-ci-linked-auth",
+      "skills": "candidate",
+      "run": "cli-ci/candidate-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cli/SKILL.md",
+        "datocms-cli/references/deployment-workflow.md",
+        "datocms-cli/references/environment-commands.md",
+        "datocms-cli/references/running-migrations.md"
+      ],
+      "commandCount": 5,
+      "elapsedMs": 41912
+    },
+    {
+      "case": "cli-primary-in-place",
+      "skills": "baseline",
+      "run": "cli-misc/baseline-01",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: CLI refuses in-place primary run: --profile=production --source=main --in-place",
+      "skillReads": [
+        "datocms-cli/SKILL.md",
+        "datocms-cli/references/cli-setup.md",
+        "datocms-cli/references/running-migrations.md"
+      ],
+      "commandCount": 5,
+      "elapsedMs": 27277
+    },
+    {
+      "case": "cli-cma-script-file",
+      "skills": "baseline",
+      "run": "cli-misc/baseline-02",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cma/SKILL.md"
+      ],
+      "commandCount": 3,
+      "elapsedMs": 34728
+    },
+    {
+      "case": "cli-schedule-publication-call",
+      "skills": "baseline",
+      "run": "cli-misc/baseline-03",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: cma:call failed:  \u203a   Error: Resource \"editorial-qa\" not found.",
+      "skillReads": [],
+      "commandCount": 0,
+      "elapsedMs": 4468
+    },
+    {
+      "case": "cli-primary-in-place",
+      "skills": "candidate",
+      "run": "cli-misc/candidate-01",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Command forks a sandbox instead of running in place",
+      "skillReads": [],
+      "commandCount": 0,
+      "elapsedMs": 4205
+    },
+    {
+      "case": "cli-primary-in-place",
+      "skills": "candidate",
+      "run": "cli-misc/candidate-02",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: CLI stopped before touching an environment: CMS/datoCMSInternalCode/agent-skills/node_modules/@oclif/core/lib/command.js:182:22)\\n'\u001b[39m +",
+      "skillReads": [
+        "datocms-cli/SKILL.md",
+        "datocms-cli/references/cli-setup.md",
+        "datocms-cli/references/running-migrations.md"
+      ],
+      "commandCount": 5,
+      "elapsedMs": 30384
+    },
+    {
+      "case": "cli-cma-script-file",
+      "skills": "candidate",
+      "run": "cli-misc/candidate-03",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cli/SKILL.md",
+        "datocms-cli/references/cma-script.md",
+        "datocms-cma/SKILL.md",
+        "datocms-cma/references",
+        "datocms-cma/references/filtering-and-pagination.md",
+        "datocms-cma/references/migration-patterns.md",
+        "datocms-cma/references/schema.md"
+      ],
+      "commandCount": 6,
+      "elapsedMs": 40863
+    },
+    {
+      "case": "cli-schedule-publication-call",
+      "skills": "candidate",
+      "run": "cli-misc/candidate-04",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cli",
+        "datocms-cli/SKILL.md",
+        "datocms-cli/references/direct-cma-calls.md",
+        "datocms-cma",
+        "datocms-cma/references/resource-gotchas.md"
+      ],
+      "commandCount": 4,
+      "elapsedMs": 15821
+    },
+    {
+      "case": "cli-primary-in-place",
+      "skills": "candidate",
+      "run": "cli-misc/candidate-05",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cli/SKILL.md",
+        "datocms-cli/references",
+        "datocms-cli/references/cli-setup.md",
+        "datocms-cli/references/environment-commands.md",
+        "datocms-cli/references/running-migrations.md"
+      ],
+      "commandCount": 5,
+      "elapsedMs": 29072
+    },
+    {
+      "case": "cma-audit-log-export",
+      "skills": "baseline",
+      "run": "cma-misc/baseline-01",
+      "recheckOf": null,
+      "passed": false,
+      "error": "ApiError: POST https://site-api.datocms.com/audit-log-events/query: 422 ",
+      "skillReads": [],
+      "commandCount": 10,
+      "elapsedMs": 45638
+    },
+    {
+      "case": "cma-nested-export",
+      "skills": "baseline",
+      "run": "cma-misc/baseline-02",
+      "recheckOf": null,
+      "passed": false,
+      "error": "ApiError: GET https://site-api.datocms.com/items?filter%5Btype%5D=landing_page&nested=true&page%5Blimit%5D=500&page%5Boffset%5D=0: 422 ",
+      "skillReads": [
+        "datocms-cma/SKILL.md"
+      ],
+      "commandCount": 14,
+      "elapsedMs": 75956
+    },
+    {
+      "case": "cma-add-locale-backfill",
+      "skills": "baseline",
+      "run": "cma-misc/baseline-03",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cma/SKILL.md",
+        "datocms-cma/references/editing-records.md",
+        "datocms-cma/references/localization.md"
+      ],
+      "commandCount": 9,
+      "elapsedMs": 143219
+    },
+    {
+      "case": "cma-audit-log-export",
+      "skills": "candidate",
+      "run": "cma-misc/candidate-01",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:",
+      "skillReads": [],
+      "commandCount": 8,
+      "elapsedMs": 51396
+    },
+    {
+      "case": "cma-nested-export",
+      "skills": "candidate",
+      "run": "cma-misc/candidate-02",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cma/SKILL.md",
+        "datocms-cma/references/client-types-and-behaviors.md",
+        "datocms-cma/references/editing-records.md",
+        "datocms-cma/references/filtering-and-pagination.md"
+      ],
+      "commandCount": 12,
+      "elapsedMs": 62498
+    },
+    {
+      "case": "cma-add-locale-backfill",
+      "skills": "candidate",
+      "run": "cma-misc/candidate-03",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: record article-00",
+      "skillReads": [],
+      "commandCount": 21,
+      "elapsedMs": 87812
+    },
+    {
+      "case": "cma-audit-log-export",
+      "skills": "candidate",
+      "run": "cma-misc/candidate-04",
+      "recheckOf": null,
+      "passed": false,
+      "error": "TypeError: Cannot read properties of undefined (reading 'map')",
+      "skillReads": [],
+      "commandCount": 4,
+      "elapsedMs": 25901
+    },
+    {
+      "case": "cma-add-locale-backfill",
+      "skills": "candidate",
+      "run": "cma-misc/candidate-05",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cma/SKILL.md",
+        "datocms-cma/references/editing-records.md",
+        "datocms-cma/references/localization.md"
+      ],
+      "commandCount": 12,
+      "elapsedMs": 63428
+    },
+    {
+      "case": "cma-audit-log-export",
+      "skills": "candidate",
+      "run": "cma-misc/candidate-06",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [],
+      "commandCount": 13,
+      "elapsedMs": 54164
+    },
+    {
+      "case": "cma-link-delete-blocked",
+      "skills": "baseline",
+      "run": "cma-schema/baseline-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cma/SKILL.md",
+        "datocms-cma/references/schema.md"
+      ],
+      "commandCount": 17,
+      "elapsedMs": 75130
+    },
+    {
+      "case": "cma-link-delete-drops-reference",
+      "skills": "baseline",
+      "run": "cma-schema/baseline-02",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [],
+      "commandCount": 11,
+      "elapsedMs": 39842
+    },
+    {
+      "case": "cma-link-delete-blocked",
+      "skills": "candidate",
+      "run": "cma-schema/candidate-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [],
+      "commandCount": 16,
+      "elapsedMs": 87807
+    },
+    {
+      "case": "cma-link-delete-drops-reference",
+      "skills": "candidate",
+      "run": "cma-schema/candidate-03",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cma/SKILL.md",
+        "datocms-cma/references/schema.md"
+      ],
+      "commandCount": 9,
+      "elapsedMs": 35716
+    },
+    {
+      "case": "cma-link-delete-blocked",
+      "skills": "candidate",
+      "run": "cma-schema/recheck-01",
+      "recheckOf": "cma-schema/candidate-01",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null
+    },
+    {
+      "case": "feedback-apostrophe-url",
+      "skills": "baseline",
+      "run": "feedback/baseline-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-feedback/SKILL.md"
+      ],
+      "commandCount": 2,
+      "elapsedMs": 19704
+    },
+    {
+      "case": "feedback-apostrophe-url",
+      "skills": "candidate",
+      "run": "feedback/candidate-01-recheck-01",
+      "recheckOf": "feedback/candidate-01",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null
+    },
+    {
+      "case": "feedback-apostrophe-url",
+      "skills": "candidate",
+      "run": "feedback/candidate-01",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Shell rejected a command",
+      "skillReads": [
+        "datocms-feedback/SKILL.md"
+      ],
+      "commandCount": 3,
+      "elapsedMs": 26177
+    },
+    {
+      "case": "astro-content-link-navigation",
+      "skills": "baseline",
+      "run": "frontend-content-link/baseline-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-frontend-integrations/SKILL.md",
+        "datocms-frontend-integrations/references/astro-content-link.md",
+        "datocms-frontend-integrations/references/content-link-concepts.md",
+        "datocms-frontend-integrations/references/verification-checklists.md"
+      ],
+      "commandCount": 5,
+      "elapsedMs": 33047
+    },
+    {
+      "case": "svelte-stega-debug",
+      "skills": "baseline",
+      "run": "frontend-content-link/baseline-02",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-frontend-integrations/SKILL.md"
+      ],
+      "commandCount": 7,
+      "elapsedMs": 44895
+    },
+    {
+      "case": "svelte-stega-debug",
+      "skills": "candidate",
+      "run": "frontend-content-link/candidate-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-frontend-integrations/SKILL.md"
+      ],
+      "commandCount": 6,
+      "elapsedMs": 35683
+    },
+    {
+      "case": "astro-content-link-navigation",
+      "skills": "candidate",
+      "run": "frontend-content-link/candidate-02",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-frontend-integrations/SKILL.md",
+        "datocms-frontend-integrations/references/astro-content-link.md",
+        "datocms-frontend-integrations/references/content-link-concepts.md",
+        "datocms-frontend-integrations/references/verification-checklists.md",
+        "datocms-frontend-integrations/references/web-previews-concepts.md"
+      ],
+      "commandCount": 6,
+      "elapsedMs": 32250
+    },
+    {
+      "case": "svelte-stega-debug",
+      "skills": "candidate",
+      "run": "frontend-content-link/candidate-03",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [],
+      "commandCount": 5,
+      "elapsedMs": 25520
+    },
+    {
+      "case": "next-published-cache-refresh",
+      "skills": "baseline",
+      "run": "frontend-next-cache/baseline-02",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [],
+      "commandCount": 8,
+      "elapsedMs": 152031
+    },
+    {
+      "case": "next-published-cache-refresh",
+      "skills": "candidate",
+      "run": "frontend-next-cache/candidate-02",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-frontend-integrations/SKILL.md",
+        "datocms-frontend-integrations/references/nextjs.md",
+        "datocms-frontend-integrations/references/verification-checklists.md"
+      ],
+      "commandCount": 11,
+      "elapsedMs": 74764
+    },
+    {
+      "case": "cli-importer-install",
+      "skills": "baseline",
+      "run": "importers/baseline-recheck-01",
+      "recheckOf": "importers/baseline-01",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null
+    },
+    {
+      "case": "cli-importer-install",
+      "skills": "candidate",
+      "run": "importers/candidate-01",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [],
+      "commandCount": 6,
+      "elapsedMs": 35504
+    },
+    {
+      "case": "cli-importer-install",
+      "skills": "candidate",
+      "run": "importers/candidate-02",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-cli/SKILL.md",
+        "datocms-cli/references/cli-setup.md",
+        "datocms-cli/references/importing-content.md"
+      ],
+      "commandCount": 6,
+      "elapsedMs": 44390
+    },
+    {
+      "case": "cli-importer-install",
+      "skills": "candidate",
+      "run": "importers/candidate-recheck-01",
+      "recheckOf": "importers/candidate-01",
+      "passed": true,
+      "error": null,
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null
+    },
+    {
+      "case": "plugin-new-scaffold-strict",
+      "skills": "baseline",
+      "run": "plugin/baseline-02",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Word count unavailable on rich_text fields",
+      "skillReads": [
+        "datocms-plugin/SKILL.md",
+        "datocms-plugin/references/config-screen.md",
+        "datocms-plugin/references/field-extensions.md",
+        "datocms-plugin/references/project-scaffold.md",
+        "datocms-plugin/references/surface-starters.md"
+      ],
+      "commandCount": 7,
+      "elapsedMs": 99063
+    },
+    {
+      "case": "plugin-new-scaffold-strict",
+      "skills": "candidate",
+      "run": "plugin/candidate-02",
+      "recheckOf": null,
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Word count unavailable on rich_text fields",
+      "skillReads": [
+        "datocms-plugin/SKILL.md",
+        "datocms-plugin/references/config-screen.md",
+        "datocms-plugin/references/design-datocms-react-ui-bridge.md",
+        "datocms-plugin/references/design-forms-and-controls.md",
+        "datocms-plugin/references/design-foundations.md",
+        "datocms-plugin/references/field-extensions.md",
+        "datocms-plugin/references/project-scaffold.md"
+      ],
+      "commandCount": 8,
+      "elapsedMs": 74009
+    },
+    {
+      "case": "plugin-new-scaffold-strict",
+      "skills": "candidate",
+      "run": "plugin/candidate-03",
+      "recheckOf": null,
+      "passed": true,
+      "error": null,
+      "skillReads": [
+        "datocms-plugin/SKILL.md",
+        "datocms-plugin/references/config-screen.md",
+        "datocms-plugin/references/design-forms-and-controls.md",
+        "datocms-plugin/references/design-foundations.md",
+        "datocms-plugin/references/field-extensions.md",
+        "datocms-plugin/references/project-scaffold.md",
+        "datocms-plugin/references/surface-starters.md"
+      ],
+      "commandCount": 8,
+      "elapsedMs": 79420
+    },
+    {
+      "case": "plugin-new-scaffold-strict",
+      "skills": "candidate",
+      "run": "plugin/recheck-candidate-02-01",
+      "recheckOf": "plugin/candidate-02",
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Word count unavailable on rich_text fields",
+      "skillReads": null,
+      "commandCount": null,
+      "elapsedMs": null
+    }
+  ]
+}
