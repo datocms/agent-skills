@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Dev-only tooling for the DatoCMS agent skills repo (e2e harness, tests, formatting, release scripts). Kept out of the repo root so plugin installs do not install these dependencies.",
   "scripts": {
+    "test": "node --test tests/*.test.mjs tests/*.test.cjs tests/structured-text/convert.test.mjs evals/coexistence/*.test.mjs",
     "test:e2e": "vitest run --config vitest.e2e.config.ts",
     "test:coexistence:fixtures": "node --test evals/coexistence/*.test.mjs",
     "eval:coexistence": "cd .. && node dev/evals/coexistence/run.mjs",
@@ -30,7 +31,6 @@
     "@datocms/cma-client-node": "^6.1.0",
     "@datocms/dashboard-client": "^6.1.0",
     "@types/node": "^22.19.17",
-    "concurrent-promise-queue": "^1.0.10",
     "datocms": "^4.0.26",
     "datocms-structured-text-dastdown": "6.0.0",
     "datocms-structured-text-utils": "6.0.1",

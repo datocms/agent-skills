@@ -163,10 +163,10 @@ npm ci --prefix dev                           # dev dependencies and the pre-com
 python3 evals/scripts/validate_skill_repo.py  # repo invariants (the hook runs this too)
 npm --prefix dev run typecheck
 npm --prefix dev run format:check
-npm --prefix dev run test:e2e:harness         # offline harness tests
+npm --prefix dev test                         # all offline tests
 ```
 
-The pre-commit hook formats staged Markdown, rebuilds the `zips/` of changed skills, and runs the validator. Trigger evals and native agent sessions are paid, need an authenticated `claude` or `codex` CLI, and run only on request; see [`evals/README.md`](evals/README.md) and [`dev/e2e/README.md`](dev/e2e/README.md). Keep `package.json` and lockfiles out of the repo root: Claude Code would install them for every plugin user, and the validator rejects them.
+Tests never run automatically; run them when you need them. The pre-commit hook formats staged Markdown, rebuilds the `zips/` of changed skills, and runs the validator. Trigger evals and native agent sessions are paid, need an authenticated `claude` or `codex` CLI, and run only on request; see [`evals/README.md`](evals/README.md) and [`dev/e2e/README.md`](dev/e2e/README.md). Keep `package.json` and lockfiles out of the repo root: Claude Code would install them for every plugin user, and the validator rejects them.
 
 ---
 

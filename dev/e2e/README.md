@@ -13,11 +13,11 @@ npm --prefix dev run test:e2e
 npm --prefix dev run test:e2e -- e2e/cases/recent-content-regressions.e2e.test.ts
 ```
 
-Each case verifies the project ID, forks a uniquely named sandbox, seeds fixtures, runs the agent, independently asserts final state, and destroys only its sandbox. Cleanup runs after failures and verifies deletion. Token mode does not perform organization-wide cleanup. The default is one worker; increase workers only when the disposable project's sandbox capacity allows it. `E2E_KEEP_PROJECT=1` retains environments for deliberate debugging.
+Each case verifies the project ID, forks a uniquely named sandbox, seeds fixtures, runs the agent, independently asserts final state, and destroys only its sandbox. Sandbox removal runs after failures and verifies deletion. The harness never deletes projects. The default is one worker; increase workers only when the disposable project's sandbox capacity allows it. `E2E_KEEP_PROJECT=1` retains environments for deliberate debugging.
 
 The agent receives the confirmed environment and CLI authentication context. Credentials are supplied only through environment variables. The runner installs this checkout's skills in an isolated workspace, disables host configuration/plugins/memory, uses temporary authentication links, and removes its workspace and authentication directory afterward. Shell environment snapshots are disabled so credentials are not copied into runtime snapshot files. Transcripts are redacted; observed credential output fails the run.
 
-The original dashboard-account provisioning route and other agent adapters remain available for compatibility, but are outside this track's validation claims.
+The original dashboard-account provisioning route and other agent adapters remain available for compatibility, but are outside this track's validation claims. That route creates a new project per case and leaves it for you to delete.
 
 ## Application, generated-code, and advisory cases
 

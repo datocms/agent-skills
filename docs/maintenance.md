@@ -40,7 +40,7 @@ For the full eval workflow (running, interpreting, and updating snapshots) see [
 The local converter tests copy the shipped runtime to scratch and install its locked dependencies there. They need Node >=20.19.0 and npm registry access for installation, but no DatoCMS credentials. Never install dependencies into the shipped skill directory.
 
 ```bash
-node --test dev/tests/structured-text/convert.test.mjs
+npm --prefix dev test   # every offline test in dev/tests and the coexistence fixtures
 (cd dev/tests/dastdown && npm ci --ignore-scripts --no-audit --no-fund && npm test)
 npm --prefix dev run typecheck
 npm --prefix dev run format:check

@@ -72,17 +72,10 @@ export async function createTestProject<Context = undefined>(
 
 	const cmaClient = buildCmaClient({ apiToken });
 
-	let context: Context;
-	if (options.fixtures) {
-		try {
-			context = await options.fixtures(cmaClient);
-		} catch (error) {
-			await dashboardClient.sites.destroy(siteId).catch(() => {}); // Best-effort cleanup.
-			throw error;
-		}
-	} else {
-		context = undefined as Context;
-	}
+	// Projects are never deleted by the harness; remove them manually.
+	const context = options.fixtures
+		? await options.fixtures(cmaClient)
+		: (undefined as Context);
 
 	return { siteId, apiToken, cmaClient, dashboardClient, context };
 }
@@ -90,10 +83,9 @@ export async function createTestProject<Context = undefined>(
 export async function destroyTestProject(
 	project: TestProject<unknown>,
 ): Promise<void> {
-	if (project.dashboardClient) {
-		await project.dashboardClient.sites.destroy(project.siteId);
-		return;
-	}
+	// Dashboard-route projects are left for manual deletion; only the token route's own
+	// sandbox environment is removed here.
+	if (project.dashboardClient) return;
 	if (!project.environment?.startsWith("e2e-"))
 		throw Error("Refusing cleanup outside a created test environment");
 	const root = buildCmaClient({ apiToken: project.apiToken });

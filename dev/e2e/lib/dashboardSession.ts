@@ -51,14 +51,6 @@ function writeCachedSessionId(sessionId: string): void {
 	process.env.DATOCMS_SESSION_ID = sessionId;
 }
 
-export function invalidateCachedSession(): void {
-	delete process.env.DATOCMS_SESSION_ID;
-	try {
-		if (existsSync(SESSION_CACHE_PATH)) {
-			writeFileSync(SESSION_CACHE_PATH, "");
-		}
-	} catch {}
-}
 
 async function loginAndCache(): Promise<string> {
 	const emails = shuffle(
@@ -106,12 +98,3 @@ export async function buildAuthenticatedDashboardClient(): Promise<DashboardClie
 	});
 }
 
-export function isAuthError(error: unknown): boolean {
-	if (!(error instanceof ApiError)) return false;
-	return (
-		error.response.status === 401 ||
-		error.response.status === 403 ||
-		Boolean(error.findError("INVALID_AUTHORIZATION_HEADER")) ||
-		Boolean(error.findError("INVALID_AUTHENTICATION"))
-	);
-}
