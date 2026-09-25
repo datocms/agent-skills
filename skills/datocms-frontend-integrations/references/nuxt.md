@@ -478,7 +478,7 @@ Key points:
 
 **File:** `lib/datocms/recordInfo.ts`
 
-Requires `cma-types` — generated types expose `Schema.X.ID` (literal-typed model id) and the `AnyModel` union, which discriminates `item.attributes` per branch.
+Requires generated `cma-types` ([how](./web-previews-concepts.md#recordtowebsiteroute-pattern)).
 
 ```ts
 import type { RawApiTypes } from '@datocms/cma-client';
@@ -526,10 +526,6 @@ export default defineNuxtConfig({
 Required: `@datocms/rest-client-utils`
 
 ## Content Link (Optional)
-
-### Note on Nuxt Content Link Support
-
-Nuxt starter kit doesn't use `contentLink` or `baseEditingUrl` in query function. `useDraftMode` decodes JWT for real-time but doesn't pass Content Link options.
 
 To add Content Link, modify `useQuery` composable:
 

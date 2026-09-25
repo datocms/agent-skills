@@ -81,7 +81,7 @@ Generate only these project changes:
 - Default every new profile to the same shared `./migrations` directory
 - Preserve existing per-profile migrations directories if the repo already uses them and the user did not ask to change them
 - Use one helper script instead of adding many profile-specific package scripts
-- The helper may support `--dry-run`, `--source=<env>`, `--destination-template=<template>`, `--fast-fork`, and explicit `--force`, but it must not auto-promote by default
+- The helper may support `--dry-run`, `--source=<env>`, `--destination-template=<template>`, `--fast-fork`, and explicit `--force` (only with `--fast-fork`), but it must not auto-promote by default
 - Do not infer project mappings from external systems or remote APIs
 - Do not create one migrations directory per project unless the repo already follows that pattern
 

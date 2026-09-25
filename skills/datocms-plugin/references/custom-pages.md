@@ -183,10 +183,10 @@ const itemTypeId = params.get('itemTypeId');
 
 ### Navigating Between Plugin Pages
 
-Use `ctx.navigateTo()` to navigate to other plugin pages:
+`ctx.navigateTo(path)`; path prefix (after environment prefix) follows the page's declaring hook: `mainNavigationTabs` → `/p/<pluginId>/pages/<pageId>`, `settingsAreaSidebarItemGroups` → `/configuration/p/...`, `contentAreaSidebarItems` → `/editor/p/...`:
 
 ```ts
-// Navigate to a plugin page
+// Settings-area page 'export'
 const environmentPrefix = ctx.isEnvironmentPrimary ? '' : `/environments/${ctx.environment}`;
 const pagePath = `${environmentPrefix}/configuration/p/${ctx.plugin.id}/pages/export`;
 ctx.navigateTo(`${pagePath}?itemTypeId=${someId}`);

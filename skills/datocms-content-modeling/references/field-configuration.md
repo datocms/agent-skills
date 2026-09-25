@@ -156,7 +156,7 @@ validators: {
 }
 ```
 
-`size` on `rich_text`, `length` on `structured_text` keep records under 300 KB / 500-block limits — see `models-vs-blocks.md`.
+`size` caps `rich_text` blocks; `structured_text` has no block-count validator — `length` caps characters only. Limits: `models-vs-blocks.md`.
 
 ### Sanitize HTML for `text` fields
 

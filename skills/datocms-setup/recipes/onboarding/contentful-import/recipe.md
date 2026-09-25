@@ -82,7 +82,7 @@ Generate only these project changes:
 
 After generating the files, tell the user:
 
-1. Fill in the Contentful credentials locally (DatoCMS auth is already wired through the linked default profile)
+1. Fill in the Contentful credentials locally (DatoCMS auth is already wired through the linked default profile); each teammate also runs `npx datocms login` and the `plugins:install` command once — CLI login and plugins are per machine
 2. Run the helper once without `--autoconfirm` to review the import behavior
 3. Add flags like `--skip-content`, `--only-content-type`, or `--autoconfirm` only when they intentionally want those modes
 

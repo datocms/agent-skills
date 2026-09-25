@@ -40,7 +40,7 @@ Block fields bounded per-record. Content compounds? Limits push to models.
 
 | Limit | Default | Notes |
 | - | - | - |
-| Max record size | **300 KB** | Nested blocks count. Links/assets don't. Higher on some plans. |
+| Max record size | **300 KB** | Nested blocks count. Links/assets don't. Plan-independent; support raises only exceptionally. |
 | Max blocks per record | **500** | All block fields, all nesting. |
 | Max nested depth | **5 levels** | Block in block in block... 5 deep. |
 

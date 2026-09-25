@@ -16,7 +16,7 @@ If the user clearly asks for one or more of these outcomes, load only the matchi
 | `frontend-features` | `responsive-images`, `structured-text`, `video-player`, `site-search`, `seo`, `robots-sitemaps` | media rendering, rich text, search, metadata, sitemap wiring |
 | `migrations` | `migrations`, `migration-release-workflow`, `blueprint-sync`, `sandbox-iteration`, `cli-profiles`, `migration-autogenerate` | schema workflow, promotion, shared history, sandbox reset, profiles, diff-based generation |
 | `onboarding` | `contentful-import`, `wordpress-import` | one-shot import helpers |
-| `platform` | `cma-types`, `webhooks`, `build-triggers` | schema types, webhook sync, build trigger management |
+| `platform` | `cli-bootstrap`, `cma-types`, `webhooks`, `build-triggers` | CLI install + project link, schema types, webhook sync, build trigger management |
 
 ## Discovery Mode
 

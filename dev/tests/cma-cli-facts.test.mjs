@@ -1,0 +1,56 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { resolve } from 'node:path';
+import test from 'node:test';
+import { fileURLToPath } from 'node:url';
+
+// REFERENCE_REPO_ROOT points at an alternate tree containing skills/ (e.g. a baseline snapshot).
+const repoRoot = process.env.REFERENCE_REPO_ROOT
+  ? resolve(process.env.REFERENCE_REPO_ROOT)
+  : fileURLToPath(new URL('../../', import.meta.url));
+const skill = (path) => readFileSync(resolve(repoRoot, 'skills', path), 'utf8');
+const installed = (path) => readFileSync(fileURLToPath(new URL(`../node_modules/${path}`, import.meta.url)), 'utf8');
+const require = createRequire(import.meta.url);
+
+test('migrations:run flag table states every flag dependency and exclusion the CLI enforces', () => {
+  // datocms 4.2.0 lib/commands/migrations/run.js: e.g. 'fast-fork' dependsOn ['destination'];
+  // oclif rejects `migrations:run --fast-fork` alone before any API call.
+  const { default: Command } = require('datocms/lib/commands/migrations/run.js');
+  const rows = Object.fromEntries([...skill('datocms-cli/references/running-migrations.md').matchAll(/^\| `--([\w-]+)[^|]*\|.*$/gm)].map(([row, flag]) => [flag, row]));
+  for (const [flag, { dependsOn = [], exclusive = [] }] of Object.entries(Command.flags)) {
+    for (const other of dependsOn) assert.ok(rows[flag]?.includes(`requires \`--${other}\``), `--${flag} row must say it requires --${other}`);
+    for (const other of exclusive) assert.ok(rows[flag]?.includes(`exclusive with \`--${other}\``), `--${flag} row must say it is exclusive with --${other}`);
+  }
+});
+
+test('upload helper-only options match the installed CMA client helper schemas', () => {
+  // @datocms/cma-client-node 6.1.3 (and cma-client-browser 6.1.0) Upload.d.ts: helper schemas are
+  // Omit<UploadCreateSchema, 'path'> plus source, filename?, skipCreationIfAlreadyExists? (Node create) and onProgress?.
+  const types = installed('@datocms/cma-client-node/dist/types/resources/Upload.d.ts');
+  const helperKeys = new Set([...types.matchAll(/CreateUploadFrom\w+Schema = Omit<ApiTypes\.UploadCreateSchema, 'path'> & \{([^}]*)\}/g)]
+    .flatMap(([, body]) => [...body.matchAll(/^\s+(\w+)\??:/gm)].map(([, key]) => key)));
+  const raw = installed('@datocms/cma-client/dist/types/generated/ApiTypes.d.ts').match(/export type UploadCreateSchema = \{([\s\S]*?)\n\};/)[1];
+  const rawKeys = new Set([...raw.matchAll(/^ {4}(\w+)\??:/gm)].map(([, key]) => key));
+  assert.match(types, /createFromLocalFile\(body: \w+\): CancelablePromise<ApiTypes\.Upload>/);
+
+  const section = skill('datocms-cma/references/uploads.md').split('\n## Helper-only options\n')[1].split('\n## ')[0];
+  const listed = [...section.matchAll(/^- \*\*`(\w+)/gm)].map(([, key]) => key);
+  assert.ok(listed.length > 0, 'Helper-only options lists no options');
+  for (const key of listed) assert.ok(helperKeys.has(key) && !rawKeys.has(key), `${key} is not a helper-only option`);
+  // The old intro promised "three properties" but listed two plus the return type.
+  const count = section.match(/\b(one|two|three|four|five) (?:properties|options)\b/)?.[1];
+  if (count) assert.equal(['one', 'two', 'three', 'four', 'five'].indexOf(count) + 1, listed.length, `Intro says ${count} but lists ${listed.length}`);
+});
+
+test('CMA route selection keeps the CLI config readable and honors a requested route over the retired-MCP stop', () => {
+  // Round-2 audit cma-3 (verifier-corrected): the CLI readiness check reads datocms.config.json, so the
+  // configuration ban must be scoped to MCP client configuration, and the stop rule that runs before the
+  // route rules must yield when the user asks for the CLI or current MCP instead (the explicit-route rule);
+  // merely mentioning the current connection while requesting the retired one must not bypass it.
+  assert.match(skill('datocms-cli/SKILL.md'), /datocms\.config\.json/);
+  const cma = skill('datocms-cma/SKILL.md');
+  assert.ok(cma.includes("don't run startup connection checks or scan MCP client configuration."), 'configuration ban must name MCP client configuration');
+  assert.ok(!cma.includes('scan client configuration'), 'unscoped configuration ban is back');
+  assert.ok(cma.includes('Apply this stop condition before the normal route rules below, unless the user asks for the CLI or current MCP instead.'), 'stop rule must yield to a requested route');
+});

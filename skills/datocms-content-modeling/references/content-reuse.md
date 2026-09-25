@@ -150,8 +150,8 @@ Article model
   ├── fieldset: "SEO"
   │     └── seo
   └── fieldset: "Publishing"
-        ├── published_at
-        └── author
+        ├── author
+        └── tags
 ```
 
 Use fieldsets to ease editor cognitive load, not reuse mechanism. Same fieldset structure can't be "shared" across models—wanting that? Want frameless single-block pattern (Pattern 4).

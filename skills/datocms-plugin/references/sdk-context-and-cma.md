@@ -182,7 +182,7 @@ Field extension `fieldTypes`: `'all'` or `FieldType[]` (no `single_block`):
 'rich_text' | 'seo' | 'slug' | 'string' | 'structured_text' | 'text' | 'video'
 ```
 
-Do not create editor field extensions for modular content, single block, or Structured Text. Use addon extensions for those cases.
+Do not create editor field extensions for modular content, single block, or Structured Text; use addons. Single-block addon: `overrideFieldExtensions` when `field.attributes.field_type === 'single_block'`, or `fieldTypes: 'all'` (offered on every field type).
 
 ## CSS and theme context
 

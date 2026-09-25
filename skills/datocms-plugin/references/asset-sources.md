@@ -74,15 +74,16 @@ type NewUpload = {
   notes?: string;
   tags?: string[];
   default_field_metadata?: {
-    [locale: string]: {
-      alt: string | null;
-      title: string | null;
-      custom_data: Record<string, unknown>;
-      focal_point?: { x: number; y: number } | null;
-    };
+    alt?: { [locale: string]: string | null };
+    title?: { [locale: string]: string | null };
+    custom_data?: { [locale: string]: Record<string, unknown> };
+    focal_point?: { x: number; y: number } | null; // not localized
+    poster_time?: number | null; // video only, not localized
   };
 };
 ```
+
+`default_field_metadata` shape needs SDK ≥2.4; SDK <2.4 accepts only the locale-keyed `{ [locale]: { alt, title, custom_data } }` form (deprecated in ≥2.4, still accepted).
 
 **URL resource**: The URL must respond with `Access-Control-Allow-Origin` header (e.g., `*`).
 
@@ -165,13 +166,7 @@ export default function UnsplashSource({ ctx }: Props) {
       author: photo.user.name,
       copyright: 'Unsplash License',
       notes: photo.alt_description || undefined,
-      default_field_metadata: {
-        [locale]: {
-          alt: photo.alt_description,
-          title: null,
-          custom_data: {},
-        },
-      },
+      default_field_metadata: { alt: { [locale]: photo.alt_description } },
     });
   };
 
@@ -226,4 +221,4 @@ export default function UnsplashSource({ ctx }: Props) {
 - Use `ctx.select()` to finalize the selection — this creates the upload and closes the modal
 - URL resources must be CORS-enabled
 - For base64, include the full data URI with mime type
-- `default_field_metadata` lets you set per-locale alt text, title, and custom data
+- `default_field_metadata`: `alt`, `title`, `custom_data` keyed by locale; `focal_point`, `poster_time` single values

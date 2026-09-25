@@ -258,12 +258,13 @@ async function atomicWrite(path, content) {
 
 const { options, errors } = parseArgs(process.argv.slice(2));
 const report = { version: 1, ok: false, format: options.format ?? null, diagnostics: [], normalizations: [] };
+const invalidArguments = () => issue('INVALID_ARGUMENTS', `${errors.join(' ')} Usage: ${usage}`, null, 'Correct the command arguments.');
 let paths;
 let document;
 try {
   paths = await safePaths(options);
   if (errors.length) {
-    report.diagnostics.push(issue('INVALID_ARGUMENTS', `${errors.join(' ')} Usage: ${usage}`, null, 'Correct the command arguments.'));
+    report.diagnostics.push(invalidArguments());
   } else {
     const source = new TextDecoder('utf-8', { fatal: true }).decode(await readFile(paths.input));
     if (!source.trim()) {
@@ -295,7 +296,9 @@ try {
     }
   }
 } catch (error) {
-  report.diagnostics.push(issue(paths ? 'CONVERSION_FAILED' : 'UNSAFE_PATHS', error.message, null, 'Correct the input or file paths and retry.'));
+  // A missing path is an argument error; parseArgs already recorded which one.
+  const missingPath = !paths && !(options.input && options.output && options.report);
+  report.diagnostics.push(missingPath ? invalidArguments() : issue(paths ? 'CONVERSION_FAILED' : 'UNSAFE_PATHS', error.message, null, 'Correct the input or file paths and retry.'));
 }
 
 report.ok = report.diagnostics.length === 0;
@@ -307,16 +310,25 @@ if (report.ok) {
   ];
 }
 const json = (value) => `${JSON.stringify(value, null, 2)}\n`;
+let reportWritten = false;
 try {
   if (paths) {
     // A report write failure must never replace a previously valid output document.
     await atomicWrite(paths.report, json(report));
+    reportWritten = true;
     if (report.ok) await atomicWrite(paths.output, json(document));
   }
 } catch (error) {
   report.ok = false;
   report.diagnostics.push(issue('WRITE_FAILED', error.message, null, 'Ensure both destination directories are writable and retry.'));
-  if (paths) await atomicWrite(paths.report, json(report)).catch(() => {});
+  if (paths) reportWritten = await atomicWrite(paths.report, json(report)).then(() => true, () => false);
 }
-(report.ok ? process.stdout : process.stderr).write(json(report));
+// The report file keeps every diagnostic; the console gets a bounded summary.
+const consoleLimit = 10;
+const diagnosticCounts = {};
+for (const { code } of report.diagnostics) diagnosticCounts[code] = (diagnosticCounts[code] ?? 0) + 1;
+const consoleReport = reportWritten
+  ? { version: report.version, ok: report.ok, format: report.format, reportPath: paths.report, diagnosticCounts, diagnostics: report.diagnostics.slice(0, consoleLimit), omittedDiagnostics: Math.max(0, report.diagnostics.length - consoleLimit), normalizations: report.normalizations }
+  : report;
+(report.ok ? process.stdout : process.stderr).write(json(consoleReport));
 process.exitCode = report.ok ? 0 : 1;

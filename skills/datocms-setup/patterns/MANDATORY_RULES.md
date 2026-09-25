@@ -51,7 +51,7 @@ Detect the project's package manager before installing:
 
 1. `pnpm-lock.yaml` -> `pnpm add`
 2. `yarn.lock` -> `yarn add`
-3. `bun.lockb` -> `bun add`
+3. `bun.lock` / `bun.lockb` -> `bun add`
 4. Otherwise -> `npm install`
 
 Always install DatoCMS packages as regular dependencies (not devDependencies) unless the package is CLI-only.

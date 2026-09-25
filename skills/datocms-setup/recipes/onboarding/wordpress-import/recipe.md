@@ -93,7 +93,7 @@ Generate only these project changes:
 
 After generating the files, tell the user:
 
-1. Fill in the WordPress credentials locally (DatoCMS auth is already wired through the linked default profile)
+1. Fill in the WordPress credentials locally (DatoCMS auth is already wired through the linked default profile); each teammate also runs `npx datocms login` and the `plugins:install` command once — CLI login and plugins are per machine
 2. Prefer `WORDPRESS_JSON_API_URL` when they already know the exact REST API endpoint
 3. Run the helper once without `--autoconfirm` to review the import behavior
 4. Add flags like `--ignore-errors`, `--concurrency`, or `--autoconfirm` only when they intentionally want those modes

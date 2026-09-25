@@ -111,7 +111,7 @@ For design work, prefer public `datocms-react-ui` components when they match the
 - Keep `ctx.openModal()` parameters and `ctx.resolve()` values JSON-serializable.
 - Normalize stored plugin parameters at read/save boundaries.
 - Use `ctx.setParameters()` directly in `renderManualFieldExtensionConfigScreen`.
-- Do not create editor field extensions for modular content, single block, or Structured Text fields; use addon extensions instead.
+- Do not create editor field extensions for modular content, single block, or Structured Text fields; use addons (single block has no `FieldType`: `overrideFieldExtensions`, or `fieldTypes: 'all'` if every field type may offer it).
 - Prefer SDK helpers before browser CMA calls. If browser CMA is required, use `@datocms/cma-client-browser`, add only required permissions, and guard missing `ctx.currentUserAccessToken`.
 - Keep modals, sidebars, and config screens compact.
 

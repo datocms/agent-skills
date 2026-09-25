@@ -24,7 +24,7 @@ function usage() {
       'Usage:',
       '  node scripts/datocms-sync-projects.mjs <profile...>',
       '    [--dry-run] [--source=<env>] [--destination-template=<template>]',
-      '    [--fast-fork] [--force] [-- <extra migrations:run args>]',
+      '    [--fast-fork [--force]] [-- <extra migrations:run args>]',
       '',
       'Default destination template: {profile}-sync-{timestamp}',
     ].join('\n'),
@@ -111,6 +111,13 @@ if (options.help) {
 }
 
 if (options.profiles.length === 0) {
+  usage();
+  process.exit(1);
+}
+
+// migrations:run rejects --force unless --fast-fork is also set.
+if (options.force && !options.fastFork) {
+  console.error('--force requires --fast-fork.');
   usage();
   process.exit(1);
 }

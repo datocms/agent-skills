@@ -27,11 +27,7 @@ Examine project setup:
 
 2. Find existing `executeQuery` or `rawExecuteQuery` imports to understand usage patterns.
 
-3. Check `.env`, `.env.local` for DatoCMS API token:
-   - `DATOCMS_CDA_TOKEN`
-   - `DATOCMS_READONLY_TOKEN`
-   - `DATOCMS_API_TOKEN`
-   - `NEXT_PUBLIC_DATOCMS_CDA_TOKEN`
+3. Check `.env*` files (incl. `.env.example`) for `*DATOCMS*TOKEN*` vars; reuse those names. Starters: `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`, `DATOCMS_DRAFT_CONTENT_CDA_TOKEN`.
 
 4. Check framework (Next.js, Astro, Remix, Nuxt, SvelteKit) to determine server vs client queries. Don't expose tokens to browser unless using public read-only token.
 
@@ -146,7 +142,7 @@ Before presenting final code:
 9. **Structured text** — all relevant sub-fields included
 10. **Fetch integration** — framework-native `fetch`? use `buildRequestHeaders()` / `buildRequestInit()`
 11. **Type generation** — gql.tada or graphql-codegen? use project's `graphql()` function, check scalar mappings
-12. **gql.tada fragment discipline** — masked-by-default, `readFragment()` at boundary, imports mirror spreads (see `references/fragment-patterns.md`)
+12. **gql.tada fragments** — composition array mirrors every `...Fragment` spread; follow project's masking setup (see `references/fragment-patterns.md`)
 
 ## Cross-Skill Routing
 

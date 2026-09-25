@@ -1,13 +1,15 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { cp, link, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
+import { chmod, cp, link, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { after, before, test } from 'node:test';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const shipped = join(here, '../../../skills/datocms-structured-text/scripts');
+// REFERENCE_REPO_ROOT runs the suite against another checkout's converter (e.g. a pre-fix baseline).
+const repoRoot = process.env.REFERENCE_REPO_ROOT ? resolve(process.env.REFERENCE_REPO_ROOT) : join(here, '../../..');
+const shipped = join(repoRoot, 'skills/datocms-structured-text/scripts');
 let scratch;
 let runtime;
 let sequence = 0;
@@ -332,6 +334,68 @@ test('invalid format produces a diagnostic', async () => {
   assert.equal(JSON.parse(await readFile(paths.report, 'utf8')).diagnostics[0].code, 'INVALID_ARGUMENTS');
 });
 
+// Regression (audit modeling+st-6): a missing path used to surface as UNSAFE_PATHS
+// ("All three file paths are required...") without the argument errors or usage line.
+for (const [name, args, expected] of [
+  ['no arguments', () => [], ['Missing --input.', 'Missing --report.']],
+  ['--help', () => ['--help'], ['Unknown argument --help.']],
+  ['missing --report', (paths) => ['--input', paths.input, '--format', 'markdown', '--output', paths.output], ['Missing --report.']],
+  ['bad format and missing --report', (paths) => ['--input', paths.input, '--format', 'pdf', '--output', paths.output], ['Missing --report.', 'Format must be markdown or html.']],
+]) {
+  test(`missing paths report INVALID_ARGUMENTS with usage and write nothing: ${name}`, async () => {
+    const paths = await files('# Original');
+    await writeFile(paths.output, 'existing');
+    const result = spawnSync(process.execPath, [join(runtime, 'convert.mjs'), ...args(paths)], { cwd: paths.directory, encoding: 'utf8', timeout: 30_000 });
+    assert.equal(result.status, 1, result.stdout);
+    assert.equal(result.stdout, '');
+    const report = JSON.parse(result.stderr);
+    assert.equal(report.ok, false);
+    assert.deepEqual(report.diagnostics.map((entry) => entry.code), ['INVALID_ARGUMENTS']);
+    for (const text of [...expected, 'Usage: node convert.mjs --input FILE --format markdown|html --output FILE --report FILE']) {
+      assert(report.diagnostics[0].message.includes(text), report.diagnostics[0].message);
+    }
+    assert.equal(report.diagnostics[0].action, 'Correct the command arguments.');
+    assert.equal(await readFile(paths.output, 'utf8'), 'existing');
+    assert.deepEqual((await readdir(paths.directory)).sort(), ['document.json', 'source.md']);
+  });
+}
+
+// Regression (audit modeling+st-7): the console used to repeat the whole report, one
+// diagnostic per unsupported attribute/style, so Google Docs-style HTML flooded it.
+test('console output summarizes a large diagnostics report; the report file keeps all of it', async () => {
+  const paragraphs = Array.from({ length: 40 }, (_, index) => `<p class="c${index}" id="h${index}"><span style="color:#000;font-size:11pt">Line ${index}</span></p>`);
+  const paths = await files(paragraphs.join('\n'), 'html');
+  await writeFile(paths.output, 'existing');
+  const result = invoke(paths);
+  assert.equal(result.status, 1, result.stdout);
+  assert.equal(result.stdout, '');
+  const reportText = await readFile(paths.report, 'utf8');
+  const report = JSON.parse(reportText);
+  assert.deepEqual(Object.keys(report), ['version', 'ok', 'format', 'diagnostics', 'normalizations'], 'report file format is unchanged');
+  assert.equal(report.diagnostics.length, 160);
+  const summary = JSON.parse(result.stderr);
+  assert.equal(summary.ok, false);
+  assert.equal(summary.format, 'html');
+  assert.equal(summary.reportPath, paths.report);
+  assert.deepEqual(summary.diagnosticCounts, { UNSUPPORTED_ATTRIBUTE: 80, UNSUPPORTED_STYLE: 80 });
+  assert.deepEqual(summary.diagnostics, report.diagnostics.slice(0, 10));
+  assert.equal(summary.omittedDiagnostics, 150);
+  assert(result.stderr.length < reportText.length / 5, `console output ${result.stderr.length} bytes vs report ${reportText.length}`);
+  assert.equal(await readFile(paths.output, 'utf8'), 'existing');
+});
+
+test('successful conversion prints the summary on stdout and keeps the report file format', async () => {
+  const paths = await files('# Title\n\nBody.');
+  const result = invoke(paths);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stderr, '');
+  const report = JSON.parse(await readFile(paths.report, 'utf8'));
+  assert.deepEqual(Object.keys(report), ['version', 'ok', 'format', 'diagnostics', 'normalizations']);
+  const summary = JSON.parse(result.stdout);
+  assert.deepEqual(summary, { version: 1, ok: true, format: 'markdown', reportPath: paths.report, diagnosticCounts: {}, diagnostics: [], omittedDiagnostics: 0, normalizations: report.normalizations });
+  assert.equal(report.normalizations.length, 3);
+});
+
 for (const alias of ['same-input-output', 'same-input-report', 'same-output-report', 'symlink-output', 'hard-link-report', 'symlink-directory']) {
   test(`path safety rejects ${alias} without changing source/output`, async () => {
     const paths = await files('# Original');
@@ -364,6 +428,31 @@ test('report path failure prevents output replacement', async () => {
   assert.equal(invoke(paths).status, 1);
   assert.equal(await readFile(paths.output, 'utf8'), 'existing');
 });
+
+// WRITE_FAILED: the console summary may point at the report only when the report was written.
+for (const unwritable of ['output', 'report']) {
+  test(`unwritable ${unwritable} directory reports WRITE_FAILED without a dangling reportPath`, { skip: (process.getuid?.() === 0 || process.platform === 'win32') && 'directory permissions not enforced' }, async () => {
+    const paths = await files('# Title');
+    const locked = join(paths.directory, 'locked');
+    await mkdir(locked);
+    paths[unwritable] = join(locked, `${unwritable}.json`);
+    await chmod(locked, 0o555);
+    let result;
+    try { result = invoke(paths); } finally { await chmod(locked, 0o755); }
+    assert.equal(result.status, 1, result.stdout);
+    assert.equal(result.stdout, '');
+    const printed = JSON.parse(result.stderr);
+    assert.deepEqual(printed.diagnostics.map((entry) => entry.code), ['WRITE_FAILED']);
+    await assert.rejects(readFile(paths.output), { code: 'ENOENT' });
+    if (unwritable === 'output') {
+      assert.equal(printed.reportPath, paths.report);
+      assert.deepEqual(JSON.parse(await readFile(paths.report, 'utf8')).diagnostics, printed.diagnostics);
+    } else {
+      assert.equal(printed.reportPath, undefined, 'no report file exists to point at');
+      await assert.rejects(readFile(paths.report), { code: 'ENOENT' });
+    }
+  });
+}
 
 async function inputHasCaseAlias(paths) {
   try {

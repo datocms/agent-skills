@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync, readdirSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 
 function run(args) {
   const result = spawnSync('npx', ['datocms', ...args], {
@@ -25,80 +25,62 @@ function usage() {
   );
 }
 
-function inferMigrationFormat() {
-  const migrationsDir = join(process.cwd(), 'migrations');
-
-  if (existsSync(migrationsDir) && statSync(migrationsDir).isDirectory()) {
-    const entries = readdirSync(migrationsDir, { withFileTypes: true });
-    const hasTs = entries.some((entry) => entry.isFile() && entry.name.endsWith('.ts'));
-    const hasJs = entries.some((entry) => entry.isFile() && entry.name.endsWith('.js'));
-
-    if (hasTs && !hasJs) {
-      return '--ts';
-    }
-
-    if (hasJs && !hasTs) {
-      return '--js';
-    }
-  }
-
-  if (existsSync(join(process.cwd(), 'tsconfig.json'))) {
-    return '--ts';
-  }
-
-  return undefined;
+// Same directory `datocms migrations:new` writes to: --config-file / DATOCMS_CONFIG_FILE
+// (default ./datocms.config.json), --profile / DATOCMS_PROFILE (default "default"; both
+// also read from .env.local and .env), then the profile's migrations.directory relative
+// to the config file, else ./migrations.
+function migrationsDir(options) {
+  for (const file of ['.env.local', '.env']) if (existsSync(file)) process.loadEnvFile?.(file);
+  const configPath = resolve(options['config-file'] ?? process.env.DATOCMS_CONFIG_FILE ?? 'datocms.config.json');
+  const config = existsSync(configPath) ? JSON.parse(readFileSync(configPath, 'utf8')) : {};
+  const directory = config.profiles?.[options.profile ?? process.env.DATOCMS_PROFILE ?? 'default']?.migrations?.directory;
+  return directory ? resolve(dirname(configPath), directory) : resolve('migrations');
 }
 
-const rawArgs = process.argv.slice(2);
+// Keep the directory's single existing format; otherwise the CLI infers it (template, tsconfig).
+function inferMigrationFormat(directory) {
+  const files = existsSync(directory) ? readdirSync(directory).filter((file) => /^\d+.*\.(js|ts)$/.test(file)) : [];
+  const hasTs = files.some((file) => file.endsWith('.ts'));
+  const hasJs = files.some((file) => file.endsWith('.js'));
+  return hasTs === hasJs ? undefined : hasTs ? '--ts' : '--js';
+}
 
-if (rawArgs.length === 0 || rawArgs.includes('--help')) {
+const [name, ...rawArgs] = process.argv.slice(2);
+
+if (!name || name === '--help' || rawArgs.includes('--help')) {
   usage();
-  process.exit(rawArgs.includes('--help') ? 0 : 1);
+  process.exit(name ? 0 : 1);
 }
 
-const name = rawArgs[0];
-let from;
-let to;
+const options = {};
 const passthroughArgs = [];
 
-for (let i = 1; i < rawArgs.length; i += 1) {
-  const arg = rawArgs[i];
+for (let i = 0; i < rawArgs.length; i += 1) {
+  const match = rawArgs[i].match(/^--(from|to|profile|config-file)(?:=(.*))?$/);
 
-  if (arg.startsWith('--from=')) {
-    from = arg.slice('--from='.length);
+  if (!match) {
+    passthroughArgs.push(rawArgs[i]);
     continue;
   }
 
-  if (arg === '--from') {
-    from = rawArgs[i + 1];
-    i += 1;
-    continue;
-  }
+  const value = match[2] ?? rawArgs[++i];
+  options[match[1]] = value;
 
-  if (arg.startsWith('--to=')) {
-    to = arg.slice('--to='.length);
-    continue;
+  if (match[1] === 'profile' || match[1] === 'config-file') {
+    passthroughArgs.push(`--${match[1]}=${value}`);
   }
-
-  if (arg === '--to') {
-    to = rawArgs[i + 1];
-    i += 1;
-    continue;
-  }
-
-  passthroughArgs.push(arg);
 }
 
-if (!name || !from) {
+if (!options.from) {
   usage();
   process.exit(1);
 }
 
-const autogenerateTarget = to ? `${from}:${to}` : from;
+const autogenerateTarget = options.to ? `${options.from}:${options.to}` : options.from;
 const formatFlag =
   passthroughArgs.includes('--ts') || passthroughArgs.includes('--js')
     ? undefined
-    : inferMigrationFormat();
+    : inferMigrationFormat(migrationsDir(options));
 
 run([
   'migrations:new',

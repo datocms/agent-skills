@@ -61,7 +61,7 @@ Step 2 must succeed before step 3, and step 3 references path (`id` from step 1,
 
 ## Helper-only options
 
-`createFromLocalFile` / `createFromUrl` / `createFromFileOrBlob` schemas extend base `UploadCreateSchema` with three properties that don't exist in raw `uploads.create`:
+`createFromLocalFile` / `createFromUrl` / `createFromFileOrBlob` schemas extend base `UploadCreateSchema`; helper-only behavior absent from raw `uploads.create`:
 
 - **`skipCreationIfAlreadyExists: true`** (Node `createFromLocalFile` / `createFromUrl` only) — computes file's MD5 and, if upload with that hash already exists in project, returns existing one instead of creating duplicate. Hashing is content-based, so renames and metadata changes don't defeat dedup. Essential when migration scripts may re-run.
 - **`onProgress(info)`** — receives tagged-union event stream during upload. Sequence (skipping fields specific to `createFromUrl`):

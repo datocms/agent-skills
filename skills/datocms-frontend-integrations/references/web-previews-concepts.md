@@ -161,7 +161,7 @@ The incoming JSON:API item has `relationships.item_type.data.id`, not `__itemTyp
 
 Maps DatoCMS record to frontend URL. Used by preview-links endpoint.
 
-Same pattern across all frameworks: deserialize the raw item with `deserializeRawItem` from `@datocms/rest-client-utils`, then switch on `item.__itemTypeId`. With `cma-types` in place, each `case Schema.X.ID` narrows `item.attributes` to that model's fields — no `as` casts needed.
+Same pattern across all frameworks: deserialize the raw item with `deserializeRawItem` from `@datocms/rest-client-utils`, then switch on `item.__itemTypeId`. With `cma-types` generated (`npx datocms schema:generate src/lib/datocms/cma-types.ts`; path = where the `cma-types` import resolves), each `case Schema.X.ID` narrows `item.attributes` to that model's fields — no `as` casts needed.
 
 Skeleton:
 
@@ -242,6 +242,10 @@ Two-step CMA call — `plugins.create` installs the package, `plugins.update` wr
 - **Migration script** (preferred when repo has `migrations/`) — `npx datocms migrations:new "install web previews plugin" --ts` scaffolds a file exporting `async function(client: Client)`. CLI tracks runs via `schema_migration` model, so install only happens once per environment. Idempotent + versioned + replays on `migrations:run` against forked envs.
 
 ```ts
+// Read at run time (the CLI loads .env.local/.env); never inline values in a committed migration.
+const baseUrl = process.env.SITE_URL!; // or the repo's *_SITE_URL
+const SECRET_API_TOKEN = process.env.SECRET_API_TOKEN!;
+
 const plugin = await client.plugins.create({
   package_name: 'datocms-plugin-web-previews',
 });

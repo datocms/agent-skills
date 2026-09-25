@@ -18,7 +18,6 @@
         "../datocms-cda/references/images-and-videos.md",
         "../datocms-frontend-integrations/references/astro-image.md",
         "../datocms-frontend-integrations/references/astro.md",
-        "../datocms-frontend-integrations/references/image-concepts.md",
         "../datocms-frontend-integrations/references/nextjs.md",
         "../datocms-frontend-integrations/references/nuxt.md",
         "../datocms-frontend-integrations/references/react-image.md",
@@ -62,7 +61,6 @@
         "../datocms-frontend-integrations/references/astro-seo.md",
         "../datocms-frontend-integrations/references/content-link-concepts.md",
         "../datocms-frontend-integrations/references/react-seo.md",
-        "../datocms-frontend-integrations/references/seo-concepts.md",
         "../datocms-frontend-integrations/references/svelte-seo.md",
         "../datocms-frontend-integrations/references/vue-seo.md"
       ],
@@ -85,7 +83,6 @@
         "../datocms-cma/references/client-types-and-behaviors.md",
         "../datocms-frontend-integrations/references/react-site-search.md",
         "../datocms-frontend-integrations/references/site-search-api.md",
-        "../datocms-frontend-integrations/references/site-search-concepts.md",
         "../datocms-frontend-integrations/references/vue-site-search.md"
       ],
       "assets": [],
@@ -115,7 +112,10 @@
         "../datocms-frontend-integrations/references/svelte-structured-text.md",
         "../datocms-frontend-integrations/references/sveltekit.md",
         "../datocms-frontend-integrations/references/vue-content-link.md",
-        "../datocms-frontend-integrations/references/vue-structured-text.md"
+        "../datocms-frontend-integrations/references/vue-structured-text.md",
+        "../datocms-structured-text/references/conversion.md",
+        "../datocms-structured-text/references/document-model.md",
+        "../datocms-structured-text/references/editing.md"
       ],
       "assets": [],
       "scripts": [],
@@ -141,7 +141,6 @@
         "../datocms-frontend-integrations/references/svelte-content-link.md",
         "../datocms-frontend-integrations/references/svelte-video-player.md",
         "../datocms-frontend-integrations/references/sveltekit.md",
-        "../datocms-frontend-integrations/references/video-player-concepts.md",
         "../datocms-frontend-integrations/references/vue-content-link.md",
         "../datocms-frontend-integrations/references/vue-video-player.md"
       ],
@@ -167,7 +166,8 @@
         "../datocms-frontend-integrations/references/astro.md",
         "../datocms-frontend-integrations/references/nextjs.md",
         "../datocms-frontend-integrations/references/nuxt.md",
-        "../datocms-frontend-integrations/references/sveltekit.md"
+        "../datocms-frontend-integrations/references/sveltekit.md",
+        "../datocms-frontend-integrations/references/verification-checklists.md"
       ],
       "assets": [],
       "scripts": [],
@@ -216,7 +216,8 @@
         "../datocms-frontend-integrations/references/react-content-link.md",
         "../datocms-frontend-integrations/references/svelte-content-link.md",
         "../datocms-frontend-integrations/references/sveltekit.md",
-        "../datocms-frontend-integrations/references/vue-content-link.md"
+        "../datocms-frontend-integrations/references/vue-content-link.md",
+        "../datocms-frontend-integrations/references/visual-editing-concepts.md"
       ],
       "assets": [],
       "scripts": [],
@@ -303,7 +304,11 @@
       "summary": "Scaffold the full visual-editing bundle: draft mode, Content Link, Web Previews, and optional real-time updates.",
       "prerequisites": [],
       "shared_references": [
-        "../datocms-frontend-integrations/references/visual-editing-concepts.md"
+        "../datocms-frontend-integrations/references/visual-editing-concepts.md",
+        "../datocms-frontend-integrations/references/content-link-concepts.md",
+        "../datocms-frontend-integrations/references/draft-mode-concepts.md",
+        "../datocms-frontend-integrations/references/realtime-concepts.md",
+        "../datocms-frontend-integrations/references/web-previews-concepts.md"
       ],
       "assets": [],
       "scripts": [],
@@ -331,7 +336,8 @@
         "../datocms-frontend-integrations/references/nextjs.md",
         "../datocms-frontend-integrations/references/nuxt.md",
         "../datocms-frontend-integrations/references/sveltekit.md",
-        "../datocms-frontend-integrations/references/web-previews-concepts.md"
+        "../datocms-frontend-integrations/references/web-previews-concepts.md",
+        "../datocms-frontend-integrations/references/visual-editing-concepts.md"
       ],
       "assets": [],
       "scripts": [],

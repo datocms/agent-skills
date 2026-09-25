@@ -82,14 +82,14 @@ export async function generateMetadata(): Promise<Metadata> {
 
 ## `toRemixMeta()`
 
-Generates an array of `MetaDescriptor` objects for Remix v2 `meta` export:
+`MetaDescriptor[]` for route `meta` export. Remix v2 below; React Router 7+ framework mode: `Route.MetaArgs` (or `MetaFunction` from `react-router`), read `loaderData` (7.8+; earlier 7.x only `data`, removed in v8):
 
 ```ts
-import type { MetaFunction } from 'remix';
+import type { MetaFunction } from '@remix-run/node';
 import { toRemixMeta } from 'react-datocms/seo';
 
-export const meta: MetaFunction = ({ data: { post } }) => {
-  return toRemixMeta(post.seo);
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return toRemixMeta(data?.post.seo ?? null);
 };
 ```
 
@@ -135,5 +135,5 @@ export const meta: MetaFunction = ({ data: { post } }) => {
 | `renderMetaTags()` | React elements | react-helmet, React 19+ |
 | `renderMetaTagsToString()` | HTML string | Server-side rendering |
 | `toNextMetadata()` | `Metadata` object | Next.js `generateMetadata` |
-| `toRemixMeta()` | `MetaDescriptor[]` | Remix v2 `meta` export |
+| `toRemixMeta()` | `MetaDescriptor[]` | Remix v2 / React Router 7+ `meta` export |
 | `toRemixV1Meta()` | Object | Remix v1 `meta` export (legacy) |

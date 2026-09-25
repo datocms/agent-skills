@@ -419,7 +419,7 @@ Key points:
 
 **File:** `src/lib/datocms/recordInfo.ts`
 
-Requires `cma-types` — generated types expose `Schema.X.ID` (literal-typed model id) and the `AnyModel` union, which discriminates `item.attributes` per branch.
+Requires generated `cma-types` ([how](./web-previews-concepts.md#recordtowebsiteroute-pattern)).
 
 ```ts
 import type { RawApiTypes } from '@datocms/cma-client';
