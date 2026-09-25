@@ -69,17 +69,20 @@ export function ContentLink() {
 }
 ```
 
-Include in root layout:
+Include in root layout, only in draft mode:
 
 ```jsx
 // app/layout.tsx
+import { draftMode } from 'next/headers';
 import { ContentLink } from './ContentLink';
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const { isEnabled: isDraftMode } = await draftMode();
+
   return (
     <html>
       <body>
-        <ContentLink />
+        {isDraftMode && <ContentLink />}
         {children}
       </body>
     </html>

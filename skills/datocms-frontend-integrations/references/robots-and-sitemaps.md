@@ -20,7 +20,7 @@ DatoCMS Site Search uses its own crawler:
 - Supported robots directives: `User-agent`, `Allow`, `Disallow`
 - Supported matching helpers: `*` wildcard and `$` end-of-path marker
 - Unsupported: `crawl-delay`, page-level `nofollow`, page-level `noindex`
-- Unsupported: multiple robots groups for the same user agent
+- Unsupported: multiple robots groups for the same user agent — emit exactly one group per crawler user agent
 
 ## Order matters
 
@@ -57,8 +57,9 @@ The crawler:
 
 Sitemap generation rules:
 
-- emit absolute URLs
+- emit absolute URLs, built with the [site URL helper](seo-concepts.md#canonical-urls-and-site-url)
 - keep every URL on the same domain as the configured public site URL
+- emit a `Sitemap:` directive in `robots.txt` with the absolute sitemap (or index) URL, e.g. `Sitemap: https://www.example.com/sitemap.xml`
 - include stable `lastmod` values when you have them
 - use a sitemap index only when you truly emit multiple sitemap documents
 
@@ -84,7 +85,7 @@ Only generate suffix-specific groups when the project already uses multiple sear
 
 Keep sitemap generation deterministic by centralizing route logic:
 
-- one helper that turns records or route entries into absolute public URLs
+- one helper that turns records or route entries into absolute public URLs ([site URL helper](seo-concepts.md#canonical-urls-and-site-url))
 - one source list describing which sections feed the sitemap
 - one `lastmod` strategy per source
 

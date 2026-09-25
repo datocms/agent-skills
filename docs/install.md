@@ -152,6 +152,8 @@ The folder names inside `skills/` match each skill's `name:` field, so the repo 
 
 `datocms-structured-text` supports local document work independently. Record persistence, GraphQL reads, framework rendering, and plugin form writes use companion skills only when requested. If a referenced companion is absent, install that skill from `datocms/agent-skills` or update the full bundle before continuing the dependent portion.
 
+`datocms-setup` does not work alone: it holds only the guided conversation and links to the sibling skills for every implementation step, so install it with the full set.
+
 ## Detached Snapshot Install
 
 If you want a copy that still works after the repo is moved or deleted, copy the skill folders instead of symlinking them.
@@ -178,4 +180,4 @@ cp -R "$repo_root/skills/datocms-cda/." "$skills_dir/datocms-cda"
 - `skills/datocms-plugin`
 - `skills/datocms-setup`
 
-`datocms-setup` already contains its internal recipes, shared references, and recipe-local scripts/assets, so there is no second setup bundle to install.
+`datocms-setup` links to the sibling skill folders by relative path, so keep them installed next to it under the same parent folder.

@@ -28,8 +28,10 @@ if [[ -n "$staged_md" ]]; then
 fi
 
 # Find skills with staged changes (any file under skills/<name>/ except agents/, which is excluded from zips).
+# Deletions count too, or a delete-only commit would leave stale files in the zip; --no-renames lists a
+# rename as delete + add so the skill it leaves is rebuilt as well as the one it enters.
 changed_skills=$(
-  git diff --cached --name-only --diff-filter=ACMR \
+  git diff --cached --name-only --no-renames --diff-filter=ACMRD \
     | awk -F/ '$1 == "skills" && $2 ~ /^datocms-/ && $3 != "agents" { print $2 }' \
     | sort -u
 )
@@ -43,10 +45,15 @@ if [[ -n "$changed_skills" ]]; then
 
   while IFS= read -r skill; do
     [[ -z "$skill" ]] && continue
-    echo "regenerating zips/${skill}.zip"
     rm -f "zips/${skill}.zip"
-    (cd "$tmp/skills" && zip -rq "$repo_root/zips/${skill}.zip" "$skill/" -x "${skill}/agents/*")
-    git add "zips/${skill}.zip"
+    if [[ -d "$tmp/skills/$skill" ]]; then
+      echo "regenerating zips/${skill}.zip"
+      (cd "$tmp/skills" && zip -rq "$repo_root/zips/${skill}.zip" "$skill/" -x "${skill}/agents/*")
+      git add "zips/${skill}.zip"
+    else
+      echo "removing zips/${skill}.zip (skill deleted)"
+      git rm -q --cached --ignore-unmatch "zips/${skill}.zip"
+    fi
   done <<< "$changed_skills"
 fi
 

@@ -1,0 +1,42 @@
+name: DatoCMS Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      destination:
+        description: Destination sandbox environment id
+        required: true
+
+permissions:
+  contents: read
+
+# One release at a time: an overlapping run's maintenance:off would unlock editors mid-release.
+concurrency:
+  group: datocms-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: npm ci
+
+      - name: Run DatoCMS release helper
+        # Inputs reach the shell only via env: an input expression inside run: is script injection.
+        run: node scripts/datocms-release.mjs --destination="$DESTINATION"
+        env:
+          DESTINATION: ${{ inputs.destination }}
+          DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
+
+      # A cancelled run kills the helper before its finally; this step still runs and unlocks the project.
+      - name: Ensure maintenance mode is off
+        if: always()
+        run: npx datocms maintenance:off --api-token="$DATOCMS_API_TOKEN"
+        env:
+          DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}

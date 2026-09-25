@@ -6,7 +6,7 @@ This directory holds the evaluation framework for the skills shipped in this rep
 
 The loop follows the pattern from [Anthropic's skill-iteration article](https://claude.com/blog/improving-skill-creator-test-measure-and-refine-agent-skills): write a curated set of test prompts, score the skill against them, and iterate on the skill description until precision and recall are acceptable.
 
-There are two distinct evaluations in this repo. They answer different questions, run with different scripts, and live in separate directory trees. Everything below is organised under them.
+There is one evaluation: trigger classification. Setup orchestration behavior (questions, plan-then-confirm, handoff) is covered by the regression case [`dev/e2e/regressions/cases/setup-guided.mjs`](../dev/e2e/regressions/cases/setup-guided.mjs), not here.
 
 > **Cost warning.** Evals make many LLM calls. Do not run them proactively. Only run when explicitly asked.
 
@@ -134,36 +134,6 @@ python3 evals/scripts/generate_refinement_briefs.py \
 ```
 
 Rule of thumb: edit the SKILL.md frontmatter `description` first (small deltas), re-run the eval, only touch the SKILL.md body once the description change is validated.
-
----
-
-## Router evaluation
-
-**Question it answers:** "Given the user's setup intent, which recipes — in which stages, in which order — does the `datocms-setup` orchestrator route to?"
-
-The `datocms-setup` skill is a special case: it's an orchestrator that internally routes a setup prompt to a deterministic sequence of recipes (Stage A + Stage B). A simple "fire / don't fire" classifier isn't enough — we need to check the actual routing decision (which recipes, in which order). The router eval scores that decision against an expected expansion.
-
-Router evals only exist for `datocms-setup` today. Everything else uses trigger evals.
-
-### Fixture format
-
-The router fixture lives at `evals/fixtures/router/datocms-setup.json` and is a JSON array of routing cases. Each case has:
-
-- `query` — the user request.
-- `should_route` — whether the setup orchestrator should fire at all.
-- `expected_recipes` — fully expanded, prerequisite-first recipe ids (no bundle aliases).
-- `expected_stage_a` / `expected_stage_b` — which stage each recipe belongs to.
-- `notes` — optional context.
-
-The companion `datocms-setup.matrix.md` is a human-readable matrix of the cases; the JSON is the source of truth.
-
-### Running
-
-```bash
-python3 evals/scripts/run_setup_router_eval.py
-```
-
-Writes under `evals/results/router/datocms-setup/<track>/<source>/results.json`. There is no `_summary/` for the router (single skill — the per-skill report _is_ the report).
 
 ---
 

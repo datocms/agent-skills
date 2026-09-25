@@ -39,7 +39,7 @@ Runs migration scripts that have not been executed yet.
 | Flag | Type | Description |
 | - | - | - |
 | `--source=<env>` | string | Environment to fork from (defaults to primary) |
-| `--destination=<env>` | string | Name for the new forked environment (exclusive with `--in-place`) |
+| `--destination=<env>` | string | Name for the new forked environment: lowercase letters, numbers, dashes; default `<source>-post-migrations` (exclusive with `--in-place`) |
 | `--in-place` | boolean | Run in the source environment without forking (exclusive with `--destination`) |
 | `--allow-primary` | boolean | Required for `--in-place` on primary (requires `--in-place`); additive-only, no rollback |
 | `--dry-run` | boolean | Simulate execution without making actual changes |
@@ -68,6 +68,8 @@ npx datocms migrations:run --source=staging --destination=staging-migrated
 
 This is the safest approach: if migrations fail, the source environment is untouched.
 
+Destination id already existing → run fails (`Environment "…" already exists!`) before forking. Without `--destination`, every run after the first hits this until `<source>-post-migrations` is promoted or destroyed: pass a fresh `--destination` per run.
+
 ## In-Place Execution
 
 Run migrations directly on an environment without forking:
@@ -90,6 +92,8 @@ Preview which migrations would run without executing them:
 npx datocms migrations:run --dry-run
 ```
 
+Lists pending scripts only: no fork, no tracking-model creation, no tracking records, scripts never loaded or executed (syntax/type errors surface only on real run). Reads the source environment's tracking model (missing → every script listed as pending). Still needs a token, and still fails when the destination id already exists or the migrations directory is missing.
+
 ## Migration Tracking
 
 The CLI uses a DatoCMS model to track which migrations have already been executed. By default, this model has the API key `schema_migration`.
@@ -109,6 +113,8 @@ The CLI discovers migration files by scanning the migrations directory for files
 Files must start with digits (the timestamp prefix). They are sorted by filename to determine execution order.
 
 Default migrations directory: `./migrations/` (configurable via `--migrations-dir` or `datocms.config.json`).
+
+Missing directory → `migrations:run` (`--dry-run` too) fails with `Directory "…" does not exist!`; `migrations:new` creates it.
 
 ## TypeScript Execution
 

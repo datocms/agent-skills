@@ -4,6 +4,14 @@ Scaffolding new migration scripts with `migrations:new`.
 
 For Structured Text backfills, load [document model](../../datocms-structured-text/references/document-model.md), then [editing](../../datocms-structured-text/references/editing.md) for existing DAST or [conversion](../../datocms-structured-text/references/conversion.md) for Markdown/HTML. Keep migration ordering here and typed record writes in [CMA editing records](../../datocms-cma/references/editing-records.md).
 
+## Contents
+
+- Inputs to confirm before running commands
+- Command
+- Format Detection
+- Autogenerate Mode
+- Schema Types Flag
+
 ## Inputs to confirm before running commands
 
 Only enter this sub-task once the user has chosen the migration approach (see "Schema changes" in Step 2 of SKILL.md). Confirm these inputs when they are not already clear:
@@ -43,10 +51,12 @@ Run `npx datocms migrations:new --help` for all available flags.
 
 The CLI determines the file format in this order:
 
-1. If `--template` is provided -> use the template file's extension
-2. If `--js` flag is set -> JavaScript
-3. If `--ts` flag is set or a `tsconfig.json` is found -> TypeScript
+1. Template (`--template`, else profile `migrations.template`) -> template file's extension
+2. `--js` -> JavaScript (`--ts`/`--js` exclusive)
+3. `--ts`, profile `migrations.tsconfig`, or nearest `tsconfig.json` (searched from cwd upward) -> TypeScript
 4. Otherwise -> JavaScript
+
+Existing files in the migrations directory never decide: repo with JS migrations under any `tsconfig.json` gets `.ts` files unless `--js` is passed. File goes to active profile's `migrations.directory` (relative to config file), else `./migrations` — `migrations:new` has no `--migrations-dir` flag.
 
 Preserve the repo's established TS/JS convention unless the user explicitly asks for a different output format.
 

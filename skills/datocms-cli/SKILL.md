@@ -120,6 +120,8 @@ Based on task classification, read appropriate reference files from `references/
 | Importing content | `references/importing-content.md` |
 | CLI plugin management | `references/cli-plugin-management.md` |
 
+Bundled helpers to copy into the repo: `scripts/` (release and multi-project sync wrappers) and `assets/` (their GitHub Actions workflows); contracts in `deployment-workflow.md` › Release Helper and `blueprint-sync.md` › Automation Guidance.
+
 **Load cross-cutting references when needed:**
 
 - If creating + running migrations together -> load both `creating-migrations.md` and `running-migrations.md`
@@ -152,3 +154,4 @@ This skill covers **CLI commands, flags, configuration, workflows, and migration
 | Querying content with GraphQL for frontend display | **datocms-cda** |
 | Setting up framework integration, draft mode, or real-time updates | **datocms-frontend-integrations** |
 | Building a DatoCMS plugin | **datocms-plugin** |
+| User wants a setup planned or walked through (migrations plus release, multi-project sync, imports into a project) | **datocms-setup** |

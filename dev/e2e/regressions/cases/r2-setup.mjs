@@ -91,7 +91,8 @@ const calls = [];
 const resource = (name) => new Proxy({}, { get: (_, method) => typeof method !== 'string' || method === 'then' ? undefined : async (...args) => {
   calls.push({ resource: name, method, args });
   if (/list/i.test(method)) return [];
-  if (/create$/i.test(method)) return { id: name + '-1', ...(args.at(-1) ?? {}) };
+  // Created entities come back complete; plugins always carry a parameters object (cma-client Plugin type).
+  if (/create$/i.test(method)) return { id: name + '-1', ...(name === 'plugins' ? { parameters: {} } : {}), ...(args.at(-1) ?? {}) };
   return { id: typeof args[0] === 'string' ? args[0] : args[0]?.id, ...(args[1] ?? {}) };
 } });
 const client = new Proxy({}, { get: (_, name) => typeof name !== 'string' || name === 'then' ? undefined : resource(name) });
@@ -117,8 +118,8 @@ function walk(dir, base = dir) {
 export default [
   {
     id: 'setup-web-previews-migration-secret',
-    guards: ['skills/datocms-setup/recipes/frontend-foundation/web-previews/recipe.md'],
-    prompt: `$datocms-setup Our Next.js site already has DatoCMS draft mode and a working \`/api/preview-links\` endpoint. Please finish the side-by-side preview setup by installing and configuring the Web Previews plugin for our Production frontend at ${SITE} (sidebar open by default; we don't need the Visual tab). We keep every DatoCMS project change in this repo's migrations, so do it as a new migration; we'll review it and run it ourselves later with \`npx datocms migrations:run\`. Those settings are final, no need to confirm them again. Don't run anything against DatoCMS: there is no DatoCMS login on this machine.`,
+    guards: ['skills/datocms-setup/SKILL.md', 'skills/datocms-frontend-integrations/references/web-previews-concepts.md'],
+    prompt: `$datocms-setup Our Next.js site already has DatoCMS draft mode and a working \`/api/preview-links\` endpoint. Please finish the side-by-side preview setup by installing and configuring the Web Previews plugin for our Production frontend at ${SITE} (sidebar open by default; we don't need the Visual tab). We keep every DatoCMS project change in this repo's migrations, so do it as a new migration; we'll review it and run it ourselves later with \`npx datocms migrations:run\`. Those settings are final: go ahead without checking the plan with us first. Don't run anything against DatoCMS: there is no DatoCMS login on this machine.`,
     budget: { timeoutMs: 420000, maxCommands: 60 },
     setup(workspace, ctx) {
       for (const [path, content] of Object.entries(repo)) {

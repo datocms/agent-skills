@@ -46,7 +46,7 @@ CLI v4+ uses **OAuth-based authentication** as best practice.
 npx datocms login
 ```
 
-Opens browser for OAuth. Port 7651 in use → manual copy-paste flow. Re-running `login` replaces existing credentials.
+Opens browser for OAuth. Port 7651 in use → manual copy-paste flow. Re-running `login` replaces existing credentials. Credentials live in per-user OS config dir, not the repo: one login per machine serves every repo; teammates and CI don't inherit it.
 
 ### Log out
 
@@ -91,6 +91,7 @@ Search behavior:
 1. **Exact match first** — query equals `id`, `name` (case-insensitive), or full `domain` (case-insensitive) → only those matches.
 2. **Fuzzy match otherwise** — scores against project name and short domain (custom or `internal_subdomain`). `.admin.datocms.com` excluded from fuzzy matching.
 3. Results sorted by score, capped to `--limit`. **Always returns list, never single "best" guess.**
+4. Query matches nothing → error `No projects match '<query>'`: rerun without query (default cap 20: raise `--limit` or narrow with `--workspace`). No accessible project at all → error `No projects found.`: user creates one at <https://dashboard.datocms.com/>, then link.
 
 JSON output schema (one object per project):
 
@@ -110,11 +111,12 @@ JSON output schema (one object per project):
 Agent bootstrap pipeline:
 
 ```bash
-SITE_ID=$(npx datocms projects:list blog --json | jq -r '.[0].id')
-npx datocms link --site-id=$SITE_ID
+npx datocms projects:list blog --json
+# show each candidate (name, id, workspace); wait for explicit yes
+npx datocms link --site-id=<id> [--organization-id=<workspace.id>]
 ```
 
-Only safe to auto-pick `.[0]` when agent has high confidence query matches single project (or result length 1). On ambiguity, surface list to user.
+Never auto-pick `.[0]`, even when list has one result: link only project user explicitly confirmed. `--organization-id` = `workspace.id` when `workspace.type` is `organization`.
 
 ## Linking a Project
 
@@ -134,8 +136,8 @@ npx datocms link --site-id=12345
 npx datocms link --site-id=12345 --organization-id=67890
 
 # Configure a named profile instead of "default" (e.g. one profile per
-# project in a blueprint-sync repo)
-npx datocms link --profile=client_a --site-id=12345
+# project in a blueprint-sync repo, sharing ./migrations)
+npx datocms link --profile=client_a --site-id=12345 --migrations-dir=./migrations
 ```
 
 `link` combines authentication and profile configuration:
@@ -145,6 +147,8 @@ npx datocms link --profile=client_a --site-id=12345
 3. Stores project's `siteId` (and `organizationId`) in profile
 4. Configures migration directory, model API key, log level, etc. (auto-defaulted in non-TTY)
 
+Extra profile: linking a profile not yet in a config that already has another (e.g. `default`) defaults its migrations directory to `./<camelCase(profileId)>Migrations` (`client_a` → `./clientAMigrations`; same TTY prompt default) — splits shared migration history (`migrations:run` → `Directory "…" does not exist!`). Pass `--migrations-dir=./migrations` (model already defaults to `schema_migration`), or write the profile block first — existing `migrations.directory` kept.
+
 ### Interactive vs non-interactive behavior
 
 - **`--site-id` provided + OAuth credentials present** → fully non-interactive. Defaults written for log level and migrations; agent can drive.
@@ -153,6 +157,10 @@ npx datocms link --profile=client_a --site-id=12345
 - **No `--site-id` in TTY** → interactive picker (workspace selection + project search).
 
 Alternatively, authenticate via API token env var during interactive `link` flow.
+
+Never hand-write `siteId`/`organizationId` in `datocms.config.json`: `link` validates project against Dashboard API before saving. Hand-authored profiles without them are fine — link each afterwards.
+
+Linking profile that has `apiTokenEnvName` keeps it but adds `siteId`, which wins in [API Token Resolution](#api-token-resolution) — env token no longer read; CI without OAuth session then errors unless passing `--api-token`. Ask before linking such profile.
 
 Run `npx datocms link --help` for all flags (`--profile`, `--log-level`, `--migrations-dir`, `--migrations-model`, `--migrations-template`, `--migrations-tsconfig`, `--organization-id`, `--site-id`).
 
@@ -215,8 +223,10 @@ CLI uses `datocms.config.json` in project root. Structure:
 CLI decides **which profile to use** in this order:
 
 1. `--profile=<id>` on command
-2. `DATOCMS_PROFILE=<id>` in environment
-3. `default` profile in `datocms.config.json`
+2. `DATOCMS_PROFILE=<id>` in environment (also read from `.env.local`, then `.env`, in cwd)
+3. `default` profile in `datocms.config.json` — config with several profiles and neither 1 nor 2 → error `Multiple profiles detected`, no fallback
+
+Config file: `--config-file=<path>` / `DATOCMS_CONFIG_FILE` (default `./datocms.config.json`); `migrations.*` paths resolve relative to it.
 
 Use `DATOCMS_PROFILE` when multiple commands in same shell should share same non-default profile.
 
@@ -226,7 +236,7 @@ Once active profile known, CLI resolves API token in this order:
 
 1. **`--api-token` flag** — passed directly on command line (no env binding)
 2. **Linked project** — if profile has `siteId` (set by `link`), CLI uses OAuth credentials to fetch project's API token via Dashboard API. Requires prior `datocms login`; no OAuth session (e.g. CI) → hard error, step 3 never checked — pass `--api-token`.
-3. **Environment variable for active profile** (unlinked profiles only) — uses `apiTokenEnvName` from profile config, or falls back to default naming:
+3. **Environment variable for active profile** (unlinked profiles only; also read from `.env.local`/`.env`) — uses `apiTokenEnvName` from profile config, or falls back to default naming:
    - default profile: `DATOCMS_API_TOKEN`
    - named profile `client_a`: `DATOCMS_CLIENT_A_PROFILE_API_TOKEN`
 

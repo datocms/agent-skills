@@ -129,7 +129,9 @@ DatoCMS sends a webhook when cache tags need invalidation. Configure it in Proje
 
 The `tags` array contains the opaque cache tags that need purging. Your webhook handler should match these against whatever tags you stored when the content was originally fetched.
 
-**Note:** The `cda_cache_tags` / `invalidate` event type does not support webhook filters — it always fires for all tag changes. To programmatically create this webhook via the CMA, consult `datocms cma:docs webhooks create` for the current endpoint shape.
+**Note:** The `cda_cache_tags` / `invalidate` event accepts only environment filters (e.g. primary only), never model or record filters — it fires for every tag change ([resource-gotchas.md › Webhooks](../../datocms-cma/references/resource-gotchas.md#webhooks-webhooks)). To programmatically create this webhook via the CMA, consult `datocms cma:docs webhooks create` for the current endpoint shape.
+
+**Authentication:** webhooks have no secret field — add custom header `Authorization: Bearer <secret>` on the webhook (CMA `headers`); handler rejects any other value with 401. Enable `auto_retry` so failed deliveries (timeouts, errors) are retried.
 
 ### Next.js Cache Tags
 
@@ -137,7 +139,7 @@ Next.js limits each `fetch` call to **128 cache tags**. A DatoCMS query can retu
 
 The solution is to assign each query a stable **Query ID**, tag the fetch with only that ID, and store the mapping from Query ID → DatoCMS tags in a database. The webhook handler then looks up which Query IDs are affected and calls `revalidateTag()` for each.
 
-For the full implementation pattern (replacement `executeQuery`, DB abstraction, webhook route handler), see `skills/datocms-frontend-integrations/references/nextjs.md` → "Cache Tags (Optional)".
+For the full implementation pattern (replacement `executeQuery`, DB abstraction, webhook route handler), see [nextjs.md → Cache Tags (Optional)](../../datocms-frontend-integrations/references/nextjs.md#cache-tags-optional).
 
 ### Response tag collection and purge adapters
 

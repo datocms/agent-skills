@@ -236,34 +236,40 @@ Baseline: DatoCMS CLI present and repo linked via `npx datocms link` (so `datocm
 
 ### Programmatic install (default)
 
-Two-step CMA call — `plugins.create` installs the package, `plugins.update` writes parameters. Execution surface depends on repo:
+`plugins.list` first — reuse the installed `datocms-plugin-web-previews` instead of creating a duplicate, else `plugins.create`; then `plugins.update` writes `parameters`. `parameters` is sent whole: merge into the saved object (other frontends, settings); omitting it keeps saved settings ([resource-gotchas.md › Plugins](../../datocms-cma/references/resource-gotchas.md#plugins-plugins)). Execution surface depends on repo:
 
-- **One-off** — `npx datocms cma:script` stdin or file. No tracking; re-running tries to recreate (catch existing instance first with `client.plugins.list()`).
-- **Migration script** (preferred when repo has `migrations/`) — `npx datocms migrations:new "install web previews plugin" --ts` scaffolds a file exporting `async function(client: Client)`. CLI tracks runs via `schema_migration` model, so install only happens once per environment. Idempotent + versioned + replays on `migrations:run` against forked envs.
+- **One-off** — `npx datocms cma:script` stdin or file. No tracking; the list check keeps re-runs from duplicating the plugin.
+- **Migration script** (preferred when repo has `migrations/`) — `npx datocms migrations:new "install web previews plugin" --ts` scaffolds a file exporting `async function(client: Client)`. CLI tracks runs via `schema_migration` model, so install only happens once per environment. Idempotent + versioned + replays on `migrations:run` against forked envs. Default `migrations:run` installs the plugin in the sandbox it forks ([running-migrations.md › Default Behavior (Fork-and-Run)](../../datocms-cli/references/running-migrations.md#default-behavior-fork-and-run)) — primary gets it only after that env is promoted (or via `--in-place --allow-primary`, additive-only). Name the target environment in the plan and handoff.
 
 ```ts
 // Read at run time (the CLI loads .env.local/.env); never inline values in a committed migration.
-const baseUrl = process.env.SITE_URL!; // or the repo's *_SITE_URL
-const SECRET_API_TOKEN = process.env.SECRET_API_TOKEN!;
+const baseUrl = process.env.SITE_URL; // or the repo's *_SITE_URL (see seo-concepts.md › Canonical URLs and Site URL)
+// the framework's secret var: NUXT_SECRET_API_TOKEN (Nuxt), PRIVATE_SECRET_API_TOKEN (SvelteKit)
+const SECRET_API_TOKEN = process.env.SECRET_API_TOKEN;
+if (!baseUrl || !SECRET_API_TOKEN) throw new Error('Missing site URL or preview secret');
 
-const plugin = await client.plugins.create({
-  package_name: 'datocms-plugin-web-previews',
-});
+const frontend = {
+  name: 'Production',
+  previewWebhook: `${baseUrl}/api/preview-links?token=${SECRET_API_TOKEN}`,
+  visualEditing: {
+    enableDraftModeUrl: `${baseUrl}/api/draft-mode/enable?token=${SECRET_API_TOKEN}`,
+    initialPath: '/',
+  },
+};
+
+const plugin =
+  (await client.plugins.list()).find((p) => p.package_name === 'datocms-plugin-web-previews') ??
+  (await client.plugins.create({ package_name: 'datocms-plugin-web-previews' }));
+
+// Keep other frontends and settings; update this frontend by name, keeping its other keys (customHeaders).
+const { frontends, ...settings } = plugin.parameters;
+const saved = Array.isArray(frontends) ? frontends.find((f) => f?.name === frontend.name) : undefined;
+const otherFrontends = Array.isArray(frontends)
+  ? frontends.filter((f) => f?.name !== frontend.name)
+  : [];
 
 await client.plugins.update(plugin.id, {
-  parameters: {
-    frontends: [
-      {
-        name: 'Production',
-        previewWebhook: `${baseUrl}/api/preview-links?token=${SECRET_API_TOKEN}`,
-        visualEditing: {
-          enableDraftModeUrl: `${baseUrl}/api/draft-mode/enable?token=${SECRET_API_TOKEN}`,
-          initialPath: '/',
-        },
-      },
-    ],
-    startOpen: true,
-  },
+  parameters: { startOpen: true, ...settings, frontends: [...otherFrontends, { ...saved, ...frontend }] },
 });
 ```
 
@@ -282,7 +288,7 @@ Top-level `parameters.startOpen: true` opens sidebar preview by default.
 
 ### Confirm before executing
 
-Plugin install writes to live DatoCMS project. Echo resolved `frontends[]` config back to user and confirm before calling `plugins.create` / `plugins.update`.
+Plugin install writes to live DatoCMS project. Echo resolved `frontends[]` config back to user and confirm before calling `plugins.create` / `plugins.update`. Saved same-name frontend has `customHeaders` or `disabled: true` → say so in the echo (both carry over; `disabled` keeps its preview links and Visual editing off).
 
 ### Manual UI fallback
 
@@ -294,7 +300,7 @@ If CLI not linked, instruct user:
 
 ## Dependencies
 
-Preview-links endpoint requires:
+Preview-links endpoint requires, in all four frameworks:
 
-- `@datocms/cma-client` — For `RawApiTypes.Item` and `ApiTypes.ItemType` types, and `ApiError` for error handling
-- `@datocms/rest-client-utils` — for `deserializeRawItem` to convert raw JSON:API item before passing to `recordToWebsiteRoute`
+- `@datocms/cma-client` — `RawApiTypes` / `ApiTypes` types for the endpoint body and `recordToWebsiteRoute`
+- `@datocms/rest-client-utils` — `deserializeRawItem` to convert raw JSON:API item before passing to `recordToWebsiteRoute`

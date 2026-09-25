@@ -36,7 +36,8 @@ When real credentials and routes are available, run the app and check a represen
 - The root `ContentLink` component is mounted in the right place.
 - Router integration matches the framework:
   - React / Next.js uses `onNavigateTo` and `currentPath`.
-  - Vue / Nuxt uses `on-navigate-to` and `current-path`.
+  - Vue uses `on-navigate-to` and `current-path`.
+  - Nuxt uses the client-only `createController` wrapper calling `setCurrentPath` in `router.afterEach`, mounted in `<ClientOnly>` only in draft mode.
   - SvelteKit uses `onNavigateTo` and `currentPath`.
   - Astro uses only its supported props.
 - Structured Text boundaries are present only where the framework expects them.
@@ -92,6 +93,7 @@ When real credentials and routes are available, run the app and check a represen
 ### SEO and Meta Tags
 
 - Page-level SEO tags are combined with site favicon tags.
+- Canonical tag is absolute and built by the single [site URL helper](./seo-concepts.md#canonical-urls-and-site-url).
 - The framework-specific helper is correct:
   - React: `renderMetaTags()`, `toNextMetadata()`, or `toRemixMeta()`
   - Vue: `toHead()`
@@ -112,6 +114,7 @@ When real credentials and routes are available, run the app and check a represen
 ### Robots and Sitemaps
 
 - Dato crawler `Allow` rules appear before any catch-all `Disallow: /`.
+- One group per crawler user agent; `robots.txt` has an absolute `Sitemap:` directive.
 - Sitemap output only contains URLs under the configured public site URL.
 - Each public section has an explicit route builder and `lastmod` source.
 - Suffix-specific Dato crawler groups are emitted only when they are actually needed.

@@ -295,6 +295,8 @@ export async function performQuery<Result, Variables>(
 }
 ```
 
+Published-only variant (no draft mode yet): drop `event` and the `$lib/draftMode.server` import (it doesn't exist before draft mode), always `PRIVATE_DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`, no `includeDrafts`.
+
 ### Usage in `+page.server.ts`
 
 ```ts
@@ -320,20 +322,19 @@ PUBLIC_DRAFT_MODE_COOKIE_NAME=                  # Cookie name, e.g. "datocms-dra
 
 SvelteKit convention:
 
-- `PRIVATE_` prefix → only available server-side (`$env/dynamic/private`)
+- `PRIVATE_` prefix → naming convention for server-only vars (`$env/dynamic/private`); default `kit.env.privatePrefix` is `''`, so every non-`PUBLIC_` var is private; a configured `privatePrefix` discards vars matching neither prefix
 - `PUBLIC_` prefix → available on both server and client (`$env/dynamic/public`)
 
 ### Core Dependencies
 
 Required (install if missing):
 
+- `@datocms/cda-client` — `executeQuery`
 - `jsonwebtoken` — For signing/verifying JWT cookies
 - `@types/jsonwebtoken` — TypeScript types (dev dependency)
 - `serialize-error` — For serializing error objects
 
-Optional for Web Previews helpers:
-
-- `@datocms/cma-client` — For `RawApiTypes`
+`gql.tada` — `TadaDocumentNode`, only when the repo uses gql.tada typed queries.
 
 ## Web Previews (Optional)
 
@@ -450,7 +451,7 @@ export async function recordToWebsiteRoute(
 
 ### Web Previews Dependencies
 
-Required: `@datocms/rest-client-utils`
+Required: `@datocms/rest-client-utils`, `@datocms/cma-client` (`RawApiTypes`)
 
 ## Content Link (Optional)
 
@@ -717,11 +718,13 @@ CDN-first cache tag invalidation for SvelteKit. Instead of revalidating all cont
 - Your SvelteKit site is deployed behind a CDN that supports tag-based purging (Netlify, Cloudflare, Fastly, Bunny)
 - You want per-record granularity in cache invalidation
 
-For the webhook payload structure and CDN header table, see `skills/datocms-cda/references/draft-caching-environments.md` → "Cache Tags".
+For the webhook payload structure and CDN header table, see [CDA cache tags](../../datocms-cda/references/draft-caching-environments.md#cache-tags).
 
 ### Modified Query Function
 
-Switch from `executeQuery` to `rawExecuteQuery` to access the `x-cache-tags` response header:
+Switch from `executeQuery` to `rawExecuteQuery` to access the `x-cache-tags` response header.
+
+The example assumes preview mode exists. For a published-only project, omit the draft helper and draft token, use the published token, and set `includeDrafts: false`. Preserve authenticated preview handling when already configured; do not add preview mode just to enable caching.
 
 **File:** `src/lib/datocms/queries.ts`
 

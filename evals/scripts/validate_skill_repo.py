@@ -5,11 +5,13 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import html
 import json
 import re
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import unquote
 
 BANNED_SKILL_BODY_PATTERNS = (
     "AskUserQuestion",
@@ -40,25 +42,25 @@ ALLOW_IMPLICIT_RE = re.compile(
 SKILL_GLOB_PATTERNS = (
     "skills/*/SKILL.md",
 )
-RECIPE_GLOB_PATTERN = "skills/datocms-setup/recipes/*/*/recipe.md"
+SETUP_SKILL_DIR = "skills/datocms-setup"
+FRAMEWORK_REFERENCE_PATHS = tuple(
+    f"skills/datocms-frontend-integrations/references/{framework}.md"
+    for framework in ("nextjs", "nuxt", "sveltekit", "astro")
+)
+MARKDOWN_LINK_RE = re.compile(r"\[(?:[^\]\\\n]|\\.)*\]\(\s*<?([^)\s>]+)>?(?:\s+\"[^\"]*\")?\s*\)")
+INLINE_CODE_RE = re.compile(r"`+[^`\n]*`+")
+FW_HEADING_RE = re.compile(r"FW › `([^`\n]+)`")
+FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
+ATX_HEADING_RE = re.compile(r"^ {0,3}#{1,6}[ \t]+(.+?)(?:[ \t]+#+)?[ \t]*$")
+EXTERNAL_LINK_PREFIXES = ("http://", "https://", "mailto:")
 CODEX_DESCRIPTION_MAX_CHARS = 1024
 TRIGGER_FIXTURES_DIR = "evals/fixtures/trigger"
 TRIGGER_RESULTS_DIR = "evals/results/trigger"
-SETUP_ROUTER_FIXTURE_PATH = "evals/fixtures/router/datocms-setup.json"
-SETUP_ROUTER_MATRIX_PATH = "evals/fixtures/router/datocms-setup.matrix.md"
 DEFAULT_QUERY_MODE = "implicit"
 ALLOWED_QUERY_MODES = {
     "implicit",
     "explicit",
     "overlap",
-}
-ALLOWED_SETUP_ROUTER_STAGE_B = {
-    "none",
-    "visual-editing",
-    "vercel-overlay-conflict",
-    "site-search",
-    "graphql-types",
-    "migrations",
 }
 
 SCAFFOLD_CAPABLE_SKILLS = {
@@ -207,10 +209,6 @@ def _iter_skill_files(repo_root: Path) -> list[Path]:
     for pattern in SKILL_GLOB_PATTERNS:
         skill_files.extend(sorted(repo_root.glob(pattern)))
     return skill_files
-
-
-def _iter_recipe_files(repo_root: Path) -> list[Path]:
-    return sorted(repo_root.glob(RECIPE_GLOB_PATTERN))
 
 
 def _extract_json_payload(raw: str, source: Path) -> dict[str, object]:
@@ -531,271 +529,118 @@ def _validate_eval_result_names(
             )
 
 
-def _load_setup_recipe_ids(repo_root: Path, errors: list[str]) -> set[str]:
-    manifest_path = (
-        repo_root / "skills" / "datocms-setup" / "references" / "recipe-manifest.json"
-    )
-    if not manifest_path.exists():
-        return set()
+def _fence_toggle(line: str, fence: str | None) -> tuple[bool, str | None]:
+    """CommonMark fences: a fence opens with 3+ backticks or tildes and closes only on a line
+    of the same character, at least as long, with nothing after it."""
+    match = FENCE_RE.match(line)
+    if not match:
+        return False, fence
+    run = match.group(1)
+    if fence is None:
+        return True, run
+    if run[0] == fence[0] and len(run) >= len(fence) and not line.strip()[len(run):].strip():
+        return True, None
+    return False, fence
 
-    try:
-        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        errors.append(f"{manifest_path}: invalid JSON ({exc})")
-        return set()
 
-    recipes = payload.get("recipes", [])
-    if not isinstance(recipes, list):
-        errors.append(f"{manifest_path}: manifest must include a non-empty `recipes` array")
-        return set()
-
-    recipe_ids: set[str] = set()
-    for index, recipe in enumerate(recipes):
-        if not isinstance(recipe, dict):
-            errors.append(f"{manifest_path}: recipe {index} must be an object")
+def _markdown_headings(path: Path) -> list[str]:
+    headings: list[str] = []
+    fence: str | None = None
+    for line in path.read_text(encoding="utf-8").splitlines():
+        is_fence, fence = _fence_toggle(line, fence)
+        if is_fence or fence is not None:
             continue
-        recipe_id = recipe.get("id")
-        if isinstance(recipe_id, str) and recipe_id.strip():
-            recipe_ids.add(recipe_id.strip())
-    return recipe_ids
+        match = ATX_HEADING_RE.match(line)
+        if match:
+            headings.append(match.group(1).strip())
+    return headings
 
 
-def _expand_setup_recipe_closure(
-    recipe_id: str,
-    recipe_map: dict[str, dict[str, object]],
-    errors: list[str],
-    source: Path,
-    index: int,
-    _seen: set[str] | None = None,
-) -> set[str]:
-    seen = set() if _seen is None else set(_seen)
-    if recipe_id in seen:
-        return set()
-    seen.add(recipe_id)
-
-    recipe = recipe_map.get(recipe_id)
-    if recipe is None:
-        errors.append(f"{source}: router eval row {index} references unknown recipe `{recipe_id}`")
-        return set()
-
-    closure = {recipe_id}
-    prerequisites = recipe.get("prerequisites", [])
-    if not isinstance(prerequisites, list):
-        errors.append(f"{source}: manifest recipe `{recipe_id}` must include string array `prerequisites`")
-        return closure
-
-    for prerequisite in prerequisites:
-        if not isinstance(prerequisite, str) or not prerequisite.strip():
-            continue
-        closure.update(
-            _expand_setup_recipe_closure(
-                prerequisite.strip(),
-                recipe_map,
-                errors,
-                source,
-                index,
-                seen,
-            )
-        )
-    return closure
+def _github_heading_slugs(headings: list[str]) -> set[str]:
+    # github-slugger over the rendered heading text: code spans keep their content, links keep
+    # their text, tags and emphasis markers drop, entities decode; then lowercase, strip
+    # punctuation, spaces to hyphens, repeats suffixed -1, -2, ...
+    occurrences: dict[str, int] = {}
+    slugs: set[str] = set()
+    for heading in headings:
+        parts = re.split(r"(`+)(.+?)\1", heading)
+        rendered = []
+        for index in range(0, len(parts), 3):
+            text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", parts[index])
+            text = re.sub(r"<[^>]+>", "", text)
+            text = re.sub(r"\*+|(?<![\w])_+|_+(?![\w])", "", text)
+            rendered.append(html.unescape(text))
+            if index + 2 < len(parts):
+                rendered.append(parts[index + 2])
+        base = re.sub(r"[^\w\- ]", "", "".join(rendered).lower()).replace(" ", "-")
+        slug = base
+        while slug in occurrences:
+            occurrences[base] += 1
+            slug = f"{base}-{occurrences[base]}"
+        occurrences[slug] = 0
+        slugs.add(slug)
+    return slugs
 
 
-def _extract_manual_matrix_negative_controls(path: Path, errors: list[str]) -> list[str]:
-    if not path.exists():
-        errors.append(f"{path}: missing datocms-setup manual matrix")
-        return []
-
-    text = path.read_text(encoding="utf-8")
-    marker = "## Negative controls"
-    start = text.find(marker)
-    if start == -1:
-        errors.append(f"{path}: missing `## Negative controls` section")
-        return []
-
-    section = text[start:].splitlines()
-    queries: list[str] = []
-    for line in section:
-        stripped = line.strip()
-        if not stripped.startswith("| `"):
-            continue
-        parts = stripped.split("`")
-        if len(parts) >= 3 and parts[1].strip():
-            queries.append(parts[1].strip())
-    return queries
-
-
-def _validate_setup_router_eval(repo_root: Path, errors: list[str]) -> None:
-    fixture_path = repo_root / SETUP_ROUTER_FIXTURE_PATH
-    if not fixture_path.exists():
-        errors.append(f"{fixture_path}: missing datocms-setup router eval fixture")
+def _validate_setup_pointers(repo_root: Path, canonical_skill_names: set[str], errors: list[str]) -> None:
+    setup_dir = repo_root / SETUP_SKILL_DIR
+    if not setup_dir.exists():
         return
 
-    try:
-        payload = json.loads(fixture_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        errors.append(f"{fixture_path}: invalid JSON ({exc})")
-        return
+    framework_headings = {
+        rel_path: set(_markdown_headings(repo_root / rel_path))
+        for rel_path in FRAMEWORK_REFERENCE_PATHS
+        if (repo_root / rel_path).exists()
+    }
+    for rel_path in FRAMEWORK_REFERENCE_PATHS:
+        if rel_path not in framework_headings:
+            errors.append(f"{repo_root / rel_path}: missing framework reference that setup `FW ›` pointers target")
 
-    if not isinstance(payload, list) or not payload:
-        errors.append(f"{fixture_path}: router eval fixture must be a non-empty JSON array")
-        return
+    slug_cache: dict[Path, set[str]] = {}
 
-    manifest_path = (
-        repo_root / "skills" / "datocms-setup" / "references" / "recipe-manifest.json"
-    )
-    try:
-        recipe_payload = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        errors.append(f"{manifest_path}: invalid JSON ({exc})")
-        return
-    recipe_rows = recipe_payload.get("recipes", []) if isinstance(recipe_payload, dict) else []
-    recipe_map: dict[str, dict[str, object]] = {}
-    for recipe in recipe_rows:
-        if not isinstance(recipe, dict):
-            continue
-        recipe_id = recipe.get("id")
-        if isinstance(recipe_id, str) and recipe_id.strip():
-            recipe_map[recipe_id.strip()] = recipe
+    for md_file in sorted(setup_dir.rglob("*.md")):
+        text = md_file.read_text(encoding="utf-8")
 
-    if not recipe_map:
-        errors.append(f"{manifest_path}: unable to load recipe ids for router eval validation")
-        return
+        if md_file.name != "SKILL.md":
+            _validate_reference_paths(md_file, errors)
+            _validate_banned_skill_body_patterns(md_file, errors)
+            _validate_routed_skill_names(md_file, canonical_skill_names, errors)
 
-    manual_matrix_path = repo_root / SETUP_ROUTER_MATRIX_PATH
-    expected_negative_controls = set(_extract_manual_matrix_negative_controls(manual_matrix_path, errors))
-
-    covered_recipe_ids: set[str] = set()
-    covered_stage_b: set[str] = set()
-    seen_negative_queries: set[str] = set()
-
-    for index, row in enumerate(payload):
-        if not isinstance(row, dict):
-            errors.append(f"{fixture_path}: router eval row {index} must be an object")
-            continue
-
-        query = row.get("query")
-        should_route = row.get("should_route")
-        expected_recipes = row.get("expected_recipes")
-        expected_stage_a = row.get("expected_stage_a")
-        expected_stage_b = row.get("expected_stage_b")
-        notes = row.get("notes", "")
-
-        if not isinstance(query, str) or not query.strip():
-            errors.append(f"{fixture_path}: router eval row {index} must include a non-empty string `query`")
-            query = ""
-        if not isinstance(should_route, bool):
-            errors.append(f"{fixture_path}: router eval row {index} must include boolean `should_route`")
-            continue
-        if not isinstance(expected_recipes, list) or any(
-            not isinstance(item, str) or not item.strip() for item in expected_recipes
-        ):
-            errors.append(
-                f"{fixture_path}: router eval row {index} must include string array `expected_recipes`"
-            )
-            expected_recipes = []
-        if not isinstance(expected_stage_a, bool):
-            errors.append(
-                f"{fixture_path}: router eval row {index} must include boolean `expected_stage_a`"
-            )
-            expected_stage_a = False
-        if not isinstance(expected_stage_b, str) or expected_stage_b not in ALLOWED_SETUP_ROUTER_STAGE_B:
-            allowed = ", ".join(sorted(ALLOWED_SETUP_ROUTER_STAGE_B))
-            errors.append(
-                f"{fixture_path}: router eval row {index} has invalid `expected_stage_b`; expected one of {allowed}"
-            )
-            expected_stage_b = "none"
-        if not isinstance(notes, str):
-            errors.append(f"{fixture_path}: router eval row {index} `notes` must be a string when present")
-
-        normalized_recipes: list[str] = []
-        seen_recipes: set[str] = set()
-        for recipe_id in expected_recipes:
-            normalized_recipe = recipe_id.strip()
-            if normalized_recipe in seen_recipes:
+        fence: str | None = None
+        prose_lines: list[str] = []
+        for line_number, line in enumerate(text.splitlines(), start=1):
+            is_fence, next_fence = _fence_toggle(line, fence)
+            if is_fence and fence is None:
                 errors.append(
-                    f"{fixture_path}: router eval row {index} duplicates recipe `{normalized_recipe}`"
+                    f"{md_file}:{line_number}: fenced code block; setup ships no implementation, link the owning skill instead"
                 )
+            fence = next_fence
+            if not is_fence and fence is None:
+                prose_lines.append(line)
+
+        prose = INLINE_CODE_RE.sub("``", "\n".join(prose_lines))
+        for target in MARKDOWN_LINK_RE.findall(prose):
+            if target.lower().startswith(EXTERNAL_LINK_PREFIXES):
                 continue
-            seen_recipes.add(normalized_recipe)
-            normalized_recipes.append(normalized_recipe)
+            path_part, _, fragment = target.partition("#")
+            resolved = (md_file.parent / unquote(path_part)).resolve() if path_part else md_file
+            if not resolved.is_file():
+                errors.append(f"{md_file}: link target `{target}` does not resolve to a file")
+                continue
+            if not resolved.is_relative_to((repo_root / "skills").resolve()):
+                errors.append(f"{md_file}: link target `{target}` is outside skills/ and won't ship with the skills")
+                continue
+            if not fragment:
+                continue
+            if resolved not in slug_cache:
+                slug_cache[resolved] = _github_heading_slugs(_markdown_headings(resolved))
+            if unquote(fragment) not in slug_cache[resolved]:
+                errors.append(f"{md_file}: link target `{target}` names no heading in {resolved.name}")
 
-            if normalized_recipe == "visual-editing":
-                errors.append(
-                    f"{fixture_path}: router eval row {index} must use expanded recipes, not the `visual-editing` bundle alias"
-                )
-            elif normalized_recipe not in recipe_map:
-                errors.append(
-                    f"{fixture_path}: router eval row {index} references unknown recipe `{normalized_recipe}`"
-                )
-
-        if should_route:
-            if not normalized_recipes:
-                errors.append(
-                    f"{fixture_path}: router eval row {index} routes to datocms-setup but has no expected recipes"
-                )
-            for recipe_id in normalized_recipes:
-                covered_recipe_ids.add(recipe_id)
-
-            implied_closure: set[str] = set()
-            for recipe_id in normalized_recipes:
-                implied_closure.update(
-                    _expand_setup_recipe_closure(
-                        recipe_id,
-                        recipe_map,
-                        errors,
-                        fixture_path,
-                        index,
-                    )
-                )
-
-            missing_prerequisites = sorted(
-                recipe_id for recipe_id in implied_closure if recipe_id not in normalized_recipes
-            )
-            if missing_prerequisites:
-                missing_text = ", ".join(missing_prerequisites)
-                errors.append(
-                    f"{fixture_path}: router eval row {index} omits expanded prerequisites: {missing_text}"
-                )
-
-            covered_stage_b.add(expected_stage_b)
-            query_lower = query.lower()
-            if (
-                "visual editing" in query_lower
-                or "preview and editor workflows" in query_lower
-                or "preview/editor workflows" in query_lower
-                or "side-by-side editing" in query_lower
-                or expected_stage_b == "visual-editing"
-            ):
-                covered_recipe_ids.add("visual-editing")
-        else:
-            if normalized_recipes:
-                errors.append(
-                    f"{fixture_path}: router eval row {index} must keep `expected_recipes` empty when should_route is false"
-                )
-            if expected_stage_a:
-                errors.append(
-                    f"{fixture_path}: router eval row {index} must keep `expected_stage_a` false when should_route is false"
-                )
-            if expected_stage_b != "none":
-                errors.append(
-                    f"{fixture_path}: router eval row {index} must keep `expected_stage_b` as `none` when should_route is false"
-                )
-            if query:
-                seen_negative_queries.add(query)
-
-    missing_recipe_ids = sorted(set(recipe_map) - covered_recipe_ids)
-    for recipe_id in missing_recipe_ids:
-        errors.append(f"{fixture_path}: router eval coverage is missing recipe `{recipe_id}`")
-
-    missing_stage_b = sorted(ALLOWED_SETUP_ROUTER_STAGE_B - {"none"} - covered_stage_b)
-    for stage_b in missing_stage_b:
-        errors.append(f"{fixture_path}: router eval coverage is missing Stage B branch `{stage_b}`")
-
-    missing_negative_controls = sorted(expected_negative_controls - seen_negative_queries)
-    for query in missing_negative_controls:
-        errors.append(
-            f"{fixture_path}: router eval is missing manual-matrix negative control `{query}`"
-        )
+        for heading in sorted(set(FW_HEADING_RE.findall(text))):
+            for rel_path, headings in framework_headings.items():
+                if heading not in headings:
+                    errors.append(f"{md_file}: `FW › {heading}` has no matching heading in {rel_path}")
 
 
 def _validate_result_fixture_sync(
@@ -889,121 +734,6 @@ def _validate_astro_imports(repo_root: Path, errors: list[str]) -> None:
             errors.append(
                 f"{astro_ref}: Astro references must use subpath imports, not `from '@datocms/astro'`"
             )
-
-
-def _validate_setup_manifest(repo_root: Path, errors: list[str]) -> None:
-    skill_root = repo_root / "skills" / "datocms-setup"
-    if not skill_root.exists():
-        return
-
-    manifest_path = skill_root / "references" / "recipe-manifest.json"
-    if not manifest_path.exists():
-        errors.append(f"{manifest_path}: missing setup recipe manifest")
-        return
-
-    try:
-        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        errors.append(f"{manifest_path}: invalid JSON ({exc})")
-        return
-
-    if not isinstance(payload, dict):
-        errors.append(f"{manifest_path}: manifest root must be an object")
-        return
-
-    recipes = payload.get("recipes")
-    if not isinstance(recipes, list) or not recipes:
-        errors.append(f"{manifest_path}: manifest must include a non-empty `recipes` array")
-        return
-
-    recipe_ids: set[str] = set()
-    manifest_recipe_paths: set[str] = set()
-
-    for index, recipe in enumerate(recipes):
-        if not isinstance(recipe, dict):
-            errors.append(f"{manifest_path}: recipe {index} must be an object")
-            continue
-
-        recipe_id = recipe.get("id")
-        recipe_path = recipe.get("path")
-        prerequisites = recipe.get("prerequisites")
-        assets = recipe.get("assets")
-        scripts = recipe.get("scripts")
-        shared_references = recipe.get("shared_references")
-
-        if not isinstance(recipe_id, str) or not recipe_id.strip():
-            errors.append(f"{manifest_path}: recipe {index} must include non-empty string `id`")
-            continue
-
-        if recipe_id in recipe_ids:
-            errors.append(f"{manifest_path}: duplicate recipe id `{recipe_id}`")
-        recipe_ids.add(recipe_id)
-
-        if not isinstance(recipe_path, str) or not recipe_path.strip():
-            errors.append(f"{manifest_path}: recipe `{recipe_id}` must include non-empty string `path`")
-        else:
-            manifest_recipe_paths.add(recipe_path)
-            resolved_recipe = skill_root / recipe_path
-            if not resolved_recipe.exists():
-                errors.append(f"{manifest_path}: recipe `{recipe_id}` points to missing path `{recipe_path}`")
-
-        if not isinstance(prerequisites, list) or any(not isinstance(item, str) for item in prerequisites):
-            errors.append(f"{manifest_path}: recipe `{recipe_id}` must include string array `prerequisites`")
-
-        if not isinstance(shared_references, list) or any(
-            not isinstance(item, str) for item in shared_references
-        ):
-            errors.append(
-                f"{manifest_path}: recipe `{recipe_id}` must include string array `shared_references`"
-            )
-        else:
-            for rel_path in shared_references:
-                if not (skill_root / rel_path).exists():
-                    errors.append(
-                        f"{manifest_path}: recipe `{recipe_id}` references missing shared reference `{rel_path}`"
-                    )
-
-        for field_name, entries in (("assets", assets), ("scripts", scripts)):
-            if not isinstance(entries, list) or any(not isinstance(item, str) for item in entries):
-                errors.append(f"{manifest_path}: recipe `{recipe_id}` must include string array `{field_name}`")
-                continue
-            for rel_path in entries:
-                if not (skill_root / rel_path).exists():
-                    errors.append(
-                        f"{manifest_path}: recipe `{recipe_id}` references missing {field_name[:-1]} `{rel_path}`"
-                    )
-
-    for recipe in recipes:
-        if not isinstance(recipe, dict):
-            continue
-        recipe_id = recipe.get("id")
-        prerequisites = recipe.get("prerequisites")
-        if not isinstance(recipe_id, str) or not isinstance(prerequisites, list):
-            continue
-        for prerequisite in prerequisites:
-            if prerequisite not in recipe_ids:
-                errors.append(
-                    f"{manifest_path}: recipe `{recipe_id}` references unknown prerequisite `{prerequisite}`"
-                )
-
-    actual_recipe_paths = {
-        path.relative_to(skill_root).as_posix() for path in _iter_recipe_files(repo_root)
-    }
-    missing_recipe_paths = sorted(actual_recipe_paths - manifest_recipe_paths)
-    for recipe_path in missing_recipe_paths:
-        errors.append(f"{manifest_path}: missing manifest entry for `{recipe_path}`")
-
-    extra_recipe_paths = sorted(manifest_recipe_paths - actual_recipe_paths)
-    for recipe_path in extra_recipe_paths:
-        errors.append(f"{manifest_path}: manifest lists unknown recipe path `{recipe_path}`")
-
-    forbidden_skill_files = sorted((skill_root / "recipes").glob("**/SKILL.md"))
-    for forbidden_path in forbidden_skill_files:
-        errors.append(f"{forbidden_path}: internal recipe folders must not ship `SKILL.md`")
-
-    forbidden_metadata = sorted((skill_root / "recipes").glob("**/agents/openai.yaml"))
-    for forbidden_path in forbidden_metadata:
-        errors.append(f"{forbidden_path}: internal recipe folders must not ship `agents/openai.yaml`")
 
 
 PLUGIN_ROOT_LOCKFILES = ("bun.lock", "bun.lockb", "npm-shrinkwrap.json", "package-lock.json")
@@ -1120,7 +850,6 @@ def main() -> int:
 
     frontmatter_by_path = {path: _extract_frontmatter(path) for path in skill_files}
     canonical_skill_names = {frontmatter.name for frontmatter in frontmatter_by_path.values()}
-    recipe_files = _iter_recipe_files(repo_root)
 
     errors: list[str] = []
 
@@ -1132,18 +861,13 @@ def main() -> int:
         _validate_description_length(skill_file, frontmatter, errors)
         _validate_scaffold_contract(skill_file, frontmatter, errors)
 
-    for recipe_file in recipe_files:
-        _validate_reference_paths(recipe_file, errors)
-        _validate_banned_skill_body_patterns(recipe_file, errors)
-
     _validate_scaffold_marketing(repo_root, errors)
     _validate_eval_fixture_coverage(repo_root, canonical_skill_names, errors)
     _validate_eval_result_names(repo_root, canonical_skill_names, errors)
     _validate_astro_imports(repo_root, errors)
-    _validate_setup_manifest(repo_root, errors)
+    _validate_setup_pointers(repo_root, canonical_skill_names, errors)
     _validate_codex_plugin_manifest(repo_root, errors)
     _validate_plugin_root_has_no_dependency_install(repo_root, errors)
-    _validate_setup_router_eval(repo_root, errors)
 
     if args.require_fresh_results_sync:
         _validate_result_fixture_sync(repo_root, errors)
@@ -1158,7 +882,6 @@ def main() -> int:
         return 1
 
     print(f"[ok] validated {len(skill_files)} skills")
-    print(f"[ok] validated {len(recipe_files)} internal setup recipes")
     print("[ok] reference paths resolve")
     print("[ok] metadata files are present and synced")
     print(f"[ok] skill descriptions fit within Codex {CODEX_DESCRIPTION_MAX_CHARS}-char limit")
@@ -1168,12 +891,14 @@ def main() -> int:
     print(
         f"[ok] result directories under {TRIGGER_RESULTS_DIR} match canonical skill names and embedded skill_name"
     )
-    print("[ok] datocms-setup router eval fixture is present and covers recipes and Stage B branches")
     if args.require_fresh_results_sync:
         print("[ok] checked-in root eval result rows match canonical fixtures")
     print("[ok] banned host-specific labels are absent from skill bodies")
     print("[ok] Astro references use subpath imports")
-    print("[ok] datocms-setup manifest paths, prerequisites, references, scripts, and assets are valid")
+    print(
+        "[ok] datocms-setup markdown links resolve to existing files and headings, "
+        "`FW ›` headings exist in all four framework references, and setup ships no code blocks"
+    )
     print("[ok] Codex plugin manifest is present and synced with Claude Code manifest")
     print("[ok] plugin root has no package.json + lockfile pair that plugin installs would run")
     if args.require_clean_git:

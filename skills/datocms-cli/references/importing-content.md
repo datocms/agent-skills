@@ -27,6 +27,10 @@ If the target is existing or unclear, prefer a staged approach:
 - consider schema-only or narrowed imports first when the importer supports it
 - call out any destructive schema-reset behavior explicitly
 
+Importers have no DatoCMS environment flag: they always write to the primary environment of the profile or `--api-token` project, so a sandbox fork can't isolate them. To rehearse against a project holding content, import first into a separate disposable project (another profile or `--api-token`).
+
+Without `--autoconfirm`, the importer asks in the terminal before destroying each clashing model — a non-TTY agent shell can't answer, so a staged run is the user's step in their own terminal. Credentials (`--wp-password`, `--contentful-token`) come from env vars the user sets (e.g. `--wp-password="$WORDPRESS_PASSWORD"`), never pasted into chat.
+
 ## WordPress Import
 
 ### Installation
@@ -35,6 +39,8 @@ If the target is existing or unclear, prefer a staged approach:
 npx datocms plugins:install @datocms/cli-plugin-wordpress
 ```
 
+Installs into the per-user CLI data directory, never as project dependency — `npm install` of the plugin never registers `wordpress:import`. Each teammate runs `npx datocms login` and the `plugins:install` command above once: CLI login and plugins are per machine.
+
 ### Command
 
 ```bash
@@ -42,6 +48,8 @@ npx datocms wordpress:import [flags]
 ```
 
 Run `npx datocms wordpress:import --help` for all flags. Key flags include `--autoconfirm` (skip prompts), `--concurrency` (default: 15), and `--ignore-errors`.
+
+Site URL: `--wp-url` (any URL of REST-enabled site; API endpoint auto-discovered) or `--wp-json-api-url` (exact `/wp-json` endpoint, no discovery — prefer when known) — mutually exclusive, one required. `--wp-username` and `--wp-password` required.
 
 ### Destructive behavior
 
@@ -78,6 +86,8 @@ Add `--autoconfirm` only when the operator intentionally wants a non-interactive
 npx datocms plugins:install @datocms/cli-plugin-contentful
 ```
 
+Installs into the per-user CLI data directory, never as project dependency — `npm install` of the plugin never registers `contentful:import`. Each teammate runs `npx datocms login` and the `plugins:install` command above once: CLI login and plugins are per machine.
+
 ### Command
 
 ```bash
@@ -86,9 +96,11 @@ npx datocms contentful:import [flags]
 
 Run `npx datocms contentful:import --help` for all flags. Key flags include `--autoconfirm` (skip prompts), `--concurrency` (default: 15), and `--ignore-errors`.
 
+`--contentful-token` needs Contentful Content Management API token (personal access token): importer reads through `contentful-management`, so Delivery/Preview API keys don't work despite flag help saying "read-only API token". `--contentful-environment` picks Contentful environment by name (default `master`; unknown → `Could not find environment named "…"`).
+
 ### Destructive behavior
 
-The importer destroys existing Contentful-shaped schema in the DatoCMS target before recreating it.
+The importer destroys existing Contentful-shaped schema in the DatoCMS target before recreating it. Only prompt (skipped by `--autoconfirm`): destroying existing models whose api_keys match the imported content types (snake_cased Contentful id + `_model`: `blogPost` → `blog_post_model`). It also replaces the project's locales with the Contentful locales (site update, no prompt, even with `--skip-content`).
 
 ### Import Steps
 

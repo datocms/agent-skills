@@ -300,6 +300,8 @@ type ExecuteQueryOptions<Variables> = {
 };
 ```
 
+Published-only variant (no draft mode yet): drop `includeDrafts` and the draft token, always `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` (its `env.schema` entry only).
+
 ### Usage in Astro pages
 
 ```astro
@@ -377,13 +379,12 @@ DRAFT_MODE_COOKIE_NAME=               # Cookie name, e.g. "datocms-draft-mode"
 
 Required (install if missing):
 
+- `@datocms/cda-client` — `executeQuery`
 - `jsonwebtoken` — For signing/verifying JWT cookies
 - `@types/jsonwebtoken` — TypeScript types (dev dependency)
 - `serialize-error` — For serializing error objects
 
-Optional for Web Previews helpers:
-
-- `@datocms/cma-client` — For `RawApiTypes`
+`gql.tada` — `TadaDocumentNode`, only when the repo uses gql.tada typed queries.
 
 ## Web Previews (Optional)
 
@@ -513,7 +514,7 @@ export default defineConfig({
 
 ### Web Previews Dependencies
 
-Required: `@datocms/rest-client-utils`
+Required: `@datocms/rest-client-utils`, `@datocms/cma-client` (`RawApiTypes`)
 
 ## Content Link (Optional)
 

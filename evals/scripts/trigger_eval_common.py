@@ -8,7 +8,7 @@ import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 DEFAULT_QUERY_MODE = "implicit"
 SOURCE_FRONTMATTER = "frontmatter"
@@ -54,7 +54,8 @@ class SkillMetadata:
     allow_implicit_invocation: bool
 
 
-PredictionRunner = Callable[[Path, str, int, str | None], list[bool]]
+# Evaluated at runtime, so no `X | None` here (Python 3.9 has no union operator for types).
+PredictionRunner = Callable[[Path, str, int, Optional[str]], list[bool]]
 
 
 def iter_skill_files(repo_root: Path) -> list[Path]:
@@ -387,7 +388,9 @@ def evaluate_skill(
     results: list[dict[str, Any]] = []
     passed = 0
 
-    for row, prediction in zip(eval_queries, predictions, strict=True):
+    if len(predictions) != len(eval_queries):  # zip(strict=True) needs Python 3.10
+        raise ValueError(f"{skill_name}: {len(predictions)} predictions for {len(eval_queries)} queries")
+    for row, prediction in zip(eval_queries, predictions):
         should_trigger = bool(row["should_trigger"])
         triggers = 1 if prediction else 0
         trigger_rate = float(triggers)

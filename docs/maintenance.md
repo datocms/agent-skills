@@ -12,8 +12,8 @@ npm ci --prefix dev
 
 The `prepare` script wires `core.hooksPath` to `.husky/` automatically. From that point on, every `git commit` will:
 
-1. Detect skills with staged changes (anything under `skills/<name>/` except `agents/`, which is excluded from the claude.ai zips anyway).
-2. Regenerate the `.zip` for each affected skill from a temp checkout of the **index** — so zips reflect _staged_ content only, never unstaged working-tree edits — and re-stage the regenerated zip.
+1. Detect skills with staged changes, deletions included (anything under `skills/<name>/` except `agents/`, which is excluded from the claude.ai zips anyway).
+2. Regenerate the `.zip` for each affected skill from a temp checkout of the **index** — so zips reflect _staged_ content only, never unstaged working-tree edits — and re-stage the regenerated zip. A skill deleted entirely has its zip removed.
 3. Run `validate_skill_repo.py`. A non-zero exit blocks the commit.
 
 The hook intentionally does **not** bump plugin versions or run evals — both are explicit release-time decisions (see below). To skip the hook for a specific commit, use the standard `git commit --no-verify`.
@@ -105,5 +105,5 @@ metadata:
 - Each public skill lives at `skills/<skill-name>/SKILL.md` with a YAML frontmatter block followed by markdown body.
 - Each skill ships a Codex agent interface config at `skills/<skill-name>/agents/openai.yaml` that **must stay synced** with the SKILL.md frontmatter. The validator checks this.
 - Detailed reference docs go under `skills/<skill-name>/references/`.
-- `datocms-setup` is the special orchestrator and routes to internal recipes via `references/recipe-manifest.json`. Recipes live under `skills/datocms-setup/recipes/<lane>/<recipe-id>/`.
+- `datocms-setup` holds no implementation facts (no code, env var names, packages, commands or API facts beyond what a question needs). Every pointer is a relative link to a sibling file or heading (`../../datocms-<sibling>/references/<file>.md#<heading>`) or FW › `Heading` (present in all four framework references); the validator fails when one does not resolve. Renaming a linked sibling heading means updating the setup link in the same change.
 - Every public skill needs a canonical eval fixture at `evals/fixtures/trigger/<skill-name>.json` and a checked-in results snapshot at `evals/results/trigger/<skill-name>/<track>/<source>/results.json`.

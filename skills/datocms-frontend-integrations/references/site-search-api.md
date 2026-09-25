@@ -50,6 +50,10 @@ const searchIndex = await client.searchIndexes.create({
 await client.searchIndexes.trigger(searchIndex.id);
 ```
 
+`frontend_url` is the crawl start point: the deployed public site (the crawler can't reach localhost).
+
+Provisioning token's role needs: `can_manage_search_indexes` (create/edit indexes), `can_manage_users` (create/edit roles), `can_manage_access_tokens` (tokens). Manual re-index (`trigger`) is gated by the role's `positive_search_index_permissions`, not `can_manage_search_indexes`. On a permission failure, name the missing one.
+
 Useful CMA methods:
 
 - `client.searchIndexes.list()`
@@ -84,6 +88,8 @@ const { data: results, meta } = await client.searchResults.rawList({
   },
 });
 ```
+
+Example reads Astro's `import.meta.env`. Browser-visible elsewhere: Next.js `process.env.NEXT_PUBLIC_DATOCMS_SITE_SEARCH_TOKEN` / `_INDEX_ID`; Nuxt `useRuntimeConfig().public` keys declared in `runtimeConfig.public` (set by `NUXT_PUBLIC_*`); SvelteKit `PUBLIC_*` via `$env/static/public` or `$env/dynamic/public`. Token value only in the git-ignored env file.
 
 Important behaviors:
 

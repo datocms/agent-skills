@@ -18,7 +18,7 @@ const pkg = (setupImporter, devDependencies = {}) => JSON.stringify({
 export default [
   {
     id: 'cli-importer-install',
-    guards: ['skills/datocms-cli/references/importing-content.md', 'skills/datocms-setup/recipes/onboarding/wordpress-import/recipe.md'],
+    guards: ['skills/datocms-cli/references/importing-content.md', 'skills/datocms-cli/references/cli-plugin-management.md'],
     prompt: `We are going to migrate our WordPress site into DatoCMS with the official DatoCMS CLI importer. Set up the importer for this project so that \`npx datocms wordpress:import --help\` works here. Also add an npm script named \`setup:importer\` to package.json that a teammate can run once, after cloning and \`npm install\`, to get the same working command on their machine. The \`datocms\` CLI is already a devDependency and installed; npm registry access is available. Do not run an actual import: no WordPress or DatoCMS credentials or live project are available.`,
     budget: { timeoutMs: 420000, maxCommands: 60 },
     setup(workspace) {

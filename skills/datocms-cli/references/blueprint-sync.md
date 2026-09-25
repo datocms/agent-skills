@@ -67,15 +67,17 @@ Each profile can authenticate using either method:
 
 ### Option A: OAuth-based (recommended for local development)
 
-Link each profile to its project via `datocms link`:
+Link each profile to its project via `datocms link` (`--site-id`, plus `--organization-id` for org projects, from `projects:list`; a non-TTY shell needs a prior `npx datocms login`):
 
 ```bash
-npx datocms link --profile=blueprint
-npx datocms link --profile=client_a
-npx datocms link --profile=client_b
+npx datocms link --profile=blueprint --site-id=<BLUEPRINT_ID> --migrations-dir=./migrations
+npx datocms link --profile=client_a --site-id=<CLIENT_A_ID> --migrations-dir=./migrations
+npx datocms link --profile=client_b --site-id=<CLIENT_B_ID> --migrations-dir=./migrations
 ```
 
 This stores `siteId` and `organizationId` in each profile. The CLI resolves the API token automatically via OAuth credentials.
+
+Keep `--migrations-dir=./migrations`: a profile not yet in a config that already has others otherwise defaults to `./<camelCase(profileId)>Migrations` (`client_a` → `./clientAMigrations`), splitting the shared history. Or write [Recommended Shape](#recommended-shape) first — link keeps an existing `migrations.directory`.
 
 ### Option B: Environment variable (recommended for CI/CD)
 
@@ -135,18 +137,21 @@ npx datocms environments:promote client-b-sync --profile=client_b
 
 ## Automation Guidance
 
-For repeated multi-project rollout, prefer a small local helper script instead of expanding `package.json` with many profile-specific scripts.
+For repeated multi-project rollout, prefer a small local helper script instead of expanding `package.json` with many profile-specific scripts. Bundled one: copy [`scripts/datocms-sync-projects.mjs`](../scripts/datocms-sync-projects.mjs) to the repo's `scripts/` and add one package script (`"datocms:sync:projects": "node scripts/datocms-sync-projects.mjs"`). Node built-ins only.
 
-Recommended behavior for that helper:
+Recommended behavior for that helper (the bundled one follows it):
 
 1. Accept one or more destination profile ids as arguments
-2. Compute a unique destination environment id per profile
+2. Compute a unique destination environment id per profile — bundled default `{profile}-sync-{timestamp}` → `client-a-sync-20260925101112` (`{profile}` lowercased, other characters → `-`; `{timestamp}` UTC `YYYYMMDDHHmmss`). Environment ids allow only lowercase letters, numbers and dashes: check every id before running any command
 3. Optionally accept `--source=<env>` and `--destination-template=<template>`
-4. Run `migrations:run --profile=<id> --destination=<env>`
-5. Support `--dry-run`, `--fast-fork`, and explicit `--force`
+4. Run `migrations:run --profile=<id> --destination=<env>` (bundled: args after `--` appended)
+5. Support `--dry-run`, `--fast-fork`, and explicit `--force` (only with `--fast-fork`)
 6. Print the created environment ids instead of auto-promoting
+7. Pass `--api-token` from `DATOCMS_<PROFILE_ID>_PROFILE_API_TOKEN` when set (linked profiles never read it); errors name only the failed command, never the arguments — they can carry the token
 
 Do not auto-promote in the sync helper by default. Promotion is a separate release decision per project.
+
+CI: [`assets/datocms-sync.github-actions.yml`](../assets/datocms-sync.github-actions.yml) → `.github/workflows/`: manual dispatch (`profiles` space-separated, `dry_run`), inputs reach the shell only through `env:`. Map one `DATOCMS_<PROFILE_ID>_PROFILE_API_TOKEN` secret per destination profile (replace the `CLIENT_A`/`CLIENT_B` examples); adapt install command and Node version.
 
 ## Safety Notes
 

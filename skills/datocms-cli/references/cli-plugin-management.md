@@ -62,6 +62,8 @@ npx datocms plugins:add @datocms/cli-plugin-wordpress
 
 A user-installed plugin overrides a core plugin with the same command name.
 
+Installs into the per-user CLI data directory, not `package.json`: per machine, not shared through the repo. `npm install <plugin>` as project dependency never registers its commands.
+
 ## Inspect a plugin
 
 ```

@@ -31,6 +31,8 @@ composables/
 nuxt.config.ts               (modify)
 ```
 
+`lib/` and `composables/` paths are relative to `srcDir` (`~`): Nuxt 4 → `app/` when that folder exists, else root. `server/` and `nuxt.config.ts` stay at root (`~~/server/...`).
+
 ### Enable Endpoint
 
 **File:** `server/api/draft-mode/enable.ts`
@@ -329,6 +331,7 @@ Key points:
 - `buildRequestInit` from `@datocms/cda-client` with Nuxt's `useFetch`
 - Token: draft from JWT cookie, published from public config
 - Returns data directly (no real-time in core)
+- Published-only variant (no draft mode yet): drop `useDraftMode`, always `config.public.datocmsPublishedContentCdaToken` (declared in [Nuxt Config Additions](#nuxt-config-additions)), no `includeDrafts`
 
 ### Nuxt Config Additions
 
@@ -373,14 +376,14 @@ NUXT_PUBLIC_DRAFT_MODE_COOKIE_NAME=                  # Cookie name, e.g. "datocm
 
 Required:
 
+- `@datocms/cda-client` — `buildRequestInit` in `useQuery`
+- `ohash` — `hash` for the `useFetch` key
 - `jsonwebtoken` — Sign/verify JWT cookies
 - `@types/jsonwebtoken` — TypeScript types (dev)
 - `serialize-error` — Serialize error objects
 - `jwt-decode` — Decode JWT client-side (`useDraftMode`)
 
-Optional (Web Previews):
-
-- `@datocms/cma-client` — `RawApiTypes`, `ApiTypes`
+`gql.tada` — `TadaDocumentNode`, only when the repo uses gql.tada typed queries.
 
 ## Web Previews (Optional)
 
@@ -523,7 +526,7 @@ export default defineNuxtConfig({
 
 ### Web Previews Dependencies
 
-Required: `@datocms/rest-client-utils`
+Required: `@datocms/rest-client-utils`, `@datocms/cma-client` (`RawApiTypes`)
 
 ## Content Link (Optional)
 
@@ -780,7 +783,7 @@ CDN-first cache tag invalidation. Forwards DatoCMS cache tags to CDN; purges aff
 - Nuxt deployed behind CDN with tag-based purging (Netlify, Cloudflare, Fastly, Bunny)
 - Per-record cache invalidation granularity needed
 
-For webhook payload/CDN header table: `skills/datocms-cda/references/draft-caching-environments.md` → "Cache Tags".
+For webhook payload/CDN header table: [CDA cache tags](../../datocms-cda/references/draft-caching-environments.md#cache-tags).
 
 ### Server query wrapper
 

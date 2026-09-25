@@ -1,6 +1,8 @@
 # synced_from_name: datocms-setup
-# synced_from_description_sha256: d98e5b7f39a253e9e3066074081d05c262527952494a96dc82a6de33cb2888ff
+# synced_from_description_sha256: dfec7027638a694c3839c3ca0571109c875d5d4904eb6080061661c8ac0df080
 interface:
   display_name: "DatoCMS Setup"
-  short_description: "One-time DatoCMS setup wizard"
-  default_prompt: "Use $datocms-setup to scaffold or configure DatoCMS setup in this project."
+  short_description: "Guided DatoCMS setup: plan first, then build"
+  default_prompt: "Use $datocms-setup to plan and set up DatoCMS in this project, step by step."
+policy:
+  allow_implicit_invocation: true

@@ -78,14 +78,13 @@ test('web previews document the cma-types generation command, and it produces th
 });
 
 // datocms 4.2.0 lib/commands/schema/generate.js writes with writeFileSync and never creates the
-// parent directory, so a fresh project fails with ENOENT. The CLI reference and the cma-types
-// recipe (which runs the command) must say to create it first.
+// parent directory, so a fresh project fails with ENOENT. The CLI reference must say to create it first.
 test('schema:generate needs an existing output directory, and the docs say so', () => {
   const project = mkdtempSync(join(tmpdir(), 'cma-types-missing-'));
   const cli = generate(project, 'src/lib/datocms/cma-types.ts');
   assert.notEqual(cli.status, 0);
   assert.match(cli.stdout + cli.stderr, /ENOENT/);
-  const docs = [join(repoRoot, 'skills/datocms-cli/references/schema-generate.md'), join(repoRoot, 'skills/datocms-setup/recipes/platform/cma-types/recipe.md')];
+  const docs = [join(repoRoot, 'skills/datocms-cli/references/schema-generate.md')];
   for (const path of docs) assert.match(readFileSync(path, 'utf8'), /(creat\w* (the )?(output )?(directory|folders)|mkdir -p)[^\n]*|directory must exist/i, path);
 });
 

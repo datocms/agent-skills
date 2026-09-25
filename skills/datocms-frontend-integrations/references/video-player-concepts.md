@@ -57,3 +57,27 @@ Video playback analytics are **disabled by default**. To enable:
 | React | `@mux/mux-player-react` |
 | Vue | `@mux/mux-player` (web component) |
 | Svelte | `@mux/mux-player` (web component) |
+| Astro (no React integration) | `@mux/mux-player` (web component, used directly) |
+
+## Astro without React integration
+
+`@datocms/astro` has no video component. Install `@mux/mux-player`, import it in a `<script>` in the `.astro` component (Astro bundles it as a client module; empty in SSR). Set the privacy defaults by hand — raw Mux defaults keep cookies and tracking on:
+
+```astro
+<mux-player
+  playback-id={video.muxPlaybackId}
+  stream-type="on-demand"
+  disable-cookies
+  disable-tracking
+  preload="metadata"
+  style={video.width && video.height ? `aspect-ratio: ${video.width} / ${video.height}` : undefined}
+  placeholder={video.blurUpThumb}
+  title={video.title}
+></mux-player>
+
+<script>
+  import '@mux/mux-player';
+</script>
+```
+
+Mux Data: add `env-key` only when user opts in.

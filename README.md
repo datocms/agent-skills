@@ -10,7 +10,7 @@
 
 # DatoCMS Skills
 
-A collection of agent skills that teach Claude, Codex, Cursor, and other coding agents how to work effectively with [DatoCMS](https://www.datocms.com) — from GraphQL queries and content management scripts to content modeling, plugin development, and one-shot project setup.
+A collection of agent skills that teach Claude, Codex, Cursor, and other coding agents how to work effectively with [DatoCMS](https://www.datocms.com) — from GraphQL queries and content management scripts to content modeling, plugin development, and guided project setup.
 
 All open source, with native plugin support on Claude Code and Codex and a universal `npx skills` installer for everything else.
 
@@ -30,7 +30,7 @@ Use the requested execution route. Otherwise, keep a usable CLI workflow; curren
 
 ## What's covered
 
-The skills are designed to work together — they cross-link and reinforce each other, so the default install brings the full set. Most trigger automatically based on your prompt; `datocms-setup` is invoked explicitly.
+The skills are designed to work together — they cross-link and reinforce each other, so the default install brings the full set. They trigger automatically based on your prompt.
 
 **Building with DatoCMS**
 
@@ -40,13 +40,13 @@ The skills are designed to work together — they cross-link and reinforce each 
 - **Writing content & automation** — record CRUD, bulk imports/exports, asset uploads, environment forks and promotions, webhooks, roles, scheduled publishing, audit logs.
 - **CLI workflows** — migrations, schema-type generation, typed CMA scripts, CI/CD pipelines, WordPress/Contentful imports.
 - **Frontend integrations** — draft mode, Web Previews, Visual Editing, Content Link, real-time preview subscriptions, cache-tag invalidation, SEO/sitemap wiring across Next.js, Nuxt, SvelteKit, and Astro.
-- **One-shot setup** (`datocms-setup`) — the only skill you invoke explicitly. Bootstraps multi-step flows like "set up visual editing" in a single command, queueing prerequisites automatically.
+- **Guided setup** (`datocms-setup`) — inspects the project, asks only what it can't infer, proposes a plan with prerequisites in order, and changes nothing until you confirm; then builds it through the other skills.
 
 **Extending the DatoCMS dashboard**
 
 - **Plugin development** — create, patch, extend, or restyle DatoCMS plugins with SDK hooks, Vite/React, browser CMA flows, permissions, and DatoCMS UI patterns.
 
-For the full list of skill names, internal setup recipes, and routing rules see [`docs/skill-catalog.md`](docs/skill-catalog.md).
+For the full list of skill names and which skill owns each setup concern see [`docs/skill-catalog.md`](docs/skill-catalog.md).
 
 ---
 
@@ -87,7 +87,7 @@ Update later with `npx skills update`. For scopes, single-skill installs, and de
 
 ### Claude.ai and Claude Desktop chat
 
-For editorial work, upload [`datocms-content-modeling.zip`](zips/datocms-content-modeling.zip) for schema advice and [`datocms-cma.zip`](zips/datocms-cma.zip) for content operations. Connect the [current remote MCP server](https://www.datocms.com/docs/mcp-server) separately when live project access is needed. Modeling advice alone requires no connection; local development recipes require the relevant workspace and tools.
+For editorial work, upload [`datocms-content-modeling.zip`](zips/datocms-content-modeling.zip) for schema advice and [`datocms-cma.zip`](zips/datocms-cma.zip) for content operations. Connect the [current remote MCP server](https://www.datocms.com/docs/mcp-server) separately when live project access is needed. Modeling advice alone requires no connection; local development workflows require the relevant workspace and tools.
 
 Upload and enable the `.zip` files via **Customize → Skills** in [Claude](https://claude.ai). A local Claude Code skill install does not itself enable them in chat. The full set of pre-built zips lives in [`zips/`](zips/).
 
@@ -97,7 +97,7 @@ Upload and enable the `.zip` files via **Customize → Skills** in [Claude](http
 
 ### Automatic skills
 
-You don't need to invoke the auto-triggered skills — describe what you want in plain language and the right one activates:
+You don't need to invoke skills by name — describe what you want in plain language and the right one activates:
 
 - "Should testimonials be a model or a block?"
 - "How should I structure a multi-locale schema with shared blocks?"
@@ -117,16 +117,18 @@ You don't need to invoke the auto-triggered skills — describe what you want in
 - "Make my plugin config screen match the DatoCMS style"
 - "Create a new DatoCMS plugin from scratch"
 
-### The setup skill (explicit)
+### Guided setup
 
-`datocms-setup` is the only skill you invoke explicitly. It handles one-shot project bootstrapping (draft mode, visual editing, migrations workflows, content imports, etc.) and queues prerequisites automatically when needed.
+`datocms-setup` walks you through multi-part setup (previews and visual editing, caching, SEO, search, migrations and releases, webhooks, imports, or a new site from a starter). It inspects the repo, asks only what it can't infer, and shows a plan: files, packages, env vars, and every change to your DatoCMS project listed separately. Nothing changes until you agree, and live project writes need your approval. Prerequisites (e.g. draft mode before Web Previews) are ordered in the plan. The code itself comes from the other skills.
+
+It activates on setup requests; to call it directly:
 
 | Platform | Invocation |
 | - | - |
 | Claude Code | `/datocms-setup <your request>` |
 | Codex | `$datocms-setup <your request>` |
 
-Phrase the prompt as the outcome you want. Terms like `content link`, `visual editing`, `click-to-edit`, or `draft mode` help the router pick the right recipe.
+Phrase the prompt as the outcome you want.
 
 ```text
 /datocms-setup install visual editing in this project
@@ -135,18 +137,14 @@ Phrase the prompt as the outcome you want. Terms like `content link`, `visual ed
 /datocms-setup set up click-to-edit overlays for draft pages
 ```
 
-If a prerequisite is missing (e.g. draft mode is needed before web previews), setup queues it in the same run instead of requiring a second call.
-
-Every recipe ends with one of two statuses: `scaffolded` if it still contains placeholders you need to fill in (API tokens, route mappings, model-to-URL maps, TODO stubs), or `production-ready` if it's wired to real project values and works end-to-end with no further edits. No guessing whether the output is ready to ship.
-
-For the full recipe catalog and routing rules see [`docs/skill-catalog.md`](docs/skill-catalog.md).
+Every setup run ends with one of two statuses: `scaffolded` if it still contains placeholders you need to fill in (API tokens, route mappings, model-to-URL maps, TODO stubs), or `production-ready` if it's wired to real project values and works end-to-end with no further edits. No guessing whether the output is ready to ship.
 
 ---
 
 ## Documentation
 
 - [`docs/install.md`](docs/install.md) — installation reference (scopes, single-skill installs, detached snapshots, update mechanics)
-- [`docs/skill-catalog.md`](docs/skill-catalog.md) — full skill catalog, internal setup recipes, and routing rules
+- [`docs/skill-catalog.md`](docs/skill-catalog.md) — full skill catalog and setup ownership map
 - [`docs/repo-layout.md`](docs/repo-layout.md) — repository layout and the reasoning behind it
 - [`docs/maintenance.md`](docs/maintenance.md) — contributor and maintainer workflows (validation, regenerating zips, release notes)
 - [`evals/README.md`](evals/README.md) — trigger-quality evaluation framework

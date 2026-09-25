@@ -1,6 +1,6 @@
 # Repo Layout
 
-The root [README](../README.md#repo-layout) shows the short shape of the repo. This page explains why the folders are split this way.
+The "Repository Structure" list in [`AGENTS.md`](../AGENTS.md#repository-structure) (mirrored in `CLAUDE.md`) is the short shape of the repo. This page explains why the folders are split this way.
 
 ## Canonical Tree
 
@@ -25,7 +25,6 @@ skills/
   datocms-setup/
     agents/
     references/
-    recipes/
 docs/
 evals/
   fixtures/
@@ -48,12 +47,7 @@ dev/
 - `skills/` contains the shipped skill folders. Their names match each skill's canonical `name:` value.
 - `skills/datocms-structured-text/` owns the DAST document lifecycle through focused references and a narrow Markdown/HTML conversion helper. Other skills link to those references while retaining their API, renderer, schema, or editor responsibilities.
 - `skills/datocms-plugin/` is the public plugin entrypoint. It covers new plugin scaffolds, existing plugin maintenance, SDK hook work, and plugin UI work that should match DatoCMS patterns.
-- `skills/datocms-setup/` is the only shipped setup entrypoint. Its `SKILL.md` stays small and routes into local recipes through references and a manifest.
-- `skills/datocms-setup/recipes/frontend-foundation/` contains project primitives such as data access, draft mode, previews, cache tags, and type generation.
-- `skills/datocms-setup/recipes/frontend-features/` contains rendering and discovery add-ons layered on top of that foundation.
-- `skills/datocms-setup/recipes/migrations/` contains repeatable schema and environment workflows.
-- `skills/datocms-setup/recipes/onboarding/` contains one-shot content import flows.
-- `skills/datocms-setup/recipes/platform/` contains project-level integrations such as webhooks, build triggers, and CMA type generation.
+- `skills/datocms-setup/` is the guided setup skill. Its `SKILL.md` owns the conversation, and `references/website.md` and `references/project.md` link each play to the sibling files and headings that hold the implementation. It ships no code, so nothing is duplicated between setup and the skills that own each concern.
 - `docs/` is for longer reference material that would make the root README too heavy.
 - `evals/` keeps fixtures, checked-in results, reports, and tooling together so the trigger-quality loop is easy to inspect. Its scripts are Python and need no npm packages.
 - `dev/` holds all Node tooling: the e2e and regression harness, the coexistence evaluator, offline tests, formatting config, release scripts, and their `package.json`/`package-lock.json`. Plugin installs copy the repo root, and Claude Code runs `npm ci` there whenever it finds `package.json` plus a lockfile, so keeping these files out of the root spares every user a dev-dependency install. The validator rejects a root `package.json` with a lockfile.

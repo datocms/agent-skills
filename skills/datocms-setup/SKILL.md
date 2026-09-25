@@ -1,77 +1,77 @@
 ---
 name: datocms-setup
 description: >-
-  End-to-end DatoCMS project setup — bundles prerequisites, takes
-  greenfield or partial projects to working state. Five lanes: (1)
-  frontend foundation (bootstrap Next.js/Nuxt/SvelteKit/Astro from
-  scratch); (2) frontend features (draft mode, visual editing, web
-  previews, content link, real-time updates, responsive images, Structured
-  Text rendering, SEO, robots/sitemaps, site search, revalidation/cache
-  tags — applied with prerequisites); (3) migrations (CLI profiles,
-  baseline migrations, shared histories, release workflow, sandbox reset
-  loops, diff-based generation); (4) onboarding imports (WordPress,
-  Contentful — content + assets); (5) platform automation (CMA scripting +
-  project-level automation). Use when user wants a named outcome
-  scaffolded in full, when related features must land together (e.g. "set
-  up visual editing" → draft mode + content link + web previews), or for
-  broad "set up X" needing routing to the smallest matching recipe bundle.
-  DAST conversion/edits within setup → datocms-structured-text.
-disable-model-invocation: true
+  Guided DatoCMS setup: inspects the project, asks only what it can't infer,
+  proposes a plan with prerequisites, and changes nothing until the user
+  agrees. For setting DatoCMS up in a site or repo (previews and visual
+  editing, caching, content rendering, SEO, search, CLI and migrations,
+  releases, multi-project sync, webhooks, build triggers, WordPress or
+  Contentful imports) or starting a new DatoCMS site. Use when the user wants
+  something set up end to end or wants to be walked through it; a single,
+  already-specified code change belongs to the owning DatoCMS skill.
 ---
 
 # DatoCMS Setup
 
-Public setup entrypoint. Keep surface small, inspect repo first, load only needed internal recipe files.
-
-**Structured Text routing before setup:** local DAST work belongs to **datocms-structured-text** — [document model](../datocms-structured-text/references/document-model.md), [editing](../datocms-structured-text/references/editing.md), or [conversion](../datocms-structured-text/references/conversion.md). Pure document conversion needs no project bootstrap. The existing `structured-text` recipe remains frontend renderer setup. In mixed setup/import work, load only the required specialist reference; missing → install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle.
-
-## Workflow
-
-1. Inspect repo silently before asking, follow `references/repo-conventions.md` + `patterns/MANDATORY_RULES.md`.
-2. **Greenfield gate** — during implementation, if no `package.json` and no `datocms.config.json` and the user has not established whether a DatoCMS project exists, ask link-vs-create per `patterns/MANDATORY_RULES.md` § Project link or create. An empty workspace does not override an existing project or block read-only planning: clarify the desired outcome first, and request the repository when implementation needs it. On "create" → wait for confirmation, queue `datocms-content-modeling` before any frontend recipe. Frontend-framework targets — surface official DatoCMS tech starter before scaffolding (see **Tech Starters**). User picks starter → guide clone + env vars only, skip all recipe scaffolding.
-3. Read `references/router.md`.
-4. Pick the smallest recipe/bundle from the router, then read only its entries in `references/recipe-manifest.json`. Filter the JSON by recipe `id` (for example, from this skill directory: `jq ' .recipes[] | select(.id == "draft-mode")' references/recipe-manifest.json`), and resolve each entry's prerequisites recursively. The manifest remains the source of truth for paths, prerequisites and shared references; a targeted task does not need the full catalog.
-5. Follow `references/router.md` to clarify only what remains unresolved:
-   - **Stage A**: when the desired outcome is unclear, offer relevant, plain-language choices that explain what each would do. Clear requests use targeted mode and skip Stage A.
-   - **Stage B**: in either mode, ask the smallest setup-specific follow-up only when repo inspection leaves a high-impact decision unresolved.
-6. Queue prerequisites from manifest before dependents. Never tell user to invoke separate setup skill.
-   - `visual-editing`: always apply `draft-mode` + `content-link`.
-   - Add `web-previews` unless user wants website-only click-to-edit.
-   - Add `realtime` only if user asks or confirms in Stage B.
-   - **Project baseline (TypeScript projects)**: queue `cma-types` alongside `cli-bootstrap` for any greenfield or first-time DatoCMS+TS setup. Default for a fully typed CMA experience; not opt-in.
-7. Load only selected `recipes/<group>/<recipe>/recipe.md`, shared setup references, sibling-skill references.
-8. Create todo list — one task per queued recipe + prerequisite, plus discrete sub-steps within each recipe (file edits, installs, env vars, verification). Mark complete as you go, never batch. Setup bundles always have many steps; todos keep progress visible and recoverable.
-9. Schema/modeling intent (add models, edit fields, design taxonomy) → `datocms-content-modeling`. Don't improvise schema here.
-10. Patch existing code in-place by default.
-11. End with `patterns/OUTPUT_STATUS.md`: report `scaffolded` vs `production-ready`, summarize recipes, list unresolved placeholders.
-
-## Tech Starters
-
-Official DatoCMS tech starters ship with draft mode, Web Previews, Content Link, real-time updates, typed GraphQL queries. Always offer one for greenfield frontend — scaffolding from scratch is redundant, inferior.
-
-| Framework | GitHub | Marketplace |
-| - | - | - |
-| Next.js | <https://github.com/datocms/nextjs-starter-kit> | <https://www.datocms.com/marketplace/starters/next-js-starter-kit> |
-| Nuxt | <https://github.com/datocms/nuxt-starter-kit> | <https://www.datocms.com/marketplace/starters/nuxt-starter-kit> |
-| SvelteKit | <https://github.com/datocms/sveltekit-starter-kit> | <https://www.datocms.com/marketplace/starters/sveltekit-starter-kit> |
-| Astro | <https://github.com/datocms/astro-starter-kit> | <https://www.datocms.com/marketplace/starters/astro-starter-kit> |
-
-**Flow:**
-
-1. Identify framework from user request or Stage A question.
-2. Surface starter: _"This directory is empty. The official DatoCMS \[Framework] starter already includes draft mode, Web Previews, Content Link, and real-time updates. Do you want to start from it, or scaffold from scratch?"_
-3. **User picks starter** → guide `git clone <repo>`, fill env vars, stop — skip all recipe scaffolding.
-4. **User declines** → continue from Workflow step 3.
+Guided setup. This skill owns the conversation: goal, questions, plan, order, consent, handoff. Implementation lives in the sibling DatoCMS skills; each play links the exact files and sections to follow. Load those, never improvise from memory. Missing sibling skill → ask the user to install the full `datocms/agent-skills` bundle.
 
 ## Rules
 
-- Don't load every recipe upfront.
-- Don't use external setup bundles. Prefer sibling DatoCMS skill references over copies.
-- Keep lane names, recipe IDs, and Stage A/B labels internal when asking setup questions; describe user outcomes.
-- Apply shared foundation once if outcomes overlap.
-- Unclear setup goal: ask compact Stage A with explained choices, then execute the minimal bundle for the selected outcome.
-- Stage B only for unresolved high-impact decisions repo can't answer.
-- Migration-heavy: ask smallest extra follow-up to separate baseline, profiles, histories, helpers, resets, diffs.
-- Report `scaffolded` when recipe depends on placeholders/provider choices/routes/ownership repo couldn't resolve.
-- Report `production-ready` only when no unresolved customer-specific values remain.
-- End by summarizing used recipes and available follow-up ids inside `datocms-setup`.
+- **Plan first: no edits in the turn that starts setup.** Inspect read-only, then reply with the plan (or the questions it needs) and stop. Instructions about what to build, however exact (files, paths, steps, "leave X as it is"), are the request, not permission to skip the plan. Only an explicit waiver of the plan in the user's words ("go ahead without confirming", "skip the plan") lets you build in the same turn: state the plan, then proceed within that scope. Otherwise build after the user replies agreeing. Live changes still need their own approval.
+- **Scope lock.** Build only the agreed plan. A new need → stop, explain, ask.
+- **Live changes.** Writes to a DatoCMS project (plugins, webhooks, build triggers, roles, tokens, search indexes, migration runs, environment fork/promote/destroy, maintenance mode, imports) or an external service (deploys, crawls) run only when the user approved that exact operation and target, in the plan or directly. Otherwise leave them as reviewable code (migration, script) or dashboard steps. Route and authentication: **datocms-cma** and **datocms-cli**; an approved live read or write without a working route (MCP connection or linked CLI) queues Connect the repo.
+- **Ask, don't assume.** Every reply before building ends with the question the user must answer. Talk in outcomes; this skill's play names, reference files and step numbers stay internal (the repo's own files belong in the plan).
+
+## Flow
+
+1. **Inspect (read-only, silent).** `package.json` (framework: `next`, `nuxt`, `@sveltejs/kit`, `astro`; DatoCMS packages; `datocms` CLI), package manager from lockfile (`pnpm-lock.yaml` → pnpm, `yarn.lock` → yarn, `bun.lock`/`bun.lockb` → bun, else npm), source layout (`src/`, Nuxt `app/`), env files (names only, never print values), `datocms.config.json` and migrations directory, existing DatoCMS code (query helper, draft/preview routes, webhook handlers, CI jobs). Never ask what the repo answers.
+2. **Goal.** No `package.json` and a website goal → **New site** below first. Clear request → step 3. Unclear ("set up DatoCMS") → ask what they want: 2–4 outcomes fitted to the repo, each with one sentence on the result. An unanswered goal has no default: wait.
+3. **Plays.** Pick from the table below; read only those sections of the play file. Queue each play's **Needs** unless the repo already has them; shared pieces once.
+4. **Questions.** Only **Ask** items still open after inspection and the user's own words; one grouped question; recommended option first; say what skipping does. A skipped implementation question takes the recommended default, recorded in the handoff.
+5. **Plan, then stop.** Show: plays in order; files to add or patch; packages; env vars; every change to DatoCMS or an external service, listed separately; what stays a placeholder. End the turn asking whether to proceed or what to change.
+6. **Build** after agreement. Plan order; follow each play's **Build** links; patch existing code in place; track steps as todos.
+7. **Hand off.** `production-ready` only when real values are wired and the result was exercised end to end (websites: serve and load a real page and the preview flow, not just build); otherwise `scaffolded`. List every open value under **Unresolved placeholders** (or "none"). Summarize what changed; **Test it**: 1–3 concrete steps from the play's **Verify**, using the real routes and env var names; offer next outcomes in plain language.
+
+## Plays
+
+| Outcome | Play | File |
+| - | - | - |
+| Site reads DatoCMS content, optionally with typed queries | Connect the site | [website.md](references/website.md) |
+| Draft previews, preview inside DatoCMS, click-to-edit, live updates | Previews and visual editing | [website.md](references/website.md) |
+| Published pages refresh when content changes | Fresh published content | [website.md](references/website.md) |
+| Images, Structured Text, video rendered from DatoCMS | Render content | [website.md](references/website.md) |
+| SEO tags, canonical URLs, robots.txt, sitemap | SEO and crawling | [website.md](references/website.md) |
+| Search page powered by DatoCMS Site Search | Site search | [website.md](references/website.md) |
+| CLI installed and repo linked to the project | Connect the repo | [project.md](references/project.md) |
+| Typed CMA code and preview route mapping | Typed CMA code | [project.md](references/project.md) |
+| Versioned schema changes | Schema migrations | [project.md](references/project.md) |
+| Release schema changes to production | Release migrations | [project.md](references/project.md) |
+| One repo driving several DatoCMS projects | Several projects | [project.md](references/project.md) |
+| DatoCMS calls other systems or starts deploys | Webhooks and build triggers | [project.md](references/project.md) |
+| Content moved in from WordPress or Contentful | Imports | [project.md](references/project.md) |
+
+Schema design (models, fields, blocks) is decided with **datocms-content-modeling** and implemented through a migration or **datocms-cma**; setup never invents schema.
+
+## New site
+
+No app yet (no `package.json`) and a website goal, before any play:
+
+1. Framework unknown → ask: Next.js, Nuxt, SvelteKit or Astro.
+2. Always offer the official starter next to scaffolding; recommend it for a new project. It ships draft mode, Web Previews, Content Link, real-time updates and typed queries. Its Marketplace page creates a new DatoCMS project with the starter's schema and sample content (and can deploy it); the GitHub repo is the code. Existing project with its own schema → say the starter's queries won't match it, so the starter serves as a reference there.
+
+   | Framework | GitHub | Marketplace |
+   | - | - | - |
+   | Next.js | <https://github.com/datocms/nextjs-starter-kit> | <https://www.datocms.com/marketplace/starters/next-js-starter-kit> |
+   | Nuxt | <https://github.com/datocms/nuxt-starter-kit> | <https://www.datocms.com/marketplace/starters/nuxt-starter-kit> |
+   | SvelteKit | <https://github.com/datocms/sveltekit-starter-kit> | <https://www.datocms.com/marketplace/starters/sveltekit-starter-kit> |
+   | Astro | <https://github.com/datocms/astro-starter-kit> | <https://www.datocms.com/marketplace/starters/astro-starter-kit> |
+3. Starter chosen → guide creating it from the Marketplace page (or cloning the repo against a project created from it) and filling its env vars; no plays needed.
+4. Scaffold chosen → after the plan is agreed, create the app with the framework's own generator, then continue with website plays.
+
+## Project
+
+Implementation needs a DatoCMS project and none is known → ask (header "Project"): "Do you already have a DatoCMS project, or should we create a new one?" Options: link existing (first), create new. Neither is recommended. Create → the user creates it at <https://dashboard.datocms.com/> and confirms; then **Connect the repo**, then schema design, then website plays.
+
+## Questions
+
+Use the harness's structured question tool when available and allowed, following its real schema and limits: short header, options with one-sentence outcomes, `(Recommended)` only when justified, multi-select only for compatible choices. No tool → numbered plain-text list. Can't ask (non-interactive run) → do only work that doesn't depend on the answer and report what's missing.

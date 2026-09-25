@@ -19,7 +19,7 @@ description: >-
 
 # DatoCMS Front-End Integrations Skill
 
-Shared front-end integration bundle. Prefer `datocms-setup` for single feature end-to-end. Stay here for mixed-feature, framework comparison, partial patching, companion-reference loading.
+Shared front-end integration bundle: targeted single- or mixed-feature implementation, partial patching, framework comparison, companion-reference loading.
 
 Structured Text components and renderer callbacks are covered here, including the resolved `record` passed to `renderBlock`. Load the document specialist only for a requested document inspection, transformation, conversion, or validation; ordinary renderer examples need no companion read.
 
@@ -35,7 +35,7 @@ Silently examine:
 2. **UI stack** — Dato rendering lib: React (`react-datocms`), Vue (`vue-datocms`), SvelteKit/Svelte (`@datocms/svelte`), Astro without React (`@datocms/astro`)
 3. **Existing Dato helpers** — `@datocms/cda-client`, query wrappers, image/Structured Text helpers, env vars
 4. **Existing integration markers** — draft mode endpoints, preview-links, Content Link, real-time subscriptions, cache-tag forwarding, search routes, robots/sitemap
-5. **File structure** — `src/` or root-level app directories
+5. **File structure** — `src/` or root-level app directories. References show `src/` paths; Next.js without `src/` → `app/`, `lib/datocms/`; SvelteKit and Astro default to `src/` (`kit.files.src`, `srcDir`); Nuxt refs show root `lib/`, `composables/` — relative to `srcDir` (`~`): Nuxt 4 → `app/` when it exists, else root; `server/` stays at root (`references/nuxt.md` › File Structure)
 6. **Starter-conventions markers** (gql.tada projects) — `gql.tada` in `package.json`, `lib/datocms/gqlUrlBuilder/` folder, project `<Text>` wrapper around `<StructuredText />`, co-located `fragments.ts` next to block / inline-record / link-to-record components. Presence of these = project follows the patterns in `references/url-builders.md` + `datocms-cda/references/fragment-patterns.md`.
 
 ### Stop conditions
@@ -64,27 +64,7 @@ Categorize into:
 
 Multiple categories can apply.
 
-### Prefer the setup orchestrator for full single-feature scaffolding
-
-Route to `datocms-setup` instead of keeping all work in this bundle:
-
-| Category | Route |
-| - | - |
-| Draft Mode Setup | `datocms-setup` for `draft-mode` |
-| Web Previews Setup | `datocms-setup` for `web-previews` |
-| Responsive Images | `datocms-setup` for `responsive-images` |
-| Structured Text Rendering | `datocms-setup` for `structured-text` |
-| Video Player | `datocms-setup` for `video-player` |
-| SEO & Meta Tags | `datocms-setup` for `seo` |
-| Real-Time Updates | `datocms-setup` for `realtime` |
-| Visual Editing / Content Link | `datocms-setup` for `visual-editing` (full flow) or `content-link` (overlays/stega only) |
-| Site Search | `datocms-setup` for `site-search` |
-| Robots & Sitemaps | `datocms-setup` for `robots-sitemaps` |
-| Cache Tags | `datocms-setup` for `cache-tags` |
-
-Route to `datocms-setup` for "set up X end-to-end from scratch" (single feature). Stay here for multi-feature, partial patching, framework comparisons, or when another skill explicitly depends on these references.
-
-**visual editing** = full editorial flow (draft mode + preview links + Content Link + real-time). Route to `content-link` only when user explicitly wants overlay/stega in isolation.
+**Visual editing** = draft mode + Web Previews + Content Link; real-time only when asked. Content Link alone only when user wants overlays/stega in isolation. Bundle defaults, Vercel conflict rule, plugin handoff fields: `references/visual-editing-concepts.md`.
 
 ### Questions
 
@@ -178,7 +158,7 @@ Use `references/site-search-api.md` for Svelte / SvelteKit site-search work.
 | Real-Time Updates | `references/astro-realtime.md` |
 | Visual Editing / Content Link | `references/astro-content-link.md` |
 
-Use `references/site-search-api.md` for Astro site-search work. For Astro video, use Mux web component directly or React integration when project already has it.
+Use `references/site-search-api.md` for Astro site-search work. For Astro video, use Mux web component directly (`references/video-player-concepts.md` › Astro without React integration) or React integration when project already has it.
 
 ### gql.tada starter-conventions references
 
@@ -203,18 +183,19 @@ Follow loaded references and shared rules:
 ### Workflow rules
 
 - Respect existing abstractions and patch in place by default
-- Prefer focused setup skill when task narrows to single full scaffold
 - Make targeted changes instead of full rewrites unless current code is unusable
 
 ### Security and environment rules
 
 - All secrets from environment variables
+- New runtime env vars: placeholder entry in `.env.example` and the repo's local git-ignored env file; reuse existing names; never commit real values. CLI/CMA tokens excluded (CLI authenticates via `login` + `link`)
 - Validate dedicated preview/webhook secret env var where draft mode or preview-links flows require it; preserve existing repo naming when present
 - Use `isRelativeUrl()` for redirect validation
 - Do not require authentication on draft-mode disable endpoints
 
 ### Query-wrapper rules
 
+- Shared helper: framework reference's `## Core` query helper — published-only variant until draft mode exists; document type follows the repo (`TadaDocumentNode` for `gql.tada`, codegen `TypedDocumentNode`, else `query: string`). Client options: [client-and-config.md](../datocms-cda/references/client-and-config.md)
 - Add or preserve `includeDrafts` option for draft-aware querying
 - Switch between published and draft CDA tokens based on that option
 - Default to `excludeInvalid: true` for draft-aware wrapper patterns unless task explicitly needs invalid records during schema work
@@ -237,6 +218,7 @@ Follow loaded references and shared rules:
 ### Dependency rules
 
 - Install missing packages only when task truly needs them
+- Packages generated code imports → direct `dependencies`, even when a Dato package already pulls them in (strict pnpm); `@types/*` and the `datocms` CLI → `devDependencies`
 - Use `@mux/mux-player-react` for React video
 - Use `@mux/mux-player` for Vue or Svelte video
 - Use `@datocms/cma-client-browser` for React / Vue widget-based site search
@@ -270,8 +252,7 @@ Use companion skills when task leaves this bundle's sweet spot:
 
 | Condition | Route to |
 | - | - |
-| Full single-feature scaffolding | `datocms-setup` with matching recipe from Step 2 |
-| Shared CDA client wrapper or `executeQuery` baseline | `datocms-setup` for `cda-client` |
+| Guided multi-part setup, a new site, or user unsure which outcome they need | `datocms-setup` |
 | Writing or optimizing GraphQL queries for the CDA | `datocms-cda` |
 | gql.tada fragment-writing discipline (masking, composition, page query) | `datocms-cda` (`../datocms-cda/references/fragment-patterns.md`) |
 | Programmatic content management, schema changes, migration scripts, access control, or webhook creation via REST | `datocms-cma` |

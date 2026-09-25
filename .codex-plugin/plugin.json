@@ -23,7 +23,7 @@
   "interface": {
     "displayName": "DatoCMS",
     "shortDescription": "Content delivery, management, modeling, CLI, frontend integrations, plugin dev, and project setup for DatoCMS",
-    "longDescription": "Focused DatoCMS skills: query content (CDA/GraphQL), manage records and schema (CMA), make content-modeling decisions (models vs blocks, taxonomies, reuse, limits, admin UI), run CLI workflows and migrations, integrate with frontend frameworks (Next.js, Nuxt, Astro, SvelteKit), build, maintain, and restyle DatoCMS plugins, and orchestrate one-time project setup including draft mode, visual editing, previews, and imports.",
+    "longDescription": "Focused DatoCMS skills: query content (CDA/GraphQL), manage records and schema (CMA), make content-modeling decisions (models vs blocks, taxonomies, reuse, limits, admin UI), run CLI workflows and migrations, integrate with frontend frameworks (Next.js, Nuxt, Astro, SvelteKit), build, maintain, and restyle DatoCMS plugins, and guide project setup (previews and visual editing, caching, SEO, migrations, imports) with a plan you confirm before anything changes.",
     "developerName": "DatoCMS",
     "category": "cms",
     "capabilities": [

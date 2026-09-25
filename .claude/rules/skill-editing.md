@@ -26,6 +26,8 @@ When refining trigger boundaries: edit frontmatter `description` first (small de
 
 The validator bans these patterns in skill bodies: `AskUserQuestion`, `Read tool`, `Claude Code alias`, `slash alias`. Do not introduce them.
 
-## datocms-setup Special Rules
+Headings are link targets: `datocms-setup` links to sibling SKILL.md and reference headings by anchor. Renaming one fails the validator until the setup link is updated.
 
-`datocms-setup` has `disable-model-invocation: true` and `allow_implicit_invocation: false` — it must always be invoked explicitly.
+## Invocation Policy
+
+Model-invocable skills (no `disable-model-invocation`) need `policy:` → `allow_implicit_invocation: true` in `agents/openai.yaml`. Explicit-only skills (`disable-model-invocation: true`) omit `policy`. `datocms-setup` is model-invocable like the others.

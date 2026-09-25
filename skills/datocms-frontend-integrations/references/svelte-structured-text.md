@@ -128,6 +128,8 @@ Unlike React (render props) and Vue (`h()` render functions), Svelte uses **sepa
 />
 ```
 
+`@datocms/svelte` depends on `datocms-structured-text-utils` but user code importing predicates, guards or types (`isBlock`, `isEmptyDocument`, `ItemLink`) needs its own direct dependency. `datocms-structured-text-generic-html-renderer` and `datocms-structured-text-to-plain-text` (examples below) are not `@datocms/svelte` dependencies: install when used.
+
 ### Block Component Example
 
 Custom block components receive `block` as a prop (the resolved record from the `blocks` array):

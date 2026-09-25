@@ -250,7 +250,7 @@ type ExecuteQueryOptions<Variables> = {
 };
 ```
 
-`force-cache` holds published responses until `cacheTag` is revalidated; Core alone never does (Vercel Data Cache survives deploys). New wrapper: add bearer-`SECRET_API_TOKEN` POST route (e.g. `src/app/api/invalidate-cache/route.ts`) calling `revalidateTag(cacheTag, { expire: 0 })` on Next 16+, `revalidateTag(cacheTag)` on Next ≤15 (check installed `next`), hit by a DatoCMS webhook (`cda_cache_tags` → `invalidate`, `Authorization: Bearer` header) — Cache Tags handler minus DB lookup. Patching: keep existing cache policy. `includeDrafts` picks draft/published token.
+`force-cache` holds published responses until `cacheTag` is revalidated; Core alone never does (Vercel Data Cache survives deploys). New wrapper: add bearer-`SECRET_API_TOKEN` POST route (e.g. `src/app/api/invalidate-cache/route.ts`) calling `revalidateTag(cacheTag, { expire: 0 })` on Next 16+, `revalidateTag(cacheTag)` on Next ≤15 (check installed `next`), hit by a DatoCMS webhook (`cda_cache_tags` → `invalidate`, `Authorization: Bearer` header) — Cache Tags handler minus DB lookup. Patching: keep existing cache policy. `includeDrafts` picks draft/published token. Published-only variant (no draft mode yet): drop `includeDrafts` and the draft token, always `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`; keep `force-cache` + `tags` only with the invalidation route.
 
 ### Core Environment Variables
 
@@ -262,7 +262,7 @@ SECRET_API_TOKEN=                       # Shared secret for endpoint auth
 
 ### Core Dependencies
 
-Required: `serialize-error`
+Required: `@datocms/cda-client`, `serialize-error`; `gql.tada` for typed queries (`TadaDocumentNode`)
 
 ## Web Previews (Optional)
 
@@ -375,7 +375,7 @@ export async function recordToWebsiteRoute(
 
 ### Web Previews Dependencies
 
-Required: `@datocms/rest-client-utils`
+Required: `@datocms/rest-client-utils`, `@datocms/cma-client` (`RawApiTypes`)
 
 ## Content Link (Optional)
 
@@ -728,6 +728,8 @@ src/app/api/
 
 Replaces Core `executeQuery`. Backward-compatible: no `queryId` → falls back to simple single-tag approach.
 
+The example assumes preview mode exists. For a published-only project, omit `draftMode()` and the draft token, use the published token, and set `includeDrafts: false`. Preserve authenticated preview handling when already configured; do not add preview mode just to enable caching.
+
 ```ts
 import { rawExecuteQuery } from '@datocms/cda-client';
 import type { TadaDocumentNode } from 'gql.tada';
@@ -784,7 +786,7 @@ When `queryId` provided: uses `rawExecuteQuery` with `returnCacheTags: true`, re
 
 **File:** `src/lib/datocms/cache-tags-db.ts`
 
-Interface + Turso (libSQL) implementation. Replace with `@vercel/postgres` or any DB:
+Interface + Turso (libSQL) implementation. Replace with any DB:
 
 ```ts
 import { createClient } from '@libsql/client';
@@ -940,6 +942,6 @@ TURSO_AUTH_TOKEN=                    # Turso auth token
 
 ### Dependencies
 
-Required: `@libsql/client` (Turso/libSQL). Alternatives: `@vercel/postgres`, `@planetscale/database`, or any SQL client. Schema is simple two-column join table — adapt `cache-tags-db.ts` to your preferred database.
+Required: `@libsql/client` (Turso/libSQL). Alternatives: `@neondatabase/serverless` (Neon; `@vercel/postgres` is deprecated), `@planetscale/database`, or any SQL client. Schema is simple two-column join table — adapt `cache-tags-db.ts` to your preferred database.
 
 Do not swallow mapping or revalidation errors: a failed operation must produce a non-success webhook response. Preserve host deployment invalidation; if an external cache survives deploys, invalidate it through the deployment workflow.

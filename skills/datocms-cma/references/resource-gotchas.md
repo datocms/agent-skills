@@ -22,19 +22,26 @@ CLI lookup: `cma:docs webhooks` covers create/update/list/find/destroy, `events`
 
 Operational notes:
 
+- **Project-level:** belongs to project, not environment — not forked, untouched by promote. Keep out of migrations (sandbox run changes it live; re-run fails on unique `name`) — create/update through selected CMA route per **Declarative sync**, after approval. Managing needs role flag `can_manage_webhooks`.
+- **Environment scope:** events fire in every environment, sandboxes included, unless filtered. Primary only → add `{ entity_type: "environment_type", entity_ids: ["primary"] }` to that event's `filters` (`"sandbox"` for sandboxes; `entity_type: "environment"` + env names for specific ones). Filters in one event entry must all match; `build_trigger`, `maintenance_mode`, `sso_user` events take no environment filter. Payload carries `environment` and `is_environment_primary`.
+- **Receiver auth:** send what receiver expects — static `headers` (e.g. `Authorization: Bearer …`) or `http_basic_user` / `http_basic_password` (sent as `Authorization: Basic`, replacing any custom `Authorization` header). Secrets from env vars, never chat.
 - **Timeouts:** 2s connection, 8s execution per delivery. Heavy work must be deferred — return 200 fast, process async.
 - **Auto-retry** (`auto_retry: true`): up to 7 retries — 2 min, 6 min, 30 min, 1 hr, 5 hrs, 1 day, 2 days.
+- **Undeliverable target:** `url` on localhost (DatoCMS can't reach it) or an empty bearer secret (unset env var → `Authorization: Bearer ` → receiver rejects) fails every delivery, each retried per **Auto-retry** — public URL and real secret before enabling.
 - **Event lifecycle on draft/published:** create → `create`, publish → `publish`, edit-published → `update`, re-publish → `publish`, unpublish → `unpublish`, delete-published → `unpublish` + `delete`. On models without draft/published: create → `create` + `publish`, update → `update` + `publish`, delete → `unpublish` + `delete`.
-- **Cache-tag invalidation** (`entity_type: "cda_cache_tags"`, `event_types: ["invalidate"]`): does **not** support filters — always fires for all cache tag changes; cannot narrow to specific models/records. Payload carries `entity.attributes.tags: string[]`. For architectural patterns, see `../../datocms-cda/references/draft-caching-environments.md`.
-- **Webhook history:** `client.webhookCalls.listPagedIterator({ filter: { webhook_id } })` lists past deliveries; `client.webhookCalls.resendWebhook(callId)` re-delivers failed call.
+- **Cache-tag invalidation** (`entity_type: "cda_cache_tags"`, `event_types: ["invalidate"]`): only `environment` / `environment_type` filters (see **Environment scope**) — otherwise fires for every cache tag change; cannot narrow to specific models/records. Payload carries `entity.attributes.tags: string[]`. For architectural patterns, see `../../datocms-cda/references/draft-caching-environments.md`.
+- **Webhook history:** `client.webhookCalls.listPagedIterator({ filter: { fields: { webhook_id: { eq: webhookId } } } })` lists past deliveries; `client.webhookCalls.resendWebhook(callId)` re-delivers failed call.
+- **Declarative sync** (repo config → project): `name` is unique — match on it to create or update, never delete unlisted webhooks; updates overwrite dashboard edits to sent fields. Create also requires `custom_payload`, `headers`, `http_basic_user`, `http_basic_password` (`null` / `{}` when unused).
 
 ## Build triggers (`buildTriggers`)
 
-CLI lookup: `cma:docs buildTriggers` covers create/update/list/find/destroy, adapters (`custom`, `netlify`, `vercel`, `gatsby_cloud`, `circle_ci`, `github_actions`, `travis_ci`, etc.), trigger/abort actions, `build_events`.
+CLI lookup: `cma:docs buildTriggers` covers create/update/list/find/destroy, trigger/abort/reindex actions; deploy history is `buildEvents`. `adapter`: `custom`, `netlify`, `vercel`, `gitlab` only.
 
 Operational notes:
 
 - `autotrigger_on_scheduled_publications: true` bridges scheduling and deploys — without it, scheduled publish/unpublish does **not** trigger build.
+- **Project-level** like webhooks — not forked, untouched by promote, keep out of migrations. Managing needs role flag `can_manage_build_triggers`.
+- **Declarative sync:** create requires `frontend_url` (nullable), `autotrigger_on_scheduled_publications` and `adapter_settings`, keys per `adapter`: `custom` → `trigger_url`, `headers`, `payload`; `netlify` → `trigger_url`, `access_token`, `branch`, `site_id`; `vercel` → `project_id`, `token`, `branch`, `team_id`, `deploy_hook_url`; `gitlab` → `trigger_url`, `token`, `ref`, `build_parameters`. `name` is unique — match on it to create or update, never delete unlisted ones; updates overwrite dashboard edits to sent fields.
 
 ## Scheduling (`scheduledPublication`, `scheduledUnpublishing`)
 

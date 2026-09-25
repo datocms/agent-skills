@@ -38,7 +38,7 @@ Add to `package.json` scripts:
 
 Two commands chained — `generate schema` fetches `schema.graphql`, `generate-output` writes the `.d.ts` from it. Always run together; the `.d.ts` is stale without a fresh schema. Re-run after model changes. The tsconfig plugin (below) regenerates the `.d.ts` live in the IDE, but CI builds need this script before `tsc`.
 
-> **Token env var:** The command above uses `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` (the setup recipe convention). If your project uses a different name like `DATOCMS_CDA_TOKEN`, adjust the command accordingly.
+> **Token env var:** The command above uses `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` (the name in the official starters and the frontend framework references). If your project uses a different name like `DATOCMS_CDA_TOKEN`, adjust the command accordingly.
 
 > **Framework env var conventions:** SvelteKit prefixes with `PRIVATE_` (e.g., `PRIVATE_DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`). Nuxt prefixes with `NUXT_PUBLIC_` (e.g., `NUXT_PUBLIC_DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`).
 
@@ -61,9 +61,9 @@ Add to `compilerOptions.plugins`:
 | Next.js | `gql.tada/ts-plugin` | `./src/lib/datocms/graphql-env.d.ts` |
 | Astro | `gql.tada/ts-plugin` | `./src/lib/datocms/graphql-env.d.ts` |
 | SvelteKit | `@0no-co/graphqlsp` | `./src/lib/datocms/graphql-env.d.ts` |
-| Nuxt | `gql.tada/ts-plugin` | `./lib/datocms/graphql-env.d.ts` |
+| Nuxt | `gql.tada/ts-plugin` | `./<srcDir>/lib/datocms/graphql-env.d.ts` (e.g. `./app/lib/...` on Nuxt 4 with `app/`) |
 
-SvelteKit uses `@0no-co/graphqlsp` (the underlying LSP plugin) instead of `gql.tada/ts-plugin`. Nuxt omits the `src/` prefix.
+SvelteKit uses `@0no-co/graphqlsp` (the underlying LSP plugin) instead of `gql.tada/ts-plugin`. It's a `gql.tada` dependency the official SvelteKit starter gets through npm hoisting; not in root `node_modules` (pnpm) → add `@0no-co/graphqlsp` as a dev dependency. Nuxt: `<srcDir>` = `app/` when that folder exists (Nuxt 4), else root, never `src/` by default ([nuxt.md › File Structure](../../datocms-frontend-integrations/references/nuxt.md#file-structure)).
 
 ### Initialization File
 
@@ -112,8 +112,10 @@ The `scalars` object maps DatoCMS custom GraphQL scalars to TypeScript types. Se
 
 ```bash
 npm install @graphql-typed-document-node/core graphql
-npm install --save-dev @graphql-codegen/cli @graphql-codegen/client-preset graphql-config
+npm install --save-dev @graphql-codegen/cli @graphql-codegen/client-preset graphql-config dotenv
 ```
+
+`dotenv` backs the config's `import 'dotenv/config'`. Repo also runs dotenv-cli scripts (`dotenv -c --`) → install `dotenv@17`: dotenv 18+ ships its own `dotenv` bin that can shadow dotenv-cli's and fail those scripts.
 
 > The `client` preset bundles `@graphql-codegen/typescript`, `@graphql-codegen/typescript-operations`, and `@graphql-codegen/typed-document-node` — no need to install them separately.
 
@@ -169,7 +171,7 @@ const config: IGraphQLConfig = {
 export default config;
 ```
 
-Adjust the `documents` glob to match where your `.graphql` files live.
+Adjust the `documents` glob to match where your `.graphql` files live. Glob matching no files → run fails (`Unable to find any GraphQL type definitions…`): add `.graphql` documents first, or set `ignoreNoDocuments: true` in `extensions.codegen`. `dotenv/config` reads only `.env`; token in `.env.local` → `import { config as loadEnv } from 'dotenv'; loadEnv({ path: ['.env.local', '.env'] });` (first file wins).
 
 ### Generate Script
 

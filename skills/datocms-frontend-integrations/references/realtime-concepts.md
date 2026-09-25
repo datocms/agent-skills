@@ -119,7 +119,7 @@ All framework implementations accept same core options:
 
 ## Rate Limiting
 
-- **Max 500 concurrent SSE connections** per DatoCMS project
+- **Max 500 concurrent SSE connections** per DatoCMS project — each active subscription holds one (a page with several subscribed components uses several)
 - **Update events consume CDA API requests** — each update re-executes query
 - **Homogeneous connections** (same query + token) share load efficiently — DatoCMS deduplicates identical subscriptions
 
