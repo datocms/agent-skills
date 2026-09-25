@@ -28,9 +28,15 @@ skills/
     recipes/
 docs/
 evals/
+  fixtures/
   results/
-  reports/
   scripts/
+dev/
+  package.json
+  e2e/
+  evals/coexistence/
+  scripts/
+  tests/
 ```
 
 ## Why It Is Split This Way
@@ -49,4 +55,5 @@ evals/
 - `skills/datocms-setup/recipes/onboarding/` contains one-shot content import flows.
 - `skills/datocms-setup/recipes/platform/` contains project-level integrations such as webhooks, build triggers, and CMA type generation.
 - `docs/` is for longer reference material that would make the root README too heavy.
-- `evals/` keeps fixtures, checked-in results, reports, and tooling together so the trigger-quality loop is easy to inspect.
+- `evals/` keeps fixtures, checked-in results, reports, and tooling together so the trigger-quality loop is easy to inspect. Its scripts are Python and need no npm packages.
+- `dev/` holds all Node tooling: the e2e and regression harness, the coexistence evaluator, offline tests, formatting config, release scripts, and their `package.json`/`package-lock.json`. Plugin installs copy the repo root, and Claude Code runs `npm ci` there whenever it finds `package.json` plus a lockfile, so keeping these files out of the root spares every user a dev-dependency install. The validator rejects a root `package.json` with a lockfile.

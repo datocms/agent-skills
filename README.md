@@ -150,6 +150,23 @@ For the full recipe catalog and routing rules see [`docs/skill-catalog.md`](docs
 - [`docs/repo-layout.md`](docs/repo-layout.md) — repository layout and the reasoning behind it
 - [`docs/maintenance.md`](docs/maintenance.md) — contributor and maintainer workflows (validation, regenerating zips, release notes)
 - [`evals/README.md`](evals/README.md) — trigger-quality evaluation framework
+- [`dev/e2e/README.md`](dev/e2e/README.md) — end-to-end and regression evaluation harness
+
+---
+
+## Development
+
+Contributors need Node 24+ with npm, Python 3, and git. The plugins ship `skills/` and the manifests; all Node tooling lives in `dev/`, so plugin installs never pull its dependencies. From the repo root:
+
+```bash
+npm ci --prefix dev                           # dev dependencies and the pre-commit hook
+python3 evals/scripts/validate_skill_repo.py  # repo invariants (the hook runs this too)
+npm --prefix dev run typecheck
+npm --prefix dev run format:check
+npm --prefix dev run test:e2e:harness         # offline harness tests
+```
+
+The pre-commit hook formats staged Markdown, rebuilds the `zips/` of changed skills, and runs the validator. Trigger evals and native agent sessions are paid, need an authenticated `claude` or `codex` CLI, and run only on request; see [`evals/README.md`](evals/README.md) and [`dev/e2e/README.md`](dev/e2e/README.md). Keep `package.json` and lockfiles out of the repo root: Claude Code would install them for every plugin user, and the validator rejects them.
 
 ---
 

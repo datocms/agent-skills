@@ -1006,6 +1006,20 @@ def _validate_setup_manifest(repo_root: Path, errors: list[str]) -> None:
         errors.append(f"{forbidden_path}: internal recipe folders must not ship `agents/openai.yaml`")
 
 
+PLUGIN_ROOT_LOCKFILES = ("bun.lock", "bun.lockb", "npm-shrinkwrap.json", "package-lock.json")
+
+
+def _validate_plugin_root_has_no_dependency_install(repo_root: Path, errors: list[str]) -> None:
+    # Plugin installs copy the repo root and run the package manager there when it holds
+    # package.json plus a supported lockfile, so dev dependencies must stay under dev/.
+    lockfiles = [name for name in PLUGIN_ROOT_LOCKFILES if (repo_root / name).exists()]
+    if (repo_root / "package.json").exists() and lockfiles:
+        errors.append(
+            f"{repo_root}: package.json with {', '.join(lockfiles)} at the plugin root makes every "
+            "Claude Code plugin install run a dependency install; keep dev tooling under dev/"
+        )
+
+
 def _validate_codex_plugin_manifest(repo_root: Path, errors: list[str]) -> None:
     codex_manifest = repo_root / ".codex-plugin" / "plugin.json"
     claude_manifest = repo_root / ".claude-plugin" / "plugin.json"
@@ -1128,6 +1142,7 @@ def main() -> int:
     _validate_astro_imports(repo_root, errors)
     _validate_setup_manifest(repo_root, errors)
     _validate_codex_plugin_manifest(repo_root, errors)
+    _validate_plugin_root_has_no_dependency_install(repo_root, errors)
     _validate_setup_router_eval(repo_root, errors)
 
     if args.require_fresh_results_sync:
@@ -1160,6 +1175,7 @@ def main() -> int:
     print("[ok] Astro references use subpath imports")
     print("[ok] datocms-setup manifest paths, prerequisites, references, scripts, and assets are valid")
     print("[ok] Codex plugin manifest is present and synced with Claude Code manifest")
+    print("[ok] plugin root has no package.json + lockfile pair that plugin installs would run")
     if args.require_clean_git:
         print("[ok] git status is clean (ignoring local-only excluded paths)")
     return 0

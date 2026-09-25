@@ -4,10 +4,10 @@ This page collects the contributor and maintainer workflows for the `datocms/llm
 
 ## Pre-commit automation
 
-This repo uses [husky](https://typicode.github.io/husky/) to run a pre-commit hook that keeps artifacts in sync with skill changes. After cloning, run:
+This repo uses [husky](https://typicode.github.io/husky/) to run a pre-commit hook that keeps artifacts in sync with skill changes. Dev tooling and its dependencies live in `dev/`. After cloning, run from the repo root:
 
 ```bash
-npm install
+npm ci --prefix dev
 ```
 
 The `prepare` script wires `core.hooksPath` to `.husky/` automatically. From that point on, every `git commit` will:
@@ -40,13 +40,13 @@ For the full eval workflow (running, interpreting, and updating snapshots) see [
 The local converter tests copy the shipped runtime to scratch and install its locked dependencies there. They need Node >=20.19.0 and npm registry access for installation, but no DatoCMS credentials. Never install dependencies into the shipped skill directory.
 
 ```bash
-node --test tests/structured-text/convert.test.mjs
-(cd tests/dastdown && npm ci --ignore-scripts --no-audit --no-fund && npm test)
-npm run typecheck
-npm run format:check
+node --test dev/tests/structured-text/convert.test.mjs
+(cd dev/tests/dastdown && npm ci --ignore-scripts --no-audit --no-fund && npm test)
+npm --prefix dev run typecheck
+npm --prefix dev run format:check
 ```
 
-The Dastdown checks execute the canonical examples selected by named section in the specialist references. Live Markdown-create and HTML-update coverage runs through the existing disposable-project harness with `npm run test:e2e`; local document checks do not establish API acceptance. Keep routing scores, document correctness, instruction-loading observations, and live persistence results separate when reporting validation.
+The Dastdown checks execute the canonical examples selected by named section in the specialist references. Live Markdown-create and HTML-update coverage runs through the existing disposable-project harness with `npm --prefix dev run test:e2e`; local document checks do not establish API acceptance. Keep routing scores, document correctness, instruction-loading observations, and live persistence results separate when reporting validation.
 
 ## Regenerate the claude.ai zips
 
@@ -70,7 +70,7 @@ Updates only propagate to installed Claude Code and Codex plugins when the plugi
 - `.claude-plugin/plugin.json`
 - `.codex-plugin/plugin.json`
 
-Without a version bump, Claude Code and Codex consider their cached copies up to date and will not fetch your changes.
+Without a version bump, Claude Code and Codex consider their cached copies up to date and will not fetch your changes. `npm --prefix dev run bump` (or `bump:minor`, `bump:major`) updates both manifests together.
 
 ## Releasing
 

@@ -22,7 +22,8 @@ if [[ -n "$staged_md" ]]; then
   fi
 fi
 if [[ -n "$staged_md" ]]; then
-  echo "$staged_md" | xargs npx --no-install remark --output --quiet
+  # Dev tooling (remark and its config) lives in dev/; plugin installs never see it.
+  echo "$staged_md" | xargs dev/node_modules/.bin/remark --rc-path dev/remark.config.mjs --no-config --output --quiet
   echo "$staged_md" | xargs git add -f
 fi
 
