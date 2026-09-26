@@ -15,6 +15,17 @@ export const cleanup = cda.cleanup;
 export const replay = (options) =>
   replayVisualApplication({ ...options, scenario: "video-playback" });
 
+export async function locatePlayer(page) {
+  // Lazy Mux players replace the placeholder when it enters the viewport.
+  await page.locator("mux-player").first()
+    .evaluate((element) => element.scrollIntoView({ block: "center" }))
+    .catch(() => {});
+  const player = page.locator("mux-player:not([data-mux-player-react-lazy-placeholder])");
+  await player.waitFor({ timeout: 60000 });
+  await player.scrollIntoViewIfNeeded();
+  return player;
+}
+
 async function createClip(path) {
   const browser = await chromium.launch({
     channel: process.env.E2E_BROWSER_CHANNEL ?? "chrome",
@@ -228,12 +239,10 @@ export async function check({
       await page.locator("h1").innerText(),
       `English 0 ${state.marker}`,
     );
-    const player = page.locator("mux-player");
-    await player.waitFor();
-    await player.scrollIntoViewIfNeeded();
+    const player = await locatePlayer(page);
     await page.waitForFunction(
       () => {
-        const player = document.querySelector("mux-player");
+        const player = document.querySelector("mux-player:not([data-mux-player-react-lazy-placeholder])");
         return player?.readyState >= 1 && player.duration > 1;
       },
       {},
@@ -266,7 +275,7 @@ export async function check({
     await player.locator('media-play-button[part~="pre-play"]').click();
     await page.waitForFunction(
       () => {
-        const player = document.querySelector("mux-player");
+        const player = document.querySelector("mux-player:not([data-mux-player-react-lazy-placeholder])");
         return player.currentTime > 0.25 && !player.paused;
       },
       {},
@@ -279,7 +288,7 @@ export async function check({
       element.currentTime = element.duration / 2;
     });
     await page.waitForFunction(() => {
-      const player = document.querySelector("mux-player");
+      const player = document.querySelector("mux-player:not([data-mux-player-react-lazy-placeholder])");
       return (
         Math.abs(player.currentTime - player.duration / 2) < 0.3 &&
         !player.seeking
@@ -288,7 +297,7 @@ export async function check({
     await player.hover();
     await playPause.click();
     await page.waitForFunction(
-      () => document.querySelector("mux-player").ended,
+      () => document.querySelector("mux-player:not([data-mux-player-react-lazy-placeholder])").ended,
       {},
       { timeout: 30000 },
     );

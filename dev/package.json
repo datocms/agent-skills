@@ -17,7 +17,7 @@
     "bump:minor": "tsx scripts/bump-version.ts minor",
     "bump:major": "tsx scripts/bump-version.ts major",
     "prepare": "cd .. && husky",
-    "test:e2e:harness": "node --test tests/native-e2e.test.mjs tests/catalog-replay.test.mjs tests/deployed-scope.test.mjs tests/visual-harness.test.mjs",
+    "test:e2e:harness": "node --test tests/native-e2e.test.mjs tests/catalog-replay.test.mjs tests/deployed-scope.test.mjs tests/visual-harness.test.mjs tests/catalog-video-locator.test.mjs",
     "e2e:frontend": "cd .. && node dev/e2e/frontend/run.mjs",
     "e2e:hosted": "cd .. && node dev/e2e/hosted/run.mjs",
     "e2e:code": "cd .. && node dev/e2e/workflows/code.mjs",
