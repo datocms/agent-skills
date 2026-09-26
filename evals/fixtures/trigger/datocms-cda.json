@@ -12,7 +12,7 @@
     "should_trigger": true
   },
   {
-    "query": "I'm building a portfolio site with DatoCMS. Each project has modular content blocks — a text block, an image gallery block, and a video embed block. How do I query these with the CDA and render them with the right components?",
+    "query": "I'm building a portfolio site with DatoCMS. Each project has modular content blocks \u2014 a text block, an image gallery block, and a video embed block. How do I query these with the CDA and render them with the right components?",
     "should_trigger": true,
     "query_mode": "overlap",
     "boundary_with": [
@@ -162,5 +162,23 @@
   {
     "query": "our DatoCMS GraphQL results are all typed as any. how do we get real TypeScript types for them?",
     "should_trigger": true
+  },
+  {
+    "query": "Our static build fetches every page from the DatoCMS GraphQL API in parallel and now fails with HTTP 429 Too Many Requests. Why, if each token is under its limit?",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Why are our DatoCMS GraphQL responses never served from the CDN cache? Our listing query passes a long filter in variables.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Our CMA import script creating records in parallel keeps getting 429 errors from DatoCMS. How do we throttle it?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
   }
 ]

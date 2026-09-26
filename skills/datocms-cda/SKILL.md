@@ -8,8 +8,8 @@ description: >-
   modular content fragments, Structured Text (DAST) with blocks/inline records,
   responsive images (srcset/blur-up/imgix), SEO metadata (_seoMetaTags, favicons,
   global SEO), video/Mux fields, draft or preview reads, environment-targeted
-  reads, cache tags via rawExecuteQuery, and Content Link metadata for visual
-  editing. Also use for CDA query type generation with gql.tada or GraphQL Code
+  reads, cache tags via rawExecuteQuery, why responses miss the CDN cache or
+  hit rate limits, and Content Link metadata for visual editing. Also use for CDA query type generation with gql.tada or GraphQL Code
   Generator.
 ---
 

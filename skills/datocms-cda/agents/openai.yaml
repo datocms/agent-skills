@@ -1,5 +1,5 @@
 # synced_from_name: datocms-cda
-# synced_from_description_sha256: 8a0566296147dc879ce7cf61a86cd9f18c03071fd2e9ad32d1284b9e57aa73a4
+# synced_from_description_sha256: 2f304fa447bcfdcfbb7a4198ec3f3fd8859f85fd359e755de5a535ee99112f91
 interface:
   display_name: "DatoCMS CDA"
   short_description: "Query DatoCMS GraphQL reads, media, and SEO"
