@@ -8,6 +8,8 @@ Run commands from the repository root. Use Node 24+, `npm ci --prefix dev`, and 
 
 Supply `E2E_DATOCMS_API_TOKEN` through the process environment or a secret manager, together with `E2E_DATOCMS_SITE_ID`. Use a dedicated, disposable project with an empty primary environment. Never put the token in a command argument, prompt, fixture, or tracked file.
 
+If `E2E_DATOCMS_API_TOKEN` comes from the CLI's OAuth session, don't run `datocms login` during a suite: re-authorizing can invalidate it. On a mid-run 401 (`INVALID_AUTHORIZATION_HEADER`), stop, refresh the token, remove owned `e2e-*` sandboxes, rerun only failed or unstarted cases under a new output dir, and keep the interrupted evidence classified as infrastructure.
+
 ```bash
 npm --prefix dev run test:e2e
 npm --prefix dev run test:e2e -- e2e/cases/recent-content-regressions.e2e.test.ts
