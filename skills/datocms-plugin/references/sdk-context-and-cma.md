@@ -174,7 +174,7 @@ import type {
 
 Entity exports include `Account`, `Field`, `Item`, `ItemType`, `Plugin`, `Role`, `Site`, `SsoUser`, `Upload`, and `User`. Import `Fieldset` from `@datocms/cma-client` if needed.
 
-Field extension `fieldTypes`: `'all'` or `FieldType[]` (no `single_block`):
+Field extension `fieldTypes`: `'all'` or `FieldType[]` (no `single_block`; Modular Content is `rich_text`):
 
 ```ts
 'boolean' | 'color' | 'date_time' | 'date' | 'file' | 'float' |

@@ -24,6 +24,15 @@ test('asset-source default_field_metadata keys match the SDK NewUploadDefaultFie
   assert.deepEqual(keys(documented), keys(sdkType));
 });
 
+test('documented field types match the SDK FieldType union, and SKILL.md maps Modular Content to rich_text', fixture, () => {
+  // Nothing in the name `rich_text` says Modular Content, so the always-loaded SKILL.md has to.
+  const union = (text) => [...text.matchAll(/'(\w+)'/g)].map((m) => m[1]).sort();
+  const sdk = pkg('datocms-plugin-sdk/dist/types/hooks/manualFieldExtensions.d.ts').match(/export type FieldType = ([^;]+);/)[1];
+  const documented = ref('sdk-context-and-cma.md').match(/Field extension `fieldTypes`[^\n]*\n\n```ts\n([\s\S]*?)```/)[1];
+  assert.deepEqual(union(documented), union(sdk));
+  assert.match(readFileSync(resolve(repoRoot, 'skills/datocms-plugin/SKILL.md'), 'utf8'), /Modular Content is `rich_text`/);
+});
+
 test('scaffold browser CMA client shares the SDK cma-client major', fixture, () => {
   // datocms-plugin-sdk >=2.3 depends on @datocms/cma-client ^6.1.0; a ^5 browser client installs a second major.
   const scaffold = ref('project-scaffold.md');

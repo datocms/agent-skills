@@ -79,7 +79,7 @@ Ask user when row is not obvious from request — reversibility and workflow pre
 | Content operation: publish/unpublish, delete individual records, fix slugs, bulk field value updates, re-tag uploads | No migration needed. |
 | Code to commit and replay across environments | Migration, not **datocms-cma**. |
 
-Destructive + migration branch stay here: load `creating-migrations.md` + `running-migrations.md`. One-offs, content operations, direct-mutation branch, `cma:script` or checked-in `buildClient()` requests → **datocms-cma**; load its references yourself, don't bounce user. Unattended runtime code (CI, app server, webhook, long-lived automation) → checked-in `buildClient()` script, owned by **datocms-cma**.
+Destructive + migration branch stay here: load `creating-migrations.md` + `running-migrations.md`. One-offs, content operations, direct-mutation branch → **datocms-cma**: it owns the API work and picks the route (CLI `cma:call` / `cma:script`, or MCP); load its references yourself, don't bounce user. Command mechanics stay here — `cma:call` / `cma:script` / `cma:docs` flags, stdin vs file mode, ambient globals, environment targeting (`direct-cma-calls.md`, `cma-script.md`). Checked-in `buildClient()` scripts and unattended runtime code (CI, app server, webhook, long-lived automation) → **datocms-cma**.
 
 ### Destructive and production-sensitive confirmations
 
@@ -113,7 +113,7 @@ Based on task classification, read appropriate reference files from `references/
 | Running migrations | `references/running-migrations.md` |
 | Schema generation | `references/schema-generate.md` |
 | Schema inspection | `references/schema-inspect.md` |
-| Direct CMA calls | `references/direct-cma-calls.md` (for `cma:call`) and/or `references/cma-script.md` (for `cma:script`) |
+| Direct CMA call mechanics | `references/direct-cma-calls.md` (for `cma:call`) and/or `references/cma-script.md` (for `cma:script`) |
 | Environment management | `references/environment-commands.md` |
 | Deployment workflow | `references/deployment-workflow.md` |
 | Multi-project sync | `references/blueprint-sync.md` |

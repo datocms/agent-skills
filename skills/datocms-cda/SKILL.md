@@ -52,7 +52,7 @@ Clear request? Proceed directly. Read only relevant references from `references/
 | Structured text (DAST value/blocks/links, render) | `references/structured-text.md` |
 | Images & media (responsiveImage, imgix, placeholders, focal, video) | `references/images-and-videos.md` |
 | SEO & meta (`_seoMetaTags`, favicons, `globalSeo`, OG tags) | `references/seo-and-meta.md` |
-| Draft/preview, strict mode, cache tags, CDN, environments, Content Link | `references/draft-caching-environments.md` |
+| Draft/preview, strict mode, reading cache tags, CDN, environments, Content Link query options | `references/draft-caching-environments.md` |
 | Type generation (gql.tada, graphql-codegen, schema types, typed queries) | `references/type-generation.md` |
 | gql.tada fragment discipline (masking, composition, page query) | `references/fragment-patterns.md` |
 | Client setup/wrappers, options, token permissions, `ApiError` handling, 429/complexity/CDN diagnostics, custom scalars | `references/client-and-config.md` |
@@ -116,7 +116,9 @@ This skill covers **reading via GraphQL CDA**. Route to companion skill for:
 | DAST structure or validation | **datocms-structured-text** — [document model](../datocms-structured-text/references/document-model.md) |
 | DAST traversal/editing; Markdown/HTML import or format export | **datocms-structured-text** — [editing](../datocms-structured-text/references/editing.md) or [conversion](../datocms-structured-text/references/conversion.md) |
 | Mutating content, schema/uploads/webhooks, scripts (including REST queries) | **datocms-cma** |
-| Draft mode endpoints, Web Previews, Content Link, subscriptions, cache tags | **datocms-frontend-integrations** |
+| App wiring: draft mode endpoints, Web Previews, Content Link overlays, realtime subscriptions, cache-tag invalidation (revalidation, CDN purge) | **datocms-frontend-integrations** |
 | Building plugin | **datocms-plugin** |
+
+Query side of that wiring stays here: `includeDrafts`, `contentLink` / `baseEditingUrl` / `_editingUrl`, reading `x-cache-tags` via `rawExecuteQuery`.
 
 Load the specialist only for a DAST task; ordinary GraphQL selection stays here. Missing required reference → install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle.

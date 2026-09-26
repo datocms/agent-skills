@@ -74,7 +74,7 @@ const isLocalized = titleField?.attributes.localized ?? false;
 
 ## Modular Content Fields
 
-Modular Content (and Single Block) values are arrays of block objects containing `itemId`, `itemTypeId`, and the block's field values:
+Modular Content (`rich_text`) and Single Block values are arrays of block objects containing `itemId`, `itemTypeId`, and the block's field values:
 
 ```ts
 // ctx.formValues.social_profiles
