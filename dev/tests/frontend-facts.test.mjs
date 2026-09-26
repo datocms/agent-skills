@@ -2,7 +2,7 @@
 // REFERENCE_REPO_ROOT points the checks at another skills snapshot (e.g. a baseline).
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import test from 'node:test';
@@ -13,6 +13,22 @@ const dev = fileURLToPath(new URL('../', import.meta.url));
 const repoRoot = process.env.REFERENCE_REPO_ROOT ? resolve(process.env.REFERENCE_REPO_ROOT) : resolve(dev, '..');
 const skill = join(repoRoot, 'skills/datocms-frontend-integrations');
 const read = (path) => readFileSync(join(skill, path), 'utf8');
+
+test('skill examples import React renderers through feature subpaths', () => {
+  function walk(directory) {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      if (entry.name === 'node_modules') continue;
+      const path = join(directory, entry.name);
+      if (entry.isDirectory()) walk(path);
+      else if (entry.isFile() && entry.name.endsWith('.md')) assert.doesNotMatch(readFileSync(path, 'utf8'), /from ['"]react-datocms['"]/, path);
+    }
+  }
+  walk(join(repoRoot, 'skills'));
+  assert.match(read('SKILL.md'), /react-datocms\/<feature>[^\n]*@mux\/mux-player-react/);
+  const imports = read('references/astro-image.md').split('\n').find(line => line.startsWith('| Import |'));
+  assert.match(imports, /react-datocms\/rsc-image/);
+  assert.match(imports, /react-datocms\/image/);
+});
 
 // Serves the two CMA calls `schema:generate` makes (primary environment lookup, then
 // GET /site?include=item_types,item_types.fields) from a one-model schema.

@@ -78,7 +78,7 @@ const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
 | Feature | React | Svelte | Astro |
 | - | - | - | - |
 | Components | `<RSCImage />` (zero JS) + `<Image />` (crossfade) | `<NakedImage />` (minimal JS) + `<Image />` (crossfade) | Single `<Image />` (zero JS) |
-| Import | `from 'react-datocms'` | `from '@datocms/svelte'` | `from '@datocms/astro/Image'` |
+| Import | `RSCImage`: `react-datocms/rsc-image`; `Image`: `react-datocms/image` | `from '@datocms/svelte'` | `from '@datocms/astro/Image'` |
 | Layout modes | `intrinsic`, `fixed`, `responsive`, `fill` | `intrinsic`, `fixed`, `responsive`, `fill` | Not applicable (native `<picture>`) |
 | Crossfade | `<Image />` only | `<Image />` only | Not available |
 | IntersectionObserver | `<Image />` only | `<Image />` only | Not used (native lazy loading) |

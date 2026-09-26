@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -9,6 +9,22 @@ const repoRoot = process.env.REFERENCE_REPO_ROOT
   : fileURLToPath(new URL('../../', import.meta.url));
 const read = (path) => readFileSync(resolve(repoRoot, 'skills/datocms-cda', path), 'utf8');
 const section = (markdown, start, end) => markdown.slice(markdown.indexOf(start), markdown.indexOf(end, markdown.indexOf(start)));
+
+test('CDA rendering guidance names feature imports and the optional video peer', () => {
+  assert.match(read('SKILL.md'), /`react-datocms\/structured-text`[^\n]*`@mux\/mux-player-react`/);
+  assert.match(read('references/structured-text.md'), /\| React \| `react-datocms\/structured-text` \|/);
+  assert.match(read('references/images-and-videos.md'), /\| React \| `react-datocms\/video-player` \|/);
+});
+
+const reactPackage = fileURLToPath(new URL('../e2e/catalog/web/node_modules/react-datocms/', import.meta.url));
+test('the installed React root barrel loads the optional Mux peer through VideoPlayer', { skip: !existsSync(reactPackage) && 'catalog React fixture is absent' }, () => {
+  const pkg = JSON.parse(readFileSync(resolve(reactPackage, 'package.json'), 'utf8'));
+  assert.equal(pkg.peerDependenciesMeta['@mux/mux-player-react'].optional, true);
+  assert.match(JSON.stringify(pkg.exports['./image']), /Image\/index\.js/);
+  assert.match(JSON.stringify(pkg.exports['./rsc-image']), /RSCImage\/index\.js/);
+  assert.match(readFileSync(resolve(reactPackage, 'dist/esm/index.js'), 'utf8'), /export \* from ['"]\.\/VideoPlayer\/index\.js['"]/);
+  assert.match(readFileSync(resolve(reactPackage, 'dist/esm/VideoPlayer/index.js'), 'utf8'), /from ['"]@mux\/mux-player-react\/lazy['"]/);
+});
 
 // cda-8: the starter kits and demos (datocms/{nextjs,astro,sveltekit,nuxt}-starter-kit,
 // next-landing-page-demo, ecommerce-website-demo .env examples) name their CDA tokens

@@ -141,7 +141,7 @@ DatoCMS provides `<StructuredText>` components for popular frameworks that handl
 
 | Framework | Package | Component |
 | - | - | - |
-| React | `react-datocms` | `<StructuredText>` |
+| React | `react-datocms/structured-text` | `<StructuredText>` |
 | Vue | `vue-datocms` | `<StructuredText>` |
 | Svelte | `@datocms/svelte` | `<StructuredText>` |
 | Astro | `@datocms/astro` | `<StructuredText>` |

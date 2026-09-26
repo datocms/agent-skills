@@ -100,7 +100,7 @@ Before presenting final code:
 4. **Draft mode** — `includeDrafts` intentional (not exposing unpublished in prod)
 5. **`excludeInvalid`** — recommend for stable schemas. Changing schema? use `filter: { _isValid: { eq: true } }` instead
 6. **Type safety** — no `as` / `as unknown as` to silence errors
-7. **Imports** — CDA from `@datocms/cda-client`; keep generated GraphQL helpers if type-gen wired
+7. **Imports** — CDA from `@datocms/cda-client`; keep generated GraphQL helpers if type-gen wired; React renderers from subpaths (`react-datocms/structured-text`): root `react-datocms` statically imports optional peer `@mux/mux-player-react`
 8. **Variables** — all dynamic via GraphQL variables, no interpolation
 9. **Structured text** — all relevant sub-fields (`value`, `blocks`, `links`, `inlineBlocks`); omitting = silent data loss
 10. **Fetch integration** — framework-native `fetch`, tagging, custom plumbing? use `buildRequestHeaders()` / `buildRequestInit()`

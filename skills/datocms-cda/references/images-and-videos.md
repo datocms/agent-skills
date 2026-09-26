@@ -222,7 +222,7 @@ query {
 
 | Framework | Package | Component |
 | - | - | - |
-| React | `react-datocms` | `<VideoPlayer>` |
+| React | `react-datocms/video-player` | `<VideoPlayer>` |
 | Vue | `vue-datocms` | `<VideoPlayer>` |
 | Svelte | `@datocms/svelte` | `<VideoPlayer>` |
 

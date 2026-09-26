@@ -205,7 +205,7 @@ Follow loaded references and shared rules:
 ### Framework rules
 
 - Use native env and redirect APIs for detected framework
-- For Astro, always use `@datocms/astro/*` subpath imports
+- Subpath imports: `@datocms/astro/*`; `react-datocms/<feature>` (root barrel requires optional `@mux/mux-player-react`)
 - Use framework-appropriate component or helper API from loaded reference, not cross-framework pattern from memory
 
 ### TypeScript rules
