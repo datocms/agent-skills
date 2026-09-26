@@ -30,7 +30,7 @@ Bootstrap only for selected CLI execution; explaining commands needs no connecti
 ### Detection (don't rely on `which datocms` — CLI runs via `npx`)
 
 1. `datocms` in `package.json` devDependencies → CLI available. Missing for selected CLI execution: install it (`npm install --save-dev datocms`).
-2. `datocms.config.json` with `siteId` on active profile → linked. Missing: drive bootstrap below.
+2. `datocms.config.json` with `siteId` on active profile → linked. Unlinked + profile token env var set (default `DATOCMS_API_TOKEN`; `.env`/`.env.local` count) → token auth works: skip login/`projects:list`/link (linking overrides it). Else drive bootstrap below.
 3. `npx datocms whoami` succeeds → OAuth session active.
 4. `migrations/` directory → migrations already scaffolded.
 5. `tsconfig.json` or `migrations.tsconfig` → TS migrations convention.

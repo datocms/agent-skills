@@ -133,3 +133,18 @@ test('CLI references explain the docs actions for list and find', () => {
   assert.match(skill('datocms-cli/references/creating-migrations.md'), /Docs actions: `instances` = list, `self` = find/);
   assert.doesNotMatch(skill('datocms-cma/references/resource-gotchas.md'), /create\/update\/list\/find\/destroy/);
 });
+
+test('CLI credentials prefer a flag, then a linked project, then the profile token environment', () => {
+  const command = installed('@datocms/cli-utils/lib/cma-client-command.js');
+  const flag = command.indexOf("let apiToken = flags['api-token']");
+  const linked = command.indexOf('apiToken = await this.resolveTokenFromSiteId(this.datoProfileConfig.siteId');
+  const token = command.indexOf('apiToken = process.env[apiTokenEnvName]');
+  assert.ok(flag >= 0 && flag < linked && linked < token);
+  assert.match(installed('@datocms/cli-utils/lib/index.js'), /config\(\{ path: \['\.env\.local', '\.env'\]/);
+});
+
+test('CLI detection skips OAuth bootstrap for an unlinked profile with a token', () => {
+  const detection = skill('datocms-cli/SKILL.md').match(/### Detection[^\n]*\n([\s\S]*?)(?=\n###? |$)/)?.[1];
+  assert.ok(detection);
+  assert.match(detection, /token auth works[^\n]*skip login/);
+});
