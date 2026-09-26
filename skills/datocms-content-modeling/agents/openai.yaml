@@ -3,6 +3,6 @@
 interface:
   display_name: "DatoCMS Content Modeling"
   short_description: "Design DatoCMS schemas, field settings and editor UI"
-  default_prompt: "Use $datocms-content-modeling to decide model vs block, field types and settings, reuse and taxonomies, or how the schema is organized for editors."
+  default_prompt: "Use $datocms-content-modeling to decide model vs block, pick the right block-bearing field, set model and field options, design reuse and taxonomies, or organize the schema for editors."
 policy:
   allow_implicit_invocation: true

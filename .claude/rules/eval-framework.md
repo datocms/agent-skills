@@ -18,7 +18,7 @@ paths:
 
 - Default per-query classification threshold: `0.5` (trigger_rate >= 0.5 = predicted trigger).
 - Default F1 gate threshold: `0.90` (`--threshold-f1`, used by `analyze_trigger_results.py`).
-- Canonical results live at `evals/results/trigger/<skill>/<track>/<source>/results.json` and record the model that answered (Codex only when `--model` is pinned), with the `--effort` when one is set; cross-skill summary at `evals/results/trigger/_summary/<track>/<source>/summary.{json,md}`. Commit results only from a deliberate full run.
+- Canonical results live at `evals/results/trigger/<skill>/<track>/<source>/results.json` and record the model that answered (Codex only when `--model` is pinned), with the `--effort` when one is set; cross-skill summary at `evals/results/trigger/_summary/<track>/<source>/summary.{json,md}`, of which only `summary.md` is committed (`summary.json` is rebuilt by the analyzer). Commit results only from a deliberate full run.
 - For one-off / exploratory runs, write to `local/` (gitignored) — history is owned by git, not duplicated in the tree.
 - Two eval tracks selected via `run_trigger_eval.py --track {claude,codex}`.
 

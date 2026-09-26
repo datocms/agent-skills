@@ -1,0 +1,447 @@
+{
+  "skill_name": "datocms-cma",
+  "description": "Manage DatoCMS records, uploads, and project automation through the Content Management API (CMA). Use for content reads/edits, publish/unpublish, bulk imports/exports, CSV scripts, localization, Structured Text and block edits, assets, roles/tokens, webhooks, scheduling, environment operations, and typed Node.js/TypeScript CMA scripts. Includes short follow-ups such as \"publish them\" or \"fix those slugs\", token/OAuth setup before content operations, and model/field changes needing a migration-versus-direct decision or embedded in CMA automation. Works with the CLI or an available DatoCMS MCP; neither MCP installation nor local execution is assumed. Route schema-inspection-only requests, versioned migrations, and standalone CLI configuration to `datocms-cli`, GraphQL reads to `datocms-cda`, and frontend or plugin code to their dedicated skills.",
+  "evaluation_source": "combined",
+  "routing_surface": {
+    "description": "Manage DatoCMS records, uploads, and project automation through the Content Management API (CMA). Use for content reads/edits, publish/unpublish, bulk imports/exports, CSV scripts, localization, Structured Text and block edits, assets, roles/tokens, webhooks, scheduling, environment operations, and typed Node.js/TypeScript CMA scripts. Includes short follow-ups such as \"publish them\" or \"fix those slugs\", token/OAuth setup before content operations, and model/field changes needing a migration-versus-direct decision or embedded in CMA automation. Works with the CLI or an available DatoCMS MCP; neither MCP installation nor local execution is assumed. Route schema-inspection-only requests, versioned migrations, and standalone CLI configuration to `datocms-cli`, GraphQL reads to `datocms-cda`, and frontend or plugin code to their dedicated skills.",
+    "display_name": "DatoCMS CMA",
+    "short_description": "Manage DatoCMS content via scripts, the CLI or MCP",
+    "default_prompt": "Use $datocms-cma to manage DatoCMS records, uploads, schema changes or project automation through the CLI, an MCP connection or a typed script."
+  },
+  "model": "claude-opus-5-5",
+  "results": [
+    {
+      "query": "I need to create a new blog post in DatoCMS programmatically using the CMA client. The model has title (string), slug (slug), body (structured text), and published_date (date) fields. Can you write the script?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "we're migrating 500 products from a CSV file into DatoCMS. each product has a name, price, description, and an image URL that needs to be uploaded as a DatoCMS asset. can you build the import script?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "How do I update a record's structured text field via the CMA? I need to programmatically set the body of an article to include headings, paragraphs, and an inline block record reference.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I need to create a new model called 'Team Member' in DatoCMS using the CMA client. It should have fields: name (string), role (string), bio (structured text), photo (file), and a link to a 'Department' model.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "can you help me paginate through all the records in my 'article' model? there are about 2000 of them and i need to export them to a JSON file. using @datocms/cma-client-node",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I need to upload images to DatoCMS from URLs, set their alt text and title metadata, and then assign them to records. Some images are already in the media library so I should check for duplicates first.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "How do I fork a DatoCMS environment, make some schema changes (add a new field to the blog_post model), and then promote it to primary? Using the CMA client programmatically.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I want to set up a webhook in DatoCMS that triggers when any record is published. Can you show me how to create the webhook configuration using the CMA client?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "need to bulk update the SEO fields on about 300 product records in datocms. want to set the meta description to a template based on the product name and category. using the cma client",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I need to query all blog posts from DatoCMS and display them on my React site. They have a title, cover image, and body. Can you write the GraphQL query for the Content Delivery API?",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Can you help me render the responsive image component from react-datocms? I want blur-up placeholders and srcset for my DatoCMS images.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I want to build a custom sidebar plugin for DatoCMS that shows word count and reading time. How do I use the plugin SDK's renderItemFormSidebar hook?",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "can you help me write a migration script using the datocms CLI? I need to create a new model with datocms migrations:new and then run it on my sandbox env",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "How do I set up draft mode for my Next.js App Router site with DatoCMS? I need the enable/disable route handlers and the token-switching executeQuery wrapper.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Our 40 authors appear on hundreds of DatoCMS articles. Should an author be a separate model we link to, or a block inside each article? Only the trade-offs, nothing changed yet.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-content-modeling"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Since I added a second project to datocms.config.json, every datocms command fails with 'Multiple profiles detected'. How do I fix that?",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I'm building a Prisma schema for my PostgreSQL database. I need models for User, Post, and Comment with proper relations. Can you help?",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "How do I configure cache tag invalidation in my SvelteKit site so that when DatoCMS content changes, only the relevant pages get purged from Cloudflare's cache?",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Use datocms-cma to create a blog post record with a structured text body and publish it in DatoCMS.",
+      "should_trigger": true,
+      "query_mode": "explicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Use datocms-cma to upload remote images, set alt and title metadata, and link the uploads to product records.",
+      "should_trigger": true,
+      "query_mode": "explicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "publish them all in DatoCMS for me",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "unpublish the draft articles on DatoCMS, just do it",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "bulk-update the titles of those DatoCMS records",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "just delete those test records from DatoCMS",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "schedule those DatoCMS posts to go live Monday at 9am Berlin time",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "fix the slugs on those DatoCMS items",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "do the DatoCMS token setup thing for me before publishing \u2014 I don't want to paste an API token into .env, use my OAuth login",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I need to add a seo field to the article model on DatoCMS",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "rename the 'body' field on blog_post to 'content' in our DatoCMS project",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "add a required meta_description to every DatoCMS model that has a title field",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I just want to add a new optional text field to the author model on DatoCMS, quickly, without setting up a migrations workflow \u2014 what's the right way?",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "just tell me which fields the DatoCMS blog_post model has and whether slug is required \u2014 I don't need code, I just want to know the schema",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Use the connected DatoCMS MCP to translate these articles into Italian, preserving their blocks and leaving them unpublished.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In Claude Desktop, update the alt text of these DatoCMS assets through the connected MCP. I do not have a terminal.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "My MCP connection is broken. Help me configure the server in my chat application.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "With DatoCMS MCP connected, add a draft mode endpoint to this Next.js application.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-frontend-integrations"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Convert this local Markdown file into DatoCMS Structured Text JSON. Only return the document; do not connect to a project, write records, or scaffold anything.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-structured-text"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Rewrite the second paragraph in this supplied DAST JSON while preserving embedded block references. Return the edited JSON only; no API calls or record writes.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-structured-text"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Convert this Markdown article to Structured Text, then write a typed CMA script to create the Article record with its title and body without publishing it.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-structured-text"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "We've never hooked DatoCMS up to our Vercel deploys. Walk me through getting the site to rebuild whenever an editor publishes, and plan it with me before changing anything.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-setup"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    }
+  ],
+  "summary": {
+    "total": 40,
+    "passed": 40,
+    "failed": 0
+  }
+}

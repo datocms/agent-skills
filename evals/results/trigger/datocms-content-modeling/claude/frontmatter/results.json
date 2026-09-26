@@ -1,0 +1,471 @@
+{
+  "skill_name": "datocms-content-modeling",
+  "description": "Decision frameworks for DatoCMS content modeling \u2014 schema shape, field choice, content reuse, taxonomies, content vs presentation, admin UI organization. Use for modeling *decisions*, not implementation: model vs block; single_block vs Modular Content vs Structured Text; references vs embedded blocks; taxonomy shape (flat/tree/faceted); refactoring page-shaped schemas to reusable content; fitting 300 KB / 500-block / 5-level record limits; model behaviour (singleton, draft mode, all_locales_required, sortable/tree/ordering_field, presentation_title_field, collection_appearance, inverse_relationships_enabled); field config (validator + appearance \u2014 enum + string_select, slug auto-fill, required_alt_title, structured_text allowlists, framed vs frameless single_block). Also schema review (reuse, editor ergonomics, omnichannel). *Creating* schema \u2192 `datocms-cli` or `datocms-cma`. Query/render \u2192 `datocms-cda` + `datocms-frontend-integrations`.",
+  "evaluation_source": "frontmatter",
+  "routing_surface": {
+    "description": "Decision frameworks for DatoCMS content modeling \u2014 schema shape, field choice, content reuse, taxonomies, content vs presentation, admin UI organization. Use for modeling *decisions*, not implementation: model vs block; single_block vs Modular Content vs Structured Text; references vs embedded blocks; taxonomy shape (flat/tree/faceted); refactoring page-shaped schemas to reusable content; fitting 300 KB / 500-block / 5-level record limits; model behaviour (singleton, draft mode, all_locales_required, sortable/tree/ordering_field, presentation_title_field, collection_appearance, inverse_relationships_enabled); field config (validator + appearance \u2014 enum + string_select, slug auto-fill, required_alt_title, structured_text allowlists, framed vs frameless single_block). Also schema review (reuse, editor ergonomics, omnichannel). *Creating* schema \u2192 `datocms-cli` or `datocms-cma`. Query/render \u2192 `datocms-cda` + `datocms-frontend-integrations`."
+  },
+  "model": "claude-opus-5-5",
+  "results": [
+    {
+      "query": "I'm starting a new DatoCMS project for a SaaS marketing site. How should I structure the content models \u2014 pages, blog posts, authors, categories? I want to make sure I don't paint myself into a corner.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Should 'testimonials' be a model or a block in DatoCMS? Same testimonials show up on multiple landing pages and editors want to update one and have it reflect everywhere.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "What's the difference between Modular Content, Structured Text, and Single Block fields in DatoCMS, and when should I use which? I'm trying to pick one for my article body.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Our DatoCMS page builder nests section > row > column > card > button blocks, and saves fail as soon as editors nest anything deeper. How should we restructure it?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Inside DatoCMS structured text, when should I use inlineItem vs itemLink? And what's the difference between block and inlineBlock?",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-structured-text"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": false
+    },
+    {
+      "query": "Reviewing our DatoCMS schema and a lot of fields are named after the visual design \u2014 bigHeroText, threeColumnGrid, redCallout. Is this a problem and how should we rename them?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I want hierarchical product categories in DatoCMS like Electronics > Phones > Smartphones. Should I use tree:true on the model or just give the model a 'parent' link to itself?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "We want faceted filtering in DatoCMS \u2014 filter products by color AND size AND material independently. How should I model this?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "How should I share an SEO field set across multiple DatoCMS models? Coming from Sanity I'd spread a fields array \u2014 what's the DatoCMS equivalent?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Editors keep complaining they have to navigate between 4 records to edit one logical page in DatoCMS. I think I over-modeled the schema with too many linked records. How do I tell when to inline vs link?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Page model with localized rich_text in 6 locales is hitting the 300 KB record-size limit in DatoCMS. What are my options?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In DatoCMS, how do I configure a `link` field with item_item_type and item_types validators? I need the typescript signature.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cma"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Write a DatoCMS migration script to create an Author model with name, bio, and photo fields.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli",
+        "datocms-cma"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "How do I query a DatoCMS structured_text field with embedded blocks via GraphQL?",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cda"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Render a DatoCMS structured text in React with custom components for inlineItem and block nodes.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-frontend-integrations",
+        "datocms-cda"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Point every DatoCMS article currently tagged 'news' at the new 'Announcements' category record instead.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cma"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Set up draft mode and visual editing in my Next.js + DatoCMS project.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-setup",
+        "datocms-frontend-integrations"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Refactoring our DatoCMS schema. Right now every page is its own model (HomePage, AboutPage, PricingPage, ContactPage). Editors want to add new pages without us shipping migrations. How should I restructure?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Our DatoCMS Content tab is a flat list of 25 models and editors are getting lost. How should I organize the menu so they can find things quickly?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Editors keep asking me to build them a 'Drafts awaiting review' view in DatoCMS. Is there a way to put this in the sidebar so they don't have to apply the filter every time?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Can I add emoji icons to DatoCMS fields in the record edit form? I want to make the form more scannable for editors.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I'm writing a DatoCMS migration that creates 15 new fields across 4 models. Should I bother filling in the hint field for each one, or is that something we can backfill later?",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I have a 'Site settings' model in DatoCMS that holds the global header, footer, and SEO defaults. Should it be a singleton? What happens if we ever need a second one?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "For an articles list in DatoCMS that editors want to manually feature/reorder, should I use sortable: true, or tree, or ordering_field tied to a 'priority' field? What's the right call?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Is it a good idea to set all_locales_required: true on our Article model in DatoCMS? We have 6 locales and editors are usually still translating when they want to publish.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I have a DatoCMS string field with three valid values: 'draft', 'review', 'published'. Should I just use single_line and validate, or pair the enum with string_select? What's the right setup?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Should I always wire required_alt_title on file fields in DatoCMS? Editors keep skipping the alt text and our SEO audit flagged it.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "On my DatoCMS Article model, should the body be a `text` field with markdown/wysiwyg or a `structured_text` field? When does it actually matter?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "For a 'dietary tags' field in DatoCMS that should be a fixed set (vegetarian, gluten-free, vegan), should I use a json field with string_multi_select editor or create a Tag model with a links field?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In DatoCMS, when should I use link_select vs link_embed for a link field? Editors find link_embed confusing because they edit shared records by accident.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "How do I lock down what editors can do inside a DatoCMS structured_text field \u2014 limit the heading levels, drop the underline mark, hide the 'open in new tab' checkbox?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "For DatoCMS slug fields, should I always set slug_title_field so it auto-fills from the title? And what about slug_format with 'webpage_slug'?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Given this DAST JSON, repair a list node whose children are spans instead of listItem nodes. Keep the existing DatoCMS schema unchanged.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-structured-text"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Design an article body schema with reusable embedded blocks, choose which blocks should be inline, and construct a sample DAST document using the chosen models.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-structured-text"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Should I add a caption field to our DatoCMS gallery block?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "List every field and validator currently on our DatoCMS blog_post model; I only need the dump for a ticket.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "We've agreed on the design. Add an integer reading_time field to Article directly in our DatoCMS sandbox, no migration file.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cma"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Schema looks right. Apply the pending migrations to a fresh sandbox.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Write the GraphQL query that pulls our DatoCMS category tree three levels deep for the mega-menu.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cda"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Check this DAST document against the body field's allowed blocks and heading levels and list every node that would be rejected.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-structured-text"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Build a DatoCMS field extension that lets editors pick a Shopify product and saves its handle into a single-line string field.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In Sanity, should page sections be an array of objects or references to separate documents?",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    }
+  ],
+  "summary": {
+    "total": 42,
+    "passed": 41,
+    "failed": 1
+  }
+}

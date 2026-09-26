@@ -8,3 +8,5 @@ tmp/
 .env
 .env.local
 datocms.config.json
+# Rebuilt by analyze_trigger_results.py; repeats every result row
+evals/results/trigger/_summary/*/*/summary.json

@@ -96,7 +96,7 @@ python3 evals/scripts/analyze_trigger_results.py \
   --track claude --source frontmatter
 ```
 
-This writes `evals/results/trigger/_summary/<track>/<source>/summary.{json,md}` containing:
+This writes `evals/results/trigger/_summary/<track>/<source>/summary.{json,md}`. Only `summary.md` is committed: `summary.json` repeats every result row (over 1 MB for a full run, and plugin installs copy the repo), so rebuild it with this command when comparing runs. The summary contains:
 
 - **Gate verdict** — passes only when every skill has results and each is at or above the F1 floor (default `--threshold-f1 0.90`). Fail lists the skills under the floor and the skills without results.
 - **Models and warnings** — the models that answered, a warning when they differ, and a warning for results produced before the description or metadata their prompt shows last changed.

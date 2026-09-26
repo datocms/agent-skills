@@ -1,0 +1,491 @@
+{
+  "skill_name": "datocms-setup",
+  "description": "Guided DatoCMS setup: inspects the project, asks only what it can't infer, proposes a plan with prerequisites, and changes nothing until the user agrees. For setting DatoCMS up in a site or repo (previews and visual editing, caching, content rendering, SEO, search, CLI and migrations, releases, multi-project sync, webhooks, build triggers, WordPress or Contentful imports) or starting a new DatoCMS site. Use when the user wants something set up end to end or wants to be walked through it; a single, already-specified code change belongs to the owning DatoCMS skill.",
+  "evaluation_source": "combined",
+  "routing_surface": {
+    "description": "Guided DatoCMS setup: inspects the project, asks only what it can't infer, proposes a plan with prerequisites, and changes nothing until the user agrees. For setting DatoCMS up in a site or repo (previews and visual editing, caching, content rendering, SEO, search, CLI and migrations, releases, multi-project sync, webhooks, build triggers, WordPress or Contentful imports) or starting a new DatoCMS site. Use when the user wants something set up end to end or wants to be walked through it; a single, already-specified code change belongs to the owning DatoCMS skill.",
+    "display_name": "DatoCMS Setup",
+    "short_description": "Guided DatoCMS setup: plan first, then build",
+    "default_prompt": "Use $datocms-setup to plan and set up DatoCMS in this project step by step: previews, content, migrations, search, imports or webhooks."
+  },
+  "model": "gpt-6-luna (medium effort)",
+  "results": [
+    {
+      "query": "Help me set up DatoCMS for this Next.js project. I'm not sure what I need yet, so walk me through it.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I want to start a new website on DatoCMS with Astro. What's the best way to begin?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "We want editors to preview drafts inside DatoCMS and click text on our Nuxt site to jump to the field. Can you guide us through setting that up?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Walk me through setting up a migrations workflow for our DatoCMS project: CLI link, migrations folder, and a release process with maintenance mode.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "We're moving our blog from WordPress to DatoCMS. Guide me through getting the import set up for this repo.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Set up what we need to manage several DatoCMS client projects from one repo with a shared migration history.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Our SvelteKit site already reads from DatoCMS. Help us plan and set up previews, SEO tags and a sitemap, one step at a time.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I've never used DatoCMS. Help me connect this existing Astro site to my DatoCMS project and show content on the homepage.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Before changing anything, help me decide which kind of preview setup our DatoCMS site needs, then set it up.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Plan the DatoCMS setup for this repo: connect the CLI, generate CMA types, and add a GitHub Actions workflow that releases migrations.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Get DatoCMS Site Search working on our Next.js site end to end, including the index, the token and a search page.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Set up a new DatoCMS website with previews and responsive images.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Set up draft mode and visual editing in my Next.js + DatoCMS project.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-frontend-integrations"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Set up webhooks and a Netlify build trigger for our DatoCMS project so the site rebuilds when editors publish.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cma"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "We need the full DatoCMS preview experience in our Next.js app: draft mode, Web Previews and click-to-edit. Figure out what's missing and set it up.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-frontend-integrations"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Use datocms-setup to add visual editing to this Next.js site.",
+      "should_trigger": true,
+      "query_mode": "explicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "/datocms-setup configure migrations and a release workflow for this repo",
+      "should_trigger": true,
+      "query_mode": "explicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "$datocms-setup set up previews for our Nuxt site",
+      "should_trigger": true,
+      "query_mode": "explicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Use datocms-setup to start a new DatoCMS site from the Next.js starter.",
+      "should_trigger": true,
+      "query_mode": "explicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Add a responsive image component for the hero image in src/app/page.tsx using react-datocms.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-frontend-integrations"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Patch our existing preview-links route so the author model resolves to /authors/[slug].",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-frontend-integrations"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "The ContentLink overlays don't show up on the Structured Text body of our Next.js draft pages. Fix it.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-frontend-integrations"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Add revalidateTag-based cache invalidation to our existing executeQuery wrapper.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-frontend-integrations"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "What's the difference between draft mode and Web Previews in DatoCMS?",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-frontend-integrations"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Write a GraphQL query that fetches the 10 latest blog posts with their cover images from DatoCMS.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Create a DatoCMS migration that adds a subtitle field to the article model.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Run our pending DatoCMS migrations in a new sandbox forked from primary.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Regenerate our DatoCMS CMA types with schema:generate.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Install the WordPress importer plugin for the DatoCMS CLI.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Bulk-publish every draft record of the product model in DatoCMS.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Why does our DatoCMS webhook get a 401 from our Next.js endpoint?",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cma",
+        "datocms-frontend-integrations"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Should categories be a tree model or a links field? Help me design the DatoCMS taxonomy.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Build a DatoCMS plugin that adds a word-count sidebar panel.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Convert this Markdown file into DatoCMS Structured Text JSON.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "The DatoCMS MCP keeps failing on my edits; help me draft a support request.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Set up draft mode in my Next.js App Router site: add the enable and disable route handlers and a dual-token executeQuery wrapper.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-frontend-integrations"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Set up a DatoCMS webhook that POSTs to https://example.com/hook whenever a record is published, using the CMA client.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cma"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Set up the datocms CLI in this repo and link it to our existing project.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": false
+    },
+    {
+      "query": "Set up a Strapi CMS with Next.js and fetch posts from its REST API.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Put our DatoCMS project in maintenance mode, promote the migrated sandbox to primary, then switch maintenance off.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli",
+        "datocms-cma"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Create a read-only DatoCMS API token for the marketing site.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cma"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Editors publish in DatoCMS but our Nuxt pages stay stale until the next deploy. Work out what this repo needs so only the changed pages refresh, and tell me what you'd change before doing it.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-frontend-integrations"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Our Astro site already shows DatoCMS content. Help me add live updates so editors see draft changes on the page without reloading.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-frontend-integrations"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": false
+    }
+  ],
+  "summary": {
+    "total": 43,
+    "passed": 41,
+    "failed": 2
+  }
+}

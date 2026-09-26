@@ -1,0 +1,308 @@
+{
+  "skill_name": "datocms-plugin",
+  "description": "Build, scaffold, maintain, or restyle DatoCMS plugins built with datocms-plugin-sdk and datocms-react-ui. Use when users ask to create a new DatoCMS plugin project, patch an existing plugin, add or adjust plugin hooks, field extensions, config screens, sidebars, pages, modals, asset sources, dropdown actions, lifecycle hooks, browser CMA flows, plugin permissions, package metadata, dark mode upgrades, or UI changes that should match the DatoCMS dashboard. Route standalone CMA scripts to datocms-cma and frontend website integrations to datocms-frontend-integrations.",
+  "evaluation_source": "frontmatter",
+  "routing_surface": {
+    "description": "Build, scaffold, maintain, or restyle DatoCMS plugins built with datocms-plugin-sdk and datocms-react-ui. Use when users ask to create a new DatoCMS plugin project, patch an existing plugin, add or adjust plugin hooks, field extensions, config screens, sidebars, pages, modals, asset sources, dropdown actions, lifecycle hooks, browser CMA flows, plugin permissions, package metadata, dark mode upgrades, or UI changes that should match the DatoCMS dashboard. Route standalone CMA scripts to datocms-cma and frontend website integrations to datocms-frontend-integrations."
+  },
+  "model": "gpt-6-luna (medium effort)",
+  "results": [
+    {
+      "query": "Create a new private DatoCMS plugin folder with a config screen and a record sidebar panel.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Scaffold a marketplace-ready DatoCMS plugin with Vite, React, package metadata, and a config screen.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Start a fresh DatoCMS plugin project that adds an asset source for importing images from an external library.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Patch this existing DatoCMS plugin config screen to rename the token field and remove the debug toggle.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In this DatoCMS plugin project, add an itemFormDropdownActions entry that clears the current slug field.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Update our DatoCMS plugin sidebar panel to show reading time only when the body field has content.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Wire a renderModal hook into this existing DatoCMS plugin without reorganizing the project.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Restyle this DatoCMS plugin sidebar panel with local CSS so it matches DatoCMS density, borders, and typography.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Our DatoCMS plugin should make editors confirm before they delete any published article.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Upgrade this existing DatoCMS plugin from legacy CSS variables to semantic Canvas tokens so it works in dark mode.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Also add a star-rating field extension to that plugin for the integer rating field.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Patch this existing DatoCMS plugin settings page and make the updated UI feel native while keeping the behavior the same.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Use datocms-plugin to create a new DatoCMS plugin project with Vite, React, and a connect() entrypoint.",
+      "should_trigger": true,
+      "query_mode": "explicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Use datocms-plugin to restyle this existing DatoCMS plugin modal so the form and actions match DatoCMS controls.",
+      "should_trigger": true,
+      "query_mode": "explicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Use datocms-plugin to patch this existing DatoCMS plugin field extension validation.",
+      "should_trigger": true,
+      "query_mode": "explicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Write a DatoCMS CMA script to bulk publish all draft records in one model.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Set up DatoCMS draft mode and Web Previews in this Next.js app.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Should testimonials be a reusable model or a block in this DatoCMS schema?",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Show how to render DatoCMS Structured Text in a React front end.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Create a CLI extension that wraps the DatoCMS migration command.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Draft an email to support about a stuck project setup workflow.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Here's the DAST JSON from one of our articles. Count the words and list every external link in it.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-structured-text"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Add a sidebar to our existing DatoCMS plugin that converts the current Structured Text Slate form value to DAST and analyzes its external links without changing the editor value.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-structured-text"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Install the Shopify Product plugin from the marketplace on our DatoCMS project and fill in its store domain setting.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cma"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Move that plugin off the marketplace package onto our private build URL, keeping its settings.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cma"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Write a Node script that lists every field using our custom map plugin as its editor so we can reassign them.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cma"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Update my datocms CLI plugins and show which ones are linked locally.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cli"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Click-to-edit overlays stopped showing on our SvelteKit draft pages; fix them.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    }
+  ],
+  "summary": {
+    "total": 28,
+    "passed": 28,
+    "failed": 0
+  }
+}
