@@ -100,7 +100,7 @@ For design work, prefer public `datocms-react-ui` components when they match the
 
 - Keep exactly one top-level `connect()` call.
 - Inspect existing `connect()` before adding hooks.
-- Import `datocms-react-ui/styles.css` once in the plugin entry file.
+- Import `datocms-react-ui/styles.css` once in the plugin entry file; keep `src/vite-env.d.ts` (`/// <reference types="vite/client" />`) or TS rejects it.
 - Wrap every rendered surface in `<Canvas ctx={ctx}>`.
 - Use `<Canvas ctx={ctx} noAutoResizer>` for pages, inspectors, and full-width sidebars.
 - Use `switch` for ID-dispatched render hooks.

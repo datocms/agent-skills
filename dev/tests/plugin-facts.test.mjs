@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -80,4 +81,42 @@ test('development-copy rollback verifies the restored fields as its own step, be
   assert.ok(restore && verify, 'restore and verify must be separate numbered steps');
   assert.equal(verify.n, restore.n + 1);
   assert.match(verify.text, /Only then optionally remove the development copy/);
+});
+
+test('plugin stylesheet guidance keeps the Vite client type reference', () => {
+  const guardrail = readFileSync(resolve(repoRoot, 'skills/datocms-plugin/SKILL.md'), 'utf8')
+    .split('\n').find(line => line.startsWith('- Import `datocms-react-ui/styles.css`'));
+  assert.match(guardrail ?? '', /vite\/client/);
+});
+
+test('TypeScript 6 accepts the plugin stylesheet only with Vite client types', fixture, () => {
+  const pluginRoot = fileURLToPath(new URL('../e2e/catalog/plugin/', import.meta.url));
+  const ts = createRequire(import.meta.url)(resolve(pluginRoot, 'node_modules/typescript'));
+  assert.match(ts.version, /^6\./, 'exercise the fixture TypeScript 6 default');
+  const entry = resolve(pluginRoot, 'stylesheet-proof.ts');
+  const reference = resolve(pluginRoot, 'vite-proof.d.ts');
+  const sources = new Map([
+    [entry, "import 'datocms-react-ui/styles.css';\n"],
+    [reference, '/// <reference types="vite/client" />\n'],
+  ]);
+  function diagnostics(withReference) {
+    const options = {
+      target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext,
+      moduleResolution: ts.ModuleResolutionKind.Bundler,
+      strict: true, noEmit: true, skipLibCheck: true, types: [],
+    };
+    const host = ts.createCompilerHost(options);
+    const readFile = host.readFile.bind(host), fileExists = host.fileExists.bind(host), getSourceFile = host.getSourceFile.bind(host);
+    host.readFile = path => sources.get(path) ?? readFile(path);
+    host.fileExists = path => sources.has(path) || fileExists(path);
+    host.getSourceFile = (path, languageVersion, ...rest) => sources.has(path)
+      ? ts.createSourceFile(path, sources.get(path), languageVersion, true)
+      : getSourceFile(path, languageVersion, ...rest);
+    return ts.getPreEmitDiagnostics(ts.createProgram(withReference ? [entry, reference] : [entry], options, host))
+      .map(error => ({ code: error.code, message: ts.flattenDiagnosticMessageText(error.messageText, '\n') }));
+  }
+  const withoutReference = diagnostics(false);
+  assert.deepEqual(withoutReference.map(error => error.code), [2882], JSON.stringify(withoutReference));
+  assert.match(withoutReference[0].message, /datocms-react-ui\/styles\.css/);
+  assert.deepEqual(diagnostics(true), []);
 });
