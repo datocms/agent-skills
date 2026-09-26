@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { build } from 'esbuild';
 import { buildClient } from '@datocms/cma-client-node';
@@ -11,6 +12,14 @@ const FIELD_TYPES = ['boolean', 'color', 'date', 'date_time', 'file', 'float', '
 const ORDERING_META = ['created_at', 'updated_at', 'first_published_at', 'published_at'];
 const ST_NODES = ['blockquote', 'code', 'heading', 'link', 'list', 'thematicBreak'];
 const OPENERS = ['open', 'xdg-open', 'start', 'osascript'];
+// Validators the API requires per field type, read from the installed CMA client's field-type table.
+const REQUIRED_VALIDATORS = Object.fromEntries(
+  readFileSync(join(dirname(createRequire(import.meta.url).resolve('@datocms/cma-client/package.json')), 'dist/types/generated/ApiTypes.d.ts'), 'utf8')
+    .split('<details>').flatMap((block) => {
+      const code = block.match(/\| Code\s*\| `(\w+)`/), required = block.match(/\| Required validators\s*\|([^|\n]*)\|/);
+      return code && required ? [[code[1], [...required[1].matchAll(/`(\w+)`/g)].map((m) => m[1])]] : [];
+    }),
+);
 const noLive = 'Dependencies are already installed. There is no live DatoCMS project or API token here, so do not run it against DatoCMS.';
 
 // Real SDK deps, isolated HOME/XDG and recording browser-opener shims, all outside the workspace.
@@ -79,6 +88,7 @@ function cmaApi(seed) {
     if (!FIELD_TYPES.includes(f.field_type)) invalid('field_type', 'VALIDATION_INCLUSION');
     if (s.fields.some((o) => o.id !== f.id && o.item_type === f.item_type && o.api_key === f.api_key)) invalid('api_key', 'VALIDATION_UNIQUENESS');
     if (f.fieldset && fieldset(f.fieldset)?.item_type !== f.item_type) invalid('fieldset');
+    for (const v of REQUIRED_VALIDATORS[f.field_type] ?? []) if (!f.validators?.[v]) invalid(`validators.${v}`, 'VALIDATION_REQUIRED');
     // field.md structured_text editor: nodes and marks required; heading_levels when headings are allowed.
     const p = f.appearance?.editor === 'structured_text' ? f.appearance.parameters ?? {} : null;
     if (p && (!Array.isArray(p.nodes) || !Array.isArray(p.marks) || p.nodes.some((n) => !ST_NODES.includes(n)) || (p.nodes.includes('heading') && !Array.isArray(p.heading_levels)))) invalid('appearance.parameters');
@@ -223,6 +233,8 @@ export default [
       fail: [
         { name: 'published-at-ordering-field', files: { 'create-blog-model.ts': blogControl('', `${publishedAtField}\n  await client.itemTypes.update(model.id, { ordering_field: { id: published.id, type: 'field' }, ordering_direction: 'desc' });`) } },
         { name: 'published-at-in-publishing-fieldset', files: { 'create-blog-model.ts': blogControl(`, ordering_meta: 'published_at', ordering_direction: 'desc'`, publishedAtField) } },
+        // The API requires structured_text_blocks and structured_text_links on every Structured Text field.
+        { name: 'body-without-required-validators', files: { 'create-blog-model.ts': blogControl(`, ordering_meta: 'published_at', ordering_direction: 'desc'`).replace(", validators: { structured_text_blocks: { item_types: [] }, structured_text_links: { item_types: [] } }", '') } },
       ],
     },
   },
