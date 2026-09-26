@@ -300,11 +300,21 @@
       "triggers": 0,
       "runs": 1,
       "pass": true
+    },
+    {
+      "query": "I want to try my local changes to a Marketplace plugin we already use on a couple of fields without breaking it for the other editors. How do I set that up, and how do I undo it afterwards?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": false
     }
   ],
   "summary": {
-    "total": 28,
+    "total": 29,
     "passed": 28,
-    "failed": 0
+    "failed": 1
   }
 }

@@ -1,6 +1,6 @@
 # Trigger Eval Summary
 
-Generated at: 2026-09-26T10:51:50.773716+00:00
+Generated at: 2026-09-26T13:21:36.278083+00:00
 Track / source: `codex` / `metadata`
 Trigger threshold (per-query): `0.5`
 F1 gate threshold: `0.9`
@@ -13,7 +13,7 @@ PASS — 9/9 skills at or above F1 90.0%.
 ## Unweighted F1 Stats
 
 - Median: 94.7%
-- Mean: 95.1%
+- Mean: 94.7%
 - Min: 90.3% (`datocms-frontend-integrations`)
 - Max: 100.0% (`datocms-feedback`)
 
@@ -29,7 +29,7 @@ Each skill counts once. No case-weighted averaging across skills.
 | datocms-content-modeling | 40/42 (95.2%) | 100.0% | 92.9% | 96.3% | 2 | 0 |
 | datocms-feedback | 40/40 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
 | datocms-frontend-integrations | 24/27 (88.9%) | 100.0% | 82.4% | 90.3% | 3 | 0 |
-| datocms-plugin | 28/28 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
+| datocms-plugin | 28/29 (96.6%) | 100.0% | 94.1% | 97.0% | 1 | 0 |
 | datocms-setup | 41/43 (95.3%) | 100.0% | 90.5% | 95.0% | 2 | 0 |
 | datocms-structured-text | 32/34 (94.1%) | 100.0% | 90.0% | 94.7% | 2 | 0 |
 
@@ -86,7 +86,7 @@ Each skill counts once. No case-weighted averaging across skills.
 
 | Query Mode | Total | Reported Pass | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
-| implicit | 19 | 19/19 (100.0%) | 100.0% | 100.0% | 100.0% |
+| implicit | 20 | 19/20 (95.0%) | 100.0% | 92.3% | 96.0% |
 | explicit | 3 | 3/3 (100.0%) | 100.0% | 100.0% | 100.0% |
 | overlap | 6 | 6/6 (100.0%) | 100.0% | 100.0% | 100.0% |
 
@@ -118,6 +118,7 @@ Each skill counts once. No case-weighted averaging across skills.
 - `datocms-frontend-integrations` how do i render DatoCMS structured text in my Vue 3 app using vue-datocms? i have custom blocks (code_block and call_to_action) and inline records that need special rendering
 - `datocms-frontend-integrations` [overlap] I need the DatoCMS GraphQL fragment plus the React wiring to render Structured Text with inline records in my Next.js app.
 - `datocms-frontend-integrations` [overlap] Fix the invalid DAST in our local article fixture, then wire the corrected value and its embedded CTA blocks into the existing react-datocms StructuredText renderer.
+- `datocms-plugin` I want to try my local changes to a Marketplace plugin we already use on a couple of fields without breaking it for the other editors. How do I set that up, and how do I undo it...
 - `datocms-setup` [overlap] Editors publish in DatoCMS but our Nuxt pages stay stale until the next deploy. Work out what this repo needs so only the changed pages refresh, and tell me what you'd change be...
 - `datocms-setup` [overlap] Our Astro site already shows DatoCMS content. Help me add live updates so editors see draft changes on the page without reloading.
 - `datocms-structured-text` [overlap] Create a DatoCMS article from this Markdown in its Structured Text body field.

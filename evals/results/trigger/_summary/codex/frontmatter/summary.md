@@ -1,6 +1,6 @@
 # Trigger Eval Summary
 
-Generated at: 2026-09-26T10:51:50.698983+00:00
+Generated at: 2026-09-26T13:21:36.224392+00:00
 Track / source: `codex` / `frontmatter`
 Trigger threshold (per-query): `0.5`
 F1 gate threshold: `0.9`
@@ -13,7 +13,7 @@ PASS — 9/9 skills at or above F1 90.0%.
 ## Unweighted F1 Stats
 
 - Median: 97.1%
-- Mean: 96.2%
+- Mean: 95.9%
 - Min: 90.2% (`datocms-content-modeling`)
 - Max: 100.0% (`datocms-feedback`)
 
@@ -29,7 +29,7 @@ Each skill counts once. No case-weighted averaging across skills.
 | datocms-content-modeling | 37/42 (88.1%) | 100.0% | 82.1% | 90.2% | 5 | 0 |
 | datocms-feedback | 40/40 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
 | datocms-frontend-integrations | 27/27 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
-| datocms-plugin | 28/28 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
+| datocms-plugin | 28/29 (96.6%) | 94.4% | 100.0% | 97.1% | 0 | 1 |
 | datocms-setup | 40/43 (93.0%) | 95.0% | 90.5% | 92.7% | 2 | 1 |
 | datocms-structured-text | 33/34 (97.1%) | 100.0% | 95.0% | 97.4% | 1 | 0 |
 
@@ -86,9 +86,9 @@ Each skill counts once. No case-weighted averaging across skills.
 
 | Query Mode | Total | Reported Pass | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
-| implicit | 19 | 19/19 (100.0%) | 100.0% | 100.0% | 100.0% |
+| implicit | 20 | 20/20 (100.0%) | 100.0% | 100.0% | 100.0% |
 | explicit | 3 | 3/3 (100.0%) | 100.0% | 100.0% | 100.0% |
-| overlap | 6 | 6/6 (100.0%) | 100.0% | 100.0% | 100.0% |
+| overlap | 6 | 5/6 (83.3%) | 50.0% | 100.0% | 66.7% |
 
 ### datocms-setup
 
@@ -127,4 +127,5 @@ Each skill counts once. No case-weighted averaging across skills.
 - `datocms-cli` [overlap] I don't want to add a CMA token to .env for this DatoCMS cleanup — use my login instead and delete those three test records
 - `datocms-cma` [overlap] Our 40 authors appear on hundreds of DatoCMS articles. Should an author be a separate model we link to, or a block inside each article? Only the trade-offs, nothing changed yet.
 - `datocms-cma` [overlap] We've never hooked DatoCMS up to our Vercel deploys. Walk me through getting the site to rebuild whenever an editor publishes, and plan it with me before changing anything.
+- `datocms-plugin` [overlap] Move that plugin off the marketplace package onto our private build URL, keeping its settings.
 - `datocms-setup` [overlap] Set up the datocms CLI in this repo and link it to our existing project.

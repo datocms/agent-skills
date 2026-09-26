@@ -1,6 +1,6 @@
 # Trigger Eval Summary
 
-Generated at: 2026-09-26T10:51:50.846494+00:00
+Generated at: 2026-09-26T13:21:36.352514+00:00
 Track / source: `codex` / `combined`
 Trigger threshold (per-query): `0.5`
 F1 gate threshold: `0.9`
@@ -12,8 +12,8 @@ PASS — 9/9 skills at or above F1 90.0%.
 
 ## Unweighted F1 Stats
 
-- Median: 98.0%
-- Mean: 97.4%
+- Median: 97.4%
+- Mean: 97.1%
 - Min: 92.3% (`datocms-content-modeling`)
 - Max: 100.0% (`datocms-cda`)
 
@@ -29,7 +29,7 @@ Each skill counts once. No case-weighted averaging across skills.
 | datocms-content-modeling | 38/42 (90.5%) | 100.0% | 85.7% | 92.3% | 4 | 0 |
 | datocms-feedback | 40/40 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
 | datocms-frontend-integrations | 27/27 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
-| datocms-plugin | 28/28 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
+| datocms-plugin | 28/29 (96.6%) | 94.4% | 100.0% | 97.1% | 0 | 1 |
 | datocms-setup | 41/43 (95.3%) | 95.2% | 95.2% | 95.2% | 1 | 1 |
 | datocms-structured-text | 33/34 (97.1%) | 100.0% | 95.0% | 97.4% | 1 | 0 |
 
@@ -86,9 +86,9 @@ Each skill counts once. No case-weighted averaging across skills.
 
 | Query Mode | Total | Reported Pass | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
-| implicit | 19 | 19/19 (100.0%) | 100.0% | 100.0% | 100.0% |
+| implicit | 20 | 20/20 (100.0%) | 100.0% | 100.0% | 100.0% |
 | explicit | 3 | 3/3 (100.0%) | 100.0% | 100.0% | 100.0% |
-| overlap | 6 | 6/6 (100.0%) | 100.0% | 100.0% | 100.0% |
+| overlap | 6 | 5/6 (83.3%) | 50.0% | 100.0% | 66.7% |
 
 ### datocms-setup
 
@@ -122,4 +122,5 @@ Each skill counts once. No case-weighted averaging across skills.
 
 - `datocms-cli` [overlap] We have no DatoCMS tooling in this repo yet. Can you plan how we'd link the project, keep schema changes in migrations and release them from GitHub Actions? Don't change anythin...
 - `datocms-cma` [overlap] We've never hooked DatoCMS up to our Vercel deploys. Walk me through getting the site to rebuild whenever an editor publishes, and plan it with me before changing anything.
+- `datocms-plugin` [overlap] Move that plugin off the marketplace package onto our private build URL, keeping its settings.
 - `datocms-setup` [overlap] Set up the datocms CLI in this repo and link it to our existing project.

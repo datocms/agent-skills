@@ -1,6 +1,6 @@
 # Trigger Eval Summary
 
-Generated at: 2026-09-26T10:51:50.446095+00:00
+Generated at: 2026-09-26T13:21:36.049437+00:00
 Track / source: `claude` / `frontmatter`
 Trigger threshold (per-query): `0.5`
 F1 gate threshold: `0.9`
@@ -29,7 +29,7 @@ Each skill counts once. No case-weighted averaging across skills.
 | datocms-content-modeling | 41/42 (97.6%) | 100.0% | 96.4% | 98.2% | 1 | 0 |
 | datocms-feedback | 40/40 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
 | datocms-frontend-integrations | 27/27 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
-| datocms-plugin | 28/28 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
+| datocms-plugin | 29/29 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
 | datocms-setup | 42/43 (97.7%) | 95.5% | 100.0% | 97.7% | 0 | 1 |
 | datocms-structured-text | 34/34 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
 
@@ -86,7 +86,7 @@ Each skill counts once. No case-weighted averaging across skills.
 
 | Query Mode | Total | Reported Pass | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
-| implicit | 19 | 19/19 (100.0%) | 100.0% | 100.0% | 100.0% |
+| implicit | 20 | 20/20 (100.0%) | 100.0% | 100.0% | 100.0% |
 | explicit | 3 | 3/3 (100.0%) | 100.0% | 100.0% | 100.0% |
 | overlap | 6 | 6/6 (100.0%) | 100.0% | 100.0% | 100.0% |
 
