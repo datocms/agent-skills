@@ -1,5 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { gradeRun } from "./gradeRun.js";
 import {
 	type CreateTestProjectOptions,
 	type TestProject,
@@ -40,6 +41,7 @@ export type E2ETestOutcome = {
 	toolCallNames: string[];
 	finalText: string | undefined;
 	assertionError?: Error;
+	stateVerdict?: "passed" | `failed: ${string}`;
 };
 
 function buildPrompt<Context>(
@@ -100,52 +102,7 @@ async function runAndAssert<Context>(
 		};
 	}
 
-	const toolCallNames = runResult.toolCalls.map((c) => c.name);
-	const base = {
-		name: testCase.name,
-		attempts: runResult.attempts,
-		transcriptPath: runResult.transcriptPath,
-		toolCallNames,
-		finalText: runResult.finalText,
-	};
-
-	if (runResult.terminatedByCap || runResult.attempts > testCase.maxAttempts) {
-		return {
-			...base,
-			passed: false,
-			reason: `Terminated after exceeding maxAttempts=${testCase.maxAttempts} or hitting timeout`,
-		};
-	}
-
-	if (runResult.oracleAccess?.length) {
-		return {
-			...base,
-			passed: false,
-			reason: `Agent referenced evaluation state: ${runResult.oracleAccess.join(" | ")}`,
-		};
-	}
-
-	if (runResult.exitCode !== 0) {
-		return {
-			...base,
-			passed: false,
-			reason: `Agent exited with code ${runResult.exitCode}`,
-		};
-	}
-
-	try {
-		await testCase.assert(project);
-	} catch (error) {
-		const err = error instanceof Error ? error : new Error(String(error));
-		return {
-			...base,
-			passed: false,
-			reason: `Assertion failed: ${err.message}`,
-			assertionError: err,
-		};
-	}
-
-	return { ...base, passed: true, reason: "ok" };
+	return gradeRun(runResult, testCase, project);
 }
 
 async function persistOutcome(outcome: E2ETestOutcome): Promise<void> {
@@ -160,6 +117,7 @@ async function persistOutcome(outcome: E2ETestOutcome): Promise<void> {
 		transcriptPath: outcome.transcriptPath,
 		toolCallNames: outcome.toolCallNames,
 		finalText: outcome.finalText,
+		stateVerdict: outcome.stateVerdict,
 	};
 	await writeFile(path, `${JSON.stringify(serializable, null, 2)}\n`);
 }

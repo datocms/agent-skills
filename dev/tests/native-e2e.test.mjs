@@ -30,6 +30,57 @@ test("account usage exhaustion stops the actor without treating application rate
   });
 });
 
+function gradingResult(extra = {}) {
+  return { attempts: 1, toolCalls: [{ name: "execute", input: {}, id: "one" }], finalText: "done", exitCode: 0, terminatedByCap: false, transcriptPath: "/fixture/native.jsonl", ...extra };
+}
+
+test("evaluation-state flags retain a passing independent state verdict without passing the run", async () => {
+  const { gradeRun } = await import("../e2e/lib/gradeRun.ts");
+  const project = { id: "fixture" };
+  let called = 0;
+  const result = await gradeRun(gradingResult({ oracleAccess: ["cat ../oracle.json"] }), {
+    name: "fixture", maxAttempts: 3,
+    assert: async actual => { assert.equal(actual, project); called++; },
+  }, project);
+  assert.equal(called, 1);
+  assert.equal(result.passed, false);
+  assert.equal(result.stateVerdict, "passed");
+  assert.match(result.reason, /referenced evaluation state/);
+  assert.deepEqual(result.toolCallNames, ["execute"]);
+});
+
+test("evaluation-state flags preserve failed independent assertions as separate evidence", async () => {
+  const { gradeRun } = await import("../e2e/lib/gradeRun.ts");
+  let called = 0;
+  const result = await gradeRun(gradingResult({ oracleAccess: ["cat ../oracle.json"] }), {
+    name: "fixture", maxAttempts: 3,
+    assert: async () => { called++; throw Error("Italian locale changed"); },
+  }, {});
+  assert.equal(called, 1);
+  assert.equal(result.passed, false);
+  assert.equal(result.stateVerdict, "failed: Italian locale changed");
+  assert.match(result.reason, /referenced evaluation state/);
+});
+
+test("grading preserves ordinary cap and exit gates and never upgrades flagged capped runs", async () => {
+  const { gradeRun } = await import("../e2e/lib/gradeRun.ts");
+  let called = 0;
+  const testCase = { name: "fixture", maxAttempts: 3, assert: async () => { called++; } };
+  for (const extra of [{ terminatedByCap: true }, { attempts: 4 }, { exitCode: 2 }]) {
+    const result = await gradeRun(gradingResult(extra), testCase, {});
+    assert.equal(result.passed, false);
+    assert.equal(called, 0, "ordinary execution gates still skip the oracle");
+  }
+  const flagged = await gradeRun(gradingResult({ terminatedByCap: true, oracleAccess: ["cat ../oracle.json"] }), testCase, {});
+  assert.equal(called, 1);
+  assert.equal(flagged.passed, false);
+  assert.equal(flagged.stateVerdict, "passed");
+  const normal = await gradeRun(gradingResult(), testCase, {});
+  assert.equal(normal.passed, true);
+  assert.equal(normal.reason, "ok");
+  assert.equal(called, 2);
+});
+
 async function fixture(callback) {
   const root = mkdtempSync(join(tmpdir(), "native-e2e-unit-"));
   mkdirSync(join(root, "skills/example"), { recursive: true });
