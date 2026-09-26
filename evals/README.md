@@ -4,7 +4,7 @@ For native `gpt-6-luna` medium task execution, live CMS verification, and built-
 
 This directory holds the **trigger check**, a cheap lint of each skill's description. For each labelled query, a classifier reads one skill's description and decides whether that skill should load. The check catches descriptions that attract requests owned by another skill (precision) or miss requests they should handle (recall).
 
-It does not measure real routing. A real agent chooses among every installed skill at once, turn by turn. For that, use the Claude Code routing probe [`dev/e2e/routing/claude.mjs`](../dev/e2e/routing/claude.mjs), which records the skill Claude Code actually invokes for a fixture's queries, and the end-to-end suite. Setup orchestration behavior (questions, plan-then-confirm, handoff) is covered by the regression case [`dev/e2e/regressions/cases/setup-guided.mjs`](../dev/e2e/regressions/cases/setup-guided.mjs), not here.
+It does not measure real routing. A real agent chooses among every installed skill at once, turn by turn. For that, use the routing probes, which record the skills an agent actually opens for a fixture's queries: [`dev/e2e/routing/claude.mjs`](../dev/e2e/routing/claude.mjs) for Claude Code and [`dev/e2e/routing/codex.mjs`](../dev/e2e/routing/codex.mjs) for Codex (the pinned native model, stopped after a few commands). The end-to-end suite covers the rest. Setup orchestration behavior (questions, plan-then-confirm, handoff) is covered by the regression case [`dev/e2e/regressions/cases/setup-guided.mjs`](../dev/e2e/regressions/cases/setup-guided.mjs), not here.
 
 > **Cost warning.** Evals make many LLM calls. Do not run them proactively. Only run when explicitly asked.
 
