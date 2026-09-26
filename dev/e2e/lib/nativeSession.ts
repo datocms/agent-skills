@@ -291,6 +291,24 @@ export async function nativeSession(options: NativeOptions) {
       .map((k) => [k, process.env[k]]),
   );
   Object.assign(environment, options.environment ?? {});
+  // The actor never gets the host HOME, where CLI logins live (DatoCMS, npm, git), unless the caller passes one.
+  // Its login shells put a stub `open` first, so `datocms login` cannot pop up the operator's browser.
+  const actorHome = join(output, "actor-home");
+  if (!options.environment?.HOME) {
+    const stubs = join(actorHome, ".stub-bin");
+    mkdirSync(stubs, { recursive: true });
+    for (const dir of [".config", ".cache", ".local/share"]) mkdirSync(join(actorHome, dir), { recursive: true });
+    for (const name of ["open", "xdg-open"])
+      writeFileSync(join(stubs, name), "#!/bin/sh\necho 'Opening apps or browsers is disabled in this evaluation.' >&2\nexit 1\n", { mode: 0o755 });
+    for (const rc of [".zprofile", ".bash_profile", ".profile"]) writeFileSync(join(actorHome, rc), `export PATH="${stubs}:$PATH"\n`);
+    Object.assign(environment, {
+      HOME: actorHome,
+      XDG_CONFIG_HOME: join(actorHome, ".config"),
+      XDG_CACHE_HOME: join(actorHome, ".cache"),
+      XDG_DATA_HOME: join(actorHome, ".local/share"),
+      PATH: `${stubs}:${environment.PATH ?? ""}`,
+    });
+  }
   const nativeHome = join(output, "native-home");
   mkdirSync(nativeHome, { recursive: true });
   const authPath = join(
@@ -467,6 +485,7 @@ export async function nativeSession(options: NativeOptions) {
     }
   } finally {
     rmSync(nativeHome, { recursive: true, force: true });
+    rmSync(actorHome, { recursive: true, force: true });
   }
   const exitCode = exitCodes.find((code) => code !== 0) ?? exitCodes.at(-1) ?? null;
   writeFileSync(join(output, "stderr.log"), redact(stderr), { mode: 0o600 });
@@ -484,7 +503,7 @@ export async function nativeSession(options: NativeOptions) {
       workspace,
       output,
       repoRoot: REPO_ROOT,
-      homes: ["HOME", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_CACHE_HOME", "NPM_CONFIG_PREFIX"].flatMap((key) => options.environment?.[key] ?? []),
+      homes: ["HOME", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_CACHE_HOME", "NPM_CONFIG_PREFIX"].flatMap((key) => environment[key] ?? []),
     }),
     transcriptPath,
     skillReads: skillReads([...commands.values()]),

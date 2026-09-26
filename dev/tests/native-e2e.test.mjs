@@ -220,6 +220,27 @@ test("single-turn sessions stay ephemeral and stop before follow-ups when a turn
     assert.equal(multi.turns.length, 1);
   }));
 
+test("actors get a fresh home, never the host's, and cannot open the operator's browser", async () => {
+  // With the host HOME an actor's `datocms whoami` reached the operator's real account and `datocms login`
+  // opened their browser.
+  await fixture(async ({ root, options, writeBinary }) => {
+    writeBinary(`const {execFileSync}=require('node:child_process');require('node:fs').writeFileSync(process.env.PROBE_PATH,JSON.stringify({home:process.env.HOME,config:process.env.XDG_CONFIG_HOME,open:execFileSync('/bin/sh',['-lc','command -v open'],{encoding:'utf8'}).trim()}));console.log(JSON.stringify({type:'turn.completed',usage:{input_tokens:1}}));`);
+    const probe = join(root, "probe.json");
+    await nativeSession({ ...options, environment: { PROBE_PATH: probe } });
+    const seen = JSON.parse(readFileSync(probe, "utf8"));
+    assert.notEqual(seen.home, process.env.HOME);
+    assert.ok(seen.home.startsWith(options.output) && seen.config.startsWith(seen.home), seen.home);
+    assert.equal(seen.open, join(seen.home, ".stub-bin/open"), "a login shell must resolve the stub open first");
+    assert.equal(existsSync(seen.home), false, "the actor home is removed after the session");
+  });
+  await fixture(async ({ root, options, writeBinary }) => {
+    writeBinary(`require('node:fs').writeFileSync(process.env.PROBE_PATH,process.env.HOME);console.log(JSON.stringify({type:'turn.completed',usage:{input_tokens:1}}));`);
+    const home = join(root, "case-home");
+    await nativeSession({ ...options, environment: { PROBE_PATH: join(root, "probe"), HOME: home } });
+    assert.equal(readFileSync(join(root, "probe"), "utf8"), home, "a caller-provided home is kept");
+  });
+});
+
 test("sessions record which skill files the actor read, and none when it never consulted a skill", async () => {
   assert.deepEqual(skillReads([
     { command: "cat .agents/skills/datocms-cma/SKILL.md && sed -n 1,80p .agents/skills/datocms-cma/references/records.md" },
