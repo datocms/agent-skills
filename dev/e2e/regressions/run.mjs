@@ -60,7 +60,9 @@ if (values.controls) {
   // reproduction of the previously documented wrong fact must fail.
   for (const c of selected) {
     assert.ok(c.controls?.pass && c.controls.fail?.length, `${c.id} needs pass and fail controls`);
-    for (const [variant, control, expectPass] of [['pass', c.controls.pass, true], ...c.controls.fail.map((f) => [`fail-${f.name}`, f, false])]) {
+    // `pass` is one control or a list of acceptable variants.
+    const passes = [].concat(c.controls.pass).map((p, i) => [i ? `pass-${p.name}` : 'pass', p, true]);
+    for (const [variant, control, expectPass] of [...passes, ...c.controls.fail.map((f) => [`fail-${f.name}`, f, false])]) {
       const directory = join(output, c.id, variant), workspace = join(directory, 'workspace');
       mkdirSync(workspace, { recursive: true });
       const result = { case: c.id, variant, expected: expectPass ? 'pass' : 'fail', passed: false };

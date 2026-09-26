@@ -556,13 +556,18 @@ export default [
     check(workspace, ctx) {
       untouched(ctx);
       const text = turnText(ctx.session, 0);
-      assert.match(text, /nextjs-starter-kit|next-js-starter-kit|official (DatoCMS )?Next\.js starter/i, 'Does not offer the official Next.js starter');
+      // Named or described: an existing project gets the starter as a reference, not by repo name.
+      assert.match(text, /nextjs-starter-kit|next-js-starter-kit|official (DatoCMS )?(Next\.js )?starter/i, 'Does not offer the official Next.js starter');
       assert.match(text, /\?/, 'Does not let the user choose between the starter and scaffolding');
       return { answer: text.slice(0, 1500) };
     },
     controls: {
-      pass: { finalText: 'The official DatoCMS Next.js starter (https://github.com/datocms/nextjs-starter-kit) already includes draft mode, Web Previews, Content Link and real-time updates. Start from it, or scaffold from scratch?' },
+      pass: [
+        { finalText: 'The official DatoCMS Next.js starter (https://github.com/datocms/nextjs-starter-kit) already includes draft mode, Web Previews, Content Link and real-time updates. Start from it, or scaffold from scratch?' },
+        { name: 'described-as-reference', finalText: 'Which starting point?\n1. **Next.js scaffold:** connect it to your existing project.\n2. **Official DatoCMS starter as a reference:** its queries need adapting to your schema.' },
+      ],
       fail: [
+        { name: 'unofficial-starter', finalText: 'Start from a create-next-app starter template, or a blank app?' },
         { name: 'scaffolds-immediately', files: { 'package.json': '{"name":"site"}', 'src/app/page.tsx': 'export default function Page() { return null; }\n' }, finalText: 'Scaffolded a Next.js app. Want previews next?' },
         { name: 'no-starter', finalText: 'Should I run create-next-app with TypeScript?' },
       ],
