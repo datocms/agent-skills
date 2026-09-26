@@ -74,6 +74,7 @@ async function main(){
    const result=await nativeSession({repoRoot:REPO_ROOT,workspace,output:join(output,name),hostedMcp:SERVER,timeoutMs:420000,maxCommands:35,maxMcpCalls:40,prompt,instructions});
    assert.equal(result.exitCode,0,`${name}: native exit`);assert.equal(result.completed,true,`${name}: incomplete turn`);
    assert.equal(result.timedOut,false);assert.equal(result.capped,false);assert.equal(result.credentialLeak,false);
+   assert.ok(!result.oracleAccess.length,`${name}: actor referenced evaluation state: ${result.oracleAccess.map(a=>a.command).join(' | ')}`);
    assert.deepEqual(result.errors,[]);
    for(const call of result.mcpCalls){
     assert.equal(call.server,SERVER.name,'Unexpected MCP route');

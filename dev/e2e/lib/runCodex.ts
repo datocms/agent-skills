@@ -81,9 +81,11 @@ export async function runCodex(
         result.exitCode === 0 &&
         result.completed &&
         !result.errors.length &&
-        !result.credentialLeak
+        !result.credentialLeak &&
+        !result.oracleAccess.length
           ? 0
           : 1,
+      oracleAccess: result.oracleAccess.map((access) => access.command),
       terminatedByCap: result.timedOut || result.capped,
       transcriptPath: result.transcriptPath,
     };

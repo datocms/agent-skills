@@ -1,7 +1,7 @@
 import { cases as workflows } from '../workflows/cases.mjs';
 
-// Review criteria stay outside actor workspaces. Reserved cases are run only
-// after the candidate has been frozen; they are not author-blinded holdouts.
+// Review criteria stay outside actor workspaces. Held-out cases run only after
+// the candidate has been frozen; they are not author-blinded holdouts.
 export const cases = [
   { ...workflows.find(c => c.id === 'setup-discovery-existing-nuxt'), area: 'setup', phase: 'screen' },
   {
@@ -32,13 +32,15 @@ export const cases = [
     prompt: '$datocms-frontend-integrations Give us a Nuxt Content Link wrapper and explain its integration, without editing files. It will be mounted only in draft mode and must synchronize route changes with the DatoCMS Web Previews panel, including query strings. We also need a numeric inventory count to be editable, a video without visible caption to select its encoded alt field, and Structured Text blocks to remain independent from surrounding prose. Show the relevant small snippets and explain unmount cleanup. We have no Vercel overlays.',
     rubric: ['Nuxt router afterEach updates fullPath before next page DOM, rather than delayed Nuxt useRoute watcher', 'Disposes controller and unregisters router hook on unmount', 'Record edit URL for number and encoded source for video', 'Structured Text outer group and block/inline boundaries, without unnecessary record-link boundary', 'Keeps draft-only controller and describes query requirements'],
   },
+  // The two *-reserved cases ran on 2026-09-19 and are no longer held out;
+  // their ids stay so existing reports still match.
   {
-    id: 'cli-reserved', area: 'cli', phase: 'reserved',
+    id: 'cli-reserved', area: 'cli', phase: 'regression',
     prompt: '$datocms-cli Explain the commands and TypeScript shapes; do not execute or connect. I need a one-off script to loop over existing article records in sandbox copy-review and print their IDs. It will run once from stdin with our linked OAuth session, not be committed. Later I may need a longer local file version, and separately a reviewed schema migration. Contrast these three execution forms, their imports, type checking and file placement. Do not create a token or scaffold migrations for the one-off content read.',
     rubric: ['Stdin uses ambient client and Schema/top-level await, no exported function/bootstrap client', 'Explains stdin typecheck versus file-mode opt-in checking and generated types', 'File mode default function receives Client from datocms/lib/cma-client-node', 'One-off scratch versus reviewed migrations, scaffold migration with CLI', 'Targets copy-review and handles pagination, respects existing OAuth'],
   },
   {
-    id: 'content-link-reserved', area: 'frontend', phase: 'reserved',
+    id: 'content-link-reserved', area: 'frontend', phase: 'regression',
     prompt: '$datocms-frontend-integrations Review this plan without editing files: we share content between Astro with View Transitions and a SvelteKit site. A developer wants to pass currentPath and onNavigateTo to both ContentLink components, wrap every link inside Structured Text in a boundary, strip stega from the whole response before rendering, and use a single group around title, author and video caption. Identify which choices need changing, show framework-appropriate imports and navigation wiring, and describe a debugging method that exposes invisible metadata. Published queries still select _editingUrl; should baseEditingUrl disappear outside draft mode?',
     rubric: ['Astro handles navigation automatically with no unsupported router props; Svelte supplies route/navigation wiring', 'Does not strip whole rendered response; cleans logic/meta separately', 'Separates competing targets with grouping/boundaries; record links in Structured Text keep prose ownership', 'Uses valid per-framework imports and a metadata-revealing debugger', 'Keeps baseEditingUrl on published queries selecting _editingUrl, without exposing draft credentials'],
   },

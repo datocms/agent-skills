@@ -115,6 +115,7 @@ try {
       usageLimitReached: session.usageLimitReached,
       timedOut: session.timedOut,
       capped: session.capped,
+      oracleAccess: session.oracleAccess,
       errors: session.errors,
     };
     result.strictExecutionPass =
@@ -133,6 +134,10 @@ try {
           !session.timedOut &&
           !session.capped,
         "Actor did not complete safely",
+      );
+      assert.ok(
+        !session.oracleAccess.length,
+        `Actor referenced evaluation state: ${session.oracleAccess.map((a) => a.command).join(" | ")}`,
       );
     }
   }

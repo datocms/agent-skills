@@ -117,6 +117,14 @@ async function runAndAssert<Context>(
 		};
 	}
 
+	if (runResult.oracleAccess?.length) {
+		return {
+			...base,
+			passed: false,
+			reason: `Agent referenced evaluation state: ${runResult.oracleAccess.join(" | ")}`,
+		};
+	}
+
 	if (runResult.exitCode !== 0) {
 		return {
 			...base,

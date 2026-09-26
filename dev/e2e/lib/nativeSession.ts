@@ -14,7 +14,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { homedir } from "node:os";
-import { join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 
 // Node tooling lives in dev/; skills and local evidence live at the repo root.
 export const DEV_ROOT = resolve(import.meta.dirname, "../..");
@@ -30,6 +30,51 @@ export function isUsageLimitError(event: Record<string, any>): boolean {
   if (!["error", "turn.failed"].includes(event.type) && event.item?.type !== "error")
     return false;
   return /usage_limit_reached|insufficient_quota|(?:weekly|account|codex) usage limit|you(?:'|’)ve hit your usage limit/i.test(JSON.stringify(event));
+}
+
+// Only an instruction keeps the actor away from evaluation state, so flag
+// commands and edited paths that name it: the checkout (evaluation code,
+// oracles, other runs), the run directory holding the workspace and evidence,
+// files beside the workspace, or its parent (`cd ..`). Paths in the workspace,
+// the actor's own HOME/XDG directories (regression cases keep them under
+// oracle/, and npm prints logs there) and installed package files
+// (node_modules may be a symlink into the checkout) are legitimate and removed
+// first, unless a path climbs out with `/..`. Relative paths assume the
+// workspace root: the tool-chosen working directory is not recorded.
+// Heuristic, not a sandbox.
+const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+export function oracleAccess(
+  commands: { command: string; turn?: number }[],
+  { workspace, output, repoRoot, homes = [] }: { workspace: string; output: string; repoRoot: string; homes?: string[] },
+) {
+  const paths = (...list: string[]) =>
+    new RegExp(
+      [...new Set(list.flatMap((p) => [resolve(p), existsSync(p) ? realpathSync(p) : resolve(p)]))]
+        .sort((a, b) => b.length - a.length)
+        .map((p) => escape(p) + "(?![\\w.-]|/\\.\\.)")
+        .join("|"),
+      "g",
+    );
+  // The run directory holds the workspace and its evidence; catalog runs keep
+  // session files in <run>/native. Homes containing either would hide them.
+  const run = [output, dirname(output)].find((p) => resolve(p) === resolve(dirname(workspace)));
+  const evidence = run ?? output;
+  const own = homes.filter((home) => ![repoRoot, evidence].some((p) => `${resolve(p)}/`.startsWith(`${resolve(home)}/`)));
+  const inside = paths(workspace, ...own), outside = paths(repoRoot, evidence);
+  const files = "oracle|native-home|session\\.json|native\\.jsonl|provenance\\.json|result\\.json|snapshots\\.json";
+  const beside = run && existsSync(run) ? readdirSync(run).filter((name) => name !== basename(workspace)).map(escape) : [];
+  const harness = new RegExp(
+    `(?:\\.\\./)+(?:${[files, ...beside].join("|")})(?![\\w.-])|\\.\\./(?:\\.\\./)+(?:[\\w.-]+/)+(?:${files})(?![\\w.-])` +
+      `|(?:^|[\\s=(;&|])\\.\\./?(?=$|[\\s'"\`;&|)])|\\b(?:dev/e2e|dev/evals|evals/fixtures|evals/results)/|node_modules/\\.\\.(?![\\w.-])`,
+  );
+  return commands
+    .filter(({ command }) => {
+      const text = command
+        .replace(inside, "")
+        .replace(/[\w@.+~/-]*\/node_modules\/[\w@.+~/-]*/g, (path) => (path.includes("/..") ? path : ""));
+      return text.search(outside) >= 0 || harness.test(text);
+    })
+    .map(({ turn, command }) => ({ turn: turn ?? 0, command }));
 }
 
 function toml(value: unknown): string {
@@ -301,6 +346,8 @@ export async function nativeSession(options: NativeOptions) {
       turn: number;
     }
   >();
+  // Paths the actor's edit tool touched, checked with the commands for oracle access.
+  const edits = new Map<string, { command: string; turn: number }>();
   const turns: { finalText: string; messages: string[]; completed: boolean; exitCode: number | null }[] = [];
   const exitCodes: (number | null)[] = [];
   async function runTurn(turnArgs: string[], prompt: string) {
@@ -344,6 +391,9 @@ export async function nativeSession(options: NativeOptions) {
           stop();
         }
       }
+      if (event.item?.type === "file_change")
+        for (const change of event.item.changes ?? [])
+          edits.set(`${turns.length}:${event.item.id}:${change.path}`, { command: `${change.kind ?? "edit"} ${change.path}`, turn: turns.length });
       if (event.item?.type === "command_execution") {
         commands.set(`${turns.length}:${event.item.id}`, { ...event.item, turn: turns.length });
         if (commands.size > (options.maxCommands ?? 100)) {
@@ -423,6 +473,13 @@ export async function nativeSession(options: NativeOptions) {
     capped,
     usageLimitReached,
     credentialLeak,
+    // REPO_ROOT, not options.repoRoot (a skills tree): evaluation code and evidence live here.
+    oracleAccess: oracleAccess([...commands.values(), ...edits.values()], {
+      workspace,
+      output,
+      repoRoot: REPO_ROOT,
+      homes: ["HOME", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_CACHE_HOME", "NPM_CONFIG_PREFIX"].flatMap((key) => options.environment?.[key] ?? []),
+    }),
     transcriptPath,
     commands: [...commands.values()],
     mcpCalls: events.filter((e) => e.type === "item.completed" && e.item?.type === "mcp_tool_call").map((e) => e.item),

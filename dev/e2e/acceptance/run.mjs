@@ -59,6 +59,7 @@ for (const c of selected) {
       result.usageLimitReached = session.usageLimitReached;
       result.skillPathsMentionedInCommands = [...new Set(session.commands.flatMap(cmd => [...cmd.command.matchAll(/(?:\.agents\/)?skills\/(datocms-[\w-]+)(?:\/[\w./-]+)?/g)].map(m => m[0])))].sort();
       assert.ok(session.completed && session.exitCode === 0 && !session.errors.length && !session.timedOut && !session.capped && !session.credentialLeak, 'Actor did not complete cleanly');
+      assert.ok(!session.oracleAccess.length, `Actor referenced evaluation state: ${session.oracleAccess.map(a => a.command).join(' | ')}`);
       const after = sourceHashes(directory, 'workspace');
       const sourcePaths = new Set([...Object.keys(before), ...Object.keys(after)]);
       result.changedFiles = [...sourcePaths].filter(path => !/\/\.(?:agents|git)\//.test(path) && before[path] !== after[path]);

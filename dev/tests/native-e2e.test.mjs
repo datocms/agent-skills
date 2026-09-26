@@ -7,10 +7,12 @@ import {
   readFileSync,
   existsSync,
   rmSync,
+  realpathSync,
+  symlinkSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { nativeSession, isUsageLimitError } from "../e2e/lib/nativeSession.ts";
+import { nativeSession, isUsageLimitError, oracleAccess, REPO_ROOT } from "../e2e/lib/nativeSession.ts";
 
 test("account usage exhaustion stops the actor without treating application rate limits as account limits", async () => {
   assert.equal(isUsageLimitError({ type: "item.completed", item: { type: "command_execution", aggregated_output: "usage_limit_reached" } }), false);
@@ -214,4 +216,62 @@ test("single-turn sessions stay ephemeral and stop before follow-ups when a turn
     assert.equal(readFileSync(join(root, "multi.jsonl"), "utf8").trim().split("\n").length, 1, "a failed turn must not be resumed");
     assert.equal(multi.completed, false);
     assert.equal(multi.turns.length, 1);
+  }));
+
+test("oracle access flags evaluation state outside the workspace but not workspace or package paths", () => {
+  const root = mkdtempSync(join(tmpdir(), "oracle-access-"));
+  try {
+    const output = join(root, "case-1"), real = join(output, "workspace-real"), workspace = join(output, "workspace");
+    mkdirSync(real, { recursive: true });
+    symlinkSync(real, workspace);
+    writeFileSync(join(output, "fixture.json"), "{}");
+    // A home containing the checkout or evidence must not hide them.
+    const paths = { workspace, output, repoRoot: REPO_ROOT, homes: [join(output, "oracle/home"), root, REPO_ROOT] };
+    const flagged = [
+      "cat ../oracle/expected.json",
+      "cd src && ls ../../../other-case-1/oracle",
+      "cat ../session.json ../native.jsonl",
+      "cat ../fixture.json",
+      "cd .. && cat oracle/expected.json",
+      "find .. -name AGENTS.md",
+      `sed -n 1,40p ${REPO_ROOT}/dev/e2e/regressions/cases/cda.mjs`,
+      `cat ${REPO_ROOT}/local/regressions/run-01/cda-1/result.json`,
+      `cat ${join(output, "oracle/state.json")}`,
+      `cat ${workspace}/../oracle/state.json`,
+      `cat ${join(output, "oracle/home")}/../expected.json`,
+      "rg expected dev/evals/coexistence",
+      "ls node_modules/../e2e",
+      `cat ${REPO_ROOT}/dev/node_modules/../e2e/lib/nativeSession.ts`,
+    ];
+    const allowed = [
+      `cd ${workspace} && npm run build`,
+      `cat ${realpathSync(real)}/src/page.tsx`,
+      "cat .agents/skills/datocms-cli/SKILL.md && cd src && cat ../package.json",
+      "cd .agents/skills/datocms-cma && cat ../datocms-cli/references/cma-script.md",
+      "cd src/app && cat ../lib/result.json && git diff HEAD..main",
+      `node -e "console.log(require('path').resolve(__dirname, '..'))"`,
+      "sed -n 1,40p node_modules/@datocms/cma-client/dist/types/index.d.ts",
+      `cat ${REPO_ROOT}/dev/node_modules/datocms/package.json`,
+      `ls ${tmpdir()} /tmp`,
+      `cat ${join(output, "oracle/home/.npm/_logs/debug-0.log")}`,
+    ];
+    const commands = [...flagged, ...allowed].map((command) => ({ command, turn: 1 }));
+    assert.deepEqual(oracleAccess(commands, paths), flagged.map((command) => ({ turn: 1, command })));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("native sessions record commands and edits that touch oracle state or evaluation code", async () =>
+  fixture(async ({ options, writeBinary }) => {
+    const home = join(options.output, "oracle/home");
+    const commands = ["cat ../oracle/expected.json", `cat ${REPO_ROOT}/dev/e2e/lib/nativeSession.ts`, `cat ${options.workspace}/src/index.ts`, `cat ${home}/.npm/_logs/debug-0.log`];
+    const edit = { id: "e1", type: "file_change", changes: [{ path: join(options.output, "oracle/expected.json"), kind: "update" }, { path: join(options.workspace, "src/index.ts"), kind: "add" }] };
+    writeBinary(
+      `for(const [i,command] of ${JSON.stringify(commands)}.entries())console.log(JSON.stringify({type:'item.completed',item:{id:'c'+i,type:'command_execution',command,exit_code:0}}));for(const type of ['item.started','item.completed'])console.log(JSON.stringify({type,item:${JSON.stringify(edit)}}));console.log(JSON.stringify({type:'turn.completed'}));`,
+    );
+    const result = await nativeSession({ ...options, environment: { HOME: home } });
+    const flagged = [...commands.slice(0, 2), `update ${edit.changes[0].path}`];
+    assert.deepEqual(result.oracleAccess, flagged.map((command) => ({ turn: 0, command })));
+    assert.deepEqual(JSON.parse(readFileSync(join(options.output, "session.json"), "utf8")).oracleAccess, result.oracleAccess);
   }));

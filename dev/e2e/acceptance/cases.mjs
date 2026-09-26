@@ -1,5 +1,5 @@
 // Freeze tasks and checks before running the candidate. No task names a skill.
-// These are reserved acceptance cases, not an author-blinded benchmark.
+// These cases ran on 2026-09-19 and are now regressions, not held out or author-blinded.
 export const cases = [
   {
     id: 'asset-cli', fixture: 'utility', check: 'cli',

@@ -112,6 +112,7 @@ if (values.controls) {
           result.skillReads = [...new Set(session.commands.flatMap((cmd) => [...cmd.command.matchAll(/skills\/(datocms-[\w-]+(?:\/[\w./-]+)?)/g)].map((m) => m[1])))].sort();
           if (session.usageLimitReached) { result.error = 'Usage limit reached'; record(result); process.exitCode = 2; break suite; }
           assert.ok(session.completed && session.exitCode === 0 && !session.errors.length && !session.timedOut && !session.capped && !session.credentialLeak, 'Actor did not complete cleanly');
+          assert.ok(!session.oracleAccess.length, `Actor referenced evaluation state: ${session.oracleAccess.map((a) => a.command).join(' | ')}`);
         } else {
           session = JSON.parse(readFileSync(join(resolve(values.recheck), `${c.id}-${repetition}`, 'session.json'), 'utf8'));
           // Sessions recorded before per-turn messages existed: rebuild them from the transcript.

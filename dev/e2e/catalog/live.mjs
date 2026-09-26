@@ -308,12 +308,14 @@ try {
       timedOut: session.timedOut,
       capped: session.capped,
       credentialOutputObserved: session.credentialLeak,
+      oracleAccess: session.oracleAccess,
       errors: session.errors,
     };
     result.strictExecutionPass =
       session.completed &&
       session.exitCode === 0 &&
       !session.credentialLeak &&
+      !session.oracleAccess.length &&
       !session.errors.length &&
       session.commands.every((c) => c.exit_code === 0);
     if (session.usageLimitReached) {
@@ -334,10 +336,15 @@ try {
         environment,
       });
       result.outcome = "passed";
-      result.status = session.credentialLeak ? "failed" : "passed";
+      result.status =
+        session.credentialLeak || session.oracleAccess.length ? "failed" : "passed";
       if (session.credentialLeak) {
         result.error =
           "Credential output was observed and redacted; functional outcomes are recorded separately";
+        process.exitCode = 1;
+      }
+      if (session.oracleAccess.length) {
+        result.error = `Actor referenced evaluation state: ${session.oracleAccess.map((a) => a.command).join(" | ")}`;
         process.exitCode = 1;
       }
     }

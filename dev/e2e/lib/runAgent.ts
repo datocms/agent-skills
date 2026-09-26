@@ -22,6 +22,8 @@ export type RunAgentResult = {
 	exitCode: number | null;
 	terminatedByCap: boolean;
 	transcriptPath: string;
+	// Commands that referenced evaluation state outside the workspace.
+	oracleAccess?: string[];
 };
 
 export type RunAgentOptions = {

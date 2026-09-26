@@ -35,6 +35,6 @@ const result = await nativeSession({
   environment, secrets: Object.entries(environment).filter(([key]) => /TOKEN|SECRET/.test(key)).map(([, value]) => value),
   prompt, instructions, timeoutMs: config.timeoutMs ?? 600000, maxCommands: config.maxCommands ?? 70,
 });
-const summary = { completed: result.completed, timedOut: result.timedOut, usageLimitReached: result.usageLimitReached, credentialLeak: result.credentialLeak, unsuccessfulCommands: result.commands.filter(command => command.exit_code !== 0).length };
+const summary = { completed: result.completed, timedOut: result.timedOut, usageLimitReached: result.usageLimitReached, credentialLeak: result.credentialLeak, oracleAccess: result.oracleAccess, unsuccessfulCommands: result.commands.filter(command => command.exit_code !== 0).length };
 writeFileSync(join(config.output, 'implementation-result.json'), JSON.stringify(summary, null, 2), { mode: 0o600 });
 console.log(JSON.stringify(summary));
