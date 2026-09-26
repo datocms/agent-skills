@@ -14,14 +14,14 @@ Before running, ask the user which track to run unless they already specified it
 - **Codex only** — `--track codex`
 - **Both** — run both tracks sequentially
 
-Use `--source frontmatter` (the default) unless the user asks for `metadata` or `combined`. Pass `--model` when the user names a model; without it, Codex results record no model. Every step below takes the same `--track` and `--source`.
+Use `--source frontmatter` (the default) unless the user asks for `metadata` or `combined`. Pass `--model` and `--effort` when the user names them (the repo baseline for Codex is `--model gpt-6-luna --effort medium`); without `--model`, Codex results record no model, and without `--effort` a Codex run uses the model's own default effort. Every step below takes the same `--track` and `--source`.
 
 **Step 1 — Classify:**
 
 The runner writes to the canonical layout at `evals/results/trigger/<skill>/<track>/<source>/results.json`. You do not pass an output directory.
 
 ```bash
-python3 evals/scripts/run_trigger_eval.py --track <track> --source <source> [--model <model>]
+python3 evals/scripts/run_trigger_eval.py --track <track> --source <source> [--model <model>] [--effort <effort>]
 ```
 
 **Step 2 — Analyze:**

@@ -113,21 +113,21 @@ print(json.dumps({
   assert.deepEqual(outcomes.decoy, [false], 'an object without `predictions` is not the answer');
 });
 
-test('Claude track runs isolated, maps answers by id and records the model that answered', () => {
+test('Claude track runs isolated, maps answers by id and records the model and effort that answered', () => {
   const box = sandbox();
   try {
-    const run = box.run(['--track', 'claude', '--skill', 'datocms-plugin']);
+    const run = box.run(['--track', 'claude', '--skill', 'datocms-plugin', '--effort', 'high']);
     assert.equal(run.status, 0, run.stderr);
     const call = box.logged();
     assert.deepEqual(call.cwdEntries, [], 'classifier must start in an empty directory');
     assert.ok(!call.cwd.startsWith(repoRoot));
     assert.equal(call.mcp, 'false');
-    for (const [flag, value] of [['--setting-sources', 'project'], ['--mcp-config', '{"mcpServers":{}}'], ['--disallowedTools', 'mcp__*'], ['--tools', '']])
+    for (const [flag, value] of [['--setting-sources', 'project'], ['--mcp-config', '{"mcpServers":{}}'], ['--disallowedTools', 'mcp__*'], ['--tools', ''], ['--effort', 'high']])
       assert.equal(call.argv[call.argv.indexOf(flag) + 1], value, flag);
     assert.ok(call.argv.includes('--strict-mcp-config'));
     assert.ok(!call.argv.includes('--dangerously-skip-permissions'));
     const saved = box.result('datocms-plugin', 'claude');
-    assert.equal(saved.model, 'fake-claude-model');
+    assert.equal(saved.model, 'fake-claude-model (high effort)');
     assert.deepEqual(saved.results.map((r) => r.trigger_rate), fixture('datocms-plugin').map((_, i) => (i % 2 === 0 ? 1 : 0)));
   } finally {
     box.cleanup();
@@ -164,10 +164,12 @@ test('Codex track runs outside the repo with an empty HOME and a fresh CODEX_HOM
     assert.deepEqual(box.result('datocms-cda', 'codex').results.map((r) => r.trigger_rate), fixture('datocms-cda').map((_, i) => (i % 2 === 0 ? 1 : 0)));
 
     // A relative CODEX_HOME still links the real login.
-    const pinned = box.run(['--track', 'codex', '--skill', 'datocms-cda', '--model', 'pinned-model'], { CODEX_HOME: 'codex-home' }, box.dir);
+    const pinned = box.run(['--track', 'codex', '--skill', 'datocms-cda', '--model', 'pinned-model', '--effort', 'medium'], { CODEX_HOME: 'codex-home' }, box.dir);
     assert.equal(pinned.status, 0, pinned.stderr);
     assert.equal(box.logged().auth, join(box.dir, 'codex-home/auth.json'));
-    assert.equal(box.result('datocms-cda', 'codex').model, 'pinned-model');
+    // The fresh CODEX_HOME has no config, so the effort must travel on the command line.
+    assert.equal(box.logged().argv[box.logged().argv.indexOf('-c') + 1], 'model_reasoning_effort="medium"');
+    assert.equal(box.result('datocms-cda', 'codex').model, 'pinned-model (medium effort)');
   } finally {
     box.cleanup();
   }

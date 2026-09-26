@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import functools
 import json
 import os
 import shutil
@@ -74,6 +75,8 @@ def _run(label: str, cmd: list[str], cwd: str, env: dict[str, str]) -> str:
         cmd,
         cwd=cwd,
         env=env,
+        # `codex exec` appends piped stdin to the prompt.
+        stdin=subprocess.DEVNULL,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
@@ -104,7 +107,14 @@ def _run(label: str, cmd: list[str], cwd: str, env: dict[str, str]) -> str:
     return stdout
 
 
-def _run_claude_predictions(prompt: str, expected_len: int, model: str | None) -> tuple[list[bool], str | None]:
+def _answered_by(model: str | None, effort: str | None) -> str | None:
+    # Effort moves answers as much as the model does, so results record the two together.
+    return f"{model} ({effort} effort)" if model and effort else model
+
+
+def _run_claude_predictions(
+    prompt: str, expected_len: int, model: str | None, effort: str | None = None
+) -> tuple[list[bool], str | None]:
     # Isolated like dev/e2e/routing/claude.mjs: an empty directory, no user or project settings,
     # no MCP servers (claude.ai connectors included) and no tools.
     cmd = [
@@ -129,6 +139,8 @@ def _run_claude_predictions(prompt: str, expected_len: int, model: str | None) -
     ]
     if model:
         cmd.extend(["--model", model])
+    if effort:
+        cmd.extend(["--effort", effort])
 
     with tempfile.TemporaryDirectory() as temp_dir:
         stdout = _run(
@@ -154,10 +166,14 @@ def _run_claude_predictions(prompt: str, expected_len: int, model: str | None) -
     if result.get("is_error") or not isinstance(result.get("result"), str):
         raise ValueError(f"claude returned no classification: {_tail(stdout)}")
 
-    return predictions_from_payload(find_predictions_object(result["result"]), expected_len), init.get("model")
+    return predictions_from_payload(find_predictions_object(result["result"]), expected_len), _answered_by(
+        init.get("model"), effort
+    )
 
 
-def _run_codex_predictions(prompt: str, expected_len: int, model: str | None) -> tuple[list[bool], str | None]:
+def _run_codex_predictions(
+    prompt: str, expected_len: int, model: str | None, effort: str | None = None
+) -> tuple[list[bool], str | None]:
     with tempfile.TemporaryDirectory() as temp_dir:
         temp = Path(temp_dir)
         # Outside the repo, whose AGENTS.md and fixtures would reach the classifier, with an empty
@@ -192,13 +208,16 @@ def _run_codex_predictions(prompt: str, expected_len: int, model: str | None) ->
         ]
         if model:
             cmd.extend(["--model", model])
+        if effort:
+            # Without it, the fresh CODEX_HOME runs the model at its own default effort.
+            cmd.extend(["-c", f'model_reasoning_effort="{effort}"'])
         cmd.append(prompt)
 
         _run("codex exec", cmd, str(workspace), {**os.environ, "HOME": str(home), "CODEX_HOME": str(codex_home)})
         raw = output_path.read_text(encoding="utf-8") if output_path.exists() else ""
 
     # Codex does not report its default model, so only a pinned --model is recorded.
-    return predictions_from_payload(find_predictions_object(raw), expected_len), model
+    return predictions_from_payload(find_predictions_object(raw), expected_len), _answered_by(model, effort)
 
 
 TRACKS: dict[str, tuple[Callable[[], None], PredictionRunner]] = {
@@ -232,6 +251,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--model",
         help="Model for the selected track; pin it so runs stay comparable (Codex records no model otherwise)",
+    )
+    parser.add_argument(
+        "--effort",
+        help="Reasoning effort for the selected track, recorded with the model (e.g. medium)",
     )
     parser.add_argument(
         "--source",
@@ -269,7 +292,7 @@ def main() -> int:
             args.track,
             args.model,
             args.source,
-            run_predictions,
+            functools.partial(run_predictions, effort=args.effort),
         )
         summaries.append(summary)
         print(

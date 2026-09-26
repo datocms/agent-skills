@@ -35,7 +35,7 @@ For most day-to-day skill work, `frontmatter` is the default and most representa
 Each run also has a **track**, the CLI that classifies. Both run in an empty temporary directory, never the repo, whose `AGENTS.md` and fixtures would reach the classifier. Both time out after 10 minutes instead of hanging, and a timeout ends the CLI's child processes too.
 
 - `claude` runs `claude -p` with no user or project settings, no MCP servers (claude.ai connectors included) and no tools. Results record the model that answered.
-- `codex` runs `codex exec` with an empty `HOME` and a fresh `CODEX_HOME` that holds only your login (`auth.json`), so no user config, skills, plugins or MCP servers load. Codex does not report its default model: pass `--model` to pin it and record it.
+- `codex` runs `codex exec` with an empty `HOME` and a fresh `CODEX_HOME` that holds only your login (`auth.json`), so no user config, skills, plugins or MCP servers load. Codex does not report its default model: pass `--model` to pin it and record it. Its fresh `CODEX_HOME` has no config, so without `--effort` the model runs at its own default effort, not the one in your `config.toml`.
 
 ### Fixture format
 
@@ -82,10 +82,10 @@ A good fixture has both positives and negatives in rough balance. Negatives shou
 Runs write to `evals/results/trigger/<skill>/<track>/<source>/results.json`:
 
 ```bash
-python3 evals/scripts/run_trigger_eval.py --track claude --model <model>
+python3 evals/scripts/run_trigger_eval.py --track codex --model gpt-6-luna --effort medium
 ```
 
-Defaults to `--source frontmatter`; pass `--source metadata` or `--source combined` to test the other surfaces, and `--skill <name>` to run one skill. The runner discovers every public `SKILL.md` under `skills/` and expects a matching `evals/fixtures/trigger/<skill>.json`. Pin `--model` so two runs differ only by what you changed.
+Defaults to `--source frontmatter`; pass `--source metadata` or `--source combined` to test the other surfaces, and `--skill <name>` to run one skill. The runner discovers every public `SKILL.md` under `skills/` and expects a matching `evals/fixtures/trigger/<skill>.json`. Pin `--model` and `--effort` so two runs differ only by what you changed; results record them together, e.g. `gpt-6-luna (medium effort)`.
 
 ### Summary and gate
 
