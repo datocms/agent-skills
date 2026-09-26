@@ -62,6 +62,12 @@ test('a route the user picked (MCP or CLI) holds for the whole conversation in b
   assert.match(cli, /User chose the DatoCMS MCP for live work → stop here and stay on it until they explicitly switch\./);
 });
 
+test('the sandbox allowance excludes the primary environment wherever the skills state it', () => {
+  // DatoCMS counts sandbox usage as environments minus the primary; agents counted main as a sandbox.
+  assert.match(skill('datocms-cli/references/environment-commands.md'), /The allowance counts sandboxes only: the primary environment \(usually `main`\) never counts\./);
+  assert.match(skill('datocms-cma/references/project-settings-and-usage.md'), /The environment threshold concerns sandboxes, excluding the primary environment\./);
+});
+
 test('upload helper-only options match the installed CMA client helper schemas', () => {
   // @datocms/cma-client-node 6.1.3 (and cma-client-browser 6.1.0) Upload.d.ts: helper schemas are
   // Omit<UploadCreateSchema, 'path'> plus source, filename?, skipCreationIfAlreadyExists? (Node create) and onProgress?.
