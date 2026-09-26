@@ -81,7 +81,7 @@ async function main() {
   const candidateRevision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
   const settings = { model, effort: process.env.EVAL_EFFORT, candidateRevision,
     fixtureSourceSha256: digest(['authoring.mjs', 'run.mjs', 'server.mjs', 'runtime.mjs', 'cases.mjs'].map((path) => readFileSync(new URL(path, import.meta.url))).join('\n')),
-    dependencyLockSha256: digest(readFileSync('package-lock.json')) };
+    dependencyLockSha256: digest(readFileSync(new URL('../../package-lock.json', import.meta.url))) };
   writeFileSync(join(output, 'run.json'), JSON.stringify({ ...settings, baseline: BASE_REVISION, binaryVersion: execFileSync(binary, ['--version'], { encoding: 'utf8' }).trim(), createdAt: new Date().toISOString() }, null, 2));
   const results = [];
   for (const arm of ['base', 'candidate']) {

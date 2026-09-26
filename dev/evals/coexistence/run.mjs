@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawn, spawnSync } from "node:child_process";
-import { appendFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { appendFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -220,6 +220,14 @@ export function loadServerGuidance({ revision, candidateSkills, root = repoRoot 
   }));
 }
 
+// Freeze the fixture so edits during a run cannot change later sessions. The copy lives under the run's output,
+// which has no node_modules above it, so it links the dev dependencies its imports need.
+export function freezeFixture(fixtureDir) {
+  mkdirSync(fixtureDir, { recursive: true });
+  for (const path of ["run.mjs", "server.mjs", "runtime.mjs", "cases.mjs", "mcp-runtime-contract.json"]) cpSync(join(sourceDir, path), join(fixtureDir, path));
+  symlinkSync(join(repoRoot, "dev/node_modules"), join(fixtureDir, "node_modules"));
+}
+
 export async function runOne({ testCase, arm, repetition, settings, output, baseline, binary, timeout }) {
   const directory = join(output, testCase.id, arm, String(repetition));
   mkdirSync(directory, { recursive: true });
@@ -371,8 +379,7 @@ async function main() {
   settings.serverGuidance = loadServerGuidance({ revision: guidanceRevision, candidateSkills: settings.candidateSkills });
   settings.serverGuidanceRevision = guidanceRevision === "candidate" ? `candidate:${settings.candidateRevision}` : guidanceRevision;
   settings.serverGuidanceSha256 = hash(json(settings.serverGuidance));
-  mkdirSync(settings.fixtureDir, { recursive: true });
-  for (const path of ["run.mjs", "server.mjs", "runtime.mjs", "cases.mjs", "mcp-runtime-contract.json"]) cpSync(join(sourceDir, path), join(settings.fixtureDir, path));
+  freezeFixture(settings.fixtureDir);
   const version = spawnSync(values["codex-bin"], ["--version"], { encoding: "utf8" });
   if (version.status !== 0) throw Error(`Cannot run selected agent: ${version.stderr ?? version.error}`);
   writeFileSync(join(output, "run.json"), json({ ...settings, binary: values["codex-bin"], binaryVersion: version.stdout.trim(), baseline: values.baseline, repetitions, cases: selection, arms, createdAt: new Date().toISOString() }));

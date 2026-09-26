@@ -14,7 +14,7 @@ const helperBundle = buildSync({
   stdin: {
     contents:
       'export * from "datocms-structured-text-utils"; export {parse, serialize} from "datocms-structured-text-dastdown"; export {buildBlockRecord, ApiError, TimeoutError} from "@datocms/cma-client";',
-    resolveDir: fileURLToPath(new URL("../../", import.meta.url)),
+    resolveDir: fileURLToPath(new URL("./", import.meta.url)),
   },
   bundle: true,
   format: "iife",

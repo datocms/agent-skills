@@ -8,7 +8,7 @@ import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
 import { cases, expectedRecord, initialRecord, TARGET } from "./cases.mjs";
 import { execute } from "./runtime.mjs";
-import { externalSkillOverrides, loadServerGuidance, score } from "./run.mjs";
+import { externalSkillOverrides, freezeFixture, loadServerGuidance, score } from "./run.mjs";
 
 const sourceDir = dirname(fileURLToPath(import.meta.url));
 const caseById = (id) => {
@@ -70,12 +70,12 @@ test("script logging accepts mixed primitive and nullable field values", () => {
   assert.deepEqual(result.record, initialRecord());
 });
 
-async function withServer(testCase, role, run) {
+async function withServer(testCase, role, run, serverDir = sourceDir) {
   const directory = mkdtempSync(join(tmpdir(), "coexistence-unit-"));
   const statePath = join(directory, "state.json");
   writeFileSync(join(directory, "tools.jsonl"), "");
   writeFileSync(statePath, JSON.stringify({ workspace: directory, auditPath: join(directory, "tools.jsonl"), testCase, serverGuidance: { "skills/datocms-cma/references/records.md": "RECORDS_GUIDE", "skills/datocms-cma/references/editing-records.md": "EDITING_GUIDE" }, record: initialRecord(), scripts: {}, writes: 0 }));
-  const child = spawn(process.execPath, [join(sourceDir, "server.mjs"), statePath, role], { env: {}, stdio: ["pipe", "pipe", "pipe"] });
+  const child = spawn(process.execPath, [join(serverDir, "server.mjs"), statePath, role], { env: {}, stdio: ["pipe", "pipe", "pipe"] });
   const pending = new Map();
   let nextId = 0;
   let stderr = "";
@@ -409,6 +409,21 @@ test("CLI JSON flag can suppress output after a successful write", { timeout: 15
     assert.match(saved.content[0].text, /Summer update/);
     assert.equal(state().writes, 1);
   });
+});
+
+test("a frozen fixture outside dev/ still starts its server and runs scripts", { timeout: 30000 }, async () => {
+  // Runs freeze the fixture under their output directory, where no node_modules sits above it.
+  const output = mkdtempSync(join(tmpdir(), "coexistence-frozen-"));
+  try {
+    freezeFixture(join(output, "fixture"));
+    await withServer(caseById("explicit-mcp"), "datocms", async ({ call, state }) => {
+      const result = await call("upsert_and_execute_unsafe_script", { ...TARGET, name: "script://edit.ts", body: { mode: "full", content: 'await client.items.update<Schema.Article>("article-1", { title: "Summer update" });' }, method_tokens: ["fixture-token-items.update"] });
+      assert.equal(result.isError, undefined, result.content?.[0]?.text);
+      assert.equal(state().writes, 1);
+    }, join(output, "fixture"));
+  } finally {
+    rmSync(output, { recursive: true, force: true });
+  }
 });
 
 test("server preserves a completed update before a later script failure", { timeout: 15000 }, async () => {
