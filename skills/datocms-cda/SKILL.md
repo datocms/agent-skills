@@ -102,7 +102,7 @@ Before presenting final code:
 6. **Type safety** — no `as` / `as unknown as` to silence errors
 7. **Imports** — CDA from `@datocms/cda-client`; keep generated GraphQL helpers if type-gen wired; React renderers from subpaths (`react-datocms/structured-text`): root `react-datocms` statically imports optional peer `@mux/mux-player-react`
 8. **Variables** — all dynamic via GraphQL variables, no interpolation
-9. **Structured text** — all relevant sub-fields (`value`, `blocks`, `links`, `inlineBlocks`); omitting = silent data loss
+9. **Structured text** — all relevant sub-fields (`value`, `blocks`, `links`, `inlineBlocks`); omitting = silent data loss; render each with its own callback (`inlineBlocks` → `renderInlineBlock`, not `renderInlineRecord`)
 10. **Fetch integration** — framework-native `fetch`, tagging, custom plumbing? use `buildRequestHeaders()` / `buildRequestInit()`
 11. **Type generation** — gql.tada or graphql-codegen? use project's `graphql()` function, check scalar mappings
 12. **gql.tada fragments** — composition array mirrors every `...Fragment` spread; follow project's masking setup (see `references/fragment-patterns.md`)

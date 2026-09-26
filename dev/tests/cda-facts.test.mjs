@@ -3,6 +3,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 
 const repoRoot = process.env.REFERENCE_REPO_ROOT
   ? resolve(process.env.REFERENCE_REPO_ROOT)
@@ -61,6 +62,29 @@ test('the installed Structured Text record contract requires typename and id', (
   assert.ok(record);
   assert.match(record[1], /__typename:\s*string/);
   assert.match(record[1], /\bid:\s*string/);
+});
+
+test('CDA verification distinguishes inline blocks from inline record callbacks', () => {
+  const item = read('SKILL.md').split('\n').find(line => line.startsWith('9. **Structured text**'));
+  assert.match(item, /inlineBlocks[^\n]*renderInlineBlock/);
+  assert.match(item, /not `renderInlineRecord`/);
+});
+
+test('inline block rendering requires its own callback in the installed React renderer', { skip: !existsSync(reactPackage) && 'catalog React fixture is absent' }, async () => {
+  const require = createRequire(new URL('../e2e/catalog/web/package.json', import.meta.url));
+  const React = require('react');
+  const { renderToStaticMarkup } = require('react-dom/server');
+  const pkg = JSON.parse(readFileSync(resolve(reactPackage, 'package.json'), 'utf8'));
+  assert.match(JSON.stringify(pkg.exports['./structured-text'].import), /dist\/esm\/StructuredText\/index\.js/);
+  const { StructuredText } = await import(new URL('../e2e/catalog/web/node_modules/react-datocms/dist/esm/StructuredText/index.js', import.meta.url));
+  const data = {
+    value: { schema: 'dast', document: { type: 'root', children: [{ type: 'paragraph', children: [{ type: 'inlineBlock', item: 'quote' }] }] } },
+    inlineBlocks: [{ id: 'quote', __typename: 'QuoteRecord', text: 'Inline quotation' }],
+  };
+  const wrong = () => React.createElement('span', null, 'Wrong callback');
+  assert.throws(() => renderToStaticMarkup(React.createElement(StructuredText, { data, renderInlineRecord: wrong })), /inlineBlock.*renderInlineBlock.*specified/);
+  const rendered = renderToStaticMarkup(React.createElement(StructuredText, { data, renderInlineBlock: ({ record }) => React.createElement('span', null, record.text) }));
+  assert.match(rendered, /Inline quotation/);
 });
 
 // cda-8: the starter kits and demos (datocms/{nextjs,astro,sveltekit,nuxt}-starter-kit,
