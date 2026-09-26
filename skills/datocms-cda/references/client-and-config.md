@@ -25,7 +25,7 @@ npm install @datocms/cda-client
 
 | Export | Description |
 | - | - |
-| `executeQuery(query, options)` | Execute a GraphQL query, return the result data |
+| `executeQuery<Result>(query, options)` | Execute a GraphQL query, return the result data (`unknown` unless typed) |
 | `rawExecuteQuery(query, options)` | Execute a query, return `[Result, Response]` tuple (needed for cache tags) |
 | `executeQueryWithAutoPagination(query, options)` | Fetch collections with `first` > 500 via a single query with aliased selections (see `pagination-and-ordering.md` for complexity implications) |
 | `rawExecuteQueryWithAutoPagination(query, options)` | Auto-paginate, return `[Result, Response]` tuple |

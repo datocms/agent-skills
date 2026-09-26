@@ -77,7 +77,7 @@ Also apply every Step 4 check while writing.
 
 ### GraphQL Queries
 
-- Write as **template literal strings** (unless project uses `TypedDocumentNode` / `gql.tada`)
+- Write as **template literal strings** (unless project uses `TypedDocumentNode` / `gql.tada`); a string query returns `unknown` — type it: `executeQuery<Result>(query, …)`
 - Request **only needed fields** — don't over-fetch
 - Use DatoCMS custom scalars in declarations (`$first: IntType`, `$id: ItemId`)
 - Match project convention; `/* GraphQL */` prefix enables editor highlighting/validation

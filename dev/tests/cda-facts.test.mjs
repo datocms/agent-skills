@@ -136,3 +136,15 @@ test('CDN-first caching re-serializes x-cache-tags instead of forwarding the raw
   assert.doesNotMatch(text, /Forward `x-cache-tags` as a response header/);
   assert.match(text, /Re-serialize space-separated `x-cache-tags` into the CDN's tag header/);
 });
+
+test('GraphQL string query guidance requires an explicit result type', () => {
+  const queries = read('SKILL.md').match(/### GraphQL Queries\n([\s\S]*?)(?=\n###? |$)/)?.[1];
+  assert.ok(queries);
+  assert.match(queries, /returns `unknown`[^\n]*executeQuery<Result>/);
+  assert.match(read('references/client-and-config.md'), /`executeQuery<Result>\(query, options\)`[^\n]*`unknown` unless typed/);
+});
+
+const cdaQueryTypes = fileURLToPath(new URL('../e2e/catalog/web/node_modules/@datocms/cda-client/dist/types/executeQuery.d.ts', import.meta.url));
+test('the installed CDA client defaults string query results to unknown', { skip: !existsSync(cdaQueryTypes) && 'catalog CDA fixture is absent' }, () => {
+  assert.match(readFileSync(cdaQueryTypes, 'utf8'), /executeQuery<Result = unknown, Variables = unknown>\(query: string/);
+});
