@@ -108,6 +108,8 @@ After installing `dev/e2e/catalog/web-nuxt` dependencies, run `node dev/e2e/cata
 
 ## Interpret results
 
+The `public-site` and `visual-editing` prompts ask “Verify that it works.” Earlier runs asked “Verify the production build.” Keep those cohorts separate: their verification instructions differ, so the results are not directly comparable. Independent production-build and runtime assertions remain unchanged.
+
 A correct outcome means the independent assertions passed. A strict pass additionally requires clean actor execution, credential handling and verified cleanup; `strictExecutionPass` records the actor-only execution result. Recovered command or API errors remain visible and prevent a strict pass, even if the final outcome is correct. Fixture preparation failures are infrastructure results, not failed skill tasks. One successful workflow is useful coverage, not evidence that every feature, framework, or model has been tested.
 
 `commandFailures` records non-zero or unfinished commands as `search-no-match`, `auth-probe` (a skill-prescribed authentication check), or `failure`, with bounded output excerpts. `strictExecutionPassExcludingProbes` retains the same session checks and excludes only the first two categories; the original strict score stays unchanged. `executedDeliverable` indicates a recognized build, run or test command in the trace, not proof that the command succeeded or covered the application at runtime. An empty command trace leaves it false.
