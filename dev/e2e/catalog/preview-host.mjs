@@ -3,6 +3,13 @@ import { createServer } from "node:http";
 import { join } from "node:path";
 import { build } from "esbuild";
 
+export function embeddedDraftEntry(origin, token) {
+  const entry = new URL("/api/draft-mode/enable", origin);
+  entry.searchParams.set("redirect", "/articles/article-0");
+  entry.searchParams.set("token", token);
+  return entry.href;
+}
+
 // Exercise the public Web Previews iframe protocol with the actual Content
 // Link controller. This does not claim a run inside the hosted CMS editor.
 export async function checkEmbeddedPreview({
@@ -28,13 +35,16 @@ export async function checkEmbeddedPreview({
       `(?<${name}>${name === "field_path" ? "[A-Za-z0-9_.-]+" : "[A-Za-z0-9_-]+"})`,
     );
   assert.ok(new RegExp(source).exec(destination)?.groups?.item_id);
+  // Authenticate inside the iframe so partitioned draft cookies belong to
+  // the host's top-level site. Keep this secret-bearing URL only in memory.
+  const draftEntry = embeddedDraftEntry(state.origin, state.environment.SECRET_API_TOKEN);
   const bundle = await build({
     stdin: {
       contents: `import connectToChild from 'penpal/lib/connectToChild';
         window.states=[];window.opened=[];
         const iframe=document.createElement('iframe');
         iframe.title='Website preview';iframe.style='width:900px;height:600px';
-        iframe.src=${JSON.stringify(state.origin + "/articles/article-0")};
+        iframe.src=${JSON.stringify(draftEntry)};
         const connection=connectToChild({iframe,timeout:20000,methods:{
           onInit:()=>({editUrlRegExp:{source:${JSON.stringify(source)},flags:''}}),
           onPing:()=>{},
@@ -68,7 +78,7 @@ export async function checkEmbeddedPreview({
   page.on("pageerror", (error) => errors.push(error.message));
   await page.addInitScript(() => {
     window.subscriptionLifecycle = {
-      document: crypto.randomUUID(),
+      document: crypto.randomUUID?.() ?? String(Math.random()),
       sources: [],
       updates: 0,
       initial: [],

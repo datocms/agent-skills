@@ -60,6 +60,22 @@ The runner serves the production plugin locally, installs it without extra permi
 
 For visual-editing checks inside the hosted editor, add `--hosted-editor` to a visual-editing invocation. After the automated browser assertions, the runner installs and configures Web Previews in the owned sandbox, writes `hosted-browser-task.json`, and waits up to twenty minutes. An authenticated browser operator follows that task in the actual Visual tab and records the four required observations in `hosted-finish.json`. The runner then verifies the saved draft, untouched locale and second record, and unchanged published page before removing the plugin, tokens and environment. This exercises the actual editor against the local production server; it does not establish coverage of a deployed hosting provider.
 
+If the hosted editor cannot load a localhost iframe, first start an operator-managed HTTPS tunnel to an unused loopback port, then set both transport variables for the invocation:
+
+```sh
+E2E_VISUAL_SERVER_PORT=43001 \
+E2E_VISUAL_PUBLIC_ORIGIN=https://YOUR-TUNNEL.trycloudflare.com \
+dev/node_modules/.bin/tsx dev/e2e/catalog/live.mjs \
+  --site PROJECT_ID --case visual-editing --framework nextjs --hosted-editor \
+  --output local/catalog-live/visual-nextjs-hosted-01
+```
+
+The tunnel must forward to `http://127.0.0.1:43001` and remain available until the runner finishes. The public origin is supplied before the actor and production build, so framework URL configuration, automated checks and Web Previews use the same origin; `transport.json` records the binding without credentials. The runner does not rewrite application redirects, proxy headers or cookies: SSR origin handling and iframe draft cookies remain part of the application checks. Stop the tunnel after each scenario. Omit both variables to retain the default random localhost port.
+
+The controlled iframe host opens the authenticated draft-mode handoff inside its iframe before running the existing bridge checks. This establishes partitioned draft cookies under the host's top-level site, including when the preview uses an HTTPS tunnel. The secret-bearing handoff URL stays in memory and is not written to evidence by the runner. It crosses the operator's tunnel; cloudflared can log full URLs on origin errors, so keep tunnel logs in a private directory.
+
+Public-origin checks wait for the tunnel to forward after the local listener is ready. `draft-handoff.json` records only the response status and redirect origin/path, never its query string. Off-origin handoffs fail explicitly. `browser-checkpoint.json` includes document counts, navigation times and the CMS-update timing to distinguish reload or read-after-write failures from an unavailable tunnel.
+
 WordPress imports, Contentful imports, cache tags and tag-based CDN invalidation are excluded from the current remaining-gap round. Existing historical evidence for those areas is retained.
 
 The CDA scenario defaults to an empty inline-block allowlist. Add `--variant inline-blocks` to seed real inline blocks and independently verify their rendering. This exercises both scalar and record-list shapes of the generated GraphQL field.

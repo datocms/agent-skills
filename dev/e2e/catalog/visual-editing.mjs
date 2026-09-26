@@ -8,6 +8,7 @@ import { chromium } from "./plugin/node_modules/playwright/index.mjs";
 import * as cda from "./cda.mjs";
 import { checkEmbeddedPreview } from "./preview-host.mjs";
 import { checkHostedVisual } from "./hosted-visual.mjs";
+import { resolveVisualTransport, assertSameOriginRedirect, waitForPublicTunnel } from "./visual-transport.mjs";
 import {
   configureFramework,
   configureEnvironment,
@@ -30,16 +31,28 @@ export async function prepare(options) {
     editingBase && new URL(editingBase).hostname.endsWith(".admin.datocms.com"),
     "Set E2E_DATOCMS_EDITING_BASE to the authorized project admin URL",
   );
+  const { port: requestedPort, publicOrigin } = resolveVisualTransport();
   const state = await cda.prepare(options);
+  state.publicOrigin = publicOrigin;
   state.framework = options.framework ?? "nextjs";
   state.hostedEditor = options.hostedEditor ?? false;
   const reservation = createServer();
-  await new Promise((r) => reservation.listen(0, "127.0.0.1", r));
+  await new Promise((resolve, reject) => {
+    reservation.once("error", reject);
+    reservation.listen(requestedPort, "127.0.0.1", resolve);
+  });
   state.port = reservation.address().port;
   await new Promise((r) => reservation.close(r));
   // NextURL canonicalizes loopback IPs to localhost. Keep cookie hosts stable
   // when an implementation constructs an absolute redirect from request.url.
-  state.origin = `http://localhost:${state.port}`;
+  state.origin = publicOrigin ?? `http://localhost:${state.port}`;
+  options.save("transport.json", {
+    mode: publicOrigin ? "https-public-origin" : "localhost",
+    bindHost: "127.0.0.1",
+    port: state.port,
+    origin: state.origin,
+    externalTransportManagedBy: publicOrigin ? "operator" : null,
+  });
   state.environment.SECRET_API_TOKEN = randomUUID();
   options.secrets.push(state.environment.SECRET_API_TOKEN);
   state.environment.DATOCMS_BASE_EDITING_URL = new URL(editingBase).origin;
@@ -92,6 +105,16 @@ export async function check({
     serverLog += b;
   });
   let browser, page;
+  let cmsUpdate;
+  const frameNavigations = [];
+  const safeLocation = (value) => {
+    try {
+      const url = new URL(value);
+      return { origin: url.origin, path: url.pathname };
+    } catch {
+      return { origin: null, path: null };
+    }
+  };
   const checks = [],
     errors = [];
   try {
@@ -99,14 +122,16 @@ export async function check({
     for (let attempt = 0; attempt < 60; attempt++) {
       try {
         // Only /articles/[slug] is required by the task. A root-page 404
-        // still proves the listener is ready; actual routes are checked below.
-        await fetch(state.origin);
+        // still proves the listener is ready. Probe loopback so an upstream
+        // tunnel's early 502 does not start the public-origin checks too soon.
+        await fetch(`http://127.0.0.1:${state.port}`);
         ready = true;
         break;
       } catch {}
       await new Promise((r) => setTimeout(r, 500));
     }
     assert.ok(ready, "Production server did not start");
+    if (state.publicOrigin) await waitForPublicTunnel(state.origin);
     browser = await chromium.launch({
       channel: process.env.E2E_BROWSER_CHANNEL ?? "chrome",
       headless: true,
@@ -114,6 +139,13 @@ export async function check({
     const context = await browser.newContext();
     page = await context.newPage();
     page.on("pageerror", (e) => errors.push(e.message));
+    page.on("framenavigated", (frame) => {
+      frameNavigations.push({
+        timestamp: Date.now(),
+        mainFrame: frame === page.mainFrame(),
+        ...safeLocation(frame.url()),
+      });
+    });
     // Capture the real click-to-edit destination without navigating to the CMS.
     await page.addInitScript(() => {
       window.editDestinations = [];
@@ -121,7 +153,15 @@ export async function check({
         window.editDestinations.push(String(url));
         return null;
       };
-      window.originalDocument = crypto.randomUUID();
+      window.originalDocument = crypto.randomUUID?.() ?? String(Math.random());
+      window.documentLifecycle = { docs: null, timeOrigin: performance.timeOrigin };
+      try {
+        sessionStorage.docs = String((Number(sessionStorage.docs) || 0) + 1);
+        window.documentLifecycle.docs = Number(sessionStorage.docs);
+      } catch {
+        // Error/opaque documents can deny storage without disabling the rest
+        // of the navigation and subscription diagnostics.
+      }
       window.subscriptionUpdates = 0;
       const OriginalEventSource = window.EventSource;
       window.EventSource = class extends OriginalEventSource {
@@ -185,6 +225,18 @@ export async function check({
     const draftUrl = links.find(
       (link) => new URL(link.url).pathname === "/api/draft-mode/enable",
     ).url;
+    const handoff = await context.request.get(draftUrl, { maxRedirects: 0 });
+    const locationHeader = handoff.headers().location;
+    let location;
+    try {
+      if (locationHeader) location = new URL(locationHeader, draftUrl);
+    } catch {}
+    save("draft-handoff.json", {
+      status: handoff.status(),
+      locationOrigin: location?.origin ?? null,
+      locationPath: location?.pathname ?? null,
+    });
+    assertSameOriginRedirect(handoff.status(), locationHeader, draftUrl, state.origin);
     await page.goto(draftUrl);
     // Content Link may retain invisible stega metadata in the text node.
     await page
@@ -253,9 +305,11 @@ export async function check({
       { timeout: 45000 },
     );
     const liveTitle = `Live edit ${state.marker}`;
+    cmsUpdate = { startedAt: Date.now(), completedAt: null };
     await project.cmaClient.items.update(state.records[0].id, {
       title: { en: liveTitle, it: `Bozza ${state.marker}` },
     });
+    cmsUpdate.completedAt = Date.now();
     await page
       .getByRole("heading", { level: 1 })
       .filter({ hasText: liveTitle })
@@ -301,7 +355,12 @@ export async function check({
       save("browser-checkpoint.json", {
         checks,
         errors,
-        url: page.url(),
+        url: safeLocation(page.url()),
+        frameNavigations,
+        cmsUpdate: cmsUpdate ?? null,
+        documentLifecycle: await page
+          .evaluate(() => window.documentLifecycle ?? null)
+          .catch(() => null),
         visibleText: await page
           .locator("body")
           .innerText()
