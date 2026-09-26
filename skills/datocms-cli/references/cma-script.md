@@ -178,4 +178,4 @@ npx datocms cma:script tmp/scripts/backfill-slugs.ts --environment=staging
 | Migration (`datocms-cli`) | Code that must be **committed, versioned, and replayed** across environments. Use `migrations:new` to scaffold — file-mode script can be promoted with `mv` since imports and signature already match. |
 | Checked-in `buildClient()` script (**datocms-cma**) | **Unattended runtime** code: CI, app server, webhook, long-lived automation. Needs CMA token in environment. |
 
-> **Method lookup:** `npx datocms cma:docs items self` documents `client.items.find()` / `cma:call items find`; `npx datocms cma:docs items update` documents `client.items.update()`. Docs actions and SDK methods are different names: discover other actions with `cma:docs <resource>`.
+> **Method lookup:** docs actions are REST names, not SDK methods: `npx datocms cma:docs items instances` documents `client.items.list()`, `cma:docs items self` documents `client.items.find()` / `cma:call items find`; `create`/`update`/`destroy` match. Discover others with `cma:docs <resource>`.

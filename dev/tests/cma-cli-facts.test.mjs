@@ -116,3 +116,20 @@ test('schema reference requires ordering_direction with automatic ordering', () 
   assert.match(installed('@datocms/cma-client/dist/types/generated/ApiTypes.d.ts'), /ordering_direction\?: null \| 'asc' \| 'desc'/);
   assert.match(skill('datocms-cma/references/schema.md'), /`ordering_field` or `ordering_meta` requires `ordering_direction`[^\n]*reports the error on the ordering attribute/);
 });
+
+test('docs action names map REST rels to list and find SDK methods', () => {
+  const resources = JSON.parse(installed('@datocms/cma-client/resources.json'));
+  for (const type of ['item', 'item_type', 'field']) {
+    const resource = resources.find((entry) => entry.jsonApiType === type);
+    assert.ok(resource, type);
+    assert.equal(resource.endpoints.find((entry) => entry.rel === 'instances')?.name, 'list', type);
+    assert.equal(resource.endpoints.find((entry) => entry.rel === 'self')?.name, 'find', type);
+    assert.ok(!resource.endpoints.some((entry) => entry.rel === 'list'), type);
+  }
+});
+
+test('CLI references explain the docs actions for list and find', () => {
+  assert.match(skill('datocms-cli/references/cma-script.md'), /`npx datocms cma:docs items instances` documents `client\.items\.list\(\)`/);
+  assert.match(skill('datocms-cli/references/creating-migrations.md'), /Docs actions: `instances` = list, `self` = find/);
+  assert.doesNotMatch(skill('datocms-cma/references/resource-gotchas.md'), /create\/update\/list\/find\/destroy/);
+});

@@ -18,7 +18,7 @@ In CLI mode, use `npx datocms cma:docs <resource> <action>`; command options liv
 
 ## Webhooks (`webhooks`)
 
-CLI lookup: `cma:docs webhooks` covers create/update/list/find/destroy, `events`/`filters`/`custom_payload` shape.
+CLI lookup: `cma:docs webhooks` covers create/update/instances/self/destroy, `events`/`filters`/`custom_payload` shape.
 
 Operational notes:
 
@@ -35,7 +35,7 @@ Operational notes:
 
 ## Build triggers (`buildTriggers`)
 
-CLI lookup: `cma:docs buildTriggers` covers create/update/list/find/destroy, trigger/abort/reindex actions; deploy history is `buildEvents`. `adapter`: `custom`, `netlify`, `vercel`, `gitlab` only.
+CLI lookup: `cma:docs buildTriggers` covers create/update/instances/self/destroy, trigger/abort/reindex actions; deploy history is `buildEvents`. `adapter`: `custom`, `netlify`, `vercel`, `gitlab` only.
 
 Operational notes:
 
@@ -55,7 +55,7 @@ Operational notes:
 
 ## Workflows (`workflows`)
 
-CLI lookup: `cma:docs workflows` covers create/update/list/find/destroy, `stages` array shape.
+CLI lookup: `cma:docs workflows` covers create/update/instances/self/destroy, `stages` array shape.
 
 Operational notes:
 
@@ -65,7 +65,7 @@ Operational notes:
 
 ## Saved filters (`itemTypeFilters`, `uploadFilters`)
 
-CLI lookup: `cma:docs itemTypeFilters`, `cma:docs uploadFilters` cover create/update/list/find/destroy, `filter` / `columns` / `order_by` / `shared` attributes.
+CLI lookup: `cma:docs itemTypeFilters`, `cma:docs uploadFilters` cover create/update/instances/self/destroy, `filter` / `columns` / `order_by` / `shared` attributes.
 
 Operational notes:
 
@@ -75,7 +75,7 @@ Operational notes:
 
 ## Plugins (`plugins`)
 
-CLI lookup: `cma:docs plugins` covers create/update/list/find/destroy/fields and plugin attributes.
+CLI lookup: `cma:docs plugins` covers create/update/instances/self/destroy/fields and plugin attributes.
 
 Operational notes:
 
@@ -117,7 +117,7 @@ Omitting `parameters` retains the saved global settings. The raw request bypasse
 
 ## Dashboard and schema menus (`menuItems`, `schemaMenuItems`)
 
-CLI lookup: `cma:docs menuItems`, `cma:docs schemaMenuItems` cover create/update/list/find/destroy, `label` / `position` / `parent` / `item_type` / `external_url` attributes.
+CLI lookup: `cma:docs menuItems`, `cma:docs schemaMenuItems` cover create/update/instances/self/destroy, `label` / `position` / `parent` / `item_type` / `external_url` attributes.
 
 Operational notes:
 
