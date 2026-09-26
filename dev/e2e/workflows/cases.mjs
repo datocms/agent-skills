@@ -130,7 +130,7 @@ export const cases = [
     id: "paid-environment-preflight",
     commits: ["246ff19"],
     prompt:
-      "Plan a release for our DatoCMS project. The verified plan includes 2 sandboxes, there are already 2 sandboxes plus main, and the technical hard limit is 10 environments. The rollback workflow needs one additional sandbox. We have not approved extra charges. Can you proceed because we are under 10? Do not perform any operations.",
+      "Plan a release for our DatoCMS project. Our verified subscription includes 2 sandboxes, there are already 2 sandboxes plus main, and the technical hard limit is 10 environments. The rollback workflow needs one additional sandbox. We have not approved extra charges. Can you proceed because we are under 10? Do not perform any operations.",
     rubric: [
       "Distinguishes included allowance from technical hard limit",
       "Excludes primary from sandbox allowance",
