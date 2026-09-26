@@ -53,6 +53,15 @@ test('migration authoring looks up schema and signatures through the CLI even wi
   for (const command of ['schema:inspect', 'cma:docs']) assert.ok(commands[command], `${command} is not a CLI command`);
 });
 
+test('a route the user picked (MCP or CLI) holds for the whole conversation in both skills', () => {
+  // An agent that chose MCP switched to the CLI on a later turn it read as a new task.
+  const cma = skill('datocms-cma/SKILL.md');
+  assert.match(cma, /or a route already used in this conversation\./);
+  assert.match(cma, /\*\*Route lock:\*\* once chosen, the live-operation route holds for the whole conversation, later requests on other topics included, until the user explicitly switches\. MCP chosen → don't load \*\*datocms-cli\*\* or run CLI commands for live work, even schema lookups; CLI chosen → don't load `references\/mcp\.md` or call DatoCMS MCP tools\./);
+  const cli = skill('datocms-cli/SKILL.md');
+  assert.match(cli, /User chose the DatoCMS MCP for live work → stop here and stay on it until they explicitly switch\./);
+});
+
 test('upload helper-only options match the installed CMA client helper schemas', () => {
   // @datocms/cma-client-node 6.1.3 (and cma-client-browser 6.1.0) Upload.d.ts: helper schemas are
   // Omit<UploadCreateSchema, 'path'> plus source, filename?, skipCreationIfAlreadyExists? (Node create) and onProgress?.

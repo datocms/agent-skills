@@ -23,7 +23,7 @@ Pure Structured Text conversion or local DAST work → **datocms-structured-text
 
 ## Step 1: Detect Context
 
-Reuse established CLI context. For live reads or content operations, follow **datocms-cma** route selection first. Don't install CLI solely to displace a working current remote MCP connection.
+Reuse established CLI context. For live reads or content operations, follow **datocms-cma** route selection first. Don't install CLI solely to displace a working current remote MCP connection. User chose the DatoCMS MCP for live work → stop here and stay on it until they explicitly switch.
 
 Bootstrap only for selected CLI execution; explaining commands needs no connection. CLI-specific migrations, linking, profiles, imports, and type generation stay here.
 
