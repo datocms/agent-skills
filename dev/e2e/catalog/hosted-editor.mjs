@@ -12,6 +12,7 @@ import {
   destroyTestProject,
 } from "../lib/createTestProject.ts";
 import { sourceHashes } from "../lib/nativeSession.ts";
+import { resolvePluginTransport, pluginOrigin } from "./plugin-transport.mjs";
 
 // The browser operator uses the actual signed-in editor. No browser cookies or
 // management tokens enter the plugin, which receives no extra permissions.
@@ -94,6 +95,7 @@ async function snapshot(client) {
   };
 }
 try {
+  const transport = resolvePluginTransport();
   const built = spawnSync("npm", ["run", "build"], {
     cwd: workspace,
     encoding: "utf8",
@@ -146,8 +148,18 @@ try {
     );
     response.end(readFileSync(file));
   });
-  await new Promise((r) => server.listen(0, "127.0.0.1", r));
-  const origin = `http://localhost:${server.address().port}`;
+  await new Promise((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(transport.port, "127.0.0.1", resolve);
+  });
+  const origin = pluginOrigin(server.address().port, transport.publicOrigin);
+  save("transport.json", {
+    mode: transport.publicOrigin ? "https-public-origin" : "loopback",
+    bindHost: "127.0.0.1",
+    port: server.address().port,
+    origin,
+    externalTransportManagedBy: transport.publicOrigin ? "operator" : null,
+  });
   const client = project.cmaClient;
   await client.site.update({ locales: ["en", "it"] });
   plugin = await client.plugins.create({
@@ -200,6 +212,13 @@ try {
         ? "In the actual editor, open the Title tools sidebar and its Edit title modal. Change English Title to Hosted title proof with Apply, then save the record and reload to verify persistence. Leave Italian and Untouched note unchanged. Write finish.json with modalApplied and savedAndReloaded observations; the runner independently verifies saved CMA state."
         : "In the actual editor, change English Title through the plugin to Hosted title proof, save, reload, and verify the persisted value and character count. Leave Italian and Untouched note unchanged. Write finish.json with browser observations; the runner independently verifies saved CMA state.",
     expectedTitle: "Hosted title proof",
+    localFailureDiagnostics: {
+      when: "If the editor cannot load the plugin iframe from the local origin",
+      recordIn: "finish.json",
+      chromeVersion: "Record the actual Chrome version",
+      permissionPrompt: "Record any local-network or site-permission prompt and its outcome",
+      iframeConsoleErrors: "Record the iframe console errors, or state that none were observed",
+    },
   });
   console.log(
     JSON.stringify({ status: "awaiting-browser", output, editorUrl }),
