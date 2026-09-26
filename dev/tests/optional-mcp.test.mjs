@@ -154,6 +154,38 @@ function withReviewedEditingCorrections(source) {
       'Creating brand new structured text content,',
       'Dastdown 6.0.0 changes newlines inside code-marked spans into literal `<br/>` text. This pre-write check catches that while tolerating span merging and mark normalization; it supplements the structure, marks, links, and reference checks, not the saved-content verification. If it fails, transform the original AST instead. Omit the imports when the selected runtime already supplies these helpers.\n\nCreating brand new structured text content,',
     ],
+    [
+      [
+        'Site update + per-item backfill in ONE script. Spread existing per-locale objects.',
+        '', '```ts',
+        'await client.site.update({ locales: ["en", "it", "es"] });',
+        '',
+        'const items = await client.items.list<Schema.FaqEntry>({ filter: { type: "faq_entry" }, version: "current" });',
+        'for (const it of items) {',
+        '  await client.items.update<Schema.FaqEntry>(it.id, {',
+        '    question: { ...it.question, es: "..." },',
+        '    answer:   { ...it.answer,   es: "..." },',
+        '  });',
+        '}', '```',
+      ].join('\n'),
+      [
+        "Adding a locale = two executions: record types come from the environment's locales before a script runs, so the script that adds a locale cannot type it. 1) Append the locale (keep order; first = primary), read `site.locales` back. 2) New execution (regenerate any local schema file first): backfill. Spread existing per-locale objects.",
+        '', '```ts',
+        '// Execution 1',
+        'const site = await client.site.find();',
+        'await client.site.update({ locales: [...site.locales, "es"] });',
+        'console.log((await client.site.find()).locales);',
+        '```', '', '```ts',
+        '// Execution 2: types now include es',
+        'const items = await client.items.list<Schema.FaqEntry>({ filter: { type: "faq_entry" }, version: "current" });',
+        'for (const it of items) {',
+        '  await client.items.update<Schema.FaqEntry>(it.id, {',
+        '    question: { ...it.question, es: "..." },',
+        '    answer:   { ...it.answer,   es: "..." },',
+        '  });',
+        '}', '```',
+      ].join('\n'),
+    ],
   ];
   for (const [before, after] of corrections) {
     assert.equal(source.split(before).length, 2, 'apply each reviewed correction exactly once');

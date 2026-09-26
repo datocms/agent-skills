@@ -136,11 +136,19 @@ test('shipped node transformation preserves inline and nested content while remo
 });
 
 test('shipped locale backfill updates every page and preserves existing translations', async () => {
-  const source = shippedExample(
+  const addLocale = shippedExample(
     'skills/datocms-cma/references/editing-records.md',
     'await client.site.update({ locales:',
   );
-  const client = cma.buildClient({ apiToken: 'synthetic-test-token' });
+  const backfill = shippedExample(
+    'skills/datocms-cma/references/editing-records.md',
+    'listPagedIterator<Schema.FaqEntry>',
+  );
+  assert.notEqual(addLocale, backfill, 'locale setup and backfill require separate executions');
+  const client = cma.buildClient({
+    apiToken: 'synthetic-test-token',
+    fetchFn: async () => { throw new Error('Unexpected network request in the locale backfill fixture'); },
+  });
   const records = Array.from({ length: 35 }, (_, index) => ({
     id: `faq-${String(index).padStart(2, '0')}`,
     type: 'item',
@@ -154,12 +162,18 @@ test('shipped locale backfill updates every page and preserves existing translat
   const pages = [];
   const orderings = [];
   let localesUpdated = false;
+  let siteReads = 0;
+  client.site.find = async () => {
+    siteReads++;
+    return { locales: localesUpdated ? ['en', 'it', 'es'] : ['en', 'it'] };
+  };
   client.site.update = async ({ locales }) => {
+    assert.equal(localesUpdated, false, 'add the locale once');
     assert.deepEqual(locales, ['en', 'it', 'es']);
     localesUpdated = true;
   };
   client.items.rawList = async ({ filter, version, order_by, page = { limit: 30, offset: 0 } }) => {
-    assert.equal(localesUpdated, true, 'enable the locale before backfilling it');
+    assert.equal(localesUpdated, true, "run 2 happens after run 1's locale update");
     assert.equal(filter.type, 'faq_entry');
     assert.equal(version, 'current');
     pages.push({ ...page });
@@ -183,7 +197,14 @@ test('shipped locale backfill updates every page and preserves existing translat
     updatedIds.push(id);
   };
 
-  await new AsyncFunction('client', source)(client);
+  const readbacks = [];
+  await new AsyncFunction('client', 'console', addLocale)(client, { log: value => readbacks.push(value) });
+  assert.equal(localesUpdated, true);
+  assert.equal(siteReads, 2, 'read the locales before and after the update');
+  assert.deepEqual(readbacks, [['en', 'it', 'es']]);
+  assert.deepEqual(updatedIds, [], 'execution 1 only enables the locale');
+  assert.deepEqual(pages, [], 'backfill starts in execution 2');
+  await new AsyncFunction('client', backfill)(client);
 
   assert.deepEqual(updatedIds, records.map((record) => record.id));
   assert.deepEqual(pages, [{ limit: 30, offset: 0 }, { limit: 30, offset: 30 }]);

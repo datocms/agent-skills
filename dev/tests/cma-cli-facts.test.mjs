@@ -156,3 +156,23 @@ test('stdin scripts execute with the CLI workspace as their working directory', 
 test('stdin script guidance requires absolute local file paths', () => {
   assert.match(skill('datocms-cli/references/cma-script.md'), /absolute local file paths/);
 });
+
+test('stdin locale schema is generated and validated before the script executes', () => {
+  const source = installed('datocms/lib/commands/cma/script.js');
+  const start = source.indexOf('async runStdinMode');
+  assert.ok(start >= 0, 'stdin execution path must exist');
+  const stdin = source.slice(start);
+  const generate = stdin.indexOf('writeScriptAndSchema');
+  const validate = stdin.indexOf('workspace.validate(');
+  const execute = stdin.indexOf('workspace.execute(');
+  assert.ok(generate >= 0 && generate < validate && validate < execute, 'schema generation and type validation precede every stdin execution');
+  assert.match(installed('@datocms/cma-schema-types-generator/dist/esm/index.js'), /data\.attributes\.locales/);
+});
+
+test('a locale is never typed in the script that adds it', () => {
+  const examples = [...skill('datocms-cma/references/editing-records.md').matchAll(/```ts\n([\s\S]*?)\n```/g)];
+  assert.ok(examples.length > 0);
+  for (const [, body] of examples) {
+    assert.ok(!(/site\.update\(\{\s*locales/.test(body) && /items\.update</.test(body)), 'Adding a locale and typed record backfill require separate executions');
+  }
+});

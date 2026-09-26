@@ -413,11 +413,17 @@ await client.items.update<Schema.Product>(id, { // duplicate
 
 ## Localized fields and adding a locale
 
-Site update + per-item backfill in ONE script. Spread existing per-locale objects.
+Adding a locale = two executions: record types come from the environment's locales before a script runs, so the script that adds a locale cannot type it. 1) Append the locale (keep order; first = primary), read `site.locales` back. 2) New execution (regenerate any local schema file first): backfill. Spread existing per-locale objects.
 
 ```ts
-await client.site.update({ locales: ["en", "it", "es"] });
+// Execution 1
+const site = await client.site.find();
+await client.site.update({ locales: [...site.locales, "es"] });
+console.log((await client.site.find()).locales);
+```
 
+```ts
+// Execution 2: types now include es
 for await (const it of client.items.listPagedIterator<Schema.FaqEntry>({
   filter: { type: "faq_entry" }, version: "current",
   order_by: "id_ASC", // Keep pagination order stable while updating translations.
