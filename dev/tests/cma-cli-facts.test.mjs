@@ -46,6 +46,13 @@ test('every CMA statement of the nested items page cap agrees with the installed
   ]) assert.match(skill(file), pattern, file);
 });
 
+test('migration authoring looks up schema and signatures through the CLI even with an MCP connected', () => {
+  // Agents writing a local migration beside a connected MCP asked MCP tools for signatures and failed the route.
+  assert.match(skill('datocms-cli/references/creating-migrations.md'), /DatoCMS MCP connected: look up schema \(`schema:inspect`\) and method signatures \(`cma:docs <resource> <action>`\) via CLI/);
+  const { commands } = require('datocms/oclif.manifest.json');
+  for (const command of ['schema:inspect', 'cma:docs']) assert.ok(commands[command], `${command} is not a CLI command`);
+});
+
 test('upload helper-only options match the installed CMA client helper schemas', () => {
   // @datocms/cma-client-node 6.1.3 (and cma-client-browser 6.1.0) Upload.d.ts: helper schemas are
   // Omit<UploadCreateSchema, 'path'> plus source, filename?, skipCreationIfAlreadyExists? (Node create) and onProgress?.

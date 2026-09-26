@@ -43,6 +43,8 @@ export default async function (client: Client): Promise<void> {
 
 For JavaScript, use `module.exports = async (client) => {}`. The supplied client is the CMA client; load `datocms-cma` references for operation bodies.
 
+CLI usable + DatoCMS MCP connected: look up schema (`schema:inspect`) and method signatures (`cma:docs <resource> <action>`) via CLI, not MCP tools, unless user chose MCP.
+
 Run `npx datocms migrations:new --help` for all available flags.
 
 > **Precondition:** every `migrations:new` (plain scaffolding too) needs a resolvable CMA token via a linked project (`datocms link`), `--api-token` flag, or environment variable.
