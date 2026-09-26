@@ -259,7 +259,7 @@ test('shared preview-links example preserves complete destinations and special-c
 });
 
 test('nextjs preview links take their origin from SITE_URL, not the request URL', async () => {
-  // Self-hosted Next.js reports request.url on its bind host (http://localhost:<port>) whatever Host the editor used.
+  // Self-hosted Next.js reports request.url (bind host; scheme from x-forwarded-proto), whatever Host the editor used.
   const previews = loadPreviewEndpoint('nextjs', 'preview links', 'preview-secret', 'preview-secret', {
     requestUrl: 'http://localhost:3000/api/preview', recordStatus: 'updated',
   });

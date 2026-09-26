@@ -163,3 +163,10 @@ test('Remix / React Router guidance uses live packages and detects framework mod
   const remix = join(skill, 'references/remix.md');
   assert.ok(!existsSync(remix) || !/not bundled here yet/.test(readFileSync(remix, 'utf8')), 'dated remix.md stub still shipped');
 });
+
+
+test('Next.js draft routes name the bind-host redirect trap behind a TLS proxy', () => {
+  const next = read('references/nextjs.md');
+  assert.match(next, /Never `NextResponse\.redirect\(new URL\(path, request\.url\)\)`/);
+  assert.match(next, /x-forwarded-proto/);
+});

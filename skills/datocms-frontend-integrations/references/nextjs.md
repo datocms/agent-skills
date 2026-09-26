@@ -73,7 +73,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
 Uses Next.js `draftMode()` — no JWT needed. Call `makeDraftModeWorkWithinIframes()` after enable/disable to add `partitioned: true`. `export const dynamic = 'force-dynamic'` prevents caching.
 
-Keep `redirect()`: relative `Location`. Self-hosted, `request.url` origin = server bind host (`http://localhost:<port>` under `next start`/`next dev`), not `Host` — absolute URLs (preview links) use `SITE_URL` or the repo's `*_SITE_URL` ([site URL owner](seo-concepts.md#canonical-urls-and-site-url)).
+Keep `redirect()`: relative `Location`. Never `NextResponse.redirect(new URL(path, request.url))`: self-hosted, `request.url` = bind host + `x-forwarded-proto` scheme (behind TLS proxy → `https://localhost:<port>`), not `Host` — absolute URLs (preview links) use `SITE_URL` or the repo's `*_SITE_URL` ([site URL owner](seo-concepts.md#canonical-urls-and-site-url)).
 
 ### Disable Endpoint
 
