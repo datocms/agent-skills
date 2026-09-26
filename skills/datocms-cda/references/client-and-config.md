@@ -39,7 +39,7 @@ npm install @datocms/cda-client
 import { executeQuery } from "@datocms/cda-client";
 
 const data = await executeQuery(query, {
-  token: process.env.DATOCMS_CDA_TOKEN!,
+  token: process.env.DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN!,
   // ...other options
 });
 ```
@@ -94,7 +94,7 @@ const data = await executeQuery(query, { /* ... */ });
 ```ts
 try {
   const data = await executeQuery(query, {
-    token: process.env.DATOCMS_CDA_TOKEN!,
+    token: process.env.DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN!,
   });
 } catch (error) {
   if (error instanceof ApiError) {

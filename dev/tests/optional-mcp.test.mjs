@@ -145,6 +145,11 @@ function withReviewedEditingCorrections(source) {
       "| Max page size 500 | Max page size 30 (iterators don't lower `perPage` — keep ≤ 30 → \\~16× more page fetches) |",
     ],
     ['(use w/ `findFirstNode` / `findAllNodes` / `Array#filter`)', '(use w/ `findFirstNode` / `collectNodes` / `Array#filter`)'],
+    // A null guard replaces the cast the reference itself forbids; checked against cma-client 6.1.3 types.
+    [
+      'If TS rejects spread (typically because per-locale value nullable + `Update` shape requires non-null), cast precisely w/ request schema rather than reaching for `Record<string, string>`:\n\n```ts\nquestion: { ...(currentItem.question as NonNullable<FieldValueInRequest<typeof currentItem, "question">>), es: "..." },\n```',
+      'If TS rejects spread (typically because field value may be `null` while `Update` shape requires object), guard the null instead of casting or reaching for `Record<string, string>`:\n\n```ts\nquestion: { ...(currentItem.question ?? {}), es: "..." },\n```',
+    ],
     [
       'Creating brand new structured text content,',
       'Dastdown 6.0.0 changes newlines inside code-marked spans into literal `<br/>` text. This pre-write check catches that while tolerating span merging and mark normalization; it supplements the structure, marks, links, and reference checks, not the saved-content verification. If it fails, transform the original AST instead. Omit the imports when the selected runtime already supplies these helpers.\n\nCreating brand new structured text content,',

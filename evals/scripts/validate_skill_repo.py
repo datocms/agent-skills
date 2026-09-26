@@ -865,6 +865,26 @@ def _validate_plugin_root_has_no_dependency_install(repo_root: Path, errors: lis
         )
 
 
+MAX_TRACKED_FILE_BYTES = 1_000_000
+
+
+def _validate_tracked_file_sizes(repo_root: Path, errors: list[str]) -> None:
+    # Plugin installs copy the whole repo root, so a large run ledger ships to every user.
+    try:
+        listed = subprocess.run(
+            ["git", "ls-files", "-z"], cwd=repo_root, capture_output=True, check=True
+        ).stdout.decode("utf-8")
+    except (OSError, subprocess.CalledProcessError):
+        return  # not a git checkout (e.g. a temp copy): nothing is tracked
+    for rel_path in filter(None, listed.split("\0")):
+        path = repo_root / rel_path
+        if path.is_file() and path.stat().st_size > MAX_TRACKED_FILE_BYTES:
+            errors.append(
+                f"{path}: {path.stat().st_size} bytes; plugin installs copy the whole repo, so keep files over "
+                f"{MAX_TRACKED_FILE_BYTES} bytes out of the tree (link a large run ledger at a commit permalink)"
+            )
+
+
 def _validate_codex_plugin_manifest(repo_root: Path, errors: list[str]) -> None:
     codex_manifest = repo_root / ".codex-plugin" / "plugin.json"
     claude_manifest = repo_root / ".claude-plugin" / "plugin.json"
@@ -986,6 +1006,7 @@ def main() -> int:
     _validate_hosted_mcp_references(repo_root, errors)
     _validate_codex_plugin_manifest(repo_root, errors)
     _validate_plugin_root_has_no_dependency_install(repo_root, errors)
+    _validate_tracked_file_sizes(repo_root, errors)
 
     if args.require_fresh_results_sync:
         _validate_result_fixture_sync(repo_root, errors)
@@ -1019,6 +1040,7 @@ def main() -> int:
     print("[ok] CMA references the hosted MCP server fetches from master are in place")
     print("[ok] Codex plugin manifest is present and synced with Claude Code manifest")
     print("[ok] plugin root has no package.json + lockfile pair that plugin installs would run")
+    print(f"[ok] no tracked file exceeds {MAX_TRACKED_FILE_BYTES} bytes")
     if args.require_clean_git:
         print("[ok] git status is clean (ignoring local-only excluded paths)")
     return 0

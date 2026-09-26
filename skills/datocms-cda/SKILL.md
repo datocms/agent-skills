@@ -121,4 +121,4 @@ This skill covers **reading via GraphQL CDA**. Route to companion skill for:
 
 Query side of that wiring stays here: `includeDrafts`, `contentLink` / `baseEditingUrl` / `_editingUrl`, reading `x-cache-tags` via `rawExecuteQuery`.
 
-Load the specialist only for a DAST task; ordinary GraphQL selection stays here. Missing required reference → install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle.
+Load the specialist only for a DAST task; ordinary GraphQL selection stays here. Missing sibling reference → install that skill from `datocms/agent-skills` or update the full bundle.

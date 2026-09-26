@@ -122,7 +122,7 @@ const content: NonNullable<FieldValueInRequest<typeof currentItem, "body">>["en"
   });
 ```
 
-Keep the original response for inspection and verification. Run typed block edits in one walk over that response (or `parse(editedText, english)`), then append to the writable result. Do not inspect a rewritten block as if it still contained the full response. Preserve values with inferred constants or `JSON.stringify(originalValue)`; do not introduce broad `unknown`/`any` types for snapshots.
+Keep the original response for inspection and verification. Run typed block edits in one walk over that response (or `parse(editedText, english)`), then append to the writable result. Do not inspect a rewritten block as if it still contained the full response. Preserve values with inferred constants or `structuredClone(originalValue)`; do not introduce broad `unknown`/`any` types for snapshots.
 
 Compound predicates such as `(node) => isSpan(node) && node.value === text` can return only `boolean` and lose narrowing. Reapply the corresponding guard before every node-specific access, including verification or logging after re-indexing. Guard paragraph children too: they may be links or inline records; `isParagraph(node)` does not make every child a span.
 
@@ -429,10 +429,10 @@ for await (const it of client.items.listPagedIterator<Schema.FaqEntry>({
 }
 ```
 
-If TS rejects spread (typically because per-locale value nullable + `Update` shape requires non-null), cast precisely w/ request schema rather than reaching for `Record<string, string>`:
+If TS rejects spread (typically because field value may be `null` while `Update` shape requires object), guard the null instead of casting or reaching for `Record<string, string>`:
 
 ```ts
-question: { ...(currentItem.question as NonNullable<FieldValueInRequest<typeof currentItem, "question">>), es: "..." },
+question: { ...(currentItem.question ?? {}), es: "..." },
 ```
 
 For block-bearing localized fields same per-locale shape applies — each locale key holds whatever value field expects (array of blocks/IDs for `rich_text`, full object or `null` for `single_block`, DAST tree for `structured_text`).

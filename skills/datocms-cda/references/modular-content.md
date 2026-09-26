@@ -226,7 +226,7 @@ const query = `
 `;
 
 const data = await executeQuery(query, {
-  token: process.env.DATOCMS_CDA_TOKEN!,
+  token: process.env.DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN!,
   variables: { slug: "about" },
 });
 

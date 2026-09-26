@@ -101,3 +101,5 @@ Report what was actually executed and verified, including partial or uncertain o
 ## Other tasks
 
 Use **datocms-cli** for CLI configuration, migrations, schema generation, CLI environment workflows, onboarding imports, plugin management, multi-project sync, and CI/CD. Use **datocms-setup** when the user wants a setup planned or walked through (migrations plus release, multi-project sync, imports into a project, webhooks/build triggers). Use **datocms-structured-text** for pure DAST construction, inspection, editing, and conversion, before any project setup; combine it with this skill when a CMA operation persists the document (routine record operations don't need it). Use **datocms-cda** for GraphQL content reads, **datocms-frontend-integrations** for framework code, **datocms-plugin** for plugin development, and **datocms-content-modeling** for modeling decisions without implementation.
+
+Missing sibling reference → install that skill from `datocms/agent-skills` or update the full bundle.

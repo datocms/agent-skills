@@ -42,22 +42,7 @@ Then mount the Svelte component in a root layout (it renders no visible UI):
 
 ## SvelteKit Integration
 
-For full [Web Previews plugin](https://www.datocms.com/marketplace/plugins/i/datocms-plugin-web-previews) integration, provide `onNavigateTo` and `currentPath` to sync preview navigation with the CMS:
-
-```svelte
-<script>
-  import { ContentLink } from '@datocms/svelte';
-  import { goto } from '$app/navigation';
-  import { page } from '$app/state';
-</script>
-
-<ContentLink
-  onNavigateTo={(path) => goto(path)}
-  currentPath={page.url.pathname}
-/>
-```
-
-Place this in your root `+layout.svelte`:
+For full [Web Previews plugin](https://www.datocms.com/marketplace/plugins/i/datocms-plugin-web-previews) integration, provide `onNavigateTo` and `currentPath` to sync preview navigation with the CMS. Mount it in your root `+layout.svelte`:
 
 ```svelte
 <!-- src/routes/+layout.svelte -->
@@ -65,6 +50,8 @@ Place this in your root `+layout.svelte`:
   import { ContentLink } from '@datocms/svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
+
+  const { children } = $props();
 </script>
 
 <ContentLink
@@ -72,7 +59,7 @@ Place this in your root `+layout.svelte`:
   currentPath={page.url.pathname}
 />
 
-<slot />
+{@render children()}
 ```
 
 ## Enabling Click-to-Edit

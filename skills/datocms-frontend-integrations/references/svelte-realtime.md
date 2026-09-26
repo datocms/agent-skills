@@ -4,6 +4,8 @@ Svelte store for live content updates via DatoCMS's [Real-time Updates API](http
 
 See `realtime-concepts.md` for shared initialization options, connection status values, error object shape, and the `fetcher` gotcha.
 
+`token` reaches the browser: pass the draft CDA token (e.g. `DATOCMS_DRAFT_CONTENT_CDA_TOKEN`) in from the server only while draft mode is on; never inline one. SvelteKit wiring: [sveltekit.md › Real-Time Updates](sveltekit.md#real-time-updates-optional).
+
 ## Contents
 
 - Basic Usage
@@ -20,6 +22,8 @@ See `realtime-concepts.md` for shared initialization options, connection status 
 <script>
   import { querySubscription } from '@datocms/svelte';
 
+  export let token;
+
   const subscription = querySubscription({
     query: `
       query {
@@ -29,7 +33,7 @@ See `realtime-concepts.md` for shared initialization options, connection status 
         }
       }
     `,
-    token: 'YOUR_API_TOKEN',
+    token,
   });
 
   $: ({ data, error, status } = $subscription);
@@ -118,6 +122,8 @@ When used in a draft mode context, pass the relevant options:
   import { querySubscription } from '@datocms/svelte';
   import { Image, Head, StructuredText } from '@datocms/svelte';
 
+  export let token;
+
   const query = `
     query AppQuery($first: IntType) {
       page: blog {
@@ -155,7 +161,7 @@ When used in a draft mode context, pass the relevant options:
   const subscription = querySubscription({
     query,
     variables: { first: 4 },
-    token: 'YOUR_API_TOKEN',
+    token,
   });
 
   $: ({ data, error, status } = $subscription);
@@ -173,7 +179,7 @@ When used in a draft mode context, pass the relevant options:
 
 <div>
   <p>
-    {#if status === 'connected'}<span class="connected-badge" />{/if}
+    {#if status === 'connected'}<span class="connected-badge"></span>{/if}
     {statusMessage[status]}
   </p>
 

@@ -14,7 +14,7 @@ Set `includeDrafts: true` to include draft (unpublished) content in responses. T
 
 ```ts
 const data = await executeQuery(query, {
-  token: process.env.DATOCMS_CDA_TOKEN!,
+  token: process.env.DATOCMS_DRAFT_CONTENT_CDA_TOKEN!,
   includeDrafts: true,
 });
 ```
@@ -35,7 +35,7 @@ Set `excludeInvalid: true` to filter out invalid records and **narrow GraphQL ty
 
 ```ts
 const data = await executeQuery(query, {
-  token: process.env.DATOCMS_CDA_TOKEN!,
+  token: process.env.DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN!,
   excludeInvalid: true,
 });
 ```
@@ -60,7 +60,7 @@ Target a specific DatoCMS environment (instead of the primary):
 
 ```ts
 const data = await executeQuery(query, {
-  token: process.env.DATOCMS_CDA_TOKEN!,
+  token: process.env.DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN!,
   environment: "staging",
 });
 ```
@@ -81,7 +81,7 @@ Enable cache tags to receive opaque tag strings in the response headers. These a
 import { rawExecuteQuery } from "@datocms/cda-client";
 
 const [data, response] = await rawExecuteQuery(query, {
-  token: process.env.DATOCMS_CDA_TOKEN!,
+  token: process.env.DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN!,
   returnCacheTags: true,
 });
 
@@ -159,7 +159,9 @@ Draft only — stega metadata in string fields powers click-to-edit overlays (`@
 
 ```ts
 const data = await executeQuery(query, {
-  token: process.env.DATOCMS_CDA_TOKEN!,
+  token: includeDrafts
+    ? process.env.DATOCMS_DRAFT_CONTENT_CDA_TOKEN!
+    : process.env.DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN!,
   includeDrafts,
   contentLink: includeDrafts ? "v1" : undefined,
   baseEditingUrl: "https://your-project.admin.datocms.com",

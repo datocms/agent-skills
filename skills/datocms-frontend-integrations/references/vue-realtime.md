@@ -4,6 +4,8 @@ Vue 3 composable for live content updates via DatoCMS's [Real-time Updates API](
 
 See `realtime-concepts.md` for shared initialization options, connection status values, error object shape, and the `fetcher` gotcha.
 
+`token` reaches the browser: pass the draft CDA token (e.g. `DATOCMS_DRAFT_CONTENT_CDA_TOKEN`) in from the server only while draft mode is on; never inline one. Nuxt wiring: [nuxt.md › Real-Time Updates](nuxt.md#real-time-updates-optional).
+
 In Nuxt, use the [server/client query pattern](./nuxt.md#query-composable-with-real-time-subscription): render server-fetched data during SSR and start the subscription only in the browser. The subscription transport accesses `window`. Pass plain values for `token` and `variables`; those options are not unwrapped from Vue refs. Remount a keyed consumer when its query variables change.
 
 Call `useQuerySubscription` synchronously during setup, before any `await`. For pages that can unmount during connection startup, use the explicit `onScopeDispose`/`subscribeToQuery` ownership pattern in the linked reference: register cleanup before awaiting and close a connection that resolves after disposal. The SDK composable in `vue-datocms` 8.1.19 registers cleanup after connecting and can miss that early unmount.
@@ -25,6 +27,8 @@ Call `useQuerySubscription` synchronously during setup, before any `await`. For 
 <script setup>
 import { useQuerySubscription } from 'vue-datocms';
 
+const props = defineProps({ token: String });
+
 const { status, error, data } = useQuerySubscription({
   query: `
     query {
@@ -34,7 +38,7 @@ const { status, error, data } = useQuerySubscription({
       }
     }
   `,
-  token: 'YOUR_API_TOKEN',
+  token: props.token,
 });
 
 const statusMessage = {
@@ -117,6 +121,8 @@ import { Image, StructuredText, toHead, useQuerySubscription } from 'vue-datocms
 import { useHead } from '@unhead/vue';
 import { computed } from 'vue';
 
+const props = defineProps({ token: String });
+
 const query = `
   query AppQuery($first: IntType) {
     page: blog {
@@ -154,7 +160,7 @@ const query = `
 const { data, error, status } = useQuerySubscription({
   query,
   variables: { first: 4 },
-  token: 'YOUR_API_TOKEN',
+  token: props.token,
 });
 
 const metaTags = computed(() =>

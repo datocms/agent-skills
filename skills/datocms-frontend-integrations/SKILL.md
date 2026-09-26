@@ -246,7 +246,7 @@ At minimum, verify:
 
 ## Cross-Skill Routing
 
-DAST structure/validation → [document model](../datocms-structured-text/references/document-model.md); content traversal/transforms → [editing](../datocms-structured-text/references/editing.md); Markdown/HTML import and framework-independent export → [conversion](../datocms-structured-text/references/conversion.md), all owned by **datocms-structured-text**. Load only for those tasks; component wiring and query/render adapters remain here. Missing required reference → install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle.
+DAST structure/validation → [document model](../datocms-structured-text/references/document-model.md); content traversal/transforms → [editing](../datocms-structured-text/references/editing.md); Markdown/HTML import and framework-independent export → [conversion](../datocms-structured-text/references/conversion.md), all owned by **datocms-structured-text**. Load only for those tasks; component wiring and query/render adapters remain here. Missing sibling reference → install that skill from `datocms/agent-skills` or update the full bundle.
 
 Use companion skills when task leaves this bundle's sweet spot:
 

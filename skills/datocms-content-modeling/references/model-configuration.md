@@ -115,7 +115,7 @@ Model can use exactly one ordering strategy at time. Setting two of these togeth
 - _"Is there domain field that defines order?"_ → `ordering_field`.
 - _"Order is purely chronological and model has no date field?"_ → `ordering_meta`.
 
-`sortable`, `tree`, and `ordering_field` / `ordering_meta` are mutually exclusive in practice — sortable means _manual_ order, while ordering\_\* set means _automatic_ order. Block models must have all three off.
+`sortable`, `tree`, and `ordering_field` / `ordering_meta` are mutually exclusive in practice — sortable means _manual_ order, while ordering\_\* set means _automatic_ order. Block models: `sortable` / `tree` must be off (API enforces); `ordering_field` / `ordering_meta` don't apply to blocks (not validated) — leave unset.
 
 ### Allowed field types for `ordering_field` and `ordering_meta`
 
@@ -197,7 +197,7 @@ Type allowlists are stricter than for `presentation_*_field` because these value
 
 ### Always wire these on user-facing models
 
-If model represents public-facing page or record, wire all three. Editors will routinely forget to fill dedicated SEO field; fallbacks ensure page still ships with sensible meta tags instead of empty strings.
+If model represents public-facing page or record, wire all three. Editors routinely leave dedicated SEO field empty; explicit fallbacks pick the right fields. Unset, `_seoMetaTags` guesses a title and image field but never a description.
 
 ### Don't confuse `title_field` with `presentation_title_field`
 

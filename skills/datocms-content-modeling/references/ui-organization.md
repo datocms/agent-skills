@@ -99,7 +99,7 @@ Models and blocks = **two separate trees** in schema settings. `schema_menu_item
 Every `itemTypes.create` auto-creates menu entries:
 
 - Regular model → `menu_item` in **Content tab** **and** `schema_menu_item` (`kind: "item_type"`) in **Schema tab**
-- Block model → only `schema_menu_item` (`kind: "modular_block"`) in **Schema tab** blocks tree — no Content tab entry, can't add one; editors reach block instances through parent record
+- Block model → only `schema_menu_item` (`kind: "modular_block"`) in **Schema tab** blocks tree — no Content tab entry (dashboard menu form excludes block models; API doesn't enforce it); editors reach block instances through parent record
 
 `schema_menu_item` **always** created — no skip flag. Can only redirect placement. Content tab `menu_item` = only one that can skip outright.
 

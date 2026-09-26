@@ -2,7 +2,7 @@
 
 The current comparison passes **48/48 required candidate routing, scope, and duplicate-write checks**, **48/48 strict content/script checks**, and all context gates. The strict `gatesPassed` result is **true**. The retained real CLI assessment passes **6/6 strict checks**, and the retained production-hosted MCP assessment passes **48/48 assertions across six content edits**. Earlier failed attempts remain visible.
 
-All new behavioral sessions use `gpt-5.6-terra` with `medium` reasoning and native client version `0.154.0-alpha.6.2`. The [controlled results](terra-results.json) and [real CLI results](terra-live-results.json) record source hashes, actual guidance reads and repeats, scripts, tool-output tokens, usage, assertions, and earlier observations. Earlier Astra and Luna rounds and the retention audit are in git history (removed 2026-09-26); they are not relabeled as Terra runs.
+All new behavioral sessions use `gpt-5.6-terra` with `medium` reasoning and native client version `0.154.0-alpha.6.2`. The [controlled results](https://github.com/datocms/agent-skills/blob/5471d71c7f1ed0e3c18aeb834d04c5dd276f4e27/dev/evals/coexistence/terra-results.json) and [real CLI results](https://github.com/datocms/agent-skills/blob/5471d71c7f1ed0e3c18aeb834d04c5dd276f4e27/dev/evals/coexistence/terra-live-results.json) record source hashes, actual guidance reads and repeats, scripts, tool-output tokens, usage, assertions, and earlier observations. Earlier Astra and Luna rounds and the retention audit are in git history (removed 2026-09-26); they are not relabeled as Terra runs.
 
 ## Corrections
 

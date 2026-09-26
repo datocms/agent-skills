@@ -6,7 +6,7 @@ This follow-up covers the same 26 first-parent commits after `353c06a` through `
 
 This follow-up contains **333 additional native sessions across 66 distinct scenarios**, including intermediate candidates, held-out tasks, and failed attempts. It supplements the earlier 209 sessions.
 
-The [new evidence ledger](2026-09-18-production-readiness.json) records each cohort separately, including failed attempts, native transcript hashes, source snapshots, runtime settings, and independent assertions. Rechecking a saved artifact does not count as another native session. There is no aggregate success rate across different candidates, fixture versions, and kinds of work.
+The [new evidence ledger](https://github.com/datocms/agent-skills/blob/5471d71c7f1ed0e3c18aeb834d04c5dd276f4e27/dev/e2e/reports/2026-09-18-production-readiness.json) records each cohort separately, including failed attempts, native transcript hashes, source snapshots, runtime settings, and independent assertions. Rechecking a saved artifact does not count as another native session. There is no aggregate success rate across different candidates, fixture versions, and kinds of work.
 
 ## Results and release decision
 

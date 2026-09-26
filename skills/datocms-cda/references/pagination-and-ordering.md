@@ -60,7 +60,7 @@ const query = `
 `;
 
 const data = await executeQueryWithAutoPagination(query, {
-  token: process.env.DATOCMS_CDA_TOKEN!,
+  token: process.env.DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN!,
 });
 
 // data.allBlogPosts contains all 2000 records

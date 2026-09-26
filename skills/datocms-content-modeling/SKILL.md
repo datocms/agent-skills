@@ -14,8 +14,7 @@ description: >-
   required_alt_title, structured_text allowlists, framed vs frameless
   single_block). Also schema review (reuse, editor ergonomics, omnichannel).
   *Creating* schema → `datocms-cli` or `datocms-cma`. Query/render →
-  `datocms-cda` + `datocms-frontend-integrations`. Validators + cascade:
-  `datocms-cma/references/schema.md`.
+  `datocms-cda` + `datocms-frontend-integrations`.
 ---
 
 # DatoCMS Content Modeling
@@ -37,7 +36,9 @@ Once modeling decision made:
 - **Implementation** — `datocms-cli` (migrations, default) or `datocms-cma` (user opts out of migrations / wants immediate schema mutation).
 - **Querying / rendering** — `datocms-cda` for GraphQL reads and Structured Text query fragments; `datocms-frontend-integrations` for framework rendering.
 - **Validator and cascade-strategy mechanics** — `datocms-cma/references/schema.md` (link/structured-text validators, `on_reference_delete_strategy`, etc.).
-- **Building, editing, or validating DAST** — **datocms-structured-text**: [document model](../datocms-structured-text/references/document-model.md), [editing](../datocms-structured-text/references/editing.md); source import/export → [conversion](../datocms-structured-text/references/conversion.md). CMA persists the finished payload. Missing required reference → install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle; schema-design decisions remain covered here.
+- **Building, editing, or validating DAST** — **datocms-structured-text**: [document model](../datocms-structured-text/references/document-model.md), [editing](../datocms-structured-text/references/editing.md); source import/export → [conversion](../datocms-structured-text/references/conversion.md). CMA persists the finished payload.
+
+Missing sibling reference → modeling advice here still stands; for implementation mechanics install that skill from `datocms/agent-skills` or update the full bundle.
 
 ## References
 

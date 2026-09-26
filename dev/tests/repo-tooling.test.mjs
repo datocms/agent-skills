@@ -117,6 +117,22 @@ test('validator fails when a CMA reference the hosted MCP server fetches is miss
   assert.match(errors[0], /missing; the hosted MCP server fetches this exact path from master/);
 });
 
+test('validator fails on a tracked file over 1 MB, since plugin installs copy the whole repo', () => {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'validator-size-')));
+  try {
+    for (const part of ['skills', 'evals/fixtures', 'README.md', '.claude-plugin', '.codex-plugin'])
+      cpSync(join(repoRoot, part), join(root, part), { recursive: true });
+    write(root, { 'ledger.json': 'x'.repeat(1_000_001), 'untracked.json': 'x'.repeat(1_000_001) });
+    spawnSync('git', ['init', '-q'], { cwd: root });
+    spawnSync('git', ['add', '-A', ':!untracked.json'], { cwd: root });
+    const run = spawnSync('python3', [join(repoRoot, 'evals/scripts/validate_skill_repo.py'), '--repo-root', root], { encoding: 'utf8' });
+    const oversized = run.stdout.split('\n').filter((line) => line.includes('plugin installs copy the whole repo'));
+    assert.deepEqual(oversized.map((line) => line.slice(2).replaceAll(`${root}/`, '').split(':')[0]), ['ledger.json']);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('trigger fixtures label a query that names its own skill explicit and positive', () => {
   // Claude Code and Codex always load a named skill, so a negative label there scores behaviour no description controls.
   const fixture = 'evals/fixtures/trigger/datocms-cda.json';

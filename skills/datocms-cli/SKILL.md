@@ -12,15 +12,14 @@ description: >-
   profiles; OAuth (login/logout/whoami); projects:list; project link/unlink;
   env list/fork/promote/rename/destroy; maintenance-mode toggle; CI/CD
   migration pipelines; blueprint/client project sync; imports from WordPress
-  or Contentful (assets + content); CLI plugin management
-  (plugins:install/add/available/link/remove/update/reset/inspect).
+  or Contentful (assets + content); CLI plugin management.
 ---
 
 # DatoCMS CLI Skill
 
 Use for CLI commands, migrations, and local project configuration.
 
-Pure Structured Text conversion or local DAST work → **datocms-structured-text** before CLI bootstrap: [document model](../datocms-structured-text/references/document-model.md), [editing](../datocms-structured-text/references/editing.md), or [conversion](../datocms-structured-text/references/conversion.md). CLI execution/authentication stays here when a project operation is needed. Missing required reference → install `datocms-structured-text` from `datocms/agent-skills` or update the full bundle; ordinary CLI tasks do not depend on it.
+Pure Structured Text conversion or local DAST work → **datocms-structured-text** before CLI bootstrap: [document model](../datocms-structured-text/references/document-model.md), [editing](../datocms-structured-text/references/editing.md), or [conversion](../datocms-structured-text/references/conversion.md). CLI execution/authentication stays here when a project operation is needed. Missing sibling reference → install that skill from `datocms/agent-skills` or update the full bundle; ordinary CLI commands need none.
 
 ## Step 1: Detect Context
 
@@ -55,7 +54,7 @@ For CLI work, use `npx datocms schema:inspect` (not manually joined model and fi
 ### Authentication policy
 
 - **Interactive CLI execution**: OAuth via `login` + `link`. Never ask user to paste token or add `DATOCMS_CMA_TOKEN=...` to `.env` for this case.
-- **Unattended execution** (CI, cron, server-side app, shared scripts without OAuth session): CMA-enabled token via env var. Read-only CDA tokens (`DATOCMS_READONLY_API_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`) won't work — flag that separate CMA-enabled token is needed.
+- **Unattended execution** (CI, cron, server-side app, shared scripts without OAuth session): CMA-enabled token via env var. Read-only CDA tokens (`DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`, `DATOCMS_DRAFT_CONTENT_CDA_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`) won't work — flag that separate CMA-enabled token is needed.
 
 ## Step 2: Resolve the Workflow
 

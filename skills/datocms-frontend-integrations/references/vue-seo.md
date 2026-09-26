@@ -20,9 +20,12 @@ import { toHead, useQuerySubscription } from 'vue-datocms';
 import { useHead } from '@unhead/vue';
 import { computed } from 'vue';
 
+// Draft CDA token from the server, only in draft mode: vue-realtime.md.
+const props = defineProps({ token: String });
+
 const { data } = useQuerySubscription({
   query: QUERY,
-  token: 'YOUR_API_TOKEN',
+  token: props.token,
 });
 
 const metaTags = computed(() =>
