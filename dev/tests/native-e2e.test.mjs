@@ -10,6 +10,7 @@ import {
   realpathSync,
   symlinkSync,
   chmodSync,
+  statSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -177,6 +178,65 @@ test("MCP call budget counts distinct calls and stops excessive execution", asyn
     const result = await nativeSession({ ...options, maxMcpCalls: 1 });
     assert.equal(result.capped, true);
     assert.equal(result.timedOut, false);
+  }));
+
+test("hosted MCP credentials reach an isolated native home without the host HOME", async () =>
+  fixture(async ({ root, options, writeBinary }) => {
+    const source = join(root, "mcp-credentials.json");
+    const credential = JSON.stringify({ server: { access_token: "fixture-access-token", refresh_token: "fixture-refresh-token" } });
+    writeFileSync(source, credential, { mode: 0o600 });
+    const before = statSync(source).mtimeMs;
+    const probe = join(root, "mcp-probe.json");
+    writeBinary(`const fs=require('node:fs');const file=process.env.CODEX_HOME+'/.credentials.json';fs.writeFileSync(process.env.PROBE_PATH,JSON.stringify({home:process.env.HOME,codexHome:process.env.CODEX_HOME,cred:fs.readFileSync(file,'utf8'),mode:fs.statSync(file).mode&0o777,symlink:fs.lstatSync(file).isSymbolicLink(),argv:process.argv}));console.log(JSON.stringify({type:'turn.completed'}));`);
+    const result = await nativeSession({ ...options, hostedMcp: { name: "FixtureHost", url: "https://mcp.example.test" }, mcpCredentials: source, environment: { PROBE_PATH: probe } });
+    assert.equal(result.completed, true);
+    const seen = JSON.parse(readFileSync(probe, "utf8"));
+    assert.notEqual(seen.home, process.env.HOME);
+    assert.equal(seen.cred, credential);
+    assert.equal(seen.mode, 0o600);
+    assert.equal(seen.symlink, false);
+    assert.ok(seen.argv.includes('mcp_oauth_credentials_store="file"'));
+    assert.equal(seen.codexHome.startsWith(options.output), false);
+    assert.equal(existsSync(seen.codexHome), false);
+    assert.equal(existsSync(seen.home), false);
+    assert.equal(statSync(source).mtimeMs, before, "an unchanged credential is not rewritten");
+  }));
+
+test("MCP credentials are ignored when no hosted server is configured", async () =>
+  fixture(async ({ root, options, writeBinary }) => {
+    const probe = join(root, "mcp-disabled.json");
+    writeBinary(`const fs=require('node:fs');fs.writeFileSync(process.env.PROBE_PATH,JSON.stringify({exists:fs.existsSync(process.env.CODEX_HOME+'/.credentials.json'),argv:process.argv}));console.log(JSON.stringify({type:'turn.completed'}));`);
+    const result = await nativeSession({ ...options, mcpCredentials: join(root, "does-not-exist.json"), environment: { PROBE_PATH: probe } });
+    assert.equal(result.completed, true);
+    const seen = JSON.parse(readFileSync(probe, "utf8"));
+    assert.equal(seen.exists, false);
+    assert.equal(seen.argv.some(arg => arg.startsWith("mcp_oauth_credentials_store=")), false);
+  }));
+
+test("rotated MCP credentials are copied back and all observed token values are redacted", async () =>
+  fixture(async ({ root, options, writeBinary }) => {
+    const source = join(root, "mcp-credentials.json");
+    const oldToken = "fixture-old-access-token", newToken = "fixture-new-access-token", refreshToken = "fixture-new-refresh-token";
+    writeFileSync(source, JSON.stringify({ server: { access_token: oldToken } }), { mode: 0o600 });
+    const rotated = JSON.stringify({ server: { access_token: newToken, refresh_token: refreshToken } });
+    // Emit before rotation reaches disk, then atomically replace the runtime file.
+    writeBinary(`const fs=require('node:fs');console.log(JSON.stringify({type:'item.completed',item:{id:'c1',type:'command_execution',command:'fixture command',exit_code:0,aggregated_output:${JSON.stringify(oldToken + " " + newToken + " " + refreshToken)}}}));console.error(${JSON.stringify(newToken)});setTimeout(()=>{const p=process.env.CODEX_HOME+'/.credentials.json';fs.writeFileSync(p+'.next',${JSON.stringify(rotated)});fs.renameSync(p+'.next',p);console.log(JSON.stringify({type:'turn.completed'}));},150);`);
+    const result = await nativeSession({ ...options, hostedMcp: { name: "FixtureHost", url: "https://mcp.example.test" }, mcpCredentials: source });
+    assert.equal(result.completed, true);
+    assert.equal(result.credentialLeak, true);
+    assert.equal(readFileSync(source, "utf8"), rotated);
+    assert.equal(statSync(source).mode & 0o777, 0o600);
+    for (const value of [JSON.stringify(result), ...["native.jsonl", "stderr.log", "session.json", "provenance.json"].map(name => readFileSync(join(options.output, name), "utf8"))]) {
+      for (const token of [oldToken, newToken, refreshToken]) assert.equal(value.includes(token), false);
+    }
+  }));
+
+test("MCP token values cannot be inserted into actor prompts", async () =>
+  fixture(async ({ root, options, writeBinary }) => {
+    const source = join(root, "mcp-credentials.json");
+    writeFileSync(source, JSON.stringify({ access_token: "fixture-forbidden-mcp-token" }), { mode: 0o600 });
+    writeBinary("process.exit(0)");
+    await assert.rejects(nativeSession({ ...options, hostedMcp: { name: "FixtureHost", url: "https://mcp.example.test" }, mcpCredentials: source, prompt: "Use fixture-forbidden-mcp-token" }), /Credentials must not appear/);
   }));
 test("follow-up turns resume the persisted thread and run a hook after every turn", async () =>
   fixture(async ({ root, options, writeBinary }) => {

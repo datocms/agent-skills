@@ -2,6 +2,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   appendFileSync,
+  chmodSync,
   cpSync,
   existsSync,
   mkdtempSync,
@@ -155,6 +156,7 @@ export type NativeOptions = {
   maxCommands?: number;
   maxScriptAttempts?: number;
   hostedMcp?: { name: string; url: string };
+  mcpCredentials?: string;
   maxMcpCalls?: number;
   // Later user messages, each sent by resuming the same native session after
   // the previous turn completes. onTurnComplete runs between turns (and after
@@ -181,6 +183,28 @@ export async function nativeSession(options: NativeOptions) {
     filter: (path) => !path.split(/[\\/]/).includes("node_modules"),
   });
   const secrets = (options.secrets ?? []).filter(Boolean);
+  const mcpCredentials = options.hostedMcp ? options.mcpCredentials : undefined;
+  const originalMcpCredentials = mcpCredentials ? readFileSync(mcpCredentials, "utf8") : undefined;
+  let observedMcpCredentials = originalMcpCredentials;
+  function registerMcpSecrets(contents: string) {
+    let credential: unknown;
+    try {
+      credential = JSON.parse(contents);
+    } catch {
+      // JSON parser diagnostics can include part of the credential itself.
+      throw Error("Hosted MCP credentials must contain valid JSON");
+    }
+    function visit(value: unknown) {
+      if (!value || typeof value !== "object") return;
+      for (const [key, entry] of Object.entries(value)) {
+        if (/^(?:access[_-]?token|refresh[_-]?token|id[_-]?token|client[_-]?secret|token)$/i.test(key) && typeof entry === "string" && entry) {
+          if (!secrets.includes(entry)) secrets.push(entry);
+        } else visit(entry);
+      }
+    }
+    visit(credential);
+  }
+  if (originalMcpCredentials !== undefined) registerMcpSecrets(originalMcpCredentials);
   const prompts = [options.prompt, ...(options.followUps ?? [])];
   if (
     secrets.some(
@@ -236,6 +260,7 @@ export async function nativeSession(options: NativeOptions) {
       tool_timeout_sec: 120,
       default_tools_approval_mode: "approve",
     };
+    if (mcpCredentials) config.mcp_oauth_credentials_store = "file";
   }
   const binary = process.env.CODEX_BIN ?? "codex";
   const version = spawnSync(binary, ["--version"], { encoding: "utf8" });
@@ -297,6 +322,7 @@ export async function nativeSession(options: NativeOptions) {
   const scratch = mkdtempSync(join(tmpdir(), "dato-native-"));
   const actorHome = join(scratch, "home");
   const nativeHome = join(scratch, "codex-home");
+  const nativeMcpCredentials = join(nativeHome, ".credentials.json");
   const cleanupErrors: string[] = [];
   function recordCleanup(error: unknown, operation = "") {
     const code = (error as NodeJS.ErrnoException)?.code ?? "failed";
@@ -304,11 +330,13 @@ export async function nativeSession(options: NativeOptions) {
     if (!cleanupErrors.includes(message)) cleanupErrors.push(message);
   }
   function cleanupScratch() {
-    // Remove the credential link even if another scratch entry cannot be removed.
-    try {
-      rmSync(join(nativeHome, "auth.json"), { force: true });
-    } catch (error) {
-      recordCleanup(error);
+    // Remove credentials even if another scratch entry cannot be removed.
+    for (const credential of [join(nativeHome, "auth.json"), nativeMcpCredentials]) {
+      try {
+        rmSync(credential, { force: true });
+      } catch (error) {
+        recordCleanup(error);
+      }
     }
     try {
       rmSync(scratch, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
@@ -339,6 +367,9 @@ export async function nativeSession(options: NativeOptions) {
     );
     if (existsSync(authPath))
       symlinkSync(authPath, join(nativeHome, "auth.json"));
+    // Use a real copy: the runtime can atomically replace its credential store.
+    if (originalMcpCredentials !== undefined)
+      writeFileSync(nativeMcpCredentials, originalMcpCredentials, { mode: 0o600 });
     environment.CODEX_HOME = nativeHome;
     const provenance = {
       model,
@@ -386,6 +417,41 @@ export async function nativeSession(options: NativeOptions) {
     capped = false,
     usageLimitReached = false,
     credentialLeak = false;
+  function refreshMcpSecrets() {
+    if (!mcpCredentials) return;
+    const contents = readFileSync(nativeMcpCredentials, "utf8");
+    if (contents !== observedMcpCredentials) {
+      registerMcpSecrets(contents);
+      observedMcpCredentials = contents;
+    }
+    return contents;
+  }
+  function finishMcpCredentials() {
+    if (!mcpCredentials) return;
+    try {
+      const contents = refreshMcpSecrets();
+      if (contents !== undefined && contents !== originalMcpCredentials) {
+        // Preserve a refresh-token rotation without rewriting unchanged stores.
+        if (existsSync(mcpCredentials)) chmodSync(mcpCredentials, 0o600);
+        writeFileSync(mcpCredentials, contents, { mode: 0o600 });
+      }
+    } catch (error) {
+      recordCleanup(error, "MCP credential refresh");
+    }
+    // A token may have reached stdout before the refreshed store was written.
+    // Scrub earlier evidence again after learning every observed token value.
+    for (const path of [transcriptPath, join(output, "provenance.json")]) {
+      try {
+        if (!existsSync(path)) continue;
+        const contents = readFileSync(path, "utf8");
+        if (secrets.some((secret) => contents.includes(secret))) credentialLeak = true;
+        const clean = redact(contents);
+        if (clean !== contents) writeFileSync(path, clean, { mode: 0o600 });
+      } catch (error) {
+        recordCleanup(error, "MCP evidence redaction");
+      }
+    }
+  }
   const commands = new Map<
     string,
     {
@@ -486,6 +552,12 @@ export async function nativeSession(options: NativeOptions) {
     }
     function line(raw: string) {
       snapshot();
+      try {
+        refreshMcpSecrets();
+      } catch {
+        // A credential update may be in progress. Finalization retries and
+        // records any persistent read/parse failure before removing the copy.
+      }
       if (secrets.some((secret) => raw.includes(secret))) credentialLeak = true;
       const clean = redact(raw);
       appendFileSync(transcriptPath, clean + "\n", { mode: 0o600 });
@@ -588,6 +660,7 @@ export async function nativeSession(options: NativeOptions) {
       if (timedOut || capped || usageLimitReached || credentialLeak || !turn.completed || turn.exitCode !== 0) break;
     }
   } finally {
+    finishMcpCredentials();
     cleanupScratch();
   }
   const exitCode = exitCodes.find((code) => code !== 0) ?? exitCodes.at(-1) ?? null;
@@ -630,8 +703,10 @@ export async function nativeSession(options: NativeOptions) {
         e.item?.type === "error",
     ), ...cleanupErrors.map((message) => ({ type: "error", message }))],
   };
-  writeFileSync(join(output, "session.json"), JSON.stringify(result, null, 2), {
+  // Earlier parsed events can predate a refresh-token rotation as well.
+  const cleanResult = JSON.parse(redact(JSON.stringify(result))) as typeof result;
+  writeFileSync(join(output, "session.json"), JSON.stringify(cleanResult, null, 2), {
     mode: 0o600,
   });
-  return result;
+  return cleanResult;
 }

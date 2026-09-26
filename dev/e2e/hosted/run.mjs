@@ -13,6 +13,11 @@ const hash=value=>createHash('sha256').update(value).digest('hex');
 const json=value=>JSON.stringify(value,null,2)+'\n';
 import {prepareSource,schemaSource,uploadSource,seedSource,observationSource,cleanupSource} from './fixtures.mjs';
 export const responseText=call=>(call.result?.content??[]).filter(c=>c.type==='text').map(c=>c.text).join('\n');
+export function assertNoHostedFallback(commands){
+ for(const {command} of commands){
+  assert.doesNotMatch(command,/(^|[\s;&|(]|lc ["'])(npx\s+)?datocms(\s|$)|mcp\.datocms\.com|site-api\.datocms\.com/,'CLI/direct HTTP fallback is forbidden in hosted MCP sessions');
+ }
+}
 export function exactScriptOutput(session,source,write,scope){
  const executions=session.mcpCalls.filter(c=>/upsert_and_execute_(safe|unsafe)_script$/.test(c.tool));
  assert.equal(executions.length,1,'A fixture step must execute its exact script once');
@@ -61,6 +66,8 @@ async function main(){
  const {values}=parseArgs({options:{site:{type:'string'},output:{type:'string'}}});
  if(!values.site||!values.output)throw Error('Use --site <authorized disposable site ID> --output <fresh local directory>');
  if(!/^\d+$/.test(values.site))throw Error('Site ID must be numeric');
+ const credentialFile=process.env.E2E_CODEX_MCP_CREDENTIALS;
+ if(!credentialFile||!existsSync(credentialFile))throw Error('Hosted MCP needs E2E_CODEX_MCP_CREDENTIALS pointing to its file-store credential; see dev/e2e/README.md#hosted-mcp-smoke');
  const site=values.site,output=resolve(values.output);
  if(existsSync(output))throw Error('Output exists; preserve evidence and choose a fresh directory');
  mkdirSync(output,{recursive:true});
@@ -71,11 +78,12 @@ async function main(){
   const workspace=mkdtempSync(join(tmpdir(),'dato-hosted-e2e-'));
   if(source)writeFileSync(join(workspace,'operation.ts'),source);
   try {
-   const result=await nativeSession({repoRoot:REPO_ROOT,workspace,output:join(output,name),hostedMcp:SERVER,timeoutMs:420000,maxCommands:35,maxMcpCalls:40,prompt,instructions});
+   const result=await nativeSession({repoRoot:REPO_ROOT,workspace,output:join(output,name),mcpCredentials:credentialFile,hostedMcp:SERVER,timeoutMs:420000,maxCommands:35,maxMcpCalls:40,prompt,instructions});
    assert.equal(result.exitCode,0,`${name}: native exit`);assert.equal(result.completed,true,`${name}: incomplete turn`);
    assert.equal(result.timedOut,false);assert.equal(result.capped,false);assert.equal(result.credentialLeak,false);
    assert.ok(!result.oracleAccess.length,`${name}: actor referenced evaluation state: ${result.oracleAccess.map(a=>a.command).join(' | ')}`);
    assert.deepEqual(result.errors,[]);
+   assertNoHostedFallback(result.commands);
    for(const call of result.mcpCalls){
     assert.equal(call.server,SERVER.name,'Unexpected MCP route');
     if(call.arguments?.site_id)assert.equal(call.arguments.site_id,site,'Unexpected project');

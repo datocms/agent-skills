@@ -1,9 +1,22 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {assertOutcome,exactScriptOutput} from '../e2e/hosted/run.mjs';
+import * as hosted from '../e2e/hosted/run.mjs';
+import {readFileSync} from 'node:fs';
 import {initialRecord,expectedRecord} from '../evals/coexistence/cases.mjs';
 function record(kind){const value=initialRecord({variant:'multiple'});value.type='item';return {kind,current:value,published:structuredClone(value),versions:2};}
 function changed(before){const current=expectedRecord({variant:'multiple',operation:'structured'});current.type='item';return {kind:before.kind,current,published:structuredClone(before.published),versions:3};}
+test('hosted sessions require their own credential file without inheriting the host home',()=>{
+ const source=readFileSync(new URL('../e2e/hosted/run.mjs',import.meta.url),'utf8');
+ assert.doesNotMatch(source,/HOME\s*:\s*homedir\(\)/);
+ assert.match(source,/mcpCredentials\s*:/);
+ assert.match(source,/E2E_CODEX_MCP_CREDENTIALS/);
+});
+test('hosted command routing permits skill reads and rejects CLI or direct API fallbacks',()=>{
+ assert.equal(typeof hosted.assertNoHostedFallback,'function');
+ for(const command of ['cat .agents/skills/datocms-cma/SKILL.md','rg --files','cat datocms.config.json'])assert.doesNotThrow(()=>hosted.assertNoHostedFallback([{command}]));
+ for(const command of ['npx datocms whoami','datocms cma:call items list','curl https://site-api.datocms.com/items','curl https://mcp.datocms.com','/bin/zsh -lc "npx datocms whoami"'])assert.throws(()=>hosted.assertNoHostedFallback([{command}]),/CLI\/direct HTTP fallback/);
+});
 test('hosted oracle accepts the requested edit and ignores only update bookkeeping',()=>{
  const before=record('published'),after=changed(before);assert.doesNotThrow(()=>assertOutcome('published',before,after));
  after.current.body.en.document.children[1].item.meta={current_version:'2',updated_at:'now'};

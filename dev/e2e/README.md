@@ -50,14 +50,18 @@ This suite runs native sessions with controlled CLI/MCP tools, including permiss
 
 ## Hosted MCP smoke
 
-Authenticate the native client against the real hosted server, using only a dedicated empty throwaway project with an English-only `main` environment. Grant the test connection access to that project and the permission to create and clean up its sandbox fixtures:
+Authenticate the native client against the real hosted server, using only a dedicated empty throwaway project with an English-only `main` environment. Grant the test connection access to that project and the permission to create and clean up its sandbox fixtures. Use a separate local credential store so actors keep isolated homes and cannot inherit the operator's CLI login or shell profiles:
 
 ```bash
-codex mcp add DatoCMSReleaseCheck --url https://mcp.datocms.com
+mkdir -p -m 700 local/private/hosted-mcp-codex
+CODEX_HOME="$PWD/local/private/hosted-mcp-codex" codex -c 'mcp_oauth_credentials_store="file"' \
+  -c 'mcp_servers.DatoCMSReleaseCheck.url="https://mcp.datocms.com"' mcp login DatoCMSReleaseCheck
+# Save this absolute path in ignored dev/.env; never commit the credential file.
+export E2E_CODEX_MCP_CREDENTIALS="$PWD/local/private/hosted-mcp-codex/.credentials.json"
 npm --prefix dev run e2e:hosted -- --site <authorized-site-id> --output local/hosted/run-01
 ```
 
-The native client manages OAuth credentials. No API token is supplied to this runner. Its isolated sessions use the same server name and URL to reuse the authorized connection, with the pinned validation settings and shell snapshots disabled. When the temporary test connection is no longer needed, `codex mcp logout DatoCMSReleaseCheck` clears its local authorization. If registration used a separate `CODEX_HOME`, use that same home for logout.
+The runner reads the process environment; load `dev/.env` into that shell when using the saved path. It requires `E2E_CODEX_MCP_CREDENTIALS` before starting any session. No API token is supplied. Each session copies the credential into its temporary `CODEX_HOME` with mode 0600, preserves refresh-token rotation in the source file, redacts known token values, then removes the temporary copy. The actor's `HOME` stays isolated, with the pinned settings and shell snapshots disabled. Shell CLI and direct API fallbacks fail the route check. When the connection is no longer needed, run `mcp logout DatoCMSReleaseCheck` with the same `CODEX_HOME` and file-store/server configuration used for login.
 
 `hosted/run.mjs` forks one uniquely named environment and seeds typed models, a real uploaded image, localized documents, and a record with published history. Three fresh actors perform a title edit, a localized document edit, and an edit preserving published content and a second block. All CMS work goes through the hosted MCP; there is no API-token or CLI fallback.
 
