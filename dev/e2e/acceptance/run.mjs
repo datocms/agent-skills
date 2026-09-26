@@ -64,6 +64,9 @@ for (const c of selected) {
       const sourcePaths = new Set([...Object.keys(before), ...Object.keys(after)]);
       result.changedFiles = [...sourcePaths].filter(path => !/\/\.(?:agents|git)\//.test(path) && before[path] !== after[path]);
       if (['cli', 'review'].includes(c.check)) assert.deepEqual(result.changedFiles, [], 'Advice-only task modified files');
+      // A change task that ends without editing anything never attempted the work (e.g. it announced a plan
+      // and stopped): report it as incomplete, not as a wrong change.
+      else if (!result.changedFiles.length) result.incomplete = 'Session ended without changing any file';
     } else {
       session = JSON.parse(readFileSync(join(resolve(values.recheck), c.id, 'session.json'), 'utf8'));
       assert.equal(session.model, values.model, 'Recheck must use the original model label');
@@ -71,7 +74,8 @@ for (const c of selected) {
       assert.ok(session.completed && session.exitCode === 0 && !session.errors.length && !session.timedOut && !session.capped);
       result.recheckedFrom = resolve(values.recheck);
     }
-    if (c.check === 'cli') result.runtime = await checkCli(session.finalText);
+    if (result.incomplete) result.passed = null;
+    else if (c.check === 'cli') result.runtime = await checkCli(session.finalText);
     else if (c.check === 'document') result.runtime = await checkDocument(workspace, directory);
     else if (['links', 'counter', 'notice'].includes(c.check)) {
       productionBuild(workspace, directory);
@@ -88,12 +92,12 @@ for (const c of selected) {
       result.runtime = { passed: true, assertions: checked.assertions };
     } else result.review = 'pending';
     // Advisory completion is not a quality pass; a human-readable review follows.
-    result.passed = c.check === 'review' ? null : true;
+    if (!result.incomplete) result.passed = c.check === 'review' ? null : true;
   } catch (error) { result.error = String(error); }
   results.push(result);
   save(join(directory, 'result.json'), result);
   save(join(output, 'results.json'), results);
-  console.log(JSON.stringify({ case: c.id, passed: result.passed, ...(result.skillReads?.length === 0 && { skillConsulted: false }), error: result.error, elapsedMs: result.elapsedMs }));
+  console.log(JSON.stringify({ case: c.id, passed: result.passed, ...(result.incomplete && { incomplete: result.incomplete }), ...(result.skillReads?.length === 0 && { skillConsulted: false }), error: result.error, elapsedMs: result.elapsedMs }));
   if (session?.usageLimitReached) { process.exitCode = 2; break; }
 }
-if (!process.exitCode && results.some(r => r.passed === false)) process.exitCode = 1;
+if (!process.exitCode && results.some(r => r.passed === false || r.incomplete)) process.exitCode = 1;
