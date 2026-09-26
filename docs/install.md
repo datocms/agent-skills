@@ -27,7 +27,7 @@ This repo ships both `.claude-plugin/marketplace.json` (marketplace registry) an
 
 ```bash
 # Add the marketplace (once)
-/plugin marketplace add datocms/llm-skills
+/plugin marketplace add datocms/agent-skills
 
 # Install the plugin
 /plugin install datocms@datocms-skills
@@ -37,32 +37,15 @@ Skills are namespaced as `/datocms:<skill-name>` (e.g. `/datocms:datocms-cda`).
 
 ### Installation Scopes
 
-Plugins can be installed at three scopes, each with different visibility and persistence:
+In a session, `/plugin install datocms@datocms-skills` opens the plugin's details in the `/plugin` panel, where you choose the scope. From a shell, `claude plugin install datocms@datocms-skills` installs at user scope; pass `--scope project` or `--scope local` for the others.
 
-| Scope | Flag | Where it lives | Who sees it | Version-controlled? |
-| - | - | - | - | - |
-| **User** (default) | `--scope user` | `~/.claude/plugins/` | You, in every project | No |
-| **Project** | `--scope project` | `.claude/plugins/` in the project root | Everyone who clones the repo | Yes |
-| **Local** | `--scope local` | `.claude/plugins/` in the project root (gitignored) | Only you, only in this project | No |
+| Scope | Recorded in | Who gets it |
+| - | - | - |
+| **User** | `enabledPlugins` in `~/.claude/settings.json` | You, in every project on this machine |
+| **Project** | `.claude/settings.json`, which you commit | Everyone working in the repo, once they trust the folder. Also run `claude plugin marketplace add datocms/agent-skills --scope project` so the committed file declares the marketplace too |
+| **Local** | `.claude/settings.local.json` | You, in this repo only |
 
-```bash
-# User scope (default) — available in all your projects on this machine
-/plugin install datocms@datocms-skills --scope user
-
-# Project scope — shared with the team via version control
-# Good for teams that all use DatoCMS in the same repo
-/plugin install datocms@datocms-skills --scope project
-
-# Local scope — project-specific, gitignored
-# Good for personal experimentation without affecting teammates
-/plugin install datocms@datocms-skills --scope local
-```
-
-**Which scope should I use?**
-
-- **Individual developer**: Use `user` (default). The DatoCMS skills are available in every project without any per-project setup.
-- **Team standardization**: Use `project`. Every teammate who clones the repo gets the DatoCMS skills automatically.
-- **Trying it out**: Use `local`. You can experiment without committing anything.
+Local overrides project, and project overrides user. See [Choose an install scope](https://code.claude.com/docs/en/plugins/install#choose-an-install-scope).
 
 ### Updates
 
@@ -75,7 +58,7 @@ Plugins are **cached locally** after installation. When the plugin is updated up
 3. Select the `datocms-skills` marketplace
 4. Choose **Enable auto-update**
 
-Once enabled, Claude Code refreshes marketplace data at startup and prompts you to run `/reload-plugins` when updates are available.
+Once enabled, Claude Code updates the plugin in the background during a session; run `/reload-plugins` to use the new version right away, or it loads in your next session.
 
 **Manual update:**
 
@@ -113,7 +96,7 @@ Inside a Codex session from this repo, open the plugin picker:
 /plugins
 ```
 
-Choose the **DatoCMS Local Plugins** marketplace and install `datocms`. The shipped skills are bundled into the plugin automatically. If the repo marketplace is not visible yet, restart Codex and open `/plugins` again.
+Choose the **DatoCMS** marketplace and install `datocms`. The shipped skills are bundled into the plugin automatically. If the repo marketplace is not visible yet, restart Codex and open `/plugins` again.
 
 To install from GitHub without cloning the repo, add it as a Git marketplace and install the plugin from it:
 
@@ -132,7 +115,7 @@ For published distribution, keep the plugin version in `.codex-plugin/plugin.jso
 
 ### Fallback: `$skill-installer`
 
-If the Plugin Directory is not available or you prefer manual control, use the `$skill-installer` approach described in the [README](../README.md#codex-fallback--skill-installer). The `$skill-installer` copies skill files into `~/.codex/skills/` as frozen snapshots with no auto-update.
+Without the plugin, Codex's built-in `$skill-installer` installs a skill from its GitHub URL, such as `https://github.com/datocms/agent-skills/tree/master/skills/datocms-cda`, into `~/.codex/skills/<skill-name>` as a frozen snapshot with no auto-update. Keep `master` in the URL, because the installer otherwise assumes `main`. Install every skill, since they link to each other.
 
 ## Single-Skill Install
 

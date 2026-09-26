@@ -1,13 +1,13 @@
 {
   "name": "datocms",
   "version": "1.6.6",
-  "description": "DatoCMS skills for content delivery, content management, content modeling, CLI workflows, frontend integrations, plugin development, and project setup",
+  "description": "DatoCMS skills for content delivery, content management, content modeling, Structured Text, CLI workflows, frontend integrations, plugin development, and project setup",
   "author": {
     "name": "DatoCMS",
     "url": "https://www.datocms.com"
   },
-  "homepage": "https://www.datocms.com",
-  "repository": "https://github.com/datocms/llm-skills",
+  "homepage": "https://www.datocms.com/docs/agent-skills",
+  "repository": "https://github.com/datocms/agent-skills",
   "keywords": [
     "datocms",
     "cms",
@@ -16,25 +16,27 @@
     "content-delivery",
     "content-management",
     "content-modeling",
+    "structured-text",
     "plugins",
     "migrations"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "DatoCMS",
-    "shortDescription": "Content delivery, management, modeling, CLI, frontend integrations, plugin dev, and project setup for DatoCMS",
-    "longDescription": "Focused DatoCMS skills: query content (CDA/GraphQL), manage records and schema (CMA), make content-modeling decisions (models vs blocks, taxonomies, reuse, limits, admin UI), run CLI workflows and migrations, integrate with frontend frameworks (Next.js, Nuxt, Astro, SvelteKit), build, maintain, and restyle DatoCMS plugins, and guide project setup (previews and visual editing, caching, SEO, migrations, imports) with a plan you confirm before anything changes.",
+    "shortDescription": "Content delivery, management, modeling, Structured Text, CLI, frontends, plugin dev, and project setup for DatoCMS",
+    "longDescription": "Focused DatoCMS skills: query content (CDA/GraphQL), manage records and schema (CMA), make content-modeling decisions (models vs blocks, taxonomies, reuse, limits, admin UI), work with Structured Text (DAST) documents, run CLI workflows and migrations, integrate with frontend frameworks (Next.js, Nuxt, Astro, SvelteKit), build, maintain, and restyle DatoCMS plugins, and guide project setup (previews and visual editing, caching, SEO, migrations, imports) with a plan you confirm before anything changes.",
     "developerName": "DatoCMS",
-    "category": "cms",
+    "category": "Developer Tools",
     "capabilities": [
-      "content-delivery",
-      "content-management",
-      "content-modeling",
-      "cli-workflows",
-      "frontend-integrations",
-      "plugin-development",
-      "project-setup"
+      "Interactive",
+      "Read",
+      "Write"
     ],
-    "websiteURL": "https://www.datocms.com"
+    "websiteURL": "https://www.datocms.com",
+    "defaultPrompt": [
+      "Write a GraphQL query for my DatoCMS blog posts",
+      "Add DatoCMS draft mode and previews to this app",
+      "Write a migration that adds an SEO field to a model"
+    ]
   }
 }

@@ -41,6 +41,7 @@ The skills are designed to work together — they cross-link and reinforce each 
 - **CLI workflows** — migrations, schema-type generation, typed CMA scripts, CI/CD pipelines, WordPress/Contentful imports.
 - **Frontend integrations** — draft mode, Web Previews, Visual Editing, Content Link, real-time preview subscriptions, cache-tag invalidation, SEO/sitemap wiring across Next.js, Nuxt, SvelteKit, and Astro.
 - **Guided setup** (`datocms-setup`) — inspects the project, asks only what it can't infer, proposes a plan with prerequisites in order, and changes nothing until you confirm; then builds it through the other skills.
+- **Feedback** — when a skills or MCP workflow is stuck, drafts a sanitized report and opens a prefilled DatoCMS support form.
 
 **Extending the DatoCMS dashboard**
 
@@ -61,7 +62,7 @@ Pick the install method for your agent. Every installer brings the full set by d
 /plugin install datocms@datocms-skills
 ```
 
-Skills are namespaced under the plugin (e.g. `/datocms-cda`). Enable auto-update from `/plugin` → **Marketplaces** → `datocms-skills`, or update manually with `claude plugin update datocms@datocms-skills`.
+Skills are namespaced under the plugin (e.g. `/datocms:datocms-cda`). Enable auto-update from `/plugin` → **Marketplaces** → `datocms-skills`, or update manually with `claude plugin update datocms@datocms-skills`.
 
 ### Codex
 
@@ -125,16 +126,16 @@ It activates on setup requests; to call it directly:
 
 | Platform | Invocation |
 | - | - |
-| Claude Code | `/datocms-setup <your request>` |
+| Claude Code | `/datocms:datocms-setup <your request>` |
 | Codex | `$datocms-setup <your request>` |
 
 Phrase the prompt as the outcome you want.
 
 ```text
-/datocms-setup install visual editing in this project
-/datocms-setup set up draft mode and web previews
-/datocms-setup add migrations and a release workflow
-/datocms-setup set up click-to-edit overlays for draft pages
+/datocms:datocms-setup install visual editing in this project
+/datocms:datocms-setup set up draft mode and web previews
+/datocms:datocms-setup add migrations and a release workflow
+/datocms:datocms-setup set up click-to-edit overlays for draft pages
 ```
 
 Every setup run ends with one of two statuses: `scaffolded` if it still contains placeholders you need to fill in (API tokens, route mappings, model-to-URL maps, TODO stubs), or `production-ready` if it's wired to real project values and works end-to-end with no further edits. No guessing whether the output is ready to ship.

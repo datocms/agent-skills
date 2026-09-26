@@ -4,7 +4,7 @@ This file provides guidance to Codex when working with code in this repository.
 
 ## Project Overview
 
-DatoCMS skills repository — public skills that provide focused guidance for content delivery, content management, content modeling, CLI workflows, frontend integrations, plugin development, and project setup. Ships as static markdown; no build or bundle step.
+DatoCMS skills repository — public skills that provide focused guidance for content delivery, content management, content modeling, Structured Text, CLI workflows, frontend integrations, plugin development, and project setup. Ships as static markdown; no build or bundle step.
 
 ## Repository Structure
 
