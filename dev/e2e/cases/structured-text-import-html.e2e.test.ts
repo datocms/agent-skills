@@ -45,6 +45,7 @@ namespace Schema {
 
 type Context = {
 	original: ApiTypes.ItemInNestedResponse<Schema.ImportArticle>;
+	versionCount: number;
 	italianBody: ApiTypes.Item<Schema.ImportArticle>["body"]["it"];
 	uploadId: string;
 	imageUrl: string;
@@ -162,6 +163,7 @@ test("imports HTML with an image mapping without changing another locale or unre
 				italianBody: record.body.it,
 				uploadId: upload.id,
 				imageUrl: upload.url,
+				versionCount: (await client.itemVersions.list(record.id)).length,
 			};
 		},
 		task: ({ context }) => {
@@ -300,6 +302,10 @@ test("imports HTML with an image mapping without changing another locale or unre
 				}),
 				"update must not create another article",
 			).toHaveLength(1);
+			expect(
+				(await cmaClient.itemVersions.list(context.original.id)).length,
+				"Exactly one new parent version is required",
+			).toBe(context.versionCount + 1);
 		},
 	});
 
