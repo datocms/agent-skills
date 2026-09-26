@@ -51,3 +51,11 @@ test('verify step keeps the composition rule and defers masking to the project s
   assert.match(item, /composition array mirrors every `\.\.\.Fragment` spread/);
   assert.match(item, /follow project's masking setup/);
 });
+
+test('CDN-first caching re-serializes x-cache-tags instead of forwarding the raw header', () => {
+  // CDA tags are space-separated; CDNs need their own tag header format, and collectors that joined tags with
+  // spaces broke purging.
+  const text = readFileSync(resolve(repoRoot, 'skills/datocms-cda/references/draft-caching-environments.md'), 'utf8');
+  assert.doesNotMatch(text, /Forward `x-cache-tags` as a response header/);
+  assert.match(text, /Re-serialize space-separated `x-cache-tags` into the CDN's tag header/);
+});

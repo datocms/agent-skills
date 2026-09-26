@@ -180,7 +180,8 @@ Key points:
 
 - JWT payload `{ enabled: true }` (same as SvelteKit)
 - Cookie name from `astro:env/client`, JWT secret from `astro:env/server`
-- `partitioned: true` spread with cast `as AstroCookieSetOptions` (Astro's types may not include it)
+- `partitioned: true` spread with cast `as AstroCookieSetOptions`: Astro 7.3 types include it; cast keeps older typings compiling
+- Keep draft cookie out of Astro Sessions: `session.cookie` config strips `partitioned` (not iframe-safe)
 - `isDraftModeEnabled` accepts both `APIContext` (API routes) and `AstroCookies` (Astro components via `Astro.cookies`)
 - Cookie value accessed via `cookie.value` (Astro's `AstroCookie` object, not raw string)
 

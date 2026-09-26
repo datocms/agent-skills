@@ -101,6 +101,18 @@ test('every framework Content Link reference says to clean non-editable display 
   assert.match(read('references/content-link-concepts.md'), /Strip intentionally non-editable display text/);
 });
 
+const astroInstall = join(dev, 'tests/astro-cache/node_modules/astro');
+test('astro.md cookie notes match the installed Astro: partitioned is typed, and Sessions drop it', { skip: !existsSync(astroInstall) && 'dev/tests/astro-cache not installed' }, () => {
+  // A draft cookie kept in Astro Sessions lost its partitioned flag and failed inside the editor iframe.
+  const text = read('references/astro.md');
+  assert.doesNotMatch(text, /types may not include it/);
+  assert.match(text, /Keep draft cookie out of Astro Sessions: `session\.cookie` config strips `partitioned`/);
+  assert.match(readFileSync(join(astroInstall, 'dist/core/cookies/cookies.d.ts'), 'utf8'), /AstroCookieSetOptions = Pick<[^>]*'partitioned'/);
+  const sessionCookie = readFileSync(join(astroInstall, 'dist/core/session/config.js'), 'utf8').match(/cookie: z\.union\(\[\s*z\.object\(\{([\s\S]*?)\}\)/)[1];
+  assert.match(sessionCookie, /sameSite/);
+  assert.doesNotMatch(sessionCookie, /partitioned/);
+});
+
 test('nextjs.md gives the single-argument revalidateTag form for Next 15 and earlier', () => {
   const next = read('references/nextjs.md');
   assert.match(next, /revalidateTag\(\w+, \{ expire: 0 \}\)/);
