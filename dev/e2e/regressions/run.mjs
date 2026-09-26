@@ -52,7 +52,7 @@ const results = [];
 const record = (result) => {
   results.push(result);
   save(join(output, 'results.json'), results);
-  console.log(JSON.stringify({ case: result.case, variant: result.variant ?? result.repetition, passed: result.passed, error: result.error }));
+  console.log(JSON.stringify({ case: result.case, variant: result.variant ?? result.repetition, passed: result.passed, ...(result.skillReads?.length === 0 && { skillConsulted: false }), error: result.error }));
 };
 
 if (values.controls) {
@@ -111,7 +111,7 @@ if (values.controls) {
           });
           save(join(directory, 'snapshots.json'), snapshots);
           Object.assign(result, { elapsedMs: Date.now() - started, usage: session.usage, commandCount: session.commands.length, finalText: session.finalText });
-          result.skillReads = [...new Set(session.commands.flatMap((cmd) => [...cmd.command.matchAll(/skills\/(datocms-[\w-]+(?:\/[\w./-]+)?)/g)].map((m) => m[1])))].sort();
+          result.skillReads = session.skillReads;
           if (session.usageLimitReached) { result.error = 'Usage limit reached'; record(result); process.exitCode = 2; break suite; }
           assert.ok(session.completed && session.exitCode === 0 && !session.errors.length && !session.timedOut && !session.capped && !session.credentialLeak, 'Actor did not complete cleanly');
           assert.ok(!session.oracleAccess.length, `Actor referenced evaluation state: ${session.oracleAccess.map((a) => a.command).join(' | ')}`);

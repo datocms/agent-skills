@@ -12,7 +12,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { nativeSession, isUsageLimitError, oracleAccess, REPO_ROOT } from "../e2e/lib/nativeSession.ts";
+import { nativeSession, isUsageLimitError, oracleAccess, skillReads, REPO_ROOT } from "../e2e/lib/nativeSession.ts";
 
 test("account usage exhaustion stops the actor without treating application rate limits as account limits", async () => {
   assert.equal(isUsageLimitError({ type: "item.completed", item: { type: "command_execution", aggregated_output: "usage_limit_reached" } }), false);
@@ -219,6 +219,21 @@ test("single-turn sessions stay ephemeral and stop before follow-ups when a turn
     assert.equal(multi.completed, false);
     assert.equal(multi.turns.length, 1);
   }));
+
+test("sessions record which skill files the actor read, and none when it never consulted a skill", async () => {
+  assert.deepEqual(skillReads([
+    { command: "cat .agents/skills/datocms-cma/SKILL.md && sed -n 1,80p .agents/skills/datocms-cma/references/records.md" },
+    { command: "rg -n nested .agents/skills/datocms-cma/SKILL.md" },
+    { command: "ls .agents/skills" },
+  ]), ["datocms-cma/SKILL.md", "datocms-cma/references/records.md"]);
+  assert.deepEqual(skillReads([{ command: "rg --files" }, { command: "cat node_modules/@datocms/cma-client/package.json" }]), []);
+  await fixture(async ({ options, writeBinary }) => {
+    writeBinary(`console.log(JSON.stringify({type:'item.completed',item:{id:'c1',type:'command_execution',command:'rg --files',exit_code:0}}));console.log(JSON.stringify({type:'turn.completed',usage:{input_tokens:2}}));`);
+    const result = await nativeSession(options);
+    assert.deepEqual(result.skillReads, []);
+    assert.deepEqual(JSON.parse(readFileSync(join(options.output, "session.json"), "utf8")).skillReads, []);
+  });
+});
 
 test("oracle access flags evaluation state outside the workspace but not workspace or package paths", () => {
   const root = mkdtempSync(join(tmpdir(), "oracle-access-"));

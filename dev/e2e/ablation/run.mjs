@@ -36,7 +36,7 @@ for (const c of selected) {
     completed: session.completed && session.exitCode === 0 && !session.errors.length && !session.timedOut && !session.capped && !session.oracleAccess.length,
     oracleAccess: session.oracleAccess.map(a => a.command),
     usageLimitReached: session.usageLimitReached, elapsedMs: Date.now() - started,
-    usage: session.usage, commandCount: session.commands.length,
+    usage: session.usage, commandCount: session.commands.length, skillReads: session.skillReads,
     failedCommands: session.commands.filter(c => c.exit_code !== undefined && c.exit_code !== 0).length,
     finalText: session.finalText, rubric: c.rubric, review: 'pending',
   };

@@ -336,6 +336,7 @@ suite: for (let repetition = 1; repetition <= repetitions; repetition++)
         result.elapsedMs = Date.now() - started;
         result.usage = session.usage;
         result.commandCount = session.commands.length;
+        result.skillReads = session.skillReads;
         result.usageLimitReached = session.usageLimitReached;
         result.agentCompleted =
           session.completed &&
@@ -385,7 +386,7 @@ suite: for (let repetition = 1; repetition <= repetitions; repetition++)
     save(join(directory, "result.json"), result);
     save(join(output, "results.json"), results);
     console.log(
-      `${result.passed ? "PASS" : "FAIL"} ${result.case}/${repetition}${result.error ? ": " + result.error : ""}`,
+      `${result.passed ? "PASS" : "FAIL"} ${result.case}/${repetition}${result.skillReads?.length === 0 ? " [no skill consulted]" : ""}${result.error ? ": " + result.error : ""}`,
     );
     if (result.usageLimitReached) break suite;
   }

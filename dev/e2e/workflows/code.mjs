@@ -427,6 +427,7 @@ for (let repetition = 1; repetition <= repetitions; repetition++)
           prompt: c.prompt,
           timeoutMs: 420000,
         });
+        result.skillReads = session.skillReads;
         assert.ok(
           session.completed &&
             session.exitCode === 0 &&
@@ -476,7 +477,7 @@ for (let repetition = 1; repetition <= repetitions; repetition++)
       JSON.stringify(results, null, 2),
     );
     console.log(
-      `${result.passed ? "PASS" : "FAIL"} ${c.id}/${repetition}${result.error ? ": " + result.error : ""}`,
+      `${result.passed ? "PASS" : "FAIL"} ${c.id}/${repetition}${result.skillReads?.length === 0 ? " [no skill consulted]" : ""}${result.error ? ": " + result.error : ""}`,
     );
   }
 if (results.some((r) => !r.passed)) process.exitCode = 1;

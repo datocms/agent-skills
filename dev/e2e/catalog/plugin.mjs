@@ -116,6 +116,7 @@ try {
       timedOut: session.timedOut,
       capped: session.capped,
       oracleAccess: session.oracleAccess,
+      skillReads: session.skillReads,
       errors: session.errors,
     };
     result.strictExecutionPass =

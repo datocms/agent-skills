@@ -71,6 +71,7 @@ await Promise.all(
           !session.timedOut &&
           !session.oracleAccess.length,
         oracleAccess: session.oracleAccess.map((a) => a.command),
+        skillReads: session.skillReads,
         finalText: session.finalText,
         commands: session.commands.map((x) => ({
           command: x.command,
@@ -107,7 +108,7 @@ await Promise.all(
         JSON.stringify(results, null, 2),
       );
       console.log(
-        `${result.completed ? "REVIEW" : "ERROR"} ${c.id}/${repetition}`,
+        `${result.completed ? "REVIEW" : "ERROR"} ${c.id}/${repetition}${result.skillReads.length ? "" : " [no skill consulted]"}`,
       );
     }
   }),

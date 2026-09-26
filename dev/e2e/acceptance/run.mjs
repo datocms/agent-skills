@@ -57,7 +57,7 @@ for (const c of selected) {
       result.commandCount = session.commands.length;
       result.finalText = session.finalText;
       result.usageLimitReached = session.usageLimitReached;
-      result.skillPathsMentionedInCommands = [...new Set(session.commands.flatMap(cmd => [...cmd.command.matchAll(/(?:\.agents\/)?skills\/(datocms-[\w-]+)(?:\/[\w./-]+)?/g)].map(m => m[0])))].sort();
+      result.skillReads = session.skillReads;
       assert.ok(session.completed && session.exitCode === 0 && !session.errors.length && !session.timedOut && !session.capped && !session.credentialLeak, 'Actor did not complete cleanly');
       assert.ok(!session.oracleAccess.length, `Actor referenced evaluation state: ${session.oracleAccess.map(a => a.command).join(' | ')}`);
       const after = sourceHashes(directory, 'workspace');
@@ -93,7 +93,7 @@ for (const c of selected) {
   results.push(result);
   save(join(directory, 'result.json'), result);
   save(join(output, 'results.json'), results);
-  console.log(JSON.stringify({ case: c.id, passed: result.passed, error: result.error, elapsedMs: result.elapsedMs }));
+  console.log(JSON.stringify({ case: c.id, passed: result.passed, ...(result.skillReads?.length === 0 && { skillConsulted: false }), error: result.error, elapsedMs: result.elapsedMs }));
   if (session?.usageLimitReached) { process.exitCode = 2; break; }
 }
 if (!process.exitCode && results.some(r => r.passed === false)) process.exitCode = 1;

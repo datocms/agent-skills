@@ -43,6 +43,12 @@ export function isUsageLimitError(event: Record<string, any>): boolean {
 // workspace root: the tool-chosen working directory is not recorded.
 // Heuristic, not a sandbox.
 const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+// Skill files the actor's commands name. Empty means no skill was consulted, so a failure says nothing about
+// skill content: the agent never read it.
+export function skillReads(commands: { command: string }[]): string[] {
+  return [...new Set(commands.flatMap((c) => [...c.command.matchAll(/skills\/(datocms-[\w-]+(?:\/[\w./-]+)?)/g)].map((m) => m[1] as string)))].sort();
+}
+
 export function oracleAccess(
   commands: { command: string; turn?: number }[],
   { workspace, output, repoRoot, homes = [] }: { workspace: string; output: string; repoRoot: string; homes?: string[] },
@@ -481,6 +487,7 @@ export async function nativeSession(options: NativeOptions) {
       homes: ["HOME", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_CACHE_HOME", "NPM_CONFIG_PREFIX"].flatMap((key) => options.environment?.[key] ?? []),
     }),
     transcriptPath,
+    skillReads: skillReads([...commands.values()]),
     commands: [...commands.values()],
     mcpCalls: events.filter((e) => e.type === "item.completed" && e.item?.type === "mcp_tool_call").map((e) => e.item),
     usage: events.filter((e) => e.usage).map((e) => e.usage),
