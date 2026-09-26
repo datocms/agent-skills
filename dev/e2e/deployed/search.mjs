@@ -2,10 +2,38 @@ import assert from 'node:assert/strict';
 
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+export function crawlLimit(events) {
+  let latest;
+  let latestTime = -Infinity;
+  for (const event of events) {
+    if (!event?.event_type?.startsWith('indexing_')) continue;
+    const parsedTime = Date.parse(event.created_at ?? '');
+    const time = Number.isNaN(parsedTime) ? -Infinity : parsedTime;
+    // The API normally returns newest first; timestamps also handle unsorted
+    // responses. Keep that order when timestamps are absent or equal.
+    if (!latest || time > latestTime) { latest = event; latestTime = time; }
+  }
+  // A newer event without a log must not inherit an older crawl's limit.
+  const log = latest?.data?.crawler_log ?? '';
+  const maxPages = log.match(/Max indexable pages:\s*(\d+)/);
+  const sitemap = log.match(/Found a total of\s+(\d+)\s+URLs in sitemaps/);
+  return {
+    maxIndexablePages: maxPages ? Number(maxPages[1]) : null,
+    sitemapUrls: sitemap ? Number(sitemap[1]) : null,
+    limited: /Reached maximum number of pages/.test(log),
+  };
+}
+
 export async function checkDeployedSearch({ client, searchClient, indexId, origin, marker, records, locales, save, timeoutMs = 900000 }) {
   const checks = [];
+  let sitemapUrls = null;
   async function check(name, run) {
-    try { checks.push({ name, passed: true, evidence: await run() }); }
+    try {
+      const evidence = await run();
+      checks.push(evidence?.environmentLimit === 'crawl-quota'
+        ? { name, passed: false, ...evidence }
+        : { name, passed: true, evidence });
+    }
     catch (error) { checks.push({ name, passed: false, error: error.message }); }
     save('search-checks.json', checks);
   }
@@ -28,6 +56,7 @@ export async function checkDeployedSearch({ client, searchClient, indexId, origi
     assert.equal(response.status, 200);
     const xml = await response.text();
     const urls = [...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map(match => match[1]);
+    sitemapUrls = urls.length;
     assert.ok(urls.length);
     assert.ok(urls.every(url => new URL(url).origin === origin));
     for (const locale of locales) for (const record of records) {
@@ -40,6 +69,7 @@ export async function checkDeployedSearch({ client, searchClient, indexId, origi
     const before = await client.searchIndexes.find(indexId);
     assert.equal(new URL(before.frontend_url).origin, origin);
     const startedAt = new Date().toISOString();
+    save('crawl-checkpoint.json', { startedAt, states: [], sitemapUrls });
     await client.searchIndexes.trigger(indexId);
     const states = [];
     let finished = false;
@@ -47,7 +77,7 @@ export async function checkDeployedSearch({ client, searchClient, indexId, origi
       const index = await client.searchIndexes.find(indexId);
       if (states.at(-1) !== index.meta.indexing_status) {
         states.push(index.meta.indexing_status);
-        save('crawl-checkpoint.json', { startedAt, states, meta: index.meta });
+        save('crawl-checkpoint.json', { startedAt, states, sitemapUrls, meta: index.meta });
       }
       if (index.meta.last_indexing_completed_at && index.meta.last_indexing_completed_at !== before.meta.last_indexing_completed_at && index.meta.indexing_status !== 'pending') {
         assert.equal(index.meta.indexing_status, 'success');
@@ -58,7 +88,15 @@ export async function checkDeployedSearch({ client, searchClient, indexId, origi
     }
     const events = await client.searchIndexEvents.list({ filter: { fields: { search_index_id: { eq: indexId }, created_at: { gt: startedAt } } } });
     save('crawl-events.json', events);
+    const limit = crawlLimit(events);
+    save('crawl-limit.json', { ...limit, sitemapUrlsBeforeTrigger: sitemapUrls });
     assert.ok(finished, 'Indexing did not complete before the deadline');
+    if (limit.limited) return {
+      environmentLimit: 'crawl-quota',
+      sitemapUrls: sitemapUrls ?? limit.sitemapUrls,
+      maxIndexablePages: limit.maxIndexablePages,
+      evidence: { states },
+    };
     const observations = [];
     for (const locale of locales) {
       const result = await searchClient.searchResults.rawList({ filter: { query: marker, search_index_id: indexId, locale }, page: { limit: 100, offset: 0 } });
