@@ -188,7 +188,7 @@ function loadPreviewEndpoint(framework, kind, secretApiToken, token, options = {
     exports,
     require: (name) => { assert(name in imports, 'Unexpected import: ' + name); return imports[name]; },
     URL, Response,
-    process: { env: { SECRET_API_TOKEN: secretApiToken } },
+    process: { env: { SECRET_API_TOKEN: secretApiToken, SITE_URL: 'https://app.example.test' } },
     eventHandler: (handler) => handler,
     useRuntimeConfig: () => secretApiToken === undefined ? {} : { secretApiToken },
     getQuery: () => Object.fromEntries(url.searchParams),
@@ -256,6 +256,15 @@ test('shared preview-links example preserves complete destinations and special-c
     }, { timeout: 1000 });
     assertPreviewLinks(response.previewLinks, recordUrl, previewSecret);
   }
+});
+
+test('nextjs preview links take their origin from SITE_URL, not the request URL', async () => {
+  // Self-hosted Next.js reports request.url on its bind host (http://localhost:<port>) whatever Host the editor used.
+  const previews = loadPreviewEndpoint('nextjs', 'preview links', 'preview-secret', 'preview-secret', {
+    requestUrl: 'http://localhost:3000/api/preview', recordStatus: 'updated',
+  });
+  const { previewLinks } = await (await previews.invoke('POST')).json();
+  assertPreviewLinks(previewLinks, '/article', 'preview-secret');
 });
 
 for (const framework of ['nuxt', 'nextjs', 'sveltekit', 'astro']) {

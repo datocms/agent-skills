@@ -73,6 +73,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
 Uses Next.js `draftMode()` — no JWT needed. Call `makeDraftModeWorkWithinIframes()` after enable/disable to add `partitioned: true`. `export const dynamic = 'force-dynamic'` prevents caching.
 
+Keep `redirect()`: relative `Location`. Self-hosted, `request.url` origin = server bind host (`http://localhost:<port>` under `next start`/`next dev`), not `Host` — absolute URLs (preview links) use `SITE_URL` or the repo's `*_SITE_URL` ([site URL owner](seo-concepts.md#canonical-urls-and-site-url)).
+
 ### Disable Endpoint
 
 **File:** `src/app/api/draft-mode/disable/route.ts`
@@ -311,7 +313,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     if (url) {
       if (item.meta.status !== 'published') {
-        const draftUrl = new URL('/api/draft-mode/enable', request.url);
+        const draftUrl = new URL('/api/draft-mode/enable', process.env.SITE_URL);
         draftUrl.searchParams.set('redirect', url);
         draftUrl.searchParams.set('token', token);
         response.previewLinks.push({
@@ -321,7 +323,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }
 
       if (item.meta.status !== 'draft') {
-        const publishedUrl = new URL('/api/draft-mode/disable', request.url);
+        const publishedUrl = new URL('/api/draft-mode/disable', process.env.SITE_URL);
         publishedUrl.searchParams.set('redirect', url);
         response.previewLinks.push({
           label: 'Published version',
