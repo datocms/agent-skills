@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import html
 import json
+import os
 import re
 import subprocess
 from dataclasses import dataclass
@@ -47,8 +48,27 @@ FRAMEWORK_REFERENCE_PATHS = tuple(
     f"skills/datocms-frontend-integrations/references/{framework}.md"
     for framework in ("nextjs", "nuxt", "sveltekit", "astro")
 )
-MARKDOWN_LINK_RE = re.compile(r"\[(?:[^\]\\\n]|\\.)*\]\(\s*<?([^)\s>]+)>?(?:\s+\"[^\"]*\")?\s*\)")
-INLINE_CODE_RE = re.compile(r"`+[^`\n]*`+")
+MARKDOWN_LINK_RE = re.compile(r"\[(?:[^\]\\\n]|\\.)*\]\(\s*<?([^)\s>]+)>?(?:\s+(?:\"[^\"]*\"|'[^']*'|\([^)]*\)))?\s*\)")
+LINK_DEFINITION_RE = re.compile(r"^ {0,3}\[(?!\^)(?:[^\]\\\n]|\\.)+\]:[ \t]*<?([^\s>]+)", re.MULTILINE)
+BACKTICK_RUN_RE = re.compile(r"`+")
+# Lines that start a new block (list item, table row), so a code span can't continue onto them.
+BLOCK_START_RE = re.compile(r"^[ \t]*(?:[-*+][ \t]|\d{1,9}[.)][ \t]|\|)")
+# Maintained markdown whose relative links and anchors must resolve. `**` is walked with LINK_SKIP_DIRS
+# pruned (dependencies, gitignored scratch, test inputs), so this needs neither git nor a node_modules scan.
+LINKED_MARKDOWN_GLOBS = (
+    "skills/**/*.md",
+    "docs/*.md",
+    "README.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    ".claude/rules/*.md",
+    "evals/README.md",
+    "dev/**/*.md",
+)
+LINK_SKIP_DIRS = {"node_modules", "local", "tmp", "fixtures"}
+# Top-level SKILL.md keys the Agent Skills spec allows; claude.ai and Skills API zip uploads reject others.
+SKILL_FRONTMATTER_KEYS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
+FRONTMATTER_KEY_RE = re.compile(r"^([A-Za-z_][\w-]*)[ \t]*:(?:[ \t]|$)")
 FW_HEADING_RE = re.compile(r"FW › `([^`\n]+)`")
 FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 ATX_HEADING_RE = re.compile(r"^ {0,3}#{1,6}[ \t]+(.+?)(?:[ \t]+#+)?[ \t]*$")
@@ -84,7 +104,7 @@ IGNORED_GIT_STATUS_PREFIXES = (
 class SkillFrontmatter:
     name: str
     description: str
-    disable_model_invocation: bool
+    keys: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -114,7 +134,6 @@ def _extract_frontmatter(path: Path) -> SkillFrontmatter:
 
     name: str | None = None
     description: str | None = None
-    disable_model_invocation = False
 
     i = 0
     while i < len(lines):
@@ -147,9 +166,6 @@ def _extract_frontmatter(path: Path) -> SkillFrontmatter:
             i += 1
             continue
 
-        if stripped.startswith("disable-model-invocation:"):
-            disable_model_invocation = stripped.split(":", 1)[1].strip().lower() == "true"
-
         i += 1
 
     if not name:
@@ -160,7 +176,7 @@ def _extract_frontmatter(path: Path) -> SkillFrontmatter:
     return SkillFrontmatter(
         name=name,
         description=description,
-        disable_model_invocation=disable_model_invocation,
+        keys=tuple(match.group(1) for match in map(FRONTMATTER_KEY_RE.match, lines) if match),
     )
 
 
@@ -302,7 +318,6 @@ def _validate_metadata(skill_file: Path, frontmatter: SkillFrontmatter, errors: 
         return
 
     expected_hash = hashlib.sha256(frontmatter.description.encode("utf-8")).hexdigest()
-    expected_allow_implicit = not frontmatter.disable_model_invocation
 
     if metadata.synced_name != frontmatter.name:
         errors.append(
@@ -324,15 +339,17 @@ def _validate_metadata(skill_file: Path, frontmatter: SkillFrontmatter, errors: 
     if f"${frontmatter.name}" not in metadata.default_prompt:
         errors.append(f"{metadata_path}: interface.default_prompt must reference ${frontmatter.name}")
 
-    if expected_allow_implicit:
-        if metadata.allow_implicit_invocation is not True:
+    # Every skill is model-invocable: the frontmatter key check rejects `disable-model-invocation`.
+    if metadata.allow_implicit_invocation is not True:
+        errors.append(f"{metadata_path}: policy.allow_implicit_invocation must be true")
+
+
+def _validate_frontmatter_keys(skill_file: Path, frontmatter: SkillFrontmatter, errors: list[str]) -> None:
+    for key in frontmatter.keys:
+        if key not in SKILL_FRONTMATTER_KEYS:
             errors.append(
-                f"{metadata_path}: policy.allow_implicit_invocation must be true"
-            )
-    else:
-        if metadata.allow_implicit_invocation is not None:
-            errors.append(
-                f"{metadata_path}: omit policy.allow_implicit_invocation for explicit-only skills"
+                f"{skill_file}: frontmatter key `{key}` is not in the Agent Skills spec "
+                f"({', '.join(sorted(SKILL_FRONTMATTER_KEYS))}); claude.ai and Skills API uploads of the zip reject it"
             )
 
 
@@ -531,13 +548,14 @@ def _validate_eval_result_names(
 
 def _fence_toggle(line: str, fence: str | None) -> tuple[bool, str | None]:
     """CommonMark fences: a fence opens with 3+ backticks or tildes and closes only on a line
-    of the same character, at least as long, with nothing after it."""
+    of the same character, at least as long, with nothing after it. A backtick fence's info string can't
+    contain a backtick, so such a line is inline code, not a fence."""
     match = FENCE_RE.match(line)
     if not match:
         return False, fence
     run = match.group(1)
     if fence is None:
-        return True, run
+        return (False, None) if run[0] == "`" and "`" in line[match.end():] else (True, run)
     if run[0] == fence[0] and len(run) >= len(fence) and not line.strip()[len(run):].strip():
         return True, None
     return False, fence
@@ -582,6 +600,100 @@ def _github_heading_slugs(headings: list[str]) -> set[str]:
     return slugs
 
 
+def _strip_code_spans(paragraph: str) -> str:
+    """CommonMark code spans: a run of n backticks closes at the next run of exactly n (possibly on a later
+    line of the same paragraph); a run with no closer is literal text. An opener's first backtick is literal after
+    an odd number of backslashes; closers ignore backslashes, which are literal inside code."""
+    runs = list(BACKTICK_RUN_RE.finditer(paragraph))
+    kept: list[str] = []
+    cursor = index = 0
+    while index < len(runs):
+        start, end = runs[index].span()
+        start += (start - len(paragraph[:start].rstrip("\\"))) % 2
+        closer = next((j for j in range(index + 1, len(runs)) if len(runs[j].group()) == end - start), None)
+        if start == end or closer is None:
+            index += 1
+            continue
+        kept.append(paragraph[cursor:start])
+        cursor = runs[closer].end()
+        index = closer + 1
+    kept.append(paragraph[cursor:])
+    return "".join(kept)
+
+
+def _markdown_prose(text: str) -> str:
+    """Markdown text with fenced blocks blanked and code spans removed, so link syntax in code is ignored.
+    Code spans can't cross blocks, so list items and table rows start a paragraph and headings are one."""
+    lines: list[str] = []
+    fence: str | None = None
+    for line in text.splitlines():
+        is_fence, fence = _fence_toggle(line, fence)
+        if is_fence or fence is not None:
+            lines.append("")
+        elif ATX_HEADING_RE.match(line):
+            lines += ["", line, ""]
+        else:
+            lines += ["", line] if BLOCK_START_RE.match(line) else [line]
+    return "\n\n".join(_strip_code_spans(paragraph) for paragraph in re.split(r"\n[ \t]*\n", "\n".join(lines)))
+
+
+def _iter_linked_markdown(repo_root: Path) -> list[Path]:
+    found: set[Path] = set()
+    for pattern in LINKED_MARKDOWN_GLOBS:
+        head, _, tail = pattern.partition("/**/")
+        if not tail:
+            found.update(repo_root.glob(pattern))
+            continue
+        for directory, subdirs, _files in os.walk(repo_root / head):
+            subdirs[:] = [name for name in subdirs if name not in LINK_SKIP_DIRS]
+            found.update(Path(directory).glob(tail))
+    return sorted(path for path in found if path.is_file())
+
+
+def _exists_with_case(repo_root: Path, path: Path, listings: dict[Path, set[str]]) -> bool:
+    # Path.exists() ignores case on macOS, where this runs, but GitHub and the Linux hosts that load skills don't.
+    parent = repo_root
+    for part in path.relative_to(repo_root).parts:
+        if parent not in listings:
+            listings[parent] = set(os.listdir(parent)) if parent.is_dir() else set()
+        if part not in listings[parent]:
+            return False
+        parent = parent / part
+    return True
+
+
+def _validate_markdown_links(repo_root: Path, errors: list[str]) -> None:
+    # Relative links must resolve, with exact case, to a file or directory inside the repo and anchors on .md
+    # targets to a GitHub heading slug. Skill files may only link inside skills/, since nothing else ships with them.
+    skills_root = (repo_root / "skills").resolve()
+    slug_cache: dict[Path, set[str]] = {}
+    listings: dict[Path, set[str]] = {}
+    for md_file in _iter_linked_markdown(repo_root):
+        in_skills = md_file.resolve().is_relative_to(skills_root)
+        prose = _markdown_prose(md_file.read_text(encoding="utf-8"))
+        for target in MARKDOWN_LINK_RE.findall(prose) + LINK_DEFINITION_RE.findall(prose):
+            if target.lower().startswith(EXTERNAL_LINK_PREFIXES):
+                continue
+            path_part, _, fragment = target.partition("#")
+            resolved = (md_file.parent / unquote(path_part)).resolve() if path_part else md_file.resolve()
+            if path_part.startswith("/") or not resolved.is_relative_to(repo_root):
+                errors.append(f"{md_file}: link target `{target}` must be a path relative to the file, inside the repo")
+                continue
+            if not _exists_with_case(repo_root, resolved, listings):
+                problem = "differs in case from the path on disk" if resolved.exists() else "does not resolve to a file or directory"
+                errors.append(f"{md_file}: link target `{target}` {problem}")
+                continue
+            if in_skills and not resolved.is_relative_to(skills_root):
+                errors.append(f"{md_file}: link target `{target}` is outside skills/ and won't ship with the skills")
+                continue
+            if not fragment or resolved.suffix != ".md" or not resolved.is_file():
+                continue
+            if resolved not in slug_cache:
+                slug_cache[resolved] = _github_heading_slugs(_markdown_headings(resolved))
+            if unquote(fragment) not in slug_cache[resolved]:
+                errors.append(f"{md_file}: link target `{target}` names no heading in {resolved.name}")
+
+
 def _validate_setup_pointers(repo_root: Path, canonical_skill_names: set[str], errors: list[str]) -> None:
     setup_dir = repo_root / SETUP_SKILL_DIR
     if not setup_dir.exists():
@@ -596,8 +708,6 @@ def _validate_setup_pointers(repo_root: Path, canonical_skill_names: set[str], e
         if rel_path not in framework_headings:
             errors.append(f"{repo_root / rel_path}: missing framework reference that setup `FW ›` pointers target")
 
-    slug_cache: dict[Path, set[str]] = {}
-
     for md_file in sorted(setup_dir.rglob("*.md")):
         text = md_file.read_text(encoding="utf-8")
 
@@ -607,7 +717,6 @@ def _validate_setup_pointers(repo_root: Path, canonical_skill_names: set[str], e
             _validate_routed_skill_names(md_file, canonical_skill_names, errors)
 
         fence: str | None = None
-        prose_lines: list[str] = []
         for line_number, line in enumerate(text.splitlines(), start=1):
             is_fence, next_fence = _fence_toggle(line, fence)
             if is_fence and fence is None:
@@ -615,27 +724,6 @@ def _validate_setup_pointers(repo_root: Path, canonical_skill_names: set[str], e
                     f"{md_file}:{line_number}: fenced code block; setup ships no implementation, link the owning skill instead"
                 )
             fence = next_fence
-            if not is_fence and fence is None:
-                prose_lines.append(line)
-
-        prose = INLINE_CODE_RE.sub("``", "\n".join(prose_lines))
-        for target in MARKDOWN_LINK_RE.findall(prose):
-            if target.lower().startswith(EXTERNAL_LINK_PREFIXES):
-                continue
-            path_part, _, fragment = target.partition("#")
-            resolved = (md_file.parent / unquote(path_part)).resolve() if path_part else md_file
-            if not resolved.is_file():
-                errors.append(f"{md_file}: link target `{target}` does not resolve to a file")
-                continue
-            if not resolved.is_relative_to((repo_root / "skills").resolve()):
-                errors.append(f"{md_file}: link target `{target}` is outside skills/ and won't ship with the skills")
-                continue
-            if not fragment:
-                continue
-            if resolved not in slug_cache:
-                slug_cache[resolved] = _github_heading_slugs(_markdown_headings(resolved))
-            if unquote(fragment) not in slug_cache[resolved]:
-                errors.append(f"{md_file}: link target `{target}` names no heading in {resolved.name}")
 
         for heading in sorted(set(FW_HEADING_RE.findall(text))):
             for rel_path, headings in framework_headings.items():
@@ -858,6 +946,7 @@ def main() -> int:
         _validate_banned_skill_body_patterns(skill_file, errors)
         _validate_routed_skill_names(skill_file, canonical_skill_names, errors)
         _validate_metadata(skill_file, frontmatter, errors)
+        _validate_frontmatter_keys(skill_file, frontmatter, errors)
         _validate_description_length(skill_file, frontmatter, errors)
         _validate_scaffold_contract(skill_file, frontmatter, errors)
 
@@ -866,6 +955,7 @@ def main() -> int:
     _validate_eval_result_names(repo_root, canonical_skill_names, errors)
     _validate_astro_imports(repo_root, errors)
     _validate_setup_pointers(repo_root, canonical_skill_names, errors)
+    _validate_markdown_links(repo_root, errors)
     _validate_codex_plugin_manifest(repo_root, errors)
     _validate_plugin_root_has_no_dependency_install(repo_root, errors)
 
@@ -884,6 +974,7 @@ def main() -> int:
     print(f"[ok] validated {len(skill_files)} skills")
     print("[ok] reference paths resolve")
     print("[ok] metadata files are present and synced")
+    print("[ok] SKILL.md frontmatter uses only Agent Skills spec keys")
     print(f"[ok] skill descriptions fit within Codex {CODEX_DESCRIPTION_MAX_CHARS}-char limit")
     print("[ok] routed skill names match frontmatter names")
     print("[ok] scaffold-capable skills declare scaffolded vs production-ready states")
@@ -895,10 +986,8 @@ def main() -> int:
         print("[ok] checked-in root eval result rows match canonical fixtures")
     print("[ok] banned host-specific labels are absent from skill bodies")
     print("[ok] Astro references use subpath imports")
-    print(
-        "[ok] datocms-setup markdown links resolve to existing files and headings, "
-        "`FW ›` headings exist in all four framework references, and setup ships no code blocks"
-    )
+    print("[ok] relative markdown links resolve, with exact case, to files and headings in the repo, and skill links stay inside skills/")
+    print("[ok] datocms-setup `FW ›` headings exist in all four framework references and setup ships no code blocks")
     print("[ok] Codex plugin manifest is present and synced with Claude Code manifest")
     print("[ok] plugin root has no package.json + lockfile pair that plugin installs would run")
     if args.require_clean_git:

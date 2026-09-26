@@ -1,6 +1,6 @@
 # Maintenance
 
-This page collects the contributor and maintainer workflows for the `datocms/llm-skills` repository. End users do not need anything on this page — see the root [README](../README.md) instead.
+This page collects the contributor and maintainer workflows for the `datocms/agent-skills` repository. End users do not need anything on this page — see the root [README](../README.md) instead.
 
 ## Pre-commit automation
 
@@ -12,9 +12,10 @@ npm ci --prefix dev
 
 The `prepare` script wires `core.hooksPath` to `.husky/` automatically. From that point on, every `git commit` will:
 
-1. Detect skills with staged changes, deletions included (anything under `skills/<name>/` except `agents/`, which is excluded from the claude.ai zips anyway).
-2. Regenerate the `.zip` for each affected skill from a temp checkout of the **index** — so zips reflect _staged_ content only, never unstaged working-tree edits — and re-stage the regenerated zip. A skill deleted entirely has its zip removed.
-3. Run `validate_skill_repo.py`. A non-zero exit blocks the commit.
+1. Format staged markdown with remark (skipping `.remarkignore` paths) and re-stage it. A staged markdown file that also has unstaged changes is refused, since re-staging would commit those hunks too: stage the whole file, or `git stash push --keep-index` first.
+2. Detect skills with staged changes, deletions included (anything under `skills/<name>/` except `agents/`, which is excluded from the claude.ai zips anyway).
+3. Regenerate the `.zip` for each affected skill from a temp checkout of the **index** — so zips reflect _staged_ content only, never unstaged working-tree edits — and re-stage the regenerated zip. A skill deleted entirely has its zip removed.
+4. Run `validate_skill_repo.py`. A non-zero exit blocks the commit.
 
 The hook intentionally does **not** bump plugin versions or run evals — both are explicit release-time decisions (see below). To skip the hook for a specific commit, use the standard `git commit --no-verify`.
 
@@ -32,6 +33,8 @@ python3 evals/scripts/validate_skill_repo.py --require-clean-git
 # Optional: fail if checked-in eval results are stale
 python3 evals/scripts/validate_skill_repo.py --require-fresh-results-sync
 ```
+
+Besides metadata and fixtures, the validator resolves every relative link (with exact case, as GitHub and Linux hosts do) and heading anchor in maintained markdown (`skills/`, `docs/`, `dev/`, `.claude/rules/`, `README.md`, `AGENTS.md`, `CLAUDE.md`, `evals/README.md`); links from skill files must stay inside `skills/`, the only folder that ships. It also rejects `SKILL.md` frontmatter keys outside the Agent Skills spec (`name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`), because claude.ai and Skills API uploads of the zips refuse them.
 
 For the full eval workflow (running, interpreting, and updating snapshots) see [`evals/README.md`](../evals/README.md). **Do not run evals proactively** — they are expensive. Only run them when explicitly investigating trigger quality.
 

@@ -11,8 +11,9 @@
  */
 
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { extname, resolve } from "node:path";
+import { existsSync, mkdtempSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { basename, extname, join, resolve } from "node:path";
 import { config as loadEnv } from "dotenv";
 import { encode } from "gpt-tokenizer";
 
@@ -56,8 +57,10 @@ const URL_REGEX = /https?:\/\/[^\s)]+/g;
 const HEADING_REGEX = /^(#{1,6})\s+(.*)$/gm;
 const BULLET_REGEX = /^\s*[-*+]\s+/gm;
 const FENCE_OPEN_REGEX = /^(\s{0,3})(`{3,}|~{3,})(.*)$/;
+// Single-line CommonMark code span: a backtick run closed by a run of the same length.
+const INLINE_CODE_REGEX = /(?<!`)(`+)(?!`).+?(?<!`)\1(?!`)/g;
 const PATH_REGEX =
-  /(?:\.\/|\.\.\/|\/|[A-Za-z]:\\)[\w\-/\\.]+|[\w\-.]+[/\\][\w\-/\\.]+/g;
+  /(?:\.\/|\.\.\/|\/|[A-Za-z]:\\)[\w\-/\\.]+|[\w\-.]+\/[\w\-/\\.]+/g;
 
 // ---------- Detection ----------
 
@@ -180,6 +183,7 @@ HOW TO FIX:
 - Missing URL: find it in ORIGINAL, restore it exactly where it belongs in COMPRESSED
 - Code block mismatch: find the exact code block in ORIGINAL, restore it in COMPRESSED
 - Heading mismatch: restore the exact heading text from ORIGINAL into COMPRESSED
+- Missing path or inline code: restore it verbatim from ORIGINAL
 - Do not touch any section not mentioned in the errors
 
 ORIGINAL (reference only):
@@ -271,6 +275,11 @@ function extractCodeBlocks(text: string): string[] {
   return extractCodeBlocksWithPositions(text).map((b) => b.block);
 }
 
+function extractInlineCode(text: string): Set<string> {
+  const prose = extractCodeBlocks(text).reduce((t, block) => t.replace(block, ""), text);
+  return extractSet(prose, INLINE_CODE_REGEX);
+}
+
 function extractSet(text: string, regex: RegExp): Set<string> {
   return new Set(text.match(regex) ?? []);
 }
@@ -352,7 +361,7 @@ function levenshtein(a: string, b: string): number {
     cur[0] = i;
     for (let j = 1; j <= n; j++) {
       const cost = a.charCodeAt(i - 1) === b.charCodeAt(j - 1) ? 0 : 1;
-      cur[j] = Math.min(cur[j - 1] + 1, (prev[j] ?? 0) + 1, (prev[j - 1] ?? 0) + cost);
+      cur[j] = Math.min((cur[j - 1] ?? 0) + 1, (prev[j] ?? 0) + 1, (prev[j - 1] ?? 0) + cost);
     }
     [prev, cur] = [cur, prev];
   }
@@ -504,7 +513,14 @@ function validate(orig: string, comp: string): ValidationResult {
     const parts: string[] = [`${p1.size} → ${p2.size}`];
     parts.push(`lost (${lostPaths.length}): ${JSON.stringify(lostPaths)}`);
     if (added.length) parts.push(`added (${added.length}): ${JSON.stringify(added)}`);
-    warnings.push(`Path mismatch: ${parts.join("; ")}`);
+    // PATH_REGEX also matches prose slash words (request/response, CI/CD); only losing a file path or route is an error.
+    const lostRealPath = lostPaths.some((p) => /^\.{0,2}\/\w|\.\w+$/.test(p.replace(/\.+$/, "")));
+    (lostRealPath ? errors : warnings).push(`Path mismatch: ${parts.join("; ")}`);
+  }
+
+  const lostCode = setDiff(extractInlineCode(orig), extractInlineCode(comp));
+  if (lostCode.length) {
+    errors.push(`Inline code lost or changed (${lostCode.length}): ${JSON.stringify(lostCode)}`);
   }
 
   const b1 = (orig.match(BULLET_REGEX) ?? []).length;
@@ -602,14 +618,11 @@ function compressFile(filepath: string): boolean {
       }
     }
 
-    if (attempt === 0) {
-      writeFileSync(abs, frontmatter + compressedBody);
-      console.log(`🐞 Wrote post-step-1 output to ${abs}`);
-    }
-
     if (attempt === MAX_RETRIES - 1) {
+      const lastAttempt = join(mkdtempSync(join(tmpdir(), "caveman-")), basename(abs));
+      writeFileSync(lastAttempt, frontmatter + compressedBody);
       console.log(
-        `❌ Failed after ${MAX_RETRIES} attempts — original left untouched`,
+        `❌ Failed after ${MAX_RETRIES} attempts — original left untouched, last attempt saved to ${lastAttempt}`,
       );
       return false;
     }

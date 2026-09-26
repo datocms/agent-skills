@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
+# husky runs hooks with `sh`, which is dash on some Linux systems; this script needs bash.
+[ -n "${BASH_VERSION:-}" ] || exec bash "$0" "$@"
 set -euo pipefail
 
 repo_root=$(git rev-parse --show-toplevel)
 cd "$repo_root"
 
-# Format staged markdown files with remark, skipping paths in .remarkignore.
-staged_md=$(git diff --cached --name-only --diff-filter=ACMR | { grep '\.md$' || true; })
+# Format staged markdown files with remark, skipping paths in .remarkignore. core.quotePath=false keeps
+# non-ASCII names unquoted, so they match the filters below.
+staged_md=$(git -c core.quotePath=false diff --cached --name-only --diff-filter=ACMR | { grep '\.md$' || true; })
 if [[ -n "$staged_md" ]]; then
   if [[ -f .remarkignore ]]; then
     ignore_patterns=$(grep -v '^\s*$\|^\s*#' .remarkignore || true)
@@ -22,16 +25,25 @@ if [[ -n "$staged_md" ]]; then
   fi
 fi
 if [[ -n "$staged_md" ]]; then
+  # remark formats the working-tree file and the result is re-staged whole, which would also commit
+  # any unstaged hunks of a partially staged file; refuse before touching anything.
+  partial=$(echo "$staged_md" | tr '\n' '\0' | xargs -0 git -c core.quotePath=false --literal-pathspecs diff --name-only --)
+  if [[ -n "$partial" ]]; then
+    echo "pre-commit: these markdown files have unstaged changes, and formatting would commit them too:" >&2
+    echo "$partial" | sed 's/^/  /' >&2
+    echo "Stage the whole file, or run 'git stash push --keep-index' before committing." >&2
+    exit 1
+  fi
   # Dev tooling (remark and its config) lives in dev/; plugin installs never see it.
-  echo "$staged_md" | xargs dev/node_modules/.bin/remark --rc-path dev/remark.config.mjs --no-config --output --quiet
-  echo "$staged_md" | xargs git add -f
+  echo "$staged_md" | tr '\n' '\0' | xargs -0 dev/node_modules/.bin/remark --rc-path dev/remark.config.mjs --no-config --output --quiet
+  echo "$staged_md" | tr '\n' '\0' | xargs -0 git add -f
 fi
 
 # Find skills with staged changes (any file under skills/<name>/ except agents/, which is excluded from zips).
 # Deletions count too, or a delete-only commit would leave stale files in the zip; --no-renames lists a
 # rename as delete + add so the skill it leaves is rebuilt as well as the one it enters.
 changed_skills=$(
-  git diff --cached --name-only --no-renames --diff-filter=ACMRD \
+  git -c core.quotePath=false diff --cached --name-only --no-renames --diff-filter=ACMRD \
     | awk -F/ '$1 == "skills" && $2 ~ /^datocms-/ && $3 != "agents" { print $2 }' \
     | sort -u
 )

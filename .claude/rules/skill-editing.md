@@ -26,8 +26,8 @@ When refining trigger boundaries: edit frontmatter `description` first (small de
 
 The validator bans these patterns in skill bodies: `AskUserQuestion`, `Read tool`, `Claude Code alias`, `slash alias`. Do not introduce them.
 
-Headings are link targets: `datocms-setup` links to sibling SKILL.md and reference headings by anchor. Renaming one fails the validator until the setup link is updated.
+Headings are link targets: skills and docs link to SKILL.md and reference headings by anchor. The validator checks every relative link and anchor in maintained markdown, so renaming a heading or file fails it until the links are updated.
 
 ## Invocation Policy
 
-Model-invocable skills (no `disable-model-invocation`) need `policy:` → `allow_implicit_invocation: true` in `agents/openai.yaml`. Explicit-only skills (`disable-model-invocation: true`) omit `policy`. `datocms-setup` is model-invocable like the others.
+Every skill is model-invocable: `agents/openai.yaml` needs `policy:` → `allow_implicit_invocation: true`. Frontmatter keeps to the Agent Skills spec keys (`name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`); the validator rejects others such as `disable-model-invocation`, because claude.ai and Skills API zip uploads refuse them.

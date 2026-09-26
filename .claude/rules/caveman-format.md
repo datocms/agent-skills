@@ -13,7 +13,7 @@ All prose in `skills/*/SKILL.md` and `skills/*/references/*.md` must be **cavema
 Strips natural-language padding, keeps every load-bearing fact. Same content, fewer tokens.
 
 - Drop filler intros ("This reference covers…", "In this section…").
-- Drop tables of contents — headings already are the outline.
+- Don't hand-edit `## Contents` in references — remark regenerates it for files over 100 lines.
 - Collapse multi-sentence explanations into one dense line. Chain clauses with em-dashes and parentheticals.
 - Cut hedges ("you might want to", "generally a good idea to") — state the rule.
 - Cut restatements — heading "How it works" → don't open with "Here's how it works."
