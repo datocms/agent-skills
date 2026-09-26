@@ -458,6 +458,17 @@ def _validate_eval_fixture_payload(
                     f"{path}: eval row {index} references unknown boundary skill `{normalized_name}`"
                 )
 
+        # Claude Code and Codex always load a skill the user names, so naming it is the explicit case and a positive.
+        names_skill = isinstance(query, str) and re.search(rf"(?<![\w-]){re.escape(skill_name)}(?![\w-])", query)
+        if names_skill and not should_trigger:
+            errors.append(
+                f"{path}: eval row {index} names `{skill_name}`, which then always loads, but is labelled negative"
+            )
+        if bool(names_skill) != (query_mode == "explicit"):
+            errors.append(
+                f"{path}: eval row {index} must use `query_mode: explicit` exactly when the query names `{skill_name}`"
+            )
+
         if query_mode == "overlap" and not normalized_boundary_with:
             errors.append(
                 f"{path}: eval row {index} uses `query_mode: overlap` but has no `boundary_with` skills"

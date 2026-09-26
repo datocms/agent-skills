@@ -117,6 +117,25 @@ test('validator fails when a CMA reference the hosted MCP server fetches is miss
   assert.match(errors[0], /missing; the hosted MCP server fetches this exact path from master/);
 });
 
+test('trigger fixtures label a query that names its own skill explicit and positive', () => {
+  // Claude Code and Codex always load a named skill, so a negative label there scores behaviour no description controls.
+  const fixture = 'evals/fixtures/trigger/datocms-cda.json';
+  const rows = JSON.parse(readFileSync(join(repoRoot, fixture), 'utf8'));
+  const probes = [
+    { query: 'Use datocms-cda to write a CMA import script', should_trigger: false, query_mode: 'explicit' },
+    { query: 'Ask $datocms-cda for the blog query', should_trigger: true, query_mode: 'implicit' },
+    { query: 'Fetch the latest posts', should_trigger: true, query_mode: 'explicit' },
+    { query: 'Compare datocms-cda-client releases', should_trigger: false, query_mode: 'implicit' },
+  ];
+  const errors = about(validatorErrors({ [fixture]: JSON.stringify([...rows, ...probes]) }), fixture);
+  const row = (offset) => `${fixture}: eval row ${rows.length + offset}`;
+  assert.deepEqual(errors, [
+    `${row(0)} names \`datocms-cda\`, which then always loads, but is labelled negative`,
+    `${row(1)} must use \`query_mode: explicit\` exactly when the query names \`datocms-cda\``,
+    `${row(2)} must use \`query_mode: explicit\` exactly when the query names \`datocms-cda\``,
+  ]);
+});
+
 // A throwaway git repo with the real hook, remark config and dev dependencies, and a stub validator. The hook runs
 // the way husky runs it (`sh -e`, which ignores the bash shebang). The markdown name has a space and a non-ASCII
 // letter, which git quotes by default.

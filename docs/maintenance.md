@@ -36,7 +36,7 @@ python3 evals/scripts/validate_skill_repo.py --require-fresh-results-sync
 
 Besides metadata and fixtures, the validator resolves every relative link (with exact case, as GitHub and Linux hosts do) and heading anchor in maintained markdown (`skills/`, `docs/`, `dev/`, `.claude/rules/`, `README.md`, `AGENTS.md`, `CLAUDE.md`, `evals/README.md`); links from skill files must stay inside `skills/`, the only folder that ships. It also rejects `SKILL.md` frontmatter keys outside the Agent Skills spec (`name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`), because claude.ai and Skills API uploads of the zips refuse them, and fails if a CMA reference the [hosted MCP server](#hosted-mcp-dependency) fetches is missing.
 
-For the full eval workflow (running, interpreting, and updating snapshots) see [`evals/README.md`](../evals/README.md). **Do not run evals proactively** — they are expensive. Only run them when explicitly investigating trigger quality.
+For the full eval workflow (running and interpreting results) see [`evals/README.md`](../evals/README.md). **Do not run evals proactively** — they are expensive. Only run them when explicitly investigating trigger quality.
 
 ### Structured Text checks
 
@@ -118,4 +118,4 @@ metadata:
 - Each skill ships a Codex agent interface config at `skills/<skill-name>/agents/openai.yaml` that **must stay synced** with the SKILL.md frontmatter. The validator checks this.
 - Detailed reference docs go under `skills/<skill-name>/references/`.
 - `datocms-setup` holds no implementation facts (no code, env var names, packages, commands or API facts beyond what a question needs). Every pointer is a relative link to a sibling file or heading (`../../datocms-<sibling>/references/<file>.md#<heading>`) or FW › `Heading` (present in all four framework references); the validator fails when one does not resolve. Renaming a linked sibling heading means updating the setup link in the same change.
-- Every public skill needs a canonical eval fixture at `evals/fixtures/trigger/<skill-name>.json` and a checked-in results snapshot at `evals/results/trigger/<skill-name>/<track>/<source>/results.json`.
+- Every public skill needs a canonical eval fixture at `evals/fixtures/trigger/<skill-name>.json`. Results are committed only from a deliberate eval run (see [`evals/README.md`](../evals/README.md)).

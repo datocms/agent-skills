@@ -9,7 +9,7 @@ Use this checklist when you want to confirm the repo is ready for Codex-local pl
 - Every public skill ships as `skills/<skill-name>/SKILL.md`.
 - Every public skill has synced `agents/openai.yaml` metadata.
 - Every public skill has a canonical eval fixture at `evals/fixtures/trigger/<skill-name>.json`.
-- Every included public skill has a checked-in result file at `evals/results/trigger/<skill-name>/<track>/<source>/results.json`.
+- Any checked-in trigger results match their fixtures (the fresh-results sync gate below).
 
 ## Validation commands
 

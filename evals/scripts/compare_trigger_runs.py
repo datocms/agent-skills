@@ -200,6 +200,15 @@ def _render_markdown(
     )
     lines.append("")
 
+    b_models = baseline.get("models") or ["not recorded"]
+    c_models = candidate.get("models") or ["not recorded"]
+    if b_models != c_models or "not recorded" in b_models:
+        lines.append(
+            f"Models: {', '.join(b_models)} -> {', '.join(c_models)}. "
+            "Unless both runs used the same pinned model, a change here may come from the model, not the descriptions."
+        )
+        lines.append("")
+
     lines.append("| Skill | Pass Δ | Recall Δ | Precision Δ | F1 Δ | FN Δ | FP Δ |")
     lines.append("|---|---:|---:|---:|---:|---:|---:|")
 

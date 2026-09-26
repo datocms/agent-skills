@@ -8,40 +8,33 @@ metadata:
 
 **IMPORTANT:** This skill is expensive (makes many LLM API calls). Only run when the user explicitly asks for it. Never run proactively.
 
-Before running, ask the user which eval source to run unless they already specified it in `$ARGUMENTS`:
+Before running, ask the user which track to run unless they already specified it in `$ARGUMENTS`:
 
-- **Claude Code only** — uses `run_trigger_eval.py --track claude`
-- **Codex only** — uses `run_trigger_eval.py --track codex`
-- **Both** — runs both tracks sequentially
+- **Claude Code only** — `--track claude`
+- **Codex only** — `--track codex`
+- **Both** — run both tracks sequentially
+
+Use `--source frontmatter` (the default) unless the user asks for `metadata` or `combined`. Pass `--model` when the user names a model; without it, Codex results record no model. Every step below takes the same `--track` and `--source`.
 
 **Step 1 — Classify:**
 
 The runner writes to the canonical layout at `evals/results/trigger/<skill>/<track>/<source>/results.json`. You do not pass an output directory.
 
-For Claude Code:
-
 ```bash
-python3 evals/scripts/run_trigger_eval.py --track claude --source combined
-```
-
-For Codex:
-
-```bash
-python3 evals/scripts/run_trigger_eval.py --track codex
+python3 evals/scripts/run_trigger_eval.py --track <track> --source <source> [--model <model>]
 ```
 
 **Step 2 — Analyze:**
 
 ```bash
-python3 evals/scripts/analyze_trigger_results.py \
-  --track claude --source frontmatter
+python3 evals/scripts/analyze_trigger_results.py --track <track> --source <source>
 ```
 
 This writes the cross-skill summary to `evals/results/trigger/_summary/<track>/<source>/summary.{json,md}`. Report:
 
-- The gate verdict (pass/fail at F1 ≥ 0.90, with the list of skills below threshold).
+- The gate verdict: it passes only when every skill has results at or above F1 0.90. List the skills below the floor and the skills without results.
 - Per-skill precision, recall, F1.
-- Any noteworthy false negatives / positives.
+- Any warnings (different models, results older than the current description) and noteworthy false negatives / positives.
 
 **Step 3 — Compare (optional):**
 
@@ -54,4 +47,4 @@ python3 evals/scripts/compare_trigger_runs.py \
   --output-markdown local/comparison.md
 ```
 
-Summarize regressions and improvements. For ad-hoc baselines that should not be committed, store them under `local/` (gitignored).
+Summarize regressions and improvements, and say so when the two runs used different or unrecorded models. For ad-hoc baselines that should not be committed, store them under `local/` (gitignored).

@@ -13,7 +13,11 @@
   },
   {
     "query": "I'm building a portfolio site with DatoCMS. Each project has modular content blocks — a text block, an image gallery block, and a video embed block. How do I query these with the CDA and render them with the right components?",
-    "should_trigger": true
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
   },
   {
     "query": "my datocms images are loading slow. i heard there's some responsive image stuff with srcset and blur-up placeholders? im using react-datocms. can you help me set up the image component with the right graphql fragment?",
@@ -28,7 +32,7 @@
     "should_trigger": true
   },
   {
-    "query": "I need to render structured text from DatoCMS that contains inline records and block records. The structured text has embedded 'call to action' blocks and links to other records. Using @datocms/cda-client and react-datocms StructuredText component.",
+    "query": "I need to query and render structured text from DatoCMS that contains inline records and block records. The structured text has embedded 'call to action' blocks and links to other records. Using @datocms/cda-client and react-datocms StructuredText component.",
     "should_trigger": true,
     "query_mode": "overlap",
     "boundary_with": [
@@ -44,12 +48,17 @@
     ]
   },
   {
-    "query": "I want to paginate through a collection of 500+ articles from DatoCMS CDA. What's the right way to do cursor-based pagination with the GraphQL API? I need to show 12 per page with a 'load more' button.",
+    "query": "I want to paginate through a collection of 500+ articles from DatoCMS CDA. What's the right way to page through them with the GraphQL API? I need to show 12 per page with a 'load more' button.",
     "should_trigger": true
   },
   {
     "query": "how do I query datocms to get all records that match a full-text search? the user types in a search bar and i need to search across title and body fields",
-    "should_trigger": true
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations",
+      "datocms-cma"
+    ]
   },
   {
     "query": "I need to create a new blog post programmatically in DatoCMS with a title, slug, body, and a cover image upload. This is for a migration script that imports 200 posts from our old WordPress database.",
@@ -76,8 +85,12 @@
     "should_trigger": false
   },
   {
-    "query": "I need to build a custom color picker field extension for DatoCMS using the plugin SDK. It should show a color wheel and save the hex value to the field.",
-    "should_trigger": false
+    "query": "The DatoCMS click-to-edit overlays stopped showing up on our Nuxt draft pages after the last deploy. Can you track down why?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
   },
   {
     "query": "Can you set up real-time content updates on my SvelteKit site? When an editor changes content in DatoCMS, I want the preview page to update instantly without refreshing.",
@@ -107,11 +120,6 @@
     "query_mode": "explicit"
   },
   {
-    "query": "Use datocms-cda to write a DatoCMS CMA script that bulk publishes all draft article records and uploads any missing cover images.",
-    "should_trigger": false,
-    "query_mode": "explicit"
-  },
-  {
     "query": "Validate this supplied DAST JSON document and explain its invalid child nodes. Do not query any DatoCMS project.",
     "should_trigger": false,
     "query_mode": "overlap",
@@ -134,5 +142,25 @@
     "boundary_with": [
       "datocms-structured-text"
     ]
+  },
+  {
+    "query": "executeQuery only gives me the data. How do I also get the x-cache-tags header back for my homepage query?",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Can our product listing query also return each record's link to its DatoCMS editor page? We only need the URL in the response for now.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "our DatoCMS GraphQL results are all typed as any. how do we get real TypeScript types for them?",
+    "should_trigger": true
   }
 ]

@@ -28,7 +28,6 @@ skills/
 docs/
 evals/
   fixtures/
-  results/
   scripts/
 dev/
   package.json
@@ -51,5 +50,5 @@ zips/
 - `skills/datocms-setup/` is the guided setup skill. Its `SKILL.md` owns the conversation, and `references/website.md` and `references/project.md` link each play to the sibling files and headings that hold the implementation. It ships no code, so nothing is duplicated between setup and the skills that own each concern.
 - `docs/` is for longer reference material that would make the root README too heavy.
 - `zips/` holds one archive per skill for uploading to Claude chat; the pre-commit hook rebuilds the archives of skills with staged changes.
-- `evals/` keeps fixtures, checked-in results, reports, and tooling together so the trigger-quality loop is easy to inspect. Its scripts are Python and need no npm packages.
+- `evals/` holds the trigger check, a lint of skill descriptions: fixtures and scripts. Runs write results under `evals/results/`, committed only from a deliberate run. Its scripts are Python and need no npm packages.
 - `dev/` holds all Node tooling: the e2e and regression harness, the coexistence evaluator, offline tests, formatting config, release scripts, and their `package.json`/`package-lock.json`. Plugin installs copy the repo root, and Claude Code runs `npm ci` there whenever it finds `package.json` plus a lockfile, so keeping these files out of the root spares every user a dev-dependency install. The validator rejects a root `package.json` with a lockfile.

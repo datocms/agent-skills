@@ -2,42 +2,40 @@
 
 For native `gpt-6-luna` medium task execution, live CMS verification, and built-application checks, see [the end-to-end suite](../dev/e2e/README.md). Trigger classification below is a separate signal and does not count as end-to-end task success.
 
-This directory holds the evaluation framework for the skills shipped in this repo. Its single purpose is to **measure whether the skills are effective at being invoked on the right kind of prompt** — both correctly (precision) and reliably (recall).
+This directory holds the **trigger check**, a cheap lint of each skill's description. For each labelled query, a classifier reads one skill's description and decides whether that skill should load. The check catches descriptions that attract requests owned by another skill (precision) or miss requests they should handle (recall).
 
-The loop follows the pattern from [Anthropic's skill-iteration article](https://claude.com/blog/improving-skill-creator-test-measure-and-refine-agent-skills): write a curated set of test prompts, score the skill against them, and iterate on the skill description until precision and recall are acceptable.
-
-There is one evaluation: trigger classification. Setup orchestration behavior (questions, plan-then-confirm, handoff) is covered by the regression case [`dev/e2e/regressions/cases/setup-guided.mjs`](../dev/e2e/regressions/cases/setup-guided.mjs), not here.
+It does not measure real routing. A real agent chooses among every installed skill at once, turn by turn. For that, use the Claude Code routing probe [`dev/e2e/routing/claude.mjs`](../dev/e2e/routing/claude.mjs), which records the skill Claude Code actually invokes for a fixture's queries, and the end-to-end suite. Setup orchestration behavior (questions, plan-then-confirm, handoff) is covered by the regression case [`dev/e2e/regressions/cases/setup-guided.mjs`](../dev/e2e/regressions/cases/setup-guided.mjs), not here.
 
 > **Cost warning.** Evals make many LLM calls. Do not run them proactively. Only run when explicitly asked.
 
 ---
 
-## Trigger evaluation
+## Trigger check
 
-**Question it answers:** "For each user query, should this specific skill fire — yes or no?"
+**Question it answers:** "Reading only this skill's description, should it load for this query — yes or no?"
 
-Trigger evals are per-skill binary classifiers. We feed a target skill's routing surface (its name + description, or its agent metadata, or both) plus a list of test queries to an LLM-based classifier and ask: would this skill be invoked for this query? Then we compare the classifier's answer to the ground-truth label in the fixture.
+The runner sends one prompt per skill: the skill's routing surface (see sources below) and the fixture's queries, numbered, as plain text. Fixture metadata (`query_mode`, `boundary_with`) never reaches the classifier, because it correlates with the answer; it only slices the results afterwards. The classifier answers `{"predictions":[{"id":1,"trigger":true},…]}`. Answers are matched to queries by id, and a skipped, repeated or unknown id fails the run instead of shifting every later answer. Each query is sampled once.
 
-This is the right tool when the question is whether each skill's _description_ is sharp enough to:
-
-- attract the prompts it should handle (high recall);
-- repel the prompts that belong to other skills (high precision).
-
-Trigger evals exist for every public skill in `skills/`.
+Trigger fixtures exist for every public skill in `skills/`.
 
 ### Sources: frontmatter, metadata, combined
 
-The same fixture can be scored against three different "sources" — the slice of skill metadata exposed to the classifier. Each source tests a different routing channel an agent may see in practice.
+The same fixture can be scored against three different "sources" — the slice of skill metadata exposed to the classifier.
 
 | Source | Classifier sees | What it tests |
 | - | - | - |
-| `frontmatter` | The SKILL.md `name` + `description` only. | Whether the public skill description on its own is enough to make the right routing call. This is the channel Claude Code uses. |
-| `metadata` | The Codex agent metadata only (`display_name`, `short_description`, `default_prompt`, `allow_implicit_invocation`). | Whether the Codex-side routing surface alone is enough. |
-| `combined` | Frontmatter description **and** agent metadata together. | The maximum-context routing condition: useful as a ceiling and to spot cases that _only_ succeed when both surfaces agree. |
+| `frontmatter` | The SKILL.md `name` + `description` only. | Whether the public skill description on its own is enough to make the right call. This is the channel Claude Code uses. |
+| `metadata` | The Codex agent metadata only (`display_name`, `short_description`, `default_prompt`). | Whether the Codex-side interface copy alone is enough. |
+| `combined` | Frontmatter description **and** agent metadata together. | The maximum-context condition: useful as a ceiling and to spot cases that _only_ succeed when both surfaces agree. |
 
-Pick a source that matches the question you're investigating. For most day-to-day skill work, `frontmatter` is the default and most representative target.
+For most day-to-day skill work, `frontmatter` is the default and most representative target.
 
-Orthogonally, each eval also has a **track** (`claude` vs `codex`) — which classifier was used to run it. The two tracks let us compare how each agent reads the same routing surfaces.
+### Tracks: claude and codex
+
+Each run also has a **track**, the CLI that classifies. Both run in an empty temporary directory, never the repo, whose `AGENTS.md` and fixtures would reach the classifier. Both time out after 10 minutes instead of hanging, and a timeout ends the CLI's child processes too.
+
+- `claude` runs `claude -p` with no user or project settings, no MCP servers (claude.ai connectors included) and no tools. Results record the model that answered.
+- `codex` runs `codex exec` with an empty `HOME` and a fresh `CODEX_HOME` that holds only your login (`auth.json`), so no user config, skills, plugins or MCP servers load. Codex does not report its default model: pass `--model` to pin it and record it.
 
 ### Fixture format
 
@@ -71,25 +69,23 @@ The skill's name and description are read from `skills/<skill>/SKILL.md` at run 
 Fields:
 
 - **`query`** — the user prompt to classify.
-- **`should_trigger`** — ground truth: should this skill fire?
-- **`query_mode`** — how the prompt is shaped:
+- **`should_trigger`** — ground truth: should this skill load? Judge it from the skills' descriptions and bodies (their routing tables). A query may be positive in two fixtures when both skills should load.
+- **`query_mode`** — how the prompt is shaped, used to slice results:
   - `implicit` — natural-language routing case (the most common).
-  - `explicit` — the user directly names the target skill.
-  - `overlap` — the prompt intentionally sits on a boundary between skills; combine with `boundary_with` to name the neighbouring skills.
+  - `explicit` — the user names the target skill. Claude Code and Codex always load a named skill, so an explicit query is only ever a positive, in the named skill's fixture.
+  - `overlap` — the prompt intentionally sits on a boundary between skills; `boundary_with` names the neighbouring skills.
 
-A good fixture covers all three modes, includes both positives and negatives, and pays special attention to `overlap` cases against neighbouring skills — those are where description quality actually shows up.
+A good fixture has both positives and negatives in rough balance. Negatives should be near misses that belong to a neighbouring DatoCMS skill, not unrelated tech; those boundary cases are where description quality shows up. Phrase queries the way users do, not in the description's own words: copied wording inflates the score.
 
 ### Running
 
-Runs write to `evals/results/trigger/<skill>/<track>/<source>/results.json`.
-
-Pick a track with `--track claude` (the classifier most users care about) or `--track codex`:
+Runs write to `evals/results/trigger/<skill>/<track>/<source>/results.json`:
 
 ```bash
-python3 evals/scripts/run_trigger_eval.py --track claude
+python3 evals/scripts/run_trigger_eval.py --track claude --model <model>
 ```
 
-Defaults to `--source frontmatter`; pass `--source metadata` or `--source combined` to test the other routing surfaces. The runner discovers every public `SKILL.md` under `skills/` and expects a matching `evals/fixtures/trigger/<skill>.json`.
+Defaults to `--source frontmatter`; pass `--source metadata` or `--source combined` to test the other surfaces, and `--skill <name>` to run one skill. The runner discovers every public `SKILL.md` under `skills/` and expects a matching `evals/fixtures/trigger/<skill>.json`. Pin `--model` so two runs differ only by what you changed.
 
 ### Summary and gate
 
@@ -102,12 +98,13 @@ python3 evals/scripts/analyze_trigger_results.py \
 
 This writes `evals/results/trigger/_summary/<track>/<source>/summary.{json,md}` containing:
 
-- **Per-skill table** — precision, recall, F1, FN, FP, unstable count. This is the primary diagnostic; read it first.
-- **Gate verdict** — pass / fail at the configured F1 floor (default `--threshold-f1 0.90`). Fail lists the skills under the floor.
+- **Gate verdict** — passes only when every skill has results and each is at or above the F1 floor (default `--threshold-f1 0.90`). Fail lists the skills under the floor and the skills without results.
+- **Models and warnings** — the models that answered, a warning when they differ, and a warning for results produced before the description or metadata their prompt shows last changed.
 - **Unweighted F1 stats** — median, mean, min, max across skills, each skill counting once. No case-weighted aggregate (one big skill would dominate it).
-- **Highest-impact false negatives** — sorted by lowest trigger rate, useful when you're about to refine a description.
+- **Per-skill table** — precision, recall, F1, FN, FP. This is the primary diagnostic; read it first.
+- **False negatives and false positives** — every misrouted query, for refining a description.
 
-Add `--fail-on-gate` to exit with status `1` when the gate fails (useful in CI).
+Add `--fail-on-gate` to exit with status `1` when the gate fails.
 
 ### Comparing two runs
 
@@ -120,26 +117,17 @@ python3 evals/scripts/compare_trigger_runs.py \
   --output-markdown local/comparison.md
 ```
 
-Use a baseline copied off to `local/` (gitignored) for ad-hoc experiments; commit a new canonical baseline only when a refinement has been validated.
+The comparison notes when the runs used different or unrecorded models, since a model change can move scores as much as a description change. Use a baseline copied off to `local/` (gitignored) for ad-hoc experiments; commit a new canonical baseline only when a refinement has been validated.
 
-### Refining a skill
+### Refining a description
 
-For each skill, generate a brief listing its failing queries and suggested boundary changes:
-
-```bash
-python3 evals/scripts/generate_refinement_briefs.py \
-  --analysis evals/results/trigger/_summary/claude/frontmatter/summary.json \
-  --skills-root skills \
-  --output-dir local/refinement-briefs
-```
-
-Rule of thumb: edit the SKILL.md frontmatter `description` first (small deltas), re-run the eval, only touch the SKILL.md body once the description change is validated.
+Edit the SKILL.md frontmatter `description` in small steps, based on the misroutes the summary lists, then re-run. Never paste words from failed queries into it: that fits the description to this fixture and grows it without improving real routing. Touch the SKILL.md body only once the description change is validated.
 
 ---
 
 ## Validation
 
-Cross-cutting check that the repo invariants the evals rely on are still intact (every shipped skill has a fixture, committed results match their fixtures, metadata stays in sync, etc.):
+Cross-cutting check that the repo invariants the evals rely on are still intact (every shipped skill has a fixture, fixture rows are well formed, metadata stays in sync, etc.):
 
 ```bash
 python3 evals/scripts/validate_skill_repo.py
@@ -159,7 +147,6 @@ python3 evals/scripts/validate_skill_repo.py --require-fresh-results-sync
 
 ## Notes
 
-- Default per-query trigger threshold is `0.5` (`trigger_rate >= 0.5` means predicted trigger). Override with `--threshold` on `analyze_trigger_results.py`.
 - Default F1 gate threshold is `0.90`. Override with `--threshold-f1`.
-- Ad-hoc and exploratory runs belong in `local/` (gitignored). Historical snapshots live in git — recover an older snapshot with `git show <sha>:evals/results/trigger/<skill>/<track>/<source>/results.json`.
-- The Claude Code runner executes in a temporary neutral working directory with `--setting-sources user` so project-local tool settings do not leak into the classification prompt.
+- Commit results only from a deliberate full run. Ad-hoc and exploratory runs belong in `local/` (gitignored).
+- Historical snapshots live in git — recover an older snapshot with `git show <sha>:evals/results/trigger/<skill>/<track>/<source>/results.json`. Snapshots from before 2026-09-26 were produced by a prompt that showed each query's mode, so they are not comparable with later runs.

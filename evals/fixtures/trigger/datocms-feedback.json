@@ -1,8 +1,7 @@
 [
   {
     "query": "Draft an email to support@datocms.com about the DatoCMS MCP getting stuck.",
-    "should_trigger": true,
-    "query_mode": "explicit"
+    "should_trigger": true
   },
   {
     "query": "Use datocms-feedback to summarize the failed skills/MCP experience for support.",
@@ -71,11 +70,15 @@
     ]
   },
   {
-    "query": "The MCP returned an error that explains the allowed enum values; use that error message and continue.",
-    "should_trigger": false
+    "query": "Same MCP error again. Try a smaller batch this time.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
   },
   {
-    "query": "The first update failed because the record is not published yet. Publish it first, then retry the same change.",
+    "query": "Publishing failed because a required field on the record is empty. Fill it in and publish again.",
     "should_trigger": false,
     "query_mode": "overlap",
     "boundary_with": [
@@ -108,7 +111,7 @@
     ]
   },
   {
-    "query": "The migration threw a duplicate field error. Rename the field in the migration and run it again.",
+    "query": "Summarize what this migration changed so I can paste it into the PR.",
     "should_trigger": false,
     "query_mode": "overlap",
     "boundary_with": [
@@ -141,7 +144,7 @@
     ]
   },
   {
-    "query": "The GraphQL response says _allArticles does not accept that filter. Check the schema and rewrite the filter.",
+    "query": "The GraphQL response says allArticles does not accept that filter. Check the schema and rewrite the filter.",
     "should_trigger": false,
     "query_mode": "overlap",
     "boundary_with": [
@@ -166,7 +169,7 @@
     ]
   },
   {
-    "query": "The setup recipe says DATOCMS_READONLY_TOKEN is missing. Add the placeholder to .env.example and continue wiring the query client.",
+    "query": "Setup stopped because DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN is missing. Add the placeholder to .env.example and keep wiring the query client.",
     "should_trigger": false,
     "query_mode": "overlap",
     "boundary_with": [
@@ -193,13 +196,8 @@
     ]
   },
   {
-    "query": "Fix visual editing in this Next.js project; the overlay is not showing up.",
-    "should_trigger": false,
-    "query_mode": "overlap",
-    "boundary_with": [
-      "datocms-frontend-integrations",
-      "datocms-setup"
-    ]
+    "query": "The DatoCMS dashboard throws a 500 whenever I open the media area. Help me write a bug report for DatoCMS support.",
+    "should_trigger": false
   },
   {
     "query": "This plugin UI looks bad; make the config screen match the DatoCMS dashboard.",

@@ -15,6 +15,6 @@ If validation fails, read the error output carefully and fix each reported issue
 
 - **Metadata sync errors**: Update the `agents/openai.yaml` file to match the SKILL.md frontmatter for the affected skill.
 - **Missing eval fixtures**: Create `evals/fixtures/trigger/<skill-name>.json` for any skill that lacks one.
-- **Stale results**: Re-run the relevant eval and update checked-in results.
+- **Stale results**: a fixture changed after its results were committed. Do not re-run evals yourself: tell the user, who decides whether to re-run them or delete the stale result files.
 
 After fixing, re-run validation to confirm all checks pass.

@@ -2,7 +2,8 @@
 """Analyze skill trigger-eval result files.
 
 Produces a cross-skill summary (gate + unweighted F1 stats + per-skill table)
-under `<results-dir>/_summary/<track>/<source>/summary.{json,md}`.
+under `<results-dir>/_summary/<track>/<source>/summary.{json,md}`, and flags
+skills without results and results produced for an older description or metadata.
 
 Each result file may be pure JSON or a human-readable preamble followed by JSON
 (the format currently used in this repository).
@@ -17,6 +18,8 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from trigger_eval_common import extract_frontmatter, extract_metadata, iter_skill_files, routing_surface
 
 DEFAULT_QUERY_MODE = "implicit"
 KNOWN_QUERY_MODES = ("implicit", "explicit", "overlap")
@@ -40,7 +43,6 @@ class QueryEvaluation:
     reported_pass: bool
     threshold_predicted_trigger: bool
     threshold_pass: bool
-    unstable: bool
 
 
 @dataclass
@@ -57,7 +59,6 @@ class QueryModeSummary:
     precision: float
     recall: float
     f1: float
-    unstable_count: int
     avg_trigger_rate_true: float
     avg_trigger_rate_false: float
 
@@ -66,6 +67,8 @@ class QueryModeSummary:
 class SkillSummary:
     skill_name: str
     description: str
+    routing_surface: Any
+    model: str | None
     source_file: str
     total: int
     reported_passed: int
@@ -78,7 +81,6 @@ class SkillSummary:
     precision: float
     recall: float
     f1: float
-    unstable_count: int
     avg_trigger_rate_true: float
     avg_trigger_rate_false: float
     query_modes: list[QueryModeSummary]
@@ -203,7 +205,6 @@ def _summarize_query_items(query_items: list[QueryEvaluation]) -> dict[str, Any]
         "precision": precision,
         "recall": recall,
         "f1": _safe_div(2 * precision * recall, precision + recall),
-        "unstable_count": sum(1 for item in query_items if item.unstable),
         "avg_trigger_rate_true": _safe_div(sum(true_rates), len(true_rates)),
         "avg_trigger_rate_false": _safe_div(sum(false_rates), len(false_rates)),
     }
@@ -231,7 +232,6 @@ def _build_query_mode_summaries(query_items: list[QueryEvaluation]) -> list[Quer
                 precision=summary["precision"],
                 recall=summary["recall"],
                 f1=summary["f1"],
-                unstable_count=summary["unstable_count"],
                 avg_trigger_rate_true=summary["avg_trigger_rate_true"],
                 avg_trigger_rate_false=summary["avg_trigger_rate_false"],
             )
@@ -255,7 +255,6 @@ def _build_skill_summary(payload: dict[str, Any], source_file: Path, threshold: 
         threshold_predicted_trigger = trigger_rate >= threshold
         threshold_pass = threshold_predicted_trigger == should_trigger
         reported_pass = bool(entry["pass"]) if "pass" in entry else threshold_pass
-        unstable = 0.0 < trigger_rate < 1.0
 
         query_items.append(
             QueryEvaluation(
@@ -269,15 +268,17 @@ def _build_skill_summary(payload: dict[str, Any], source_file: Path, threshold: 
                 reported_pass=reported_pass,
                 threshold_predicted_trigger=threshold_predicted_trigger,
                 threshold_pass=threshold_pass,
-                unstable=unstable,
             )
         )
 
     summary = _summarize_query_items(query_items)
+    model = payload.get("model")
 
     return SkillSummary(
         skill_name=str(payload["skill_name"]),
         description=str(payload["description"]),
+        routing_surface=payload.get("routing_surface"),
+        model=model if isinstance(model, str) and model else None,
         source_file=str(source_file),
         total=summary["total"],
         reported_passed=summary["reported_passed"],
@@ -290,7 +291,6 @@ def _build_skill_summary(payload: dict[str, Any], source_file: Path, threshold: 
         precision=summary["precision"],
         recall=summary["recall"],
         f1=summary["f1"],
-        unstable_count=summary["unstable_count"],
         avg_trigger_rate_true=summary["avg_trigger_rate_true"],
         avg_trigger_rate_false=summary["avg_trigger_rate_false"],
         query_modes=_build_query_mode_summaries(query_items),
@@ -298,20 +298,32 @@ def _build_skill_summary(payload: dict[str, Any], source_file: Path, threshold: 
     )
 
 
-def _compute_gate(skills: list[SkillSummary], f1_threshold: float) -> dict[str, Any]:
+def _compute_gate(skills: list[SkillSummary], f1_threshold: float, missing: list[str]) -> dict[str, Any]:
     below = [
         {"skill_name": skill.skill_name, "f1": skill.f1}
         for skill in skills
         if skill.f1 < f1_threshold
     ]
     below.sort(key=lambda item: (item["f1"], item["skill_name"]))
-    total = len(skills)
     return {
-        "passed": not below,
-        "total_skills": total,
-        "skills_above_threshold": total - len(below),
+        # A skill without results has not passed.
+        "passed": not below and not missing,
+        "total_skills": len(skills) + len(missing),
+        "skills_above_threshold": len(skills) - len(below),
         "skills_below_threshold": below,
+        "skills_without_results": missing,
     }
+
+
+def _current_surfaces(repo_root: Path, source: str) -> dict[str, dict[str, str]]:
+    """What each skill's classifier prompt would show today for this source, keyed by skill name."""
+    current: dict[str, dict[str, str]] = {}
+    for skill_path in iter_skill_files(repo_root):
+        name, description = extract_frontmatter(skill_path)
+        current[name] = routing_surface(source, description, extract_metadata(skill_path))
+    if not current:
+        raise ValueError(f"no skills found under {repo_root}/skills; pass --repo-root")
+    return current
 
 
 def _stats(values: list[float]) -> dict[str, float]:
@@ -361,10 +373,13 @@ def _render_markdown(report: dict[str, Any], skills: list[SkillSummary]) -> str:
     lines.append(f"Track / source: `{report['track']}` / `{report['source']}`")
     lines.append(f"Trigger threshold (per-query): `{report['threshold']}`")
     lines.append(f"F1 gate threshold: `{report['threshold_f1']}`")
+    lines.append(f"Models: {', '.join(f'`{model}`' for model in report['models'])}")
     lines.append("")
 
     gate = report["gate"]
     threshold_pct = report["threshold_f1"] * 100
+    below = gate["skills_below_threshold"]
+    missing = gate["skills_without_results"]
     lines.append("## Gate")
     lines.append("")
     if gate["passed"]:
@@ -374,13 +389,29 @@ def _render_markdown(report: dict[str, Any], skills: list[SkillSummary]) -> str:
         )
     else:
         lines.append(
-            f"FAIL — {len(gate['skills_below_threshold'])}/{gate['total_skills']} skills "
-            f"below F1 {threshold_pct:.1f}%:"
+            f"FAIL — {len(below)}/{gate['total_skills']} skills below F1 {threshold_pct:.1f}%, "
+            f"{len(missing)}/{gate['total_skills']} without results."
         )
-        lines.append("")
-        for item in gate["skills_below_threshold"]:
-            lines.append(f"- `{item['skill_name']}` — F1 {item['f1']:.1%}")
+        if below:
+            lines.append("")
+            for item in below:
+                lines.append(f"- `{item['skill_name']}` — F1 {item['f1']:.1%}")
+        if missing:
+            lines.append("")
+            lines.append(f"No results for: {', '.join(f'`{name}`' for name in missing)}.")
     lines.append("")
+
+    warnings: list[str] = []
+    if len(report["models"]) > 1:
+        warnings.append("Results come from different models, so their scores are not comparable.")
+    if report["stale_descriptions"]:
+        stale = ", ".join(f"`{name}`" for name in report["stale_descriptions"])
+        warnings.append(f"The description or metadata the prompt shows changed after these results were produced: {stale}. Re-run them before trusting their scores.")
+    if warnings:
+        lines.append("## Warnings")
+        lines.append("")
+        lines.extend(f"- {warning}" for warning in warnings)
+        lines.append("")
 
     f1_stats = report["stats_unweighted"]["f1"]
     f1_min_skill = _argmin(skills, key=lambda s: s.f1)
@@ -399,8 +430,8 @@ def _render_markdown(report: dict[str, Any], skills: list[SkillSummary]) -> str:
 
     lines.append("## Per-Skill")
     lines.append("")
-    lines.append("| Skill | Reported Pass | Precision | Recall | F1 | FN | FP | Unstable |")
-    lines.append("|---|---:|---:|---:|---:|---:|---:|---:|")
+    lines.append("| Skill | Reported Pass | Precision | Recall | F1 | FN | FP |")
+    lines.append("|---|---:|---:|---:|---:|---:|---:|")
     for skill in report["skills"]:
         lines.append(
             "| "
@@ -410,8 +441,7 @@ def _render_markdown(report: dict[str, Any], skills: list[SkillSummary]) -> str:
             f"{skill['recall']:.1%} | "
             f"{skill['f1']:.1%} | "
             f"{skill['fn']} | "
-            f"{skill['fp']} | "
-            f"{skill['unstable_count']} |"
+            f"{skill['fp']} |"
         )
 
     mixed_mode_skills = [
@@ -440,38 +470,30 @@ def _render_markdown(report: dict[str, Any], skills: list[SkillSummary]) -> str:
                     f"{mode_summary['f1']:.1%} |"
                 )
 
-    highest_impact: list[dict[str, Any]] = []
-    for skill in report["skills"]:
-        for query in skill["queries"]:
-            if query["should_trigger"] and not query["threshold_predicted_trigger"]:
-                highest_impact.append(
-                    {
-                        "skill_name": skill["skill_name"],
-                        "query": query["query"],
-                        "query_mode": query.get("query_mode", DEFAULT_QUERY_MODE),
-                        "trigger_rate": query["trigger_rate"],
-                    }
-                )
-
-    highest_impact.sort(key=lambda item: item["trigger_rate"])
-
-    if highest_impact:
+    # One sample per query, so every rate is 0 or 1: list the misroutes in fixture order.
+    for title, expected in (("False Negatives", True), ("False Positives", False)):
+        misses = [
+            (skill["skill_name"], query)
+            for skill in report["skills"]
+            for query in skill["queries"]
+            if query["should_trigger"] == expected and query["threshold_predicted_trigger"] != expected
+        ]
+        if not misses:
+            continue
         lines.append("")
-        lines.append("## Highest-Impact False Negatives")
+        lines.append(f"## {title}")
         lines.append("")
-        for item in highest_impact[:10]:
+        for skill_name, query in misses:
             mode_prefix = ""
-            if item["query_mode"] != DEFAULT_QUERY_MODE:
-                mode_prefix = f"[{item['query_mode']}] "
-            lines.append(
-                f"- `{item['skill_name']}` {mode_prefix}rate={item['trigger_rate']:.3f}: "
-                f"{_preview(item['query'])}"
-            )
+            if query.get("query_mode", DEFAULT_QUERY_MODE) != DEFAULT_QUERY_MODE:
+                mode_prefix = f"[{query['query_mode']}] "
+            lines.append(f"- `{skill_name}` {mode_prefix}{_preview(query['query'])}")
 
     return "\n".join(lines) + "\n"
 
 
 def _build_report(
+    repo_root: Path,
     result_files: list[Path],
     threshold: float,
     f1_threshold: float,
@@ -484,6 +506,13 @@ def _build_report(
     ]
 
     skill_summaries.sort(key=lambda summary: summary.skill_name)
+    current = _current_surfaces(repo_root, source)
+    missing = sorted(set(current) - {summary.skill_name for summary in skill_summaries})
+    stale = [
+        summary.skill_name
+        for summary in skill_summaries
+        if summary.skill_name in current and summary.routing_surface != current[summary.skill_name]
+    ]
 
     report = {
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -491,7 +520,9 @@ def _build_report(
         "source": source,
         "threshold": threshold,
         "threshold_f1": f1_threshold,
-        "gate": _compute_gate(skill_summaries, f1_threshold),
+        "gate": _compute_gate(skill_summaries, f1_threshold, missing),
+        "models": sorted({summary.model or "not recorded" for summary in skill_summaries}),
+        "stale_descriptions": stale,
         "stats_unweighted": _compute_unweighted_stats(skill_summaries),
         "skills": [
             {
@@ -525,11 +556,16 @@ def _discover_files(results_dir: Path, track: str, source: str) -> list[Path]:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Analyze skill trigger-eval result files")
     parser.add_argument(
+        "--repo-root",
+        default=".",
+        help="Repository root whose skills the results should cover (default: .)",
+    )
+    parser.add_argument(
         "--results-dir",
         default=DEFAULT_RESULTS_DIR,
         help=(
-            "Trigger results root scanned as <results-dir>/<skill>/<track>/<source>/results.json "
-            f"(default: {DEFAULT_RESULTS_DIR})"
+            "Trigger results root scanned as <results-dir>/<skill>/<track>/<source>/results.json; "
+            f"relative to --repo-root (default: {DEFAULT_RESULTS_DIR})"
         ),
     )
     parser.add_argument(
@@ -582,7 +618,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--fail-on-gate",
         action="store_true",
-        help="Exit with status 1 when the F1 gate fails (default: exit 0).",
+        help="Exit with status 1 when the gate fails: a skill is below the F1 floor or has no results (default: exit 0).",
     )
     return parser.parse_args()
 
@@ -596,8 +632,13 @@ def main() -> int:
     args = parse_args()
     results_dir = Path(args.results_dir)
 
+    repo_root = Path(args.repo_root).resolve()
+    if not results_dir.is_absolute():
+        results_dir = repo_root / results_dir
+
     result_files = _discover_files(results_dir, args.track, args.source)
     report, skills = _build_report(
+        repo_root,
         result_files,
         args.threshold,
         args.threshold_f1,

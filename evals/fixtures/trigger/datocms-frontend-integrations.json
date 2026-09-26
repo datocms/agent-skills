@@ -57,7 +57,7 @@
     "should_trigger": false
   },
   {
-    "query": "How do I query all blog posts from DatoCMS using the Content Delivery API GraphQL endpoint? I need filtering by category and cursor-based pagination.",
+    "query": "How do I query all blog posts from DatoCMS using the Content Delivery API GraphQL endpoint? I need filtering by category and paginated results.",
     "should_trigger": false
   },
   {
@@ -77,8 +77,12 @@
     "should_trigger": false
   },
   {
-    "query": "I'm building a React app with Tailwind CSS and need to create a responsive navigation component with a mobile hamburger menu. No CMS involved, just pure frontend.",
-    "should_trigger": false
+    "query": "We just created an empty DatoCMS project and haven't picked a framework or written any code yet. What's the fastest way to get a working website on it?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-setup"
+    ]
   },
   {
     "query": "Can you help me set up a Strapi headless CMS with Next.js? I need to fetch content from Strapi's REST API and display it in my pages.",
@@ -111,11 +115,6 @@
     "query_mode": "explicit"
   },
   {
-    "query": "Use datocms-frontend-integrations to write a CMA bulk import script that creates products from CSV and uploads images.",
-    "should_trigger": false,
-    "query_mode": "explicit"
-  },
-  {
     "query": "Validate and normalize this supplied Structured Text JSON document. Only return DAST; there is no frontend component or rendering task.",
     "should_trigger": false,
     "query_mode": "overlap",
@@ -129,6 +128,26 @@
     "query_mode": "overlap",
     "boundary_with": [
       "datocms-structured-text"
+    ]
+  },
+  {
+    "query": "Our designers want an image-left / image-right dropdown on every DatoCMS page block so the site can flip layouts. Good idea, or should layout stay out of the content model?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
+  },
+  {
+    "query": "also add a sitemap.xml route that lists every published DatoCMS article",
+    "should_trigger": true
+  },
+  {
+    "query": "Our DatoCMS search index already crawls the site. Add a search box to the Nuxt header that lists matching pages as people type.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-setup"
     ]
   }
 ]

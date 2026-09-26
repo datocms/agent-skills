@@ -28,15 +28,11 @@
     "should_trigger": true
   },
   {
-    "query": "Update this existing DatoCMS plugin config screen to match DatoCMS spacing, section grouping, and datocms-react-ui controls.",
-    "should_trigger": true
-  },
-  {
     "query": "Restyle this DatoCMS plugin sidebar panel with local CSS so it matches DatoCMS density, borders, and typography.",
     "should_trigger": true
   },
   {
-    "query": "Scaffold a new DatoCMS plugin with a config screen that uses datocms-react-ui controls and DatoCMS spacing.",
+    "query": "Our DatoCMS plugin should make editors confirm before they delete any published article.",
     "should_trigger": true
   },
   {
@@ -44,7 +40,7 @@
     "should_trigger": true
   },
   {
-    "query": "Migrate hardcoded colors and ctx.theme color usage in this DatoCMS plugin to dark-mode-compatible Canvas tokens.",
+    "query": "Also add a star-rating field extension to that plugin for the integer rating field.",
     "should_trigger": true
   },
   {
@@ -91,7 +87,7 @@
     "should_trigger": false
   },
   {
-    "query": "Count words and extract external links from this supplied DAST document. Return the analysis only; do not create or modify any DatoCMS plugin.",
+    "query": "Here's the DAST JSON from one of our articles. Count the words and list every external link in it.",
     "should_trigger": false,
     "query_mode": "overlap",
     "boundary_with": [
@@ -105,5 +101,41 @@
     "boundary_with": [
       "datocms-structured-text"
     ]
+  },
+  {
+    "query": "Install the Shopify Product plugin from the marketplace on our DatoCMS project and fill in its store domain setting.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Move that plugin off the marketplace package onto our private build URL, keeping its settings.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Write a Node script that lists every field using our custom map plugin as its editor so we can reassign them.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Update my datocms CLI plugins and show which ones are linked locally.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cli"
+    ]
+  },
+  {
+    "query": "Click-to-edit overlays stopped showing on our SvelteKit draft pages; fix them.",
+    "should_trigger": false
   }
 ]

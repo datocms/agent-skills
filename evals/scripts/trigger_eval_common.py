@@ -26,10 +26,6 @@ SHORT_DESCRIPTION_RE = re.compile(
     re.MULTILINE,
 )
 DEFAULT_PROMPT_RE = re.compile(r'^  default_prompt: "(?P<value>(?:[^"\\]|\\.)*)"$', re.MULTILINE)
-ALLOW_IMPLICIT_RE = re.compile(
-    r"^  allow_implicit_invocation: (?P<value>true|false)$",
-    re.MULTILINE,
-)
 
 SKILL_GLOB_PATTERNS = (
     "skills/*/SKILL.md",
@@ -51,11 +47,11 @@ class SkillMetadata:
     display_name: str
     short_description: str
     default_prompt: str
-    allow_implicit_invocation: bool
 
 
+# (prompt, query count, requested model) -> (answers in query order, model that answered or None).
 # Evaluated at runtime, so no `X | None` here (Python 3.9 has no union operator for types).
-PredictionRunner = Callable[[Path, str, int, Optional[str]], list[bool]]
+PredictionRunner = Callable[[str, int, Optional[str]], tuple[list[bool], Optional[str]]]
 
 
 def iter_skill_files(repo_root: Path) -> list[Path]:
@@ -132,7 +128,6 @@ def extract_metadata(skill_path: Path) -> SkillMetadata:
     display_name_match = DISPLAY_NAME_RE.search(text)
     short_description_match = SHORT_DESCRIPTION_RE.search(text)
     default_prompt_match = DEFAULT_PROMPT_RE.search(text)
-    allow_implicit_match = ALLOW_IMPLICIT_RE.search(text)
 
     missing_fields: list[str] = []
     if display_name_match is None:
@@ -150,11 +145,6 @@ def extract_metadata(skill_path: Path) -> SkillMetadata:
         display_name=decode_double_quoted_yaml(display_name_match.group("value")),
         short_description=decode_double_quoted_yaml(short_description_match.group("value")),
         default_prompt=decode_double_quoted_yaml(default_prompt_match.group("value")),
-        allow_implicit_invocation=(
-            allow_implicit_match.group("value") == "true"
-            if allow_implicit_match is not None
-            else False
-        ),
     )
 
 
@@ -201,13 +191,17 @@ def filter_eval_configs(configs: list[SkillEvalConfig], skill_name: str | None) 
     return filtered
 
 
-def case_line(index: int, row: dict[str, Any]) -> str:
-    query_mode = str(row.get("query_mode", DEFAULT_QUERY_MODE))
-    boundary_with = row.get("boundary_with", [])
-    boundary_text = ""
-    if isinstance(boundary_with, list) and boundary_with:
-        boundary_text = f" boundary_with={','.join(str(item) for item in boundary_with)}"
-    return f"{index}. [mode={query_mode}{boundary_text}] {str(row['query'])}"
+def query_lines(eval_rows: list[dict[str, Any]]) -> str:
+    # Query text only: the fixture's query_mode and boundary_with correlate with the label.
+    return "\n".join(f"{index}. {row['query']}" for index, row in enumerate(eval_rows, start=1))
+
+
+def output_rules(count: int) -> str:
+    return f"""Output:
+Return exactly one JSON object with this shape:
+{{"predictions":[{{"id":1,"trigger":true}},...]}}
+Give one entry per query id, 1 to {count}, each id exactly once.
+No explanation."""
 
 
 def build_frontmatter_prompt(
@@ -215,8 +209,6 @@ def build_frontmatter_prompt(
     description: str,
     eval_rows: list[dict[str, Any]],
 ) -> str:
-    query_lines = "\n".join(case_line(idx + 1, row) for idx, row in enumerate(eval_rows))
-
     return f"""You are a strict skill-trigger classifier.
 
 Evaluation source: frontmatter description only.
@@ -232,18 +224,11 @@ Rules:
 - Return true only when the query directly falls within this target skill scope.
 - Return false when the query is better handled by a different DatoCMS skill domain.
 - If uncertain, prefer false.
-- Treat `mode=explicit` as an explicit named-skill invocation test.
-- Treat `mode=implicit` as a natural-language routing test.
-- Treat `mode=overlap` as a boundary case where the query may plausibly fit multiple skills.
 
-Output:
-Return exactly one JSON object with this shape:
-{{"predictions":[boolean,...]}}
-The predictions array must contain exactly {len(eval_rows)} booleans, in the same order as the queries.
-No explanation.
+{output_rules(len(eval_rows))}
 
 Queries:
-{query_lines}
+{query_lines(eval_rows)}
 """
 
 
@@ -252,9 +237,6 @@ def build_metadata_prompt(
     metadata: SkillMetadata,
     eval_rows: list[dict[str, Any]],
 ) -> str:
-    query_lines = "\n".join(case_line(idx + 1, row) for idx, row in enumerate(eval_rows))
-    implicit_policy = "true" if metadata.allow_implicit_invocation else "false"
-
     return f"""You are a strict skill-trigger classifier.
 
 Evaluation source: agent metadata only.
@@ -263,7 +245,6 @@ Target skill name: {skill_name}
 Display name: {metadata.display_name}
 Short description: {metadata.short_description}
 Default prompt: {metadata.default_prompt}
-Allow implicit invocation: {implicit_policy}
 
 Task:
 For each user query below, decide if this TARGET skill should trigger.
@@ -271,19 +252,12 @@ For each user query below, decide if this TARGET skill should trigger.
 Rules:
 - Use only the metadata above to decide the skill boundary.
 - Return true only when the query clearly fits this target better than other DatoCMS skills.
-- If `mode=implicit` and allow implicit invocation is false, return false.
-- If `mode=explicit`, treat the case as an explicit named-skill invocation; this can return true even when allow implicit invocation is false.
-- If `mode=overlap`, treat the case as a natural-language boundary test unless the query itself explicitly invokes the skill.
 - If uncertain, prefer false.
 
-Output:
-Return exactly one JSON object with this shape:
-{{"predictions":[boolean,...]}}
-The predictions array must contain exactly {len(eval_rows)} booleans, in the same order as the queries.
-No explanation.
+{output_rules(len(eval_rows))}
 
 Queries:
-{query_lines}
+{query_lines(eval_rows)}
 """
 
 
@@ -293,9 +267,6 @@ def build_combined_prompt(
     metadata: SkillMetadata,
     eval_rows: list[dict[str, Any]],
 ) -> str:
-    query_lines = "\n".join(case_line(idx + 1, row) for idx, row in enumerate(eval_rows))
-    implicit_policy = "true" if metadata.allow_implicit_invocation else "false"
-
     return f"""You are a strict skill-trigger classifier.
 
 Evaluation source: frontmatter plus agent metadata.
@@ -309,29 +280,73 @@ Agent metadata:
 - display_name: {metadata.display_name}
 - short_description: {metadata.short_description}
 - default_prompt: {metadata.default_prompt}
-- allow_implicit_invocation: {implicit_policy}
 
 Task:
 For each user query below, decide if this TARGET skill should trigger.
 
 Rules:
 - Use the frontmatter description for the full scope boundary.
-- Use the agent metadata as the routing surface and policy signal.
+- Use the agent metadata as the routing surface.
 - Return true only when the query clearly fits this target better than other DatoCMS skills.
-- If `mode=implicit` and allow implicit invocation is false, return false.
-- If `mode=explicit`, treat the case as an explicit named-skill invocation; this can return true even when allow implicit invocation is false.
-- If `mode=overlap`, treat the case as a boundary test where another listed skill may also be reasonable.
 - If uncertain, prefer false.
 
-Output:
-Return exactly one JSON object with this shape:
-{{"predictions":[boolean,...]}}
-The predictions array must contain exactly {len(eval_rows)} booleans, in the same order as the queries.
-No explanation.
+{output_rules(len(eval_rows))}
 
 Queries:
-{query_lines}
+{query_lines(eval_rows)}
 """
+
+
+def find_predictions_object(text: str) -> Any:
+    """First JSON object in `text` with a `predictions` key: models sometimes wrap it in prose or a code fence."""
+    decoder = json.JSONDecoder()
+    start = text.find("{")
+    while start != -1:
+        try:
+            candidate = decoder.raw_decode(text, start)[0]
+        except json.JSONDecodeError:
+            candidate = None
+        if isinstance(candidate, dict) and "predictions" in candidate:
+            return candidate
+        start = text.find("{", start + 1)
+    raise ValueError(f"no JSON object with `predictions` in classifier output: {text[-1000:]}")
+
+
+def predictions_from_payload(payload: Any, expected_len: int) -> list[bool]:
+    """Answers in query order, matched by id: a skipped, repeated or unknown id fails the run."""
+    items = payload.get("predictions") if isinstance(payload, dict) else None
+    if not isinstance(items, list):
+        raise ValueError(f"classifier output has no `predictions` list: {str(payload)[-1000:]}")
+
+    answers: dict[int, bool] = {}
+    for item in items:
+        query_id = item.get("id") if isinstance(item, dict) else None
+        trigger = item.get("trigger") if isinstance(item, dict) else None
+        # bool is an int subclass, so `true` must not pass as an id.
+        if isinstance(query_id, bool) or not isinstance(query_id, int) or not isinstance(trigger, bool):
+            raise ValueError(f"prediction needs an integer `id` and a boolean `trigger`: {item!r}")
+        if query_id in answers:
+            raise ValueError(f"query id {query_id} answered twice")
+        answers[query_id] = trigger
+
+    expected = set(range(1, expected_len + 1))
+    if set(answers) != expected:
+        missing = sorted(expected - set(answers))
+        unknown = sorted(set(answers) - expected)
+        raise ValueError(f"answers must cover query ids 1-{expected_len}: missing {missing}, unknown {unknown}")
+    return [answers[query_id] for query_id in range(1, expected_len + 1)]
+
+
+def routing_surface(source: str, description: str, metadata: SkillMetadata) -> dict[str, str]:
+    """Every skill field the source's prompt shows; results store it so the analyzer can spot later edits."""
+    surface: dict[str, str] = {}
+    if source != SOURCE_METADATA:
+        surface["description"] = description
+    if source != SOURCE_FRONTMATTER:
+        surface["display_name"] = metadata.display_name
+        surface["short_description"] = metadata.short_description
+        surface["default_prompt"] = metadata.default_prompt
+    return surface
 
 
 def build_prompt(
@@ -383,7 +398,7 @@ def evaluate_skill(
         raise ValueError(f"{eval_path}: expected array of eval cases")
 
     prompt = build_prompt(source, skill_name, description, metadata, eval_queries)
-    predictions = prediction_runner(repo_root, prompt, len(eval_queries), model)
+    predictions, answered_by = prediction_runner(prompt, len(eval_queries), model)
 
     results: list[dict[str, Any]] = []
     passed = 0
@@ -415,6 +430,8 @@ def evaluate_skill(
         "skill_name": skill_name,
         "description": description if source != SOURCE_METADATA else metadata.short_description,
         "evaluation_source": source,
+        "routing_surface": routing_surface(source, description, metadata),
+        "model": answered_by,
         "results": results,
         "summary": {
             "total": len(results),
@@ -432,4 +449,5 @@ def evaluate_skill(
         "output_path": str(output_path),
         "passed": passed,
         "total": len(results),
+        "model": answered_by,
     }

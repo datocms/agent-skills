@@ -67,17 +67,27 @@
   {
     "query": "Create a DatoCMS article from this Markdown in its Structured Text body field.",
     "should_trigger": true,
-    "query_mode": "implicit"
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
   },
   {
     "query": "The article body is a Structured Text field. Add a paragraph and preserve its image blocks.",
     "should_trigger": true,
-    "query_mode": "implicit"
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
   },
   {
     "query": "Migrate HTML fields into Structured Text, using the existing image block model.",
     "should_trigger": true,
-    "query_mode": "implicit"
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cli",
+      "datocms-cma"
+    ]
   },
   {
     "query": "Use datocms-structured-text to validate this document.",
@@ -90,7 +100,7 @@
     "query_mode": "explicit"
   },
   {
-    "query": "Publish all draft articles in DatoCMS without changing their content.",
+    "query": "Now publish the three articles whose Structured Text bodies we just fixed.",
     "should_trigger": false,
     "query_mode": "overlap",
     "boundary_with": [
@@ -146,7 +156,7 @@
     ]
   },
   {
-    "query": "Configure draft mode and Content Link for my DatoCMS website.",
+    "query": "Clicking the Structured Text body in our Nuxt preview only selects one tiny span, and embedded blocks open the wrong editor. Fix the overlays.",
     "should_trigger": false,
     "query_mode": "overlap",
     "boundary_with": [
@@ -162,11 +172,12 @@
     ]
   },
   {
-    "query": "Set up a new DatoCMS website with previews and responsive images.",
+    "query": "Walk me through getting our SvelteKit blog to render DatoCMS images, Structured Text bodies and video properly.",
     "should_trigger": false,
     "query_mode": "overlap",
     "boundary_with": [
-      "datocms-setup"
+      "datocms-setup",
+      "datocms-frontend-integrations"
     ]
   },
   {
@@ -191,5 +202,19 @@
     "query": "Diagnose the TypeScript type error in my unrelated JSON parser.",
     "should_trigger": false,
     "query_mode": "implicit"
+  },
+  {
+    "query": "Is this DAST valid now?",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Why does the article body look different when I read it with the CMA client versus our GraphQL query? Which one is the actual Structured Text document?",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma",
+      "datocms-cda"
+    ]
   }
 ]

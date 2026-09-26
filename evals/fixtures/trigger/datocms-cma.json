@@ -60,12 +60,20 @@
     "should_trigger": false
   },
   {
-    "query": "I need to set up DatoCMS Content Link so editors can click on content in the preview and jump to the right record in the CMS. How do I add the stega encoding?",
-    "should_trigger": false
+    "query": "Our 40 authors appear on hundreds of DatoCMS articles. Should an author be a separate model we link to, or a block inside each article? Only the trade-offs, nothing changed yet.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
   },
   {
-    "query": "Help me set up the DatoCMS Web Previews plugin integration. I need a preview-links endpoint in my Nuxt app that returns the correct URL for each record type.",
-    "should_trigger": false
+    "query": "Since I added a second project to datocms.config.json, every datocms command fails with 'Multiple profiles detected'. How do I fix that?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cli"
+    ]
   },
   {
     "query": "I'm building a Prisma schema for my PostgreSQL database. I need models for User, Post, and Comment with proper relations. Can you help?",
@@ -86,11 +94,6 @@
     "query_mode": "explicit"
   },
   {
-    "query": "Use datocms-cma to scaffold a datocms CLI migration and run it against my staging profile.",
-    "should_trigger": false,
-    "query_mode": "explicit"
-  },
-  {
     "query": "publish them all in DatoCMS for me",
     "should_trigger": true
   },
@@ -107,7 +110,7 @@
     "should_trigger": true
   },
   {
-    "query": "the DatoCMS records I showed you earlier \u2014 can you publish them yourself?",
+    "query": "schedule those DatoCMS posts to go live Monday at 9am Berlin time",
     "should_trigger": true
   },
   {
@@ -204,6 +207,14 @@
     "query_mode": "overlap",
     "boundary_with": [
       "datocms-structured-text"
+    ]
+  },
+  {
+    "query": "We've never hooked DatoCMS up to our Vercel deploys. Walk me through getting the site to rebuild whenever an editor publishes, and plan it with me before changing anything.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-setup"
     ]
   }
 ]

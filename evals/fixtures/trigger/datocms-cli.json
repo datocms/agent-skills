@@ -8,7 +8,7 @@
     "should_trigger": true
   },
   {
-    "query": "I want to import our WordPress blog content into DatoCMS. We have about 400 posts with featured images and categories. Can you walk me through using the datocms CLI import command?",
+    "query": "I want to import our WordPress blog content into DatoCMS. We have about 400 posts with featured images and categories. How does the datocms CLI import command handle those, and what does it need from me?",
     "should_trigger": true
   },
   {
@@ -52,16 +52,24 @@
     "should_trigger": false
   },
   {
-    "query": "How do I render DatoCMS structured text in my React component? I need to handle inline records, block records, and custom marks using the StructuredText component.",
-    "should_trigger": false
+    "query": "before I scaffold anything: should our FAQ entries be their own DatoCMS model or a block inside each page? just the trade-offs for now",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
   },
   {
     "query": "I need to upload 200 images to DatoCMS programmatically from S3 URLs and assign them to product records using the CMA client.",
     "should_trigger": false
   },
   {
-    "query": "can you help me set up real-time content updates for my DatoCMS Next.js site? i want the preview to update live when editors change content",
-    "should_trigger": false
+    "query": "We have no DatoCMS tooling in this repo yet. Can you plan how we'd link the project, keep schema changes in migrations and release them from GitHub Actions? Don't change anything until I've approved the plan.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-setup"
+    ]
   },
   {
     "query": "How do I set up a Rails migration to add a new column to my PostgreSQL users table? I need to add email_verified boolean with a default of false.",
@@ -72,7 +80,7 @@
     "should_trigger": false
   },
   {
-    "query": "I need to set up DatoCMS migrations for a repo that already has staging and production CLI profiles plus a shared migrations directory. What should I check first?",
+    "query": "ok, dry-run those DatoCMS migrations first, don't touch primary yet",
     "should_trigger": true
   },
   {
@@ -84,7 +92,7 @@
     "should_trigger": true
   },
   {
-    "query": "How should I use datocms profile:set for named environments when the repo already has a migrations convention?",
+    "query": "I linked a second DatoCMS project into this repo with datocms link --profile=client_b and it created a clientBMigrations folder. How do I make that profile use our existing ./migrations directory instead?",
     "should_trigger": true
   },
   {
@@ -111,11 +119,6 @@
   {
     "query": "Use datocms-cli to configure datocms.config.json with staging and production profiles plus CI migration commands.",
     "should_trigger": true,
-    "query_mode": "explicit"
-  },
-  {
-    "query": "Use datocms-cli to write a DatoCMS CMA script that imports 300 products from CSV and uploads their images.",
-    "should_trigger": false,
     "query_mode": "explicit"
   },
   {
@@ -177,15 +180,15 @@
   },
   {
     "query": "publish those DatoCMS draft records for me",
-    "should_trigger": true,
+    "should_trigger": false,
     "query_mode": "overlap",
     "boundary_with": [
       "datocms-cma"
     ]
   },
   {
-    "query": "I don't want to add a CMA token to .env for this DatoCMS cleanup — use my login instead and bulk-delete those test records",
-    "should_trigger": true,
+    "query": "I don't want to add a CMA token to .env for this DatoCMS cleanup — use my login instead and delete those three test records",
+    "should_trigger": false,
     "query_mode": "overlap",
     "boundary_with": [
       "datocms-cma"

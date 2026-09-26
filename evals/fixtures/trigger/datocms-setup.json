@@ -244,13 +244,28 @@
     "query_mode": "implicit"
   },
   {
-    "query": "Configure Contentful webhooks to trigger a Vercel deploy.",
+    "query": "Put our DatoCMS project in maintenance mode, promote the migrated sandbox to primary, then switch maintenance off.",
     "should_trigger": false,
-    "query_mode": "implicit"
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cli",
+      "datocms-cma"
+    ]
   },
   {
-    "query": "Set up Supabase auth in this SvelteKit app.",
+    "query": "Create a read-only DatoCMS API token for the marketing site.",
     "should_trigger": false,
-    "query_mode": "implicit"
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Editors publish in DatoCMS but our Nuxt pages stay stale until the next deploy. Work out what this repo needs so only the changed pages refresh, and tell me what you'd change before doing it.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
   }
 ]
