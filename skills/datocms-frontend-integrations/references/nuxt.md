@@ -806,7 +806,7 @@ export async function fetchWithCacheTags<Result, Variables>(
 ) {
   const config = useRuntimeConfig(event);
   const includeDrafts = isDraftModeEnabled(event);
-  const [data, response] = await rawExecuteQuery(query, {
+  const [data, response] = await rawExecuteQuery<Result, Variables>(query, {
     variables, includeDrafts, excludeInvalid: true,
     token: includeDrafts ? config.datocmsDraftContentCdaToken : config.public.datocmsPublishedContentCdaToken,
     returnCacheTags: !includeDrafts,

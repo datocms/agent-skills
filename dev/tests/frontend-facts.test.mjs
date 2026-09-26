@@ -170,3 +170,9 @@ test('Next.js draft routes name the bind-host redirect trap behind a TLS proxy',
   assert.match(next, /Never `NextResponse\.redirect\(new URL\(path, request\.url\)\)`/);
   assert.match(next, /x-forwarded-proto/);
 });
+
+test('cache-tag wrappers preserve explicit query result types', () => {
+  for (const framework of ['nextjs', 'sveltekit', 'nuxt']) {
+    assert.doesNotMatch(read(`references/${framework}.md`), /await rawExecuteQuery\(query,/, `${framework}: pass the wrapper result and variable types`);
+  }
+});

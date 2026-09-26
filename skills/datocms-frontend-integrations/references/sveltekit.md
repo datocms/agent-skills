@@ -742,7 +742,7 @@ export async function performQueryWithCacheTags<Result, Variables>(
 ) {
   const draftModeEnabled = isDraftModeEnabled(event);
 
-  const [data, response] = await rawExecuteQuery(query, {
+  const [data, response] = await rawExecuteQuery<Result, Variables>(query, {
     variables,
     includeDrafts: draftModeEnabled,
     excludeInvalid: true,

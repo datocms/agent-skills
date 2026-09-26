@@ -754,7 +754,7 @@ async function executeQueryFn<Result, Variables>(
   const queryId = options?.queryId;
   const tags = queryId ? [queryId] : [cacheTag];
 
-  const [result, response] = await rawExecuteQuery(query, {
+  const [result, response] = await rawExecuteQuery<Result, Variables>(query, {
     variables: options?.variables,
     excludeInvalid: true,
     includeDrafts,
