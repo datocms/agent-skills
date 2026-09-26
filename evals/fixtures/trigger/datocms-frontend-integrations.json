@@ -21,7 +21,11 @@
   },
   {
     "query": "Can you help me set up Content Link for my SvelteKit site? I want editors in draft mode to be able to click on content elements and jump directly to the corresponding record in DatoCMS for editing.",
-    "should_trigger": true
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-setup"
+    ]
   },
   {
     "query": "I need real-time content updates on my Astro site when in draft mode. When an editor changes content in DatoCMS, the preview page should update immediately without a page refresh. Using SSE subscriptions.",

@@ -267,5 +267,13 @@
     "boundary_with": [
       "datocms-frontend-integrations"
     ]
+  },
+  {
+    "query": "Our Astro site already shows DatoCMS content. Help me add live updates so editors see draft changes on the page without reloading.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
   }
 ]
