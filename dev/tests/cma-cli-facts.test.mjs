@@ -33,6 +33,19 @@ test('schema:inspect flag table matches the installed command', () => {
   assert.deepEqual(documented, Object.keys(flags).filter((flag) => !plumbing.includes(flag)).sort());
 });
 
+test('every CMA statement of the nested items page cap agrees with the installed client default', () => {
+  // Agents that stop at SKILL.md used page size 500 with nested: true, which the API rejects, and read block
+  // fields flattened, where nested blocks keep them under attributes.
+  const { default: Item } = require('@datocms/cma-client/dist/cjs/generated/resources/Item.js');
+  const source = Item.toString();
+  assert.match(source, /defaultLimit: 30/, 'items iterator default page size changed');
+  for (const [file, pattern] of [
+    ['datocms-cma/SKILL.md', /`nested: true`, keep `perPage` ≤ 30[^\n]*embedded blocks keep theirs under `block\.attributes`/],
+    ['datocms-cma/references/filtering-and-pagination.md', /rejects page size > \*\*30\*\*/],
+    ['datocms-cma/references/records.md', /max page size drops from 500 to 30/],
+  ]) assert.match(skill(file), pattern, file);
+});
+
 test('upload helper-only options match the installed CMA client helper schemas', () => {
   // @datocms/cma-client-node 6.1.3 (and cma-client-browser 6.1.0) Upload.d.ts: helper schemas are
   // Omit<UploadCreateSchema, 'path'> plus source, filename?, skipCreationIfAlreadyExists? (Node create) and onProgress?.

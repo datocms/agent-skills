@@ -325,7 +325,7 @@ export default async function exportAuditLog(client: Client, sinceIso: string) {
   },
   {
     id: 'cma-nested-export',
-    guards: ['skills/datocms-cma/references/filtering-and-pagination.md', 'skills/datocms-cma/references/editing-records.md', 'skills/datocms-cma/references/records.md'],
+    guards: ['skills/datocms-cma/SKILL.md', 'skills/datocms-cma/references/filtering-and-pagination.md', 'skills/datocms-cma/references/editing-records.md', 'skills/datocms-cma/references/records.md'],
     prompt:
       'Create export-with-blocks.ts in this workspace. Export a default async function exportLandingPages(client) that receives an already-configured @datocms/cma-client-node client and resolves to every record of the DatoCMS `landing_page` model as { id, title, sections }, where `sections` lists the blocks of its `sections` Modular Content field in order as { id, heading } (each block has a `heading` string field). The model has several thousand records, so read them in as few API requests as practical and do not fetch records or blocks one at a time. Reuse the supplied client; do not create one. Dependencies are already installed. No live project or credentials are available, so do not run it against DatoCMS.',
     setup: prepare,
