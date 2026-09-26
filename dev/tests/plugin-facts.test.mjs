@@ -70,3 +70,14 @@ test('disabled-copy token is consistent across design references and exists in C
   assert.equal(upgrade, foundations);
   assert.ok(pkg('datocms-react-ui/src/Canvas/index.tsx').includes(`'${upgrade}'`));
 });
+
+test('development-copy rollback verifies the restored fields as its own step, before removing the copy', () => {
+  // All three answers restored the fields and deleted the copy without checking them when the check sat mid-sentence.
+  const steps = ref('project-scaffold.md').split('### Development copy')[1].split('\n\n**Note**')[0];
+  const numbered = [...steps.matchAll(/^(\d+)\. (.*)$/gm)].map(([, n, text]) => ({ n: Number(n), text }));
+  const restore = numbered.find((s) => /assign each test field back/.test(s.text));
+  const verify = numbered.find((s) => /^Verify each test field/.test(s.text));
+  assert.ok(restore && verify, 'restore and verify must be separate numbered steps');
+  assert.equal(verify.n, restore.n + 1);
+  assert.match(verify.text, /Only then optionally remove the development copy/);
+});

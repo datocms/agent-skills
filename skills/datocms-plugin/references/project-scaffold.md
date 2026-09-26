@@ -396,7 +396,8 @@ When the working installation must remain available:
 1. Duplicate it. The independent private copy retains the original entry point, description, permissions, and global configuration. Field editor/addon assignments are not copied; assign only the test fields, preserving their existing settings.
 2. Start the local server and edit that existing private copy's entry point to `http://localhost:5173/`; duplication already created the test installation. Changing the original Marketplace installation's URL instead would convert it to private and detach its package/version association.
 3. Accept the offer to disable the original only when intended. Disabling stops execution but retains configuration.
-4. Re-enable the original if necessary, explicitly assign each test field back to its original editor/addons, and verify those fields before optionally removing the development copy. Removing a test assignment alone does not restore the original editor. Keep the original installation: plugin names must remain unique, so do not convert the copy to the same Marketplace package.
+4. Re-enable the original if necessary and explicitly assign each test field back to its original editor/addons and settings. Removing a test assignment alone does not restore the original editor.
+5. Verify each test field now uses the original editor/addons with its settings. Only then optionally remove the development copy: a field still assigned to it loses its editor. Keep the original installation: plugin names must remain unique, so do not convert the copy to the same Marketplace package.
 
 **Note**: Safari does not properly handle localhost iframes. Use Chrome or Firefox for plugin development.
 

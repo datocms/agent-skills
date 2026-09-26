@@ -1,5 +1,5 @@
 # synced_from_name: datocms-plugin
-# synced_from_description_sha256: d1b76c8e19df19716dd490168d5475dc4e36ce5ea56a69d894dc04c75d85d9ca
+# synced_from_description_sha256: 556d913ed3a40d23af245c16fda6aa8c5cdd6a961b0ed2c87dce8a6c10fe72e6
 interface:
   display_name: "DatoCMS Plugin"
   short_description: "Build and maintain DatoCMS plugins"

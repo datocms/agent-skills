@@ -137,5 +137,10 @@
   {
     "query": "Click-to-edit overlays stopped showing on our SvelteKit draft pages; fix them.",
     "should_trigger": false
+  },
+  {
+    "query": "I want to try my local changes to a Marketplace plugin we already use on a couple of fields without breaking it for the other editors. How do I set that up, and how do I undo it afterwards?",
+    "should_trigger": true,
+    "query_mode": "implicit"
   }
 ]

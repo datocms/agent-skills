@@ -6,7 +6,8 @@ description: >-
   DatoCMS plugin project, patch an existing plugin, add or adjust plugin hooks,
   field extensions, config screens, sidebars, pages, modals, asset sources,
   dropdown actions, lifecycle hooks, browser CMA flows, plugin permissions,
-  package metadata, dark mode upgrades, or UI changes that should match the
+  package metadata, dark mode upgrades, testing local plugin changes without
+  affecting the live installation, or UI changes that should match the
   DatoCMS dashboard. Route standalone CMA scripts to datocms-cma and frontend
   website integrations to datocms-frontend-integrations.
 ---
