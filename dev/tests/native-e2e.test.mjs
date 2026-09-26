@@ -198,6 +198,48 @@ test("timeout terminates a stalled native session and removes its private home",
     assert.equal(result.completed, false);
     assert.equal(existsSync(join(options.output, "native-home")), false);
   }));
+
+test("timeout diagnostics distinguish a stalled turn from a command still running", async () => {
+  for (const completed of [true, false]) {
+    await fixture(async ({ options, writeBinary }) => {
+      writeBinary(`console.log(JSON.stringify({type:'item.started',item:{id:'work',type:'command_execution',command:'fixture operation'}}));${completed ? "setTimeout(()=>console.log(JSON.stringify({type:'item.completed',item:{id:'work',type:'command_execution',command:'fixture operation',exit_code:0}})),50);" : ""}setInterval(()=>{},1000);`);
+      const result = await nativeSession({ ...options, timeoutMs: 1200 });
+      assert.equal(result.timedOut, true);
+      assert.equal(result.stall.commandInProgress, completed ? null : 'work');
+      assert.ok(Number.isFinite(result.stall.lastEventMs));
+      assert.ok(result.stall.lastEventMs >= result.commands[0].startedMs);
+      assert.equal(result.lastEventMs, result.stall.lastEventMs);
+      assert.equal(Number.isFinite(result.commands[0].completedMs), completed);
+      const stored = JSON.parse(readFileSync(join(options.output, 'session.json'), 'utf8'));
+      assert.deepEqual(stored.stall, result.stall);
+    });
+  }
+});
+
+test("command completion merges fields and retains the observed start time", async () =>
+  fixture(async ({ options, writeBinary }) => {
+    writeBinary(`console.log(JSON.stringify({type:'item.started',item:{id:'work',type:'command_execution',command:'fixture operation',startOnly:'retained'}}));setTimeout(()=>{console.log(JSON.stringify({type:'item.completed',item:{id:'work',type:'command_execution',exit_code:0,aggregated_output:'done'}}));console.log(JSON.stringify({type:'turn.completed'}));},60);`);
+    const result = await nativeSession(options);
+    assert.equal(result.completed, true);
+    assert.equal(result.stall, null);
+    assert.equal(result.commands[0].command, 'fixture operation');
+    assert.equal(result.commands[0].startOnly, 'retained');
+    assert.equal(result.commands[0].aggregated_output, 'done');
+    assert.equal(result.commands[0].exit_code, 0);
+    assert.ok(Number.isFinite(result.commands[0].startedMs));
+    assert.ok(result.commands[0].completedMs >= result.commands[0].startedMs);
+    assert.ok(result.lastEventMs >= result.commands[0].completedMs);
+  }));
+
+test("a resumed stalled turn does not report an unfinished command from an earlier turn", async () =>
+  fixture(async ({ options, writeBinary }) => {
+    writeBinary(`if(process.argv.includes('resume')){console.log(JSON.stringify({type:'turn.started'}));setInterval(()=>{},1000);}else{console.log(JSON.stringify({type:'thread.started',thread_id:'timing-thread'}));console.log(JSON.stringify({type:'item.started',item:{id:'old',type:'command_execution',command:'fixture detached work'}}));console.log(JSON.stringify({type:'turn.completed'}));}`);
+    const result = await nativeSession({ ...options, followUps: ['Continue.'], timeoutMs: 1200 });
+    assert.equal(result.timedOut, true);
+    assert.equal(result.turns.length, 2);
+    assert.equal(result.stall.commandInProgress, null);
+    assert.ok(Number.isFinite(result.stall.lastEventMs));
+  }));
 test("credentials cannot be inserted into agent prompts", async () =>
   fixture(async ({ options, writeBinary }) => {
     writeBinary("process.exit(0)");

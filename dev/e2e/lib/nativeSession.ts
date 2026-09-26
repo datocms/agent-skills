@@ -412,6 +412,9 @@ export async function nativeSession(options: NativeOptions) {
   }
   const events: Record<string, any>[] = [];
   const mcpCallIds = new Set<string>();
+  const sessionStartedMs = performance.now();
+  let lastEventMs: number | null = null;
+  let stall: { lastEventMs: number | null; commandInProgress: string | null } | null = null;
   let stderr = "",
     timedOut = false,
     capped = false,
@@ -460,6 +463,8 @@ export async function nativeSession(options: NativeOptions) {
       exit_code?: number;
       aggregated_output?: string;
       turn: number;
+      startedMs?: number;
+      completedMs?: number;
     }
   >();
   // Paths the actor's edit tool touched, checked with the commands for oracle access.
@@ -468,6 +473,8 @@ export async function nativeSession(options: NativeOptions) {
   const exitCodes: (number | null)[] = [];
   async function runTurn(turnArgs: string[], prompt: string) {
     const turnStart = events.length;
+    const turnIndex = turns.length;
+    let turnLastEventMs: number | null = null;
     const child = spawn(binary, turnArgs, {
       cwd: workspace,
       env: environment,
@@ -551,6 +558,7 @@ export async function nativeSession(options: NativeOptions) {
       return table !== null;
     }
     function line(raw: string) {
+      const receivedMs = performance.now() - sessionStartedMs;
       snapshot();
       try {
         refreshMcpSecrets();
@@ -567,6 +575,8 @@ export async function nativeSession(options: NativeOptions) {
       } catch {
         return;
       }
+      lastEventMs = receivedMs;
+      turnLastEventMs = receivedMs;
       events.push(event);
       if (isUsageLimitError(event)) {
         usageLimitReached = true;
@@ -583,7 +593,15 @@ export async function nativeSession(options: NativeOptions) {
         for (const change of event.item.changes ?? [])
           edits.set(`${turns.length}:${event.item.id}:${change.path}`, { command: `${change.kind ?? "edit"} ${change.path}`, turn: turns.length });
       if (event.item?.type === "command_execution") {
-        commands.set(`${turns.length}:${event.item.id}`, { ...event.item, turn: turns.length });
+        const key = `${turnIndex}:${event.item.id}`;
+        const previous = commands.get(key);
+        commands.set(key, {
+          ...previous,
+          ...event.item,
+          turn: turnIndex,
+          startedMs: previous?.startedMs ?? (event.type === "item.started" ? receivedMs : undefined),
+          completedMs: event.type === "item.completed" ? receivedMs : previous?.completedMs,
+        });
         if (commands.size > (options.maxCommands ?? 100)) {
           capped = true;
           stop();
@@ -612,6 +630,14 @@ export async function nativeSession(options: NativeOptions) {
     const processTimer = setInterval(snapshot, 250);
     const timer = setTimeout(() => {
       timedOut = true;
+      // Freeze the timeout observation before stop() can drain late events.
+      // An unfinished command from an earlier turn is not this turn's stall.
+      stall ??= {
+        lastEventMs: turnLastEventMs,
+        commandInProgress: [...commands.values()]
+          .filter((command) => command.turn === turnIndex && command.completedMs === undefined)
+          .at(-1)?.id ?? null,
+      };
       stop();
     }, options.timeoutMs ?? 420_000);
     let exitCode: number | null;
@@ -672,6 +698,8 @@ export async function nativeSession(options: NativeOptions) {
     exitCode,
     stderr: redact(stderr),
     timedOut,
+    lastEventMs,
+    stall,
     capped,
     usageLimitReached,
     credentialLeak,
