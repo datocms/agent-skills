@@ -188,7 +188,7 @@ export async function nativeSession(options: NativeOptions) {
       (text, secret) => text.replaceAll(secret, "[REDACTED]"),
       value,
     );
-  const instructions = `Work only on the user's task in this isolated workspace. Do not read parent directories, evaluation code, assertions, other runs, or host credentials. Do not delegate. Never print environment variables or credentials, or store credential values in files. Use only the skills installed in this workspace; ignore host-installed copies. Do not publish packages, deploy websites, contact people, or change billing. ${options.instructions ?? ""}`;
+  const instructions = `Work only on the user's task in this isolated workspace. Do not read parent directories, evaluation code, assertions, other runs, or host credentials. Project instructions such as AGENTS.md, if any, are inside this workspace; never search parent directories for them. Do not delegate. Never print environment variables or credentials, or store credential values in files. Use only the skills installed in this workspace; ignore host-installed copies. Do not publish packages, deploy websites, contact people, or change billing. ${options.instructions ?? ""}`;
   const config: Record<string, unknown> = {
     model,
     model_reasoning_effort: EFFORT,

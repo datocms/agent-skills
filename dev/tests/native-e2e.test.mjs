@@ -89,6 +89,8 @@ test("native runner pins model and effort, redacts credentials, and removes auth
     assert.ok(args.includes('model_reasoning_effort="medium"'));
     assert.ok(args.includes('features.shell_snapshot=false'));
     assert.ok(args.includes('features.shell_snapshot_v2=false'));
+    // Agents look for AGENTS.md above the workspace unless told where it is, and that trips the oracle-access check.
+    assert.match(args.find((arg) => arg.startsWith('developer_instructions=')) ?? '', /AGENTS\.md[^"]*never search parent directories/);
     assert.equal(args.some(arg => arg.includes('synthetic-secret')), false);
     const provenance = JSON.parse(readFileSync(join(options.output, "provenance.json"), "utf8"));
     assert.ok(provenance.harnessHashes["e2e/lib/nativeSession.ts"]);
