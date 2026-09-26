@@ -670,6 +670,7 @@ export async function nativeSession(options: NativeOptions) {
     model,
     reasoningEffort: EFFORT,
     exitCode,
+    stderr: redact(stderr),
     timedOut,
     capped,
     usageLimitReached,

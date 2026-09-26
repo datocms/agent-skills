@@ -18,6 +18,13 @@ export function assertNoHostedFallback(commands){
   assert.doesNotMatch(command,/(^|[\s;&|(]|lc ["'])(npx\s+)?datocms(\s|$)|mcp\.datocms\.com|site-api\.datocms\.com/,'CLI/direct HTTP fallback is forbidden in hosted MCP sessions');
  }
 }
+export function checkMcpRoute(result,stderr){
+ const unavailable='Hosted MCP unavailable in actor CODEX_HOME (authentication?)';
+ if(/AuthRequired|invalid_token/.test(stderr))throw Error(unavailable);
+ const calls=result.mcpCalls.filter(call=>!(call.server==='codex'&&['list_mcp_resources','list_mcp_resource_templates'].includes(call.tool)));
+ for(const call of calls)assert.equal(call.server,SERVER.name,'Unexpected MCP route');
+ if(!calls.some(call=>call.server===SERVER.name))throw Error(unavailable);
+}
 export function exactScriptOutput(session,source,write,scope){
  const executions=session.mcpCalls.filter(c=>/upsert_and_execute_(safe|unsafe)_script$/.test(c.tool));
  assert.equal(executions.length,1,'A fixture step must execute its exact script once');
@@ -79,13 +86,13 @@ async function main(){
   if(source)writeFileSync(join(workspace,'operation.ts'),source);
   try {
    const result=await nativeSession({repoRoot:REPO_ROOT,workspace,output:join(output,name),mcpCredentials:credentialFile,hostedMcp:SERVER,timeoutMs:420000,maxCommands:35,maxMcpCalls:40,prompt,instructions});
+   checkMcpRoute(result,result.stderr);
    assert.equal(result.exitCode,0,`${name}: native exit`);assert.equal(result.completed,true,`${name}: incomplete turn`);
    assert.equal(result.timedOut,false);assert.equal(result.capped,false);assert.equal(result.credentialLeak,false);
    assert.ok(!result.oracleAccess.length,`${name}: actor referenced evaluation state: ${result.oracleAccess.map(a=>a.command).join(' | ')}`);
    assert.deepEqual(result.errors,[]);
    assertNoHostedFallback(result.commands);
    for(const call of result.mcpCalls){
-    assert.equal(call.server,SERVER.name,'Unexpected MCP route');
     if(call.arguments?.site_id)assert.equal(call.arguments.site_id,site,'Unexpected project');
    }
    return result;

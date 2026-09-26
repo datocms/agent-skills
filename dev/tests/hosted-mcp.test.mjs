@@ -17,6 +17,18 @@ test('hosted command routing permits skill reads and rejects CLI or direct API f
  for(const command of ['cat .agents/skills/datocms-cma/SKILL.md','rg --files','cat datocms.config.json'])assert.doesNotThrow(()=>hosted.assertNoHostedFallback([{command}]));
  for(const command of ['npx datocms whoami','datocms cma:call items list','curl https://site-api.datocms.com/items','curl https://mcp.datocms.com','/bin/zsh -lc "npx datocms whoami"'])assert.throws(()=>hosted.assertNoHostedFallback([{command}]),/CLI\/direct HTTP fallback/);
 });
+test('hosted route checks report unavailable authentication instead of a built-in resource-list route',()=>{
+ assert.equal(typeof hosted.checkMcpRoute,'function');
+ const builtins=[{server:'codex',tool:'list_mcp_resources'},{server:'codex',tool:'list_mcp_resource_templates'}];
+ assert.throws(()=>hosted.checkMcpRoute({mcpCalls:builtins},'AuthRequired: Missing Authorization header'),/Hosted MCP unavailable/);
+ assert.throws(()=>hosted.checkMcpRoute({mcpCalls:builtins},''),/Hosted MCP unavailable/);
+ assert.throws(()=>hosted.checkMcpRoute({mcpCalls:[]},''),/Hosted MCP unavailable/);
+ const valid={server:hosted.SERVER.name,tool:'get_api_methods'};
+ assert.doesNotThrow(()=>hosted.checkMcpRoute({mcpCalls:[valid,...builtins]},''));
+ assert.throws(()=>hosted.checkMcpRoute({mcpCalls:[valid]},'invalid_token'),/Hosted MCP unavailable/);
+ for(const other of [{server:'OtherServer',tool:'read'},{server:'codex',tool:'list_mcp_resource_unrecognized'},{server:'codex',tool:'execute'}])assert.throws(()=>hosted.checkMcpRoute({mcpCalls:[valid,other]},''),/Unexpected MCP route/);
+ assert.throws(()=>hosted.checkMcpRoute({mcpCalls:[{server:'OtherServer',tool:'read'}]},''),/Unexpected MCP route/);
+});
 test('hosted oracle accepts the requested edit and ignores only update bookkeeping',()=>{
  const before=record('published'),after=changed(before);assert.doesNotThrow(()=>assertOutcome('published',before,after));
  after.current.body.en.document.children[1].item.meta={current_version:'2',updated_at:'now'};

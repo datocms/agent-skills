@@ -74,6 +74,7 @@ test("native runner pins model and effort, redacts credentials, and removes auth
     assert.equal(result.credentialLeak, true);
     assert.equal(result.completed, true);
     assert.equal(result.commands.length, 1);
+    assert.equal(result.stderr, "[REDACTED]\n");
     for (const path of [
       "native.jsonl",
       "stderr.log",
