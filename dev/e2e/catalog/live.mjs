@@ -18,6 +18,7 @@ import {
 } from "../lib/createTestProject.ts";
 import { nativeSession, sourceHashes, REPO_ROOT } from "../lib/nativeSession.ts";
 import { cliLauncherSource } from "../lib/cliLauncher.ts";
+import { summarizeCommandExecution } from "../lib/commandFailures.mjs";
 import { replayVisualApplication } from "./replay.mjs";
 
 const root = resolve(import.meta.dirname, "../..");
@@ -318,6 +319,16 @@ try {
       !session.oracleAccess.length &&
       !session.errors.length &&
       session.commands.every((c) => c.exit_code === 0);
+    const commandExecution = summarizeCommandExecution(session.commands);
+    result.commandFailures = commandExecution.commandFailures;
+    result.executedDeliverable = commandExecution.executedDeliverable;
+    result.strictExecutionPassExcludingProbes =
+      session.completed &&
+      session.exitCode === 0 &&
+      !session.credentialLeak &&
+      !session.oracleAccess.length &&
+      !session.errors.length &&
+      commandExecution.commandsPassExcludingProbes;
     if (session.usageLimitReached) {
       result.status = "paused-usage-limit";
       process.exitCode = 2;

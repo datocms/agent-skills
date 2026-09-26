@@ -11,6 +11,7 @@ import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { parseArgs } from "node:util";
 import { nativeSession, sourceHashes, REPO_ROOT } from "../lib/nativeSession.ts";
+import { summarizeCommandExecution } from "../lib/commandFailures.mjs";
 
 const root = resolve(import.meta.dirname, "../..");
 const { values } = parseArgs({
@@ -124,6 +125,14 @@ try {
       session.exitCode === 0 &&
       !session.errors.length &&
       session.commands.every((c) => c.exit_code === 0);
+    const commandExecution = summarizeCommandExecution(session.commands);
+    result.commandFailures = commandExecution.commandFailures;
+    result.executedDeliverable = commandExecution.executedDeliverable;
+    result.strictExecutionPassExcludingProbes =
+      session.completed &&
+      session.exitCode === 0 &&
+      !session.errors.length &&
+      commandExecution.commandsPassExcludingProbes;
     if (session.usageLimitReached) {
       result.status = "paused-usage-limit";
       save("result.json", result);
