@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -24,6 +24,43 @@ test('the installed React root barrel loads the optional Mux peer through VideoP
   assert.match(JSON.stringify(pkg.exports['./rsc-image']), /RSCImage\/index\.js/);
   assert.match(readFileSync(resolve(reactPackage, 'dist/esm/index.js'), 'utf8'), /export \* from ['"]\.\/VideoPlayer\/index\.js['"]/);
   assert.match(readFileSync(resolve(reactPackage, 'dist/esm/VideoPlayer/index.js'), 'utf8'), /from ['"]@mux\/mux-player-react\/lazy['"]/);
+});
+
+test('Structured Text record selections include the required typename and id across every skill', () => {
+  const missing = [];
+  let selections = 0;
+  function walk(directory) {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      if (entry.name === 'node_modules') continue;
+      const path = resolve(directory, entry.name);
+      if (entry.isDirectory()) { walk(path); continue; }
+      if (!entry.isFile() || !entry.name.endsWith('.md')) continue;
+      const markdown = readFileSync(path, 'utf8');
+      for (const match of markdown.matchAll(/\b(blocks|links|inlineBlocks)\s*\{/g)) {
+        selections++;
+        const start = match.index + match[0].lastIndexOf('{');
+        let depth = 1, end = start + 1;
+        for (; end < markdown.length && depth; end++) {
+          if (markdown[end] === '{') depth++;
+          else if (markdown[end] === '}') depth--;
+        }
+        assert.equal(depth, 0, `unbalanced ${match[1]} selection in ${path}`);
+        const body = markdown.slice(start + 1, end - 1);
+        if (!/\b__typename\b/.test(body) || !/\bid\b/.test(body)) missing.push(`${path}:${markdown.slice(0, match.index).split('\n').length} ${match[1]}`);
+      }
+    }
+  }
+  walk(resolve(repoRoot, 'skills'));
+  assert.ok(selections > 0, 'the scan must exercise shipped record selections');
+  assert.deepEqual(missing, []);
+});
+
+test('the installed Structured Text record contract requires typename and id', () => {
+  const types = readFileSync(new URL('../node_modules/datocms-structured-text-utils/dist/types/types.d.ts', import.meta.url), 'utf8');
+  const record = types.match(/export type CdaStructuredTextRecord\s*=\s*\{([\s\S]*?)\}/);
+  assert.ok(record);
+  assert.match(record[1], /__typename:\s*string/);
+  assert.match(record[1], /\bid:\s*string/);
 });
 
 // cda-8: the starter kits and demos (datocms/{nextjs,astro,sveltekit,nuxt}-starter-kit,

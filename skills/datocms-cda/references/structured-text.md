@@ -33,7 +33,7 @@ query {
     content {
       value
       blocks {
-        ... on RecordInterface { id _modelApiKey }
+        ... on RecordInterface { __typename id _modelApiKey }
         ... on ImageBlockRecord {
           image {
             responsiveImage(imgixParams: { w: 800 }) {
@@ -51,7 +51,7 @@ query {
         }
       }
       links {
-        ... on RecordInterface { id _modelApiKey }
+        ... on RecordInterface { __typename id _modelApiKey }
         ... on BlogPostRecord {
           slug
           title
@@ -161,6 +161,7 @@ const query = `
         value
         blocks {
           ... on RecordInterface {
+            __typename
             id
             _modelApiKey
           }
@@ -185,6 +186,7 @@ const query = `
         }
         links {
           ... on RecordInterface {
+            __typename
             id
             _modelApiKey
           }
