@@ -162,6 +162,8 @@ Never hand-write `siteId`/`organizationId` in `datocms.config.json`: `link` vali
 
 Linking profile that has `apiTokenEnvName` keeps it but adds `siteId`, which wins in [API Token Resolution](#api-token-resolution) — env token no longer read; CI without OAuth session then errors unless passing `--api-token`. Ask before linking such profile.
 
+`link` rewrites whole profile entry — keeps `siteId`/`organizationId`, non-default `apiTokenEnvName`, `logLevel`, `migrations.*`; drops every other key (`logMode`, `baseUrl`). Re-add them after linking.
+
 Run `npx datocms link --help` for all flags (`--profile`, `--log-level`, `--migrations-dir`, `--migrations-model`, `--migrations-template`, `--migrations-tsconfig`, `--organization-id`, `--site-id`).
 
 ### Unlink a project

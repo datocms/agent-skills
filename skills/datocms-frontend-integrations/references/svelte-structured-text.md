@@ -166,17 +166,17 @@ Inline item components receive `link` as a prop (the resolved record from the `l
 
 ### Item Link Component Example
 
-Item link components receive `link` as a prop and render children via `<slot />`:
+Item link components receive `link` as a prop and render their `children` snippet:
 
 ```svelte
 <!-- ItemLink.svelte -->
 <script>
-  const { link } = $props();
+  const { link, children } = $props();
 </script>
 
 {#if link.__typename === 'TeamMemberRecord'}
   <a href={`/team/${link.slug}`}>
-    <slot />
+    {@render children()}
   </a>
 {/if}
 ```
@@ -222,24 +222,25 @@ Override default rendering for any node type using predicate-component tuples wi
 
 ### Custom Heading Example
 
-Custom node components receive a `node` prop with the DAST node data:
+Custom node components receive a `node` prop with the DAST node data and render their `children` snippet:
 
 ```svelte
 <!-- Heading.svelte -->
 <script>
   import { render as toPlainText } from 'datocms-structured-text-to-plain-text';
 
-  const { node } = $props();
+  const { node, children } = $props();
 
-  $: anchor = toPlainText(node)
-    ?.toLowerCase()
-    .replace(/ /g, '-')
-    .replace(/[^\w-]+/g, '');
+  const anchor = $derived(
+    toPlainText(node)
+      ?.toLowerCase()
+      .replace(/ /g, '-')
+      .replace(/[^\w-]+/g, ''),
+  );
 </script>
 
-<svelte:element this={`h${node.level}`}>
-  <slot />
-  <a id={anchor} />
+<svelte:element this={`h${node.level}`} id={anchor}>
+  {@render children()}
   <a href={`#${anchor}`}>#</a>
 </svelte:element>
 ```

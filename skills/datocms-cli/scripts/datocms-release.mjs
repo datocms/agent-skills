@@ -1,8 +1,22 @@
 import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+
+// The CLI reads the same file; a missing or invalid one is left for it to report.
+function readProfiles() {
+  try {
+    return JSON.parse(readFileSync(process.env.DATOCMS_CONFIG_FILE || 'datocms.config.json', 'utf8')).profiles ?? {};
+  } catch {
+    return {};
+  }
+}
+
+const profiles = readProfiles();
 
 // Linked profiles (siteId) never read token env vars, so CI passes the token as a flag.
+// Same variable the CLI would read: the profile's apiTokenEnvName, else the default naming.
 function tokenArgs(profile = process.env.DATOCMS_PROFILE || 'default') {
-  const name = profile === 'default' ? 'DATOCMS_API_TOKEN' : `DATOCMS_${profile.toUpperCase()}_PROFILE_API_TOKEN`;
+  const name = profiles[profile]?.apiTokenEnvName
+    || (profile === 'default' ? 'DATOCMS_API_TOKEN' : `DATOCMS_${profile.toUpperCase()}_PROFILE_API_TOKEN`);
   return process.env[name] ? [`--api-token=${process.env[name]}`] : [];
 }
 
@@ -42,6 +56,7 @@ function parseArgs(argv) {
     help: false,
     profile: undefined,
     skipPromote: false,
+    unknown: [],
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -99,7 +114,8 @@ function parseArgs(argv) {
       break;
     }
 
-    parsed.extraArgs.push(arg);
+    // Only args after `--` reach migrations:run; anything else is a mistake to catch before maintenance:on.
+    parsed.unknown.push(arg);
   }
 
   return parsed;
@@ -110,6 +126,13 @@ const args = parseArgs(process.argv.slice(2));
 if (args.help) {
   usage();
   process.exit(0);
+}
+
+if (args.unknown.length > 0) {
+  // Names only: a value could be a token.
+  console.error(`Unknown argument: ${args.unknown.map((arg) => (arg.startsWith('-') ? arg.split('=')[0] : '<value>')).join(' ')}`);
+  usage();
+  process.exit(1);
 }
 
 if (!args.destination) {

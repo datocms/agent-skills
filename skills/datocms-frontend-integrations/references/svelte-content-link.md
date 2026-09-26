@@ -189,11 +189,11 @@ Item link components don't need a boundary — their content belongs to the surr
 ```svelte
 <!-- ItemLink.svelte -->
 <script>
-  const { link } = $props();
+  const { link, children } = $props();
 </script>
 
 <a href={`/posts/${link.slug}`}>
-  <slot />
+  {@render children()}
 </a>
 ```
 

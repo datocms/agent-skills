@@ -145,13 +145,13 @@ Recommended behavior for that helper (the bundled one follows it):
 2. Compute a unique destination environment id per profile — bundled default `{profile}-sync-{timestamp}` → `client-a-sync-20260925101112` (`{profile}` lowercased, other characters → `-`; `{timestamp}` UTC `YYYYMMDDHHmmss`). Environment ids allow only lowercase letters, numbers and dashes: check every id before running any command
 3. Optionally accept `--source=<env>` and `--destination-template=<template>`
 4. Run `migrations:run --profile=<id> --destination=<env>` (bundled: args after `--` appended)
-5. Support `--dry-run`, `--fast-fork`, and explicit `--force` (only with `--fast-fork`)
+5. Support `--dry-run`, `--fast-fork`, and explicit `--force` (only with `--fast-fork`); refuse any other option before running anything — a mistyped `--dryrun` must not become a profile id
 6. Print the created environment ids instead of auto-promoting
-7. Pass `--api-token` from `DATOCMS_<PROFILE_ID>_PROFILE_API_TOKEN` when set (linked profiles never read it); errors name only the failed command, never the arguments — they can carry the token
+7. Pass `--api-token` from the profile's `apiTokenEnvName`, else `DATOCMS_<PROFILE_ID>_PROFILE_API_TOKEN`, when set (linked profiles never read it); errors name only the failed command, never the arguments — they can carry the token
 
 Do not auto-promote in the sync helper by default. Promotion is a separate release decision per project.
 
-CI: [`assets/datocms-sync.github-actions.yml`](../assets/datocms-sync.github-actions.yml) → `.github/workflows/`: manual dispatch (`profiles` space-separated, `dry_run`), inputs reach the shell only through `env:`. Map one `DATOCMS_<PROFILE_ID>_PROFILE_API_TOKEN` secret per destination profile (replace the `CLIENT_A`/`CLIENT_B` examples); adapt install command and Node version.
+CI: [`assets/datocms-sync.github-actions.yml`](../assets/datocms-sync.github-actions.yml) → `.github/workflows/`: manual dispatch (`profiles` space-separated, `dry_run`), inputs reach the shell only through `env:`. Map one `DATOCMS_<PROFILE_ID>_PROFILE_API_TOKEN` secret (or the profile's `apiTokenEnvName`) per destination profile (replace the `CLIENT_A`/`CLIENT_B` examples); adapt install command and Node version.
 
 ## Safety Notes
 

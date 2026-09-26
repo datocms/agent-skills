@@ -89,7 +89,7 @@ const { data: results, meta } = await client.searchResults.rawList({
 });
 ```
 
-Example reads Astro's `import.meta.env`. Browser-visible elsewhere: Next.js `process.env.NEXT_PUBLIC_DATOCMS_SITE_SEARCH_TOKEN` / `_INDEX_ID`; Nuxt `useRuntimeConfig().public` keys declared in `runtimeConfig.public` (set by `NUXT_PUBLIC_*`); SvelteKit `PUBLIC_*` via `$env/static/public` or `$env/dynamic/public`. Token value only in the git-ignored env file.
+Example reads Astro's `import.meta.env`. Browser-visible elsewhere: Next.js `process.env.NEXT_PUBLIC_DATOCMS_SITE_SEARCH_TOKEN` / `_INDEX_ID`; Nuxt `useRuntimeConfig().public` keys declared in `runtimeConfig.public` (set by `NUXT_PUBLIC_*`); SvelteKit `PUBLIC_*` via `$env/static/public` or `$env/dynamic/public`; plain React/Vue with Vite `import.meta.env.VITE_DATOCMS_SITE_SEARCH_TOKEN` / `_INDEX_ID`. Token value only in the git-ignored env file.
 
 Important behaviors:
 

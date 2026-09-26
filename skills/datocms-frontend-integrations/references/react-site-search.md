@@ -22,16 +22,22 @@ npm install react-datocms @datocms/cma-client-browser
 
 ## Basic Usage
 
+Search-only token and index id come from browser-visible env vars, never inlined. Examples use Next.js names; other frameworks: [Search requests](site-search-api.md#search-requests).
+
 ```jsx
+'use client';
+
 import { useSiteSearch } from 'react-datocms/use-site-search';
 import { buildClient } from '@datocms/cma-client-browser';
 
-const client = buildClient({ apiToken: 'YOUR_API_TOKEN' });
+const client = buildClient({
+  apiToken: process.env.NEXT_PUBLIC_DATOCMS_SITE_SEARCH_TOKEN,
+});
 
 function SearchWidget() {
   const { state, error, data } = useSiteSearch({
     client,
-    searchIndexId: '7497',
+    searchIndexId: process.env.NEXT_PUBLIC_DATOCMS_SITE_SEARCH_INDEX_ID,
   });
 
   return (
@@ -108,19 +114,23 @@ See `site-search-concepts.md` for shared options. React additionally supports:
 Uses [`react-paginate`](https://www.npmjs.com/package/react-paginate) for pagination:
 
 ```jsx
+'use client';
+
 import { buildClient } from '@datocms/cma-client-browser';
 import ReactPaginate from 'react-paginate';
 import { useSiteSearch } from 'react-datocms/use-site-search';
 import { useState } from 'react';
 
-const client = buildClient({ apiToken: 'YOUR_API_TOKEN' });
+const client = buildClient({
+  apiToken: process.env.NEXT_PUBLIC_DATOCMS_SITE_SEARCH_TOKEN,
+});
 
 function SearchPage({ locale = 'en' }) {
   const [query, setQuery] = useState('');
 
   const { state, error, data } = useSiteSearch({
     client,
-    searchIndexId: '7497',
+    searchIndexId: process.env.NEXT_PUBLIC_DATOCMS_SITE_SEARCH_INDEX_ID,
     initialState: { locale },
     highlightMatch: (text, key, context) =>
       context === 'title' ? (

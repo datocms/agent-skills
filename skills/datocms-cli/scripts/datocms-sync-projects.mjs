@@ -1,8 +1,22 @@
 import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+
+// The CLI reads the same file; a missing or invalid one is left for it to report.
+function readProfiles() {
+  try {
+    return JSON.parse(readFileSync(process.env.DATOCMS_CONFIG_FILE || 'datocms.config.json', 'utf8')).profiles ?? {};
+  } catch {
+    return {};
+  }
+}
+
+const profiles = readProfiles();
 
 // Linked profiles (siteId) never read token env vars, so CI passes the token as a flag.
+// Same variable the CLI would read: the profile's apiTokenEnvName, else the default naming.
 function tokenArgs(profile = process.env.DATOCMS_PROFILE || 'default') {
-  const name = profile === 'default' ? 'DATOCMS_API_TOKEN' : `DATOCMS_${profile.toUpperCase()}_PROFILE_API_TOKEN`;
+  const name = profiles[profile]?.apiTokenEnvName
+    || (profile === 'default' ? 'DATOCMS_API_TOKEN' : `DATOCMS_${profile.toUpperCase()}_PROFILE_API_TOKEN`);
   return process.env[name] ? [`--api-token=${process.env[name]}`] : [];
 }
 
@@ -43,6 +57,7 @@ function parseArgs(argv) {
     help: false,
     profiles: [],
     source: undefined,
+    unknown: [],
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -95,6 +110,12 @@ function parseArgs(argv) {
       break;
     }
 
+    // A mistyped flag (--dryrun) would otherwise become a profile id and run the profiles before it for real.
+    if (arg.startsWith('-')) {
+      parsed.unknown.push(arg);
+      continue;
+    }
+
     parsed.profiles.push(arg);
   }
 
@@ -115,6 +136,13 @@ const options = parseArgs(process.argv.slice(2));
 if (options.help) {
   usage();
   process.exit(0);
+}
+
+if (options.unknown.length > 0) {
+  // Names only: a value could be a token.
+  console.error(`Unknown option: ${options.unknown.map((arg) => arg.split('=')[0]).join(' ')}`);
+  usage();
+  process.exit(1);
 }
 
 if (options.profiles.length === 0) {

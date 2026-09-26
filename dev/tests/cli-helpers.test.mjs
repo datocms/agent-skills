@@ -26,13 +26,13 @@ globalThis.fetch = async () => { throw new Error('network blocked'); };
   console.log(JSON.stringify({ token: cmd.client.config.apiToken, profile: cmd.profileId, destination: flags.destination ?? null, args }));
 })().catch((e) => console.log(JSON.stringify({ error: e.message })));`;
 
-function sandbox(profiles) {
+function sandbox(profiles, extra = {}) {
   const directory = mkdtempSync(join(tmpdir(), 'ci-assets-'));
   const bin = join(directory, 'bin'), log = join(directory, 'argv.jsonl');
   mkdirSync(bin);
   mkdirSync(join(directory, 'home'));
   writeFileSync(join(bin, 'npx'), `#!${process.execPath}\nconst fs=require('node:fs');fs.appendFileSync(${JSON.stringify(log)},JSON.stringify(process.argv.slice(2))+'\\n');process.exit(process.argv[3]===process.env.SHIM_FAIL?1:0);\n`, {mode: 0o755});
-  writeFileSync(join(directory, 'datocms.config.json'), JSON.stringify({profiles: Object.fromEntries(profiles.map((p, i) => [p, {siteId: String(90001 + i), logLevel: 'NONE', migrations: {directory: './migrations', modelApiKey: 'schema_migration'}}]))}));
+  writeFileSync(join(directory, 'datocms.config.json'), JSON.stringify({profiles: Object.fromEntries(profiles.map((p, i) => [p, {siteId: String(90001 + i), logLevel: 'NONE', migrations: {directory: './migrations', modelApiKey: 'schema_migration'}, ...extra[p]}]))}));
   const env = {PATH: `${bin}:${dirname(process.execPath)}:/usr/bin:/bin`, HOME: join(directory, 'home'), XDG_CONFIG_HOME: join(directory, 'home/.config')};
   const calls = () => (existsSync(log) ? readFileSync(log, 'utf8').trim().split('\n').map((line) => JSON.parse(line)) : []);
   return {directory, env, calls, cleanup: () => rmSync(directory, {recursive: true, force: true})};
@@ -238,4 +238,44 @@ test('workflow assets pass dispatch inputs through env, never into run scripts',
     assert.deepEqual(sync.calls().map((argv) => argv.find((a) => a.startsWith('--profile='))), ['--profile=client_a', '--profile=$(touch', '--profile=pwned-sub)', '--profile=client_b;', '--profile=touch', '--profile=pwned']);
     assert.ok(sync.calls().every((argv) => !argv.includes('--dry-run')));
   } finally { sync.cleanup(); }
+});
+
+test('helpers pass the token from a custom apiTokenEnvName, the variable the CLI itself reads', () => {
+  for (const [script, args, profile] of [
+    ['scripts/datocms-release.mjs', ['--destination=rel', '--dry-run'], 'default'],
+    ['scripts/datocms-sync-projects.mjs', ['client_a', '--dry-run'], 'client_a'],
+  ]) {
+    const box = sandbox([profile], {[profile]: {apiTokenEnvName: 'CUSTOM_CMA_TOKEN'}});
+    try {
+      // The default-named variable is set too: the configured name must win, as it does in the CLI.
+      const env = {...box.env, CUSTOM_CMA_TOKEN: 'custom-token', DATOCMS_API_TOKEN: 'default-token', DATOCMS_CLIENT_A_PROFILE_API_TOKEN: 'default-token'};
+      const run = spawnSync(process.execPath, [join(cliSkill, script), ...args], {cwd: box.directory, env, encoding: 'utf8'});
+      assert.equal(run.status, 0, run.stderr);
+      const calls = box.calls();
+      assert.equal(calls.length, 1);
+      const resolved = resolveWithRealCli(box, calls[0]);
+      assert.equal(resolved.error, undefined, `${script}: ${resolved.error}`);
+      assert.equal(resolved.token, 'custom-token', script);
+    } finally { box.cleanup(); }
+  }
+});
+
+test('helpers refuse unknown options before running any command, without echoing their values', () => {
+  for (const [script, args] of [
+    // Before: --dryrun became a third profile id, so client_a and client_b ran without --dry-run first.
+    ['scripts/datocms-sync-projects.mjs', ['client_a', 'client_b', '--dryrun']],
+    ['scripts/datocms-sync-projects.mjs', ['client_a', '--api-token=leak-canary-2']],
+    // Before: stray arguments reached migrations:run after maintenance:on.
+    ['scripts/datocms-release.mjs', ['--destination=rel', '--skip-promte']],
+    ['scripts/datocms-release.mjs', ['--destination=rel', '--api-token', 'leak-canary-2']],
+  ]) {
+    const box = sandbox(['client_a', 'client_b']);
+    try {
+      const run = spawnSync(process.execPath, [join(cliSkill, script), ...args], {cwd: box.directory, env: box.env, encoding: 'utf8'});
+      assert.notEqual(run.status, 0, `${script} ${args.join(' ')} accepted an unknown option`);
+      assert.match(run.stderr, /Unknown (option|argument): --/);
+      assert.doesNotMatch(run.stdout + run.stderr, /leak-canary-2/);
+      assert.deepEqual(box.calls(), [], `${script} ${args.join(' ')} ran commands before refusing`);
+    } finally { box.cleanup(); }
+  }
 });

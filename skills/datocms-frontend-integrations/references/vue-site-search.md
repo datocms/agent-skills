@@ -23,16 +23,19 @@ npm install vue-datocms @datocms/cma-client-browser
 
 ## Basic Usage
 
+Search-only token and index id come from browser-visible config, never inlined. Examples use Nuxt public runtime config — `datocmsSiteSearchToken` / `datocmsSiteSearchIndexId` declared in `runtimeConfig.public`, set by `NUXT_PUBLIC_DATOCMS_SITE_SEARCH_TOKEN` / `NUXT_PUBLIC_DATOCMS_SITE_SEARCH_INDEX_ID`. Plain Vue + Vite: `import.meta.env.VITE_DATOCMS_SITE_SEARCH_TOKEN` / `_INDEX_ID`.
+
 ```vue
 <script setup>
 import { useSiteSearch } from 'vue-datocms';
 import { buildClient } from '@datocms/cma-client-browser';
 
-const client = buildClient({ apiToken: 'YOUR_API_TOKEN' });
+const config = useRuntimeConfig();
+const client = buildClient({ apiToken: config.public.datocmsSiteSearchToken });
 
 const { state, error, data } = useSiteSearch({
   client,
-  searchIndexId: '7497',
+  searchIndexId: config.public.datocmsSiteSearchIndexId,
 });
 </script>
 
@@ -147,11 +150,12 @@ Use `titleHighlights` and `bodyHighlights` to render search match highlighting i
 import { useSiteSearch } from 'vue-datocms';
 import { buildClient } from '@datocms/cma-client-browser';
 
-const client = buildClient({ apiToken: 'YOUR_API_TOKEN' });
+const config = useRuntimeConfig();
+const client = buildClient({ apiToken: config.public.datocmsSiteSearchToken });
 
 const { state, error, data } = useSiteSearch({
   client,
-  searchIndexId: '7497',
+  searchIndexId: config.public.datocmsSiteSearchIndexId,
   fuzzySearch: true,
   initialState: { locale: 'en' },
   resultsPerPage: 10,
