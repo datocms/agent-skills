@@ -259,7 +259,7 @@ import { StructuredText } from 'react-datocms/structured-text';
 import { stripStega, decodeStega, revealStega } from 'react-datocms/stega';
 ```
 
-See the shared [utility APIs](./content-link-concepts.md#stega-stripping-utilities) and [when to strip stega](./content-link-concepts.md#when-to-strip-stega). Keep encoding for rendered editable content; clean values used in logic, metadata or URL construction. `revealStega` makes invisible metadata visible for debugging.
+See the shared [utility APIs](./content-link-concepts.md#stega-stripping-utilities) and [when to strip stega](./content-link-concepts.md#when-to-strip-stega). Keep encoding for rendered editable content. Clean intentionally non-editable text (labels, badges) at every use, rendered text and attributes alike, and values used in logic, metadata or URL construction. `revealStega` makes invisible metadata visible for debugging.
 
 ## Troubleshooting
 

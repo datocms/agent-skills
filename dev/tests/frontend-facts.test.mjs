@@ -91,6 +91,16 @@ test('schema:generate needs an existing output directory, and the docs say so', 
 // frontend-8: next@15.5.26 dist/server/web/spec-extension/revalidate.d.ts declares
 // `revalidateTag(tag: string)`; next@16.3.6 requires `(tag, profile)`. The two-argument calls
 // in nextjs.md must come with the Next ≤15 single-argument form.
+test('every framework Content Link reference says to clean non-editable display text at each use', () => {
+  // Display-only labels kept their editing metadata in every recorded acceptance attempt while the framework
+  // references named only logic, metadata and URLs; the concepts file alone covered display text.
+  for (const framework of ['react', 'vue', 'svelte', 'astro']) {
+    const text = read(`references/${framework}-content-link.md`);
+    assert.match(text, /Clean intentionally non-editable text \(labels, badges\) at every use, rendered text and attributes alike/, framework);
+  }
+  assert.match(read('references/content-link-concepts.md'), /Strip intentionally non-editable display text/);
+});
+
 test('nextjs.md gives the single-argument revalidateTag form for Next 15 and earlier', () => {
   const next = read('references/nextjs.md');
   assert.match(next, /revalidateTag\(\w+, \{ expire: 0 \}\)/);

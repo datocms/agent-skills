@@ -186,7 +186,7 @@ import InlineTeamMember from '~/components/InlineTeamMember.astro';
 import { stripStega, decodeStega } from '@datocms/astro/ContentLink';
 ```
 
-See the shared [utility APIs](./content-link-concepts.md#stega-stripping-utilities) and [when to strip stega](./content-link-concepts.md#when-to-strip-stega). Keep encoding for rendered editable content; clean values used in logic, metadata or URL construction. `revealStega` (debug: makes invisible metadata visible) isn't re-exported here — import it from `@datocms/content-link` (add as direct dependency).
+See the shared [utility APIs](./content-link-concepts.md#stega-stripping-utilities) and [when to strip stega](./content-link-concepts.md#when-to-strip-stega). Keep encoding for rendered editable content. Clean intentionally non-editable text (labels, badges) at every use, rendered text and attributes alike, and values used in logic, metadata or URL construction. `revealStega` (debug: makes invisible metadata visible) isn't re-exported here — import it from `@datocms/content-link` (add as direct dependency).
 
 ## Troubleshooting
 
