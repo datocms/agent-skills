@@ -68,7 +68,9 @@ await Promise.all(
           session.completed &&
           session.exitCode === 0 &&
           !session.errors.length &&
-          !session.timedOut,
+          !session.timedOut &&
+          !session.oracleAccess.length,
+        oracleAccess: session.oracleAccess.map((a) => a.command),
         finalText: session.finalText,
         commands: session.commands.map((x) => ({
           command: x.command,

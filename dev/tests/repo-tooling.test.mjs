@@ -18,12 +18,13 @@ function write(root, files) {
   }
 }
 
-// Runs the validator on a copy of what it reads plus `files`, returning its error lines relative to the copy.
-function validatorErrors(files) {
+// Runs the validator on a copy of what it reads plus `files`, minus `remove`, returning its error lines relative to the copy.
+function validatorErrors(files, remove = []) {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'validator-')));
   for (const part of ['skills', 'evals/fixtures', 'README.md', '.claude-plugin', '.codex-plugin'])
     cpSync(join(repoRoot, part), join(root, part), { recursive: true });
   write(root, files);
+  for (const path of remove) rmSync(join(root, path));
   const run = spawnSync('python3', [join(repoRoot, 'evals/scripts/validate_skill_repo.py'), '--repo-root', root], { encoding: 'utf8' });
   rmSync(root, { recursive: true, force: true });
   assert.equal(run.stderr, '');
@@ -107,6 +108,13 @@ test('SKILL.md frontmatter accepts only Agent Skills spec keys', () => {
   const errors = about(validatorErrors({ [skill]: text.replace('\n---\n', extra) }), skill);
   assert.equal(errors.length, 1, errors.join('\n'));
   assert.match(errors[0], /frontmatter key `when_to_use` is not in the Agent Skills spec .*claude\.ai and Skills API uploads of the zip reject it/);
+});
+
+test('validator fails when a CMA reference the hosted MCP server fetches is missing', () => {
+  const reference = 'skills/datocms-cma/references/editing-records.md';
+  const errors = about(validatorErrors({}, [reference]), reference);
+  assert.equal(errors.length, 1, errors.join('\n'));
+  assert.match(errors[0], /missing; the hosted MCP server fetches this exact path from master/);
 });
 
 // A throwaway git repo with the real hook, remark config and dev dependencies, and a stub validator. The hook runs

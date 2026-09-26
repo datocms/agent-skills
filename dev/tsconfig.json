@@ -15,5 +15,5 @@
 		"isolatedModules": true,
 		"verbatimModuleSyntax": true
 	},
-	"include": ["e2e/**/*.ts", "vitest.e2e.config.ts"]
+	"include": ["e2e/**/*.ts", "scripts/**/*.ts", "vitest.e2e.config.ts"]
 }

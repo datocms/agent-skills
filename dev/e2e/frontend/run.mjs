@@ -343,6 +343,10 @@ suite: for (let repetition = 1; repetition <= repetitions; repetition++)
           !session.errors.length &&
           !session.timedOut;
         assert.ok(result.agentCompleted, "Agent did not complete");
+        assert.ok(
+          !session.oracleAccess.length,
+          `Actor referenced evaluation state: ${session.oracleAccess.map((a) => a.command).join(" | ")}`,
+        );
       } else {
         const original = JSON.parse(
           readFileSync(

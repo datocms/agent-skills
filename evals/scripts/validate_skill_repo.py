@@ -48,6 +48,11 @@ FRAMEWORK_REFERENCE_PATHS = tuple(
     f"skills/datocms-frontend-integrations/references/{framework}.md"
     for framework in ("nextjs", "nuxt", "sveltekit", "astro")
 )
+# The hosted DatoCMS MCP server fetches these from master at runtime (docs/maintenance.md#hosted-mcp-dependency).
+HOSTED_MCP_REFERENCE_PATHS = (
+    "skills/datocms-cma/references/records.md",
+    "skills/datocms-cma/references/editing-records.md",
+)
 MARKDOWN_LINK_RE = re.compile(r"\[(?:[^\]\\\n]|\\.)*\]\(\s*<?([^)\s>]+)>?(?:\s+(?:\"[^\"]*\"|'[^']*'|\([^)]*\)))?\s*\)")
 LINK_DEFINITION_RE = re.compile(r"^ {0,3}\[(?!\^)(?:[^\]\\\n]|\\.)+\]:[ \t]*<?([^\s>]+)", re.MULTILINE)
 BACKTICK_RUN_RE = re.compile(r"`+")
@@ -824,6 +829,17 @@ def _validate_astro_imports(repo_root: Path, errors: list[str]) -> None:
             )
 
 
+def _validate_hosted_mcp_references(repo_root: Path, errors: list[str]) -> None:
+    listings: dict[Path, set[str]] = {}
+    for rel_path in HOSTED_MCP_REFERENCE_PATHS:
+        path = repo_root / rel_path
+        if not path.is_file() or not _exists_with_case(repo_root, path, listings):
+            errors.append(
+                f"{path}: missing; the hosted MCP server fetches this exact path from master, so moving or "
+                "renaming it breaks the server's record guidance (see docs/maintenance.md#hosted-mcp-dependency)"
+            )
+
+
 PLUGIN_ROOT_LOCKFILES = ("bun.lock", "bun.lockb", "npm-shrinkwrap.json", "package-lock.json")
 
 
@@ -956,6 +972,7 @@ def main() -> int:
     _validate_astro_imports(repo_root, errors)
     _validate_setup_pointers(repo_root, canonical_skill_names, errors)
     _validate_markdown_links(repo_root, errors)
+    _validate_hosted_mcp_references(repo_root, errors)
     _validate_codex_plugin_manifest(repo_root, errors)
     _validate_plugin_root_has_no_dependency_install(repo_root, errors)
 
@@ -988,6 +1005,7 @@ def main() -> int:
     print("[ok] Astro references use subpath imports")
     print("[ok] relative markdown links resolve, with exact case, to files and headings in the repo, and skill links stay inside skills/")
     print("[ok] datocms-setup `FW ›` headings exist in all four framework references and setup ships no code blocks")
+    print("[ok] CMA references the hosted MCP server fetches from master are in place")
     print("[ok] Codex plugin manifest is present and synced with Claude Code manifest")
     print("[ok] plugin root has no package.json + lockfile pair that plugin installs would run")
     if args.require_clean_git:

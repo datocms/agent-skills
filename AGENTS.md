@@ -15,6 +15,7 @@ DatoCMS skills repository — public skills that provide focused guidance for co
 - `skills/<skill-name>/references/` — detailed reference docs imported by the skill
 - `skills/<skill-name>/agents/openai.yaml` — Codex agent interface config, must stay synced with SKILL.md frontmatter
 - `skills/datocms-setup/` — guided setup skill: owns only the conversation (inspect, ask, plan, confirm, live-change consent, handoff); `references/website.md` and `references/project.md` link to the sibling files and headings that hold the implementation (no code; the validator checks every link resolves)
+- `skills/datocms-cma/references/records.md` and `editing-records.md` — also served live from `master` by the hosted DatoCMS MCP server: never move or rename them, and read [Hosted MCP dependency](docs/maintenance.md#hosted-mcp-dependency) before editing
 - `evals/` — trigger evaluation framework (Python scripts, JSON fixtures, result snapshots)
 - `docs/` — longer reference material
 - `dev/` — Node dev tooling (e2e and regression harness, coexistence evaluator, offline tests, formatting, release scripts) with its own `package.json`; install with `npm ci --prefix dev`. Never put a `package.json` plus lockfile at the repo root: plugin installs would install them for every user

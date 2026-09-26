@@ -434,6 +434,10 @@ for (let repetition = 1; repetition <= repetitions; repetition++)
             !session.timedOut,
           "Agent did not complete",
         );
+        assert.ok(
+          !session.oracleAccess.length,
+          `Actor referenced evaluation state: ${session.oracleAccess.map((a) => a.command).join(" | ")}`,
+        );
       } else {
         const original = JSON.parse(
           readFileSync(

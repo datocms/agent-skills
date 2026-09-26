@@ -59,7 +59,7 @@ function main(): void {
     throw new Error(`Manifests out of sync:\n${summary}`);
   }
 
-  const current = manifests[0].json.version;
+  const current = manifests[0]!.json.version;
   const next = arg === "patch" || arg === "minor" || arg === "major"
     ? bump(current, arg)
     : (parseSemver(arg), arg);

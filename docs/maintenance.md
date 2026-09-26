@@ -34,7 +34,7 @@ python3 evals/scripts/validate_skill_repo.py --require-clean-git
 python3 evals/scripts/validate_skill_repo.py --require-fresh-results-sync
 ```
 
-Besides metadata and fixtures, the validator resolves every relative link (with exact case, as GitHub and Linux hosts do) and heading anchor in maintained markdown (`skills/`, `docs/`, `dev/`, `.claude/rules/`, `README.md`, `AGENTS.md`, `CLAUDE.md`, `evals/README.md`); links from skill files must stay inside `skills/`, the only folder that ships. It also rejects `SKILL.md` frontmatter keys outside the Agent Skills spec (`name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`), because claude.ai and Skills API uploads of the zips refuse them.
+Besides metadata and fixtures, the validator resolves every relative link (with exact case, as GitHub and Linux hosts do) and heading anchor in maintained markdown (`skills/`, `docs/`, `dev/`, `.claude/rules/`, `README.md`, `AGENTS.md`, `CLAUDE.md`, `evals/README.md`); links from skill files must stay inside `skills/`, the only folder that ships. It also rejects `SKILL.md` frontmatter keys outside the Agent Skills spec (`name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`), because claude.ai and Skills API uploads of the zips refuse them, and fails if a CMA reference the [hosted MCP server](#hosted-mcp-dependency) fetches is missing.
 
 For the full eval workflow (running, interpreting, and updating snapshots) see [`evals/README.md`](../evals/README.md). **Do not run evals proactively** — they are expensive. Only run them when explicitly investigating trigger quality.
 
@@ -81,6 +81,15 @@ Without a version bump, Claude Code and Codex consider their cached copies up to
 2. Bump the plugin version in both manifests (see above).
 3. Run the validator with `--require-clean-git`.
 4. Tag and publish.
+
+## Hosted MCP dependency
+
+The hosted [DatoCMS MCP server](https://www.datocms.com/docs/mcp-server) reads two CMA references straight from this repo's `master` branch. Its `get_api_methods` tool returns [`records.md`](../skills/datocms-cma/references/records.md) as the overview of the `items` resource and [`editing-records.md`](../skills/datocms-cma/references/editing-records.md) as the overview of the `items/update` action, in place of generated text. So:
+
+- A push to `master` changes what MCP users read, with no version bump or release. The server caches each file until it restarts.
+- Don't move, rename or delete either file. The server requests the exact path and has no fallback, so a failed fetch makes those lookups error. The validator fails if either path is missing.
+- The server drops every line that contains `cma:`. Put CLI-only hints (`cma:docs`, `cma:call`) on lines of their own that say they are for the CLI, so nothing else is dropped with them.
+- [`dev/tests/optional-mcp.test.mjs`](../dev/tests/optional-mcp.test.mjs) checks that the `cma:` filter keeps the Markdown structure intact, that the TypeScript examples parse, and that the main workflow sections match a reviewed baseline. An intended change to one of those sections must be added to the test's reviewed corrections. Run `npm --prefix dev test` after editing either file.
 
 ## Codex readiness
 

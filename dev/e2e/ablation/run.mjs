@@ -33,7 +33,8 @@ for (const c of selected) {
   const session = await nativeSession({ repoRoot: resolve(values['skills-root']), workspace, output: directory, prompt: c.prompt, timeoutMs: 360000 });
   const result = {
     case: c.id, phase: c.phase, area: c.area, model: session.model, reasoningEffort: session.reasoningEffort,
-    completed: session.completed && session.exitCode === 0 && !session.errors.length && !session.timedOut && !session.capped,
+    completed: session.completed && session.exitCode === 0 && !session.errors.length && !session.timedOut && !session.capped && !session.oracleAccess.length,
+    oracleAccess: session.oracleAccess.map(a => a.command),
     usageLimitReached: session.usageLimitReached, elapsedMs: Date.now() - started,
     usage: session.usage, commandCount: session.commands.length,
     failedCommands: session.commands.filter(c => c.exit_code !== undefined && c.exit_code !== 0).length,
