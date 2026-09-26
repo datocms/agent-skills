@@ -13,13 +13,14 @@ export async function checkPlugin(workspace, output) {
     stdin: {
       contents: `
     import connectToChild from 'penpal/lib/connectToChild';
+    import { hostLoaders } from '../plugin-host-loaders.mjs';
     const iframe = document.querySelector('iframe');
     window.writes = []; window.heights = [];
     window.settings = {
       mode: 'renderFieldExtension', fieldExtensionId: 'title-editor',
       fieldPath: 'title.it', locale: 'it', disabled: false,
       formValues: {title: {en: 'English sentinel', it: 'Ciao'}},
-      field: {id:'field-1',type:'field',attributes:{api_key:'title',label:'Title',field_type:'string',localized:true,validators:{}}},
+      field: {id:'field-1',type:'field',attributes:{api_key:'title',label:'Title',field_type:'string',localized:true,validators:{}},relationships:{item_type:{data:{id:'model-1',type:'item_type'}}}},
       item: null, itemType: {id:'model-1',type:'item_type',attributes:{api_key:'article'}},
       plugin: {id:'plugin-1',type:'plugin',attributes:{parameters:{}}},
       parameters: {}, theme: {}, cssDesignTokens: {'--color--surface':'rgb(255, 255, 255)','--color--ink':'rgb(20, 20, 20)','--color--ink-subtle':'rgb(100, 100, 100)','--color--border':'rgb(210, 210, 210)'},
@@ -27,7 +28,9 @@ export async function checkPlugin(workspace, output) {
       fields: {}, itemTypes: {}, fieldsets: {}, users: {}, site: {id:'fixture',type:'site',attributes:{locales:['en','it']}},
       environment:'fixture', isEnvironmentPrimary:false
     };
+    window.settings.fields[window.settings.field.id] = window.settings.field;
     const connection = connectToChild({iframe, timeout:10000, methods:{
+      ...hostLoaders(() => window.settings),
       getSettings: () => window.settings,
       setHeight: height => {window.heights.push(height);},
       setFieldValue: async (path,value) => {

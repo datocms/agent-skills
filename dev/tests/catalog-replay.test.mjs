@@ -6,11 +6,13 @@ import {
   writeFileSync,
   readFileSync,
   existsSync,
+  readdirSync,
   rmSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { replayVisualApplication } from "../e2e/catalog/replay.mjs";
+import { hostLoaders } from "../e2e/catalog/plugin-host-loaders.mjs";
 import { replay as replaySchemaDiff } from "../e2e/catalog/schema-diff.mjs";
 
 for (const scenario of ["public-site", "video-playback"])
@@ -226,5 +228,25 @@ test("visual recheck preserves implementation logic and excludes credentials and
     );
   } finally {
     rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("fake plugin hosts answer every SDK loader the plugin skill tells plugins to call", async () => {
+  // The SDK builds ctx from the host's methods, so a loader the host lacks never resolves and the plugin stalls.
+  const skill = resolve(import.meta.dirname, "../../skills/datocms-plugin");
+  const text = readdirSync(skill, { recursive: true })
+    .filter((path) => path.endsWith(".md"))
+    .map((path) => readFileSync(join(skill, path), "utf8"))
+    .join("\n");
+  const documented = [...new Set([...text.matchAll(/ctx\.(load\w+)\(/g)].map((m) => m[1]))];
+  assert.ok(documented.includes("loadItemTypeFields"), documented.join(", "));
+  const title = { id: "title", relationships: { item_type: { data: { id: "article" } } } };
+  const loaders = hostLoaders(() => ({ fields: { title }, fieldsets: {}, users: {} }));
+  assert.deepEqual(documented.filter((name) => typeof loaders[name] !== "function"), []);
+  assert.deepEqual(await loaders.loadItemTypeFields("article"), [title]);
+  assert.deepEqual(await loaders.loadItemTypeFields("other"), []);
+  for (const host of ["plugin-check.mjs", "plugin-modal-check.mjs"]) {
+    const source = readFileSync(resolve(import.meta.dirname, "../e2e/catalog", host), "utf8");
+    assert.match(source, /\.\.\.hostLoaders\(/, `${host} does not expose the loaders`);
   }
 });

@@ -9,18 +9,21 @@ export async function checkPlugin(workspace, output) {
   const bundled = await build({
     stdin: {
       contents: `import connectToChild from 'penpal/lib/connectToChild';
+      import { hostLoaders } from '../plugin-host-loaders.mjs';
       window.writes=[];window.heights=[];window.saveCalls=0;window.modalRequests=[];
       window.settings={
         mode:'renderItemFormSidebarPanel',sidebarPaneId:'title-tools',locale:'it',isSubmitting:false,
         formValues:{title:{en:'English sentinel',it:'Ciao'}},itemStatus:'draft',isFormDirty:false,
         item:null,itemType:{id:'article-model',type:'item_type',attributes:{api_key:'article'}},
         plugin:{id:'plugin-1',type:'plugin',attributes:{parameters:{}}},parameters:{},
-        fields:{},itemTypes:{},fieldsets:{},users:{},blocksAnalysis:{},
+        fields:{'title-field':{id:'title-field',type:'field',attributes:{api_key:'title',label:'Title',field_type:'string',localized:true,validators:{}},relationships:{item_type:{data:{id:'article-model',type:'item_type'}}}}},
+        itemTypes:{},fieldsets:{},users:{},blocksAnalysis:{},
         site:{id:'fixture',type:'site',attributes:{locales:['en','it']}},
         theme:{},cssDesignTokens:{'--color--surface':'rgb(255,255,255)','--color--ink':'rgb(20,20,20)'},
         colorScheme:'light',bodyPadding:[16,16,16,16],ui:{locale:'en'},environment:'fixture',isEnvironmentPrimary:false
       };
       const connection=connectToChild({iframe:document.querySelector('#sidebar'),timeout:10000,methods:{
+        ...hostLoaders(()=>window.settings),
         getSettings:()=>window.settings,setHeight:h=>window.heights.push({kind:'sidebar',height:h}),
         notice:()=>{},saveCurrentItem:()=>{window.saveCalls++;},
         setFieldValue:async(path,value)=>{
@@ -34,6 +37,7 @@ export async function checkPlugin(workspace, output) {
           const finish=value=>{resolveResult(value);setTimeout(()=>{modalConnection.destroy();frame.remove();},50);};
           window.cancelModal=()=>finish(null);
           modalConnection=connectToChild({iframe:frame,timeout:10000,methods:{
+            ...hostLoaders(()=>window.settings),
             getSettings:()=>({...window.settings,mode:'renderModal',modalId:request.id,parameters:request.parameters}),
             setHeight:h=>window.heights.push({kind:'modal',height:h}),resolve:finish
           }});
