@@ -148,3 +148,11 @@ test('CLI detection skips OAuth bootstrap for an unlinked profile with a token',
   assert.ok(detection);
   assert.match(detection, /token auth works[^\n]*skip login/);
 });
+
+test('stdin scripts execute with the CLI workspace as their working directory', () => {
+  assert.match(installed('datocms/lib/utils/script-workspace/workspace.js'), /spawn\)?\('npx', \['tsx', runnerPath, scriptPath\], \{\s*cwd: this\.rootPath/);
+});
+
+test('stdin script guidance requires absolute local file paths', () => {
+  assert.match(skill('datocms-cli/references/cma-script.md'), /absolute local file paths/);
+});

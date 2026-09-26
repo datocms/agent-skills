@@ -46,6 +46,7 @@ console.log(types.map((t) => t.api_key));
 
 - Top-level await only. `export default` rejected in stdin-mode — use file-mode if you want function.
 - Diagnostics surface only from CLI's workspace typecheck — your editor has no file to inspect.
+- Runs with the CLI workspace as cwd: pass absolute local file paths (e.g. upload helpers).
 
 Use stdin-mode when:
 
