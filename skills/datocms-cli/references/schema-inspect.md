@@ -23,7 +23,7 @@ Confirm these inputs when they are not already clear:
 - which field details to include — `basic` (default, structure only) vs `complete` (everything), or selective opt-in with `--include-validators`, `--include-appearance`, `--include-default-values`
 - whether to pull in related item types: `--include-fieldsets`, `--include-nested-blocks`, `--include-referenced-models`, `--include-embedding-models`
 - whether the caller needs stdout as TOON (default, for agents) or JSON (`--json`, for `| jq`)
-- target environment when introspecting a sandbox (`--environment`)
+- target environment when introspecting a sandbox (`--environment`), and the profile when the repo uses named ones (`--profile`)
 
 ## Command shape
 
@@ -104,6 +104,7 @@ npx datocms schema:inspect --environment=staging
 | `--include-referenced-models` | Include models referenced by `link`, `links`, or `structured_text` fields |
 | `--include-embedding-models` | For blocks only: include every model that embeds the selected blocks (direct or transitive) |
 | `-e, --environment` | Target a sandbox environment instead of the primary one |
+| `--profile` | Use that CLI profile's project and token ([selection](cli-setup.md#active-profile-selection)); pass it whenever the repo targets a named profile |
 | `--json` | Switch stdout from TOON to JSON (for `\| jq` pipelines) |
 
 Selective `--include-validators` / `--include-appearance` / `--include-default-values` flags take precedence over `--fields-details=basic`; if you pass any of them, only the selected extras are included. Use `--fields-details=complete` to get everything at once.

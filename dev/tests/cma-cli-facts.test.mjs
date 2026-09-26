@@ -24,6 +24,15 @@ test('migrations:run flag table states every flag dependency and exclusion the C
   }
 });
 
+test('schema:inspect flag table matches the installed command', () => {
+  // Every flag but the shared connection and logging plumbing, and nothing the command lacks: a missing
+  // --profile once sent inspections to the default project.
+  const { flags } = require('datocms/oclif.manifest.json').commands['schema:inspect'];
+  const plumbing = ['config-file', 'api-token', 'log-level', 'log-mode', 'base-url'];
+  const documented = [...skill('datocms-cli/references/schema-inspect.md').matchAll(/^\| `(?:-\w, )?--([\w-]+)/gm)].map(([, flag]) => flag).sort();
+  assert.deepEqual(documented, Object.keys(flags).filter((flag) => !plumbing.includes(flag)).sort());
+});
+
 test('upload helper-only options match the installed CMA client helper schemas', () => {
   // @datocms/cma-client-node 6.1.3 (and cma-client-browser 6.1.0) Upload.d.ts: helper schemas are
   // Omit<UploadCreateSchema, 'path'> plus source, filename?, skipCreationIfAlreadyExists? (Node create) and onProgress?.
