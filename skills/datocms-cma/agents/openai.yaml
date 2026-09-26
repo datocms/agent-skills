@@ -2,7 +2,7 @@
 # synced_from_description_sha256: a84b082d548fef41460c06cacbc5f50179b5fe3be29849c7e248787c1e0dcde3
 interface:
   display_name: "DatoCMS CMA"
-  short_description: "Manage DatoCMS content with typed CMA workflows"
-  default_prompt: "Use $datocms-cma to manage DatoCMS records, uploads, or project automation using the selected execution route."
+  short_description: "Manage DatoCMS content via scripts, the CLI or MCP"
+  default_prompt: "Use $datocms-cma to manage DatoCMS records, uploads, schema changes or project automation through the CLI, an MCP connection or a typed script."
 policy:
   allow_implicit_invocation: true

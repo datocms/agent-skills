@@ -3,6 +3,6 @@
 interface:
   display_name: "DatoCMS Setup"
   short_description: "Guided DatoCMS setup: plan first, then build"
-  default_prompt: "Use $datocms-setup to plan and set up DatoCMS in this project, step by step."
+  default_prompt: "Use $datocms-setup to plan and set up DatoCMS in this project step by step: previews, content, migrations, search, imports or webhooks."
 policy:
   allow_implicit_invocation: true

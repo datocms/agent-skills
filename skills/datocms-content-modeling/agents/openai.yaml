@@ -2,7 +2,7 @@
 # synced_from_description_sha256: aeff66ad7db2d47a1cf99bcfa5bab1e3e32beda7e6df8844a207592cfe79dfd2
 interface:
   display_name: "DatoCMS Content Modeling"
-  short_description: "Design DatoCMS schemas: models vs blocks, reuse, taxonomy"
-  default_prompt: "Use $datocms-content-modeling to decide model vs block, pick the right block-bearing field, design reuse and taxonomies, or refactor a presentation-shaped schema."
+  short_description: "Design DatoCMS schemas, field settings and editor UI"
+  default_prompt: "Use $datocms-content-modeling to decide model vs block, field types and settings, reuse and taxonomies, or how the schema is organized for editors."
 policy:
   allow_implicit_invocation: true

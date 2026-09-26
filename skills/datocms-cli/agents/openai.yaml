@@ -2,7 +2,7 @@
 # synced_from_description_sha256: 5cb7ca5ec829d57b29a79194837a3bd9fe097bb4b5b678c70be68cdb19f612ad
 interface:
   display_name: "DatoCMS CLI"
-  short_description: "Run DatoCMS CLI migrations, imports, envs, and plugins"
-  default_prompt: "Use $datocms-cli to set up or modify DatoCMS CLI migrations, profiles, imports, environments, or CI workflows."
+  short_description: "Inspect schemas and run migrations with the DatoCMS CLI"
+  default_prompt: "Use $datocms-cli to inspect the DatoCMS schema, write or run migrations, or manage profiles, environments, imports, CLI plugins or CI."
 policy:
   allow_implicit_invocation: true
