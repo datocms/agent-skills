@@ -9,9 +9,11 @@ import {
   rmSync,
   realpathSync,
   symlinkSync,
+  chmodSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { setTimeout as delay } from "node:timers/promises";
 import { nativeSession, isUsageLimitError, oracleAccess, skillReads, REPO_ROOT } from "../e2e/lib/nativeSession.ts";
 
 test("account usage exhaustion stops the actor without treating application rate limits as account limits", async () => {
@@ -224,12 +226,17 @@ test("actors get a fresh home, never the host's, and cannot open the operator's 
   // With the host HOME an actor's `datocms whoami` reached the operator's real account and `datocms login`
   // opened their browser.
   await fixture(async ({ root, options, writeBinary }) => {
-    writeBinary(`const {execFileSync}=require('node:child_process');require('node:fs').writeFileSync(process.env.PROBE_PATH,JSON.stringify({home:process.env.HOME,config:process.env.XDG_CONFIG_HOME,open:execFileSync('/bin/sh',['-lc','command -v open'],{encoding:'utf8'}).trim()}));console.log(JSON.stringify({type:'turn.completed',usage:{input_tokens:1}}));`);
+    writeBinary(`const {execFileSync}=require('node:child_process');require('node:fs').writeFileSync(process.env.PROBE_PATH,JSON.stringify({home:process.env.HOME,codexHome:process.env.CODEX_HOME,config:process.env.XDG_CONFIG_HOME,open:execFileSync('/bin/sh',['-lc','command -v open'],{encoding:'utf8'}).trim()}));console.log(JSON.stringify({type:'turn.completed',usage:{input_tokens:1}}));`);
     const probe = join(root, "probe.json");
     await nativeSession({ ...options, environment: { PROBE_PATH: probe } });
     const seen = JSON.parse(readFileSync(probe, "utf8"));
     assert.notEqual(seen.home, process.env.HOME);
-    assert.ok(seen.home.startsWith(options.output) && seen.config.startsWith(seen.home), seen.home);
+    for (const home of [seen.home, seen.codexHome]) {
+      assert.equal(home.startsWith(options.output), false, "private homes must not reveal evidence paths");
+      assert.equal(home.startsWith(REPO_ROOT), false, "private homes must not live inside the checkout");
+      assert.equal(existsSync(home), false, "private homes are removed after the session");
+    }
+    assert.ok(seen.config.startsWith(seen.home));
     assert.equal(seen.open, join(seen.home, ".stub-bin/open"), "a login shell must resolve the stub open first");
     assert.equal(existsSync(seen.home), false, "the actor home is removed after the session");
   });
@@ -240,6 +247,81 @@ test("actors get a fresh home, never the host's, and cannot open the operator's 
     assert.equal(readFileSync(join(root, "probe"), "utf8"), home, "a caller-provided home is kept");
   });
 });
+
+test("a session climbing out of its own native home cannot reach evidence", async () =>
+  fixture(async ({ options, writeBinary }) => {
+    writeBinary(`const command='cat '+process.env.CODEX_HOME+'/skills/.system/../..';console.log(JSON.stringify({type:'item.completed',item:{id:'c1',type:'command_execution',command,exit_code:1}}));console.log(JSON.stringify({type:'turn.completed'}));`);
+    const result = await nativeSession(options);
+    assert.deepEqual(result.oracleAccess, []);
+  }));
+
+async function waitForExit(pid) {
+  for (let attempt = 0; attempt < 100; attempt++) {
+    try { process.kill(pid, 0); }
+    catch (error) { if (error.code === "ESRCH") return; throw error; }
+    await delay(20);
+  }
+  assert.fail(`fixture subprocess ${pid} is still alive`);
+}
+
+for (const capped of [true, false]) {
+  test(`${capped ? "a capped" : "a normally completed"} session kills detached command subprocesses before grading and cleans up`, async () =>
+    fixture(async ({ root, options, writeBinary }) => {
+      const probe = join(root, "descendant.json");
+      const writer = `const fs=require('node:fs');const path=require('node:path');const home=process.env.HOME;fs.writeFileSync(path.join(home,'pid'),String(process.pid));fs.writeFileSync(process.env.PROBE_PATH,JSON.stringify({pid:process.pid,home,codexHome:process.env.CODEX_HOME}));setInterval(()=>{fs.mkdirSync(path.join(home,'.npm'),{recursive:true});fs.appendFileSync(path.join(home,'.npm','active'),'x');},20);`;
+      writeBinary(`const fs=require('node:fs');const child=require('node:child_process').spawn(process.execPath,['-e',${JSON.stringify(writer)}],{detached:true,stdio:'ignore'});child.unref();const ready=setInterval(()=>{if(!fs.existsSync(process.env.PROBE_PATH))return;clearInterval(ready);console.log(JSON.stringify({type:'item.started',item:{id:'one',type:'command_execution',command:'fixture writer'}}));setTimeout(()=>{${capped ? "console.log(JSON.stringify({type:'item.started',item:{id:'two',type:'command_execution',command:'over budget'}}));setInterval(()=>{},1000);" : "console.log(JSON.stringify({type:'turn.completed'}));process.exit(0);"}},600);},10);`);
+      let seen;
+      try {
+        const result = await nativeSession({
+          ...options,
+          maxCommands: 1,
+          environment: { PROBE_PATH: probe },
+          onTurnComplete: async () => {
+            seen = JSON.parse(readFileSync(probe, "utf8"));
+            await waitForExit(seen.pid);
+          },
+        });
+        seen ??= JSON.parse(readFileSync(probe, "utf8"));
+        assert.equal(result.capped, capped);
+        assert.equal(result.completed, !capped);
+        assert.equal(result.timedOut, false);
+        assert.deepEqual(result.errors, []);
+        assert.throws(() => process.kill(seen.pid, 0), { code: "ESRCH" });
+        assert.equal(existsSync(seen.home), false);
+        assert.equal(existsSync(seen.codexHome), false);
+        assert.equal(existsSync(dirname(seen.home)), false, "the scratch parent is removed");
+      } finally {
+        seen ??= existsSync(probe) ? JSON.parse(readFileSync(probe, "utf8")) : undefined;
+        if (seen) {
+          try { process.kill(seen.pid, "SIGKILL"); } catch (error) { if (error.code !== "ESRCH") throw error; }
+          await waitForExit(seen.pid);
+          // Also removes files a pre-fix writer recreated after nativeSession's cleanup.
+          rmSync(seen.home, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+        }
+      }
+    }));
+}
+
+test("private-home cleanup failure is non-fatal and still removes the authentication link", { skip: process.getuid?.() === 0 ? "chmod restrictions do not apply to root" : false }, async () =>
+  fixture(async ({ root, options, writeBinary }) => {
+    const probe = join(root, "cleanup.json");
+    writeBinary(`const fs=require('node:fs');const path=require('node:path');const locked=path.join(process.env.HOME,'locked');fs.mkdirSync(locked);fs.writeFileSync(path.join(locked,'file'),'fixture');fs.writeFileSync(process.env.PROBE_PATH,JSON.stringify({locked,home:process.env.HOME,codexHome:process.env.CODEX_HOME}));fs.chmodSync(locked,0);console.log(JSON.stringify({type:'turn.completed'}));`);
+    try {
+      const result = await nativeSession({ ...options, environment: { PROBE_PATH: probe } });
+      const seen = JSON.parse(readFileSync(probe, "utf8"));
+      assert.equal(result.completed, true);
+      assert.match(JSON.stringify(result.errors), /cleanup/);
+      assert.equal(existsSync(join(seen.codexHome, "auth.json")), false);
+      assert.match(readFileSync(join(options.output, "session.json"), "utf8"), /cleanup/);
+    } finally {
+      if (existsSync(probe)) {
+        const seen = JSON.parse(readFileSync(probe, "utf8"));
+        if (existsSync(seen.locked)) chmodSync(seen.locked, 0o700);
+        // Only the session-owned scratch parent may live outside this fixture root.
+        if (!seen.home.startsWith(root)) rmSync(dirname(seen.home), { recursive: true, force: true });
+      }
+    }
+  }));
 
 test("sessions record which skill files the actor read, and none when it never consulted a skill", async () => {
   assert.deepEqual(skillReads([

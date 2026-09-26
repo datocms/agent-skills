@@ -4,6 +4,7 @@ import {
   appendFileSync,
   cpSync,
   existsSync,
+  mkdtempSync,
   mkdirSync,
   readFileSync,
   readdirSync,
@@ -13,7 +14,7 @@ import {
   symlinkSync,
   writeFileSync,
 } from "node:fs";
-import { homedir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 
 // Node tooling lives in dev/; skills and local evidence live at the repo root.
@@ -293,66 +294,91 @@ export async function nativeSession(options: NativeOptions) {
   Object.assign(environment, options.environment ?? {});
   // The actor never gets the host HOME, where CLI logins live (DatoCMS, npm, git), unless the caller passes one.
   // Its login shells put a stub `open` first, so `datocms login` cannot pop up the operator's browser.
-  const actorHome = join(output, "actor-home");
-  if (!options.environment?.HOME) {
-    const stubs = join(actorHome, ".stub-bin");
-    mkdirSync(stubs, { recursive: true });
-    for (const dir of [".config", ".cache", ".local/share"]) mkdirSync(join(actorHome, dir), { recursive: true });
-    for (const name of ["open", "xdg-open"])
-      writeFileSync(join(stubs, name), "#!/bin/sh\necho 'Opening apps or browsers is disabled in this evaluation.' >&2\nexit 1\n", { mode: 0o755 });
-    for (const rc of [".zprofile", ".bash_profile", ".profile"]) writeFileSync(join(actorHome, rc), `export PATH="${stubs}:$PATH"\n`);
-    Object.assign(environment, {
-      HOME: actorHome,
-      XDG_CONFIG_HOME: join(actorHome, ".config"),
-      XDG_CACHE_HOME: join(actorHome, ".cache"),
-      XDG_DATA_HOME: join(actorHome, ".local/share"),
-      PATH: `${stubs}:${environment.PATH ?? ""}`,
-    });
+  const scratch = mkdtempSync(join(tmpdir(), "dato-native-"));
+  const actorHome = join(scratch, "home");
+  const nativeHome = join(scratch, "codex-home");
+  const cleanupErrors: string[] = [];
+  function recordCleanup(error: unknown, operation = "") {
+    const code = (error as NodeJS.ErrnoException)?.code ?? "failed";
+    const message = `cleanup: ${code}${operation ? ` (${operation})` : ""}`;
+    if (!cleanupErrors.includes(message)) cleanupErrors.push(message);
   }
-  const nativeHome = join(output, "native-home");
-  mkdirSync(nativeHome, { recursive: true });
-  const authPath = join(
-    process.env.CODEX_HOME ?? join(homedir(), ".codex"),
-    "auth.json",
-  );
-  if (existsSync(authPath))
-    symlinkSync(authPath, join(nativeHome, "auth.json"));
-  environment.CODEX_HOME = nativeHome;
-  const provenance = {
-    model,
-    reasoningEffort: EFFORT,
-    binaryVersion: version.stdout.trim(),
-    revision: spawnSync("git", ["rev-parse", "HEAD"], {
-      cwd: repoRoot,
-      encoding: "utf8",
-    }).stdout.trim(),
-    skillHashes: Object.fromEntries(
-      Object.entries(sourceHashes(workspace, ".agents/skills")).map(([path, digest]) => [path.replace(/^\.agents\//, ""), digest]),
-    ),
-    harnessHashes: harnessHashesAtLoad,
-    runtimeFeatures: Object.fromEntries(Object.entries(config).filter(([key]) => key.startsWith("features."))),
-    hostedMcp: options.hostedMcp ?? null,
-    dependencyLockHash: existsSync(join(DEV_ROOT, "package-lock.json"))
-      ? createHash("sha256")
-          .update(readFileSync(join(DEV_ROOT, "package-lock.json")))
-          .digest("hex")
-      : null,
-    budgets: {
-      timeoutMs: options.timeoutMs ?? 420_000,
-      maxCommands: options.maxCommands ?? 100,
-      maxScriptAttempts: options.maxScriptAttempts ?? null,
-      maxMcpCalls: options.maxMcpCalls ?? null,
-    },
-    startedAt: new Date().toISOString(),
-    prompt: options.prompt,
-    followUps: options.followUps ?? [],
-    instructions,
-  };
-  writeFileSync(
-    join(output, "provenance.json"),
-    redact(JSON.stringify(provenance, null, 2)),
-    { mode: 0o600 },
-  );
+  function cleanupScratch() {
+    // Remove the credential link even if another scratch entry cannot be removed.
+    try {
+      rmSync(join(nativeHome, "auth.json"), { force: true });
+    } catch (error) {
+      recordCleanup(error);
+    }
+    try {
+      rmSync(scratch, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+    } catch (error) {
+      recordCleanup(error);
+    }
+  }
+  try {
+    if (!options.environment?.HOME) {
+      const stubs = join(actorHome, ".stub-bin");
+      mkdirSync(stubs, { recursive: true });
+      for (const dir of [".config", ".cache", ".local/share"]) mkdirSync(join(actorHome, dir), { recursive: true });
+      for (const name of ["open", "xdg-open"])
+        writeFileSync(join(stubs, name), "#!/bin/sh\necho 'Opening apps or browsers is disabled in this evaluation.' >&2\nexit 1\n", { mode: 0o755 });
+      for (const rc of [".zprofile", ".bash_profile", ".profile"]) writeFileSync(join(actorHome, rc), `export PATH="${stubs}:$PATH"\n`);
+      Object.assign(environment, {
+        HOME: actorHome,
+        XDG_CONFIG_HOME: join(actorHome, ".config"),
+        XDG_CACHE_HOME: join(actorHome, ".cache"),
+        XDG_DATA_HOME: join(actorHome, ".local/share"),
+        PATH: `${stubs}:${environment.PATH ?? ""}`,
+      });
+    }
+    mkdirSync(nativeHome, { recursive: true });
+    const authPath = join(
+      process.env.CODEX_HOME ?? join(homedir(), ".codex"),
+      "auth.json",
+    );
+    if (existsSync(authPath))
+      symlinkSync(authPath, join(nativeHome, "auth.json"));
+    environment.CODEX_HOME = nativeHome;
+    const provenance = {
+      model,
+      reasoningEffort: EFFORT,
+      binaryVersion: version.stdout.trim(),
+      revision: spawnSync("git", ["rev-parse", "HEAD"], {
+        cwd: repoRoot,
+        encoding: "utf8",
+      }).stdout.trim(),
+      skillHashes: Object.fromEntries(
+        Object.entries(sourceHashes(workspace, ".agents/skills")).map(([path, digest]) => [path.replace(/^\.agents\//, ""), digest]),
+      ),
+      harnessHashes: harnessHashesAtLoad,
+      runtimeFeatures: Object.fromEntries(Object.entries(config).filter(([key]) => key.startsWith("features."))),
+      hostedMcp: options.hostedMcp ?? null,
+      dependencyLockHash: existsSync(join(DEV_ROOT, "package-lock.json"))
+        ? createHash("sha256")
+            .update(readFileSync(join(DEV_ROOT, "package-lock.json")))
+            .digest("hex")
+        : null,
+      budgets: {
+        timeoutMs: options.timeoutMs ?? 420_000,
+        maxCommands: options.maxCommands ?? 100,
+        maxScriptAttempts: options.maxScriptAttempts ?? null,
+        maxMcpCalls: options.maxMcpCalls ?? null,
+      },
+      startedAt: new Date().toISOString(),
+      prompt: options.prompt,
+      followUps: options.followUps ?? [],
+      instructions,
+    };
+    writeFileSync(
+      join(output, "provenance.json"),
+      redact(JSON.stringify(provenance, null, 2)),
+      { mode: 0o600 },
+    );
+  } catch (error) {
+    cleanupScratch();
+    throw error;
+  }
   const events: Record<string, any>[] = [];
   const mcpCallIds = new Set<string>();
   let stderr = "",
@@ -384,16 +410,82 @@ export async function nativeSession(options: NativeOptions) {
     });
     child.stdin.end(prompt);
     let buffer = "";
-    function stop() {
-      if (child.pid) {
-        try {
-          process.kill(-child.pid, "SIGKILL");
-        } catch {
-          /* already exited */
+    let childExited = false;
+    child.once("exit", () => {
+      childExited = true;
+      // Descendants can keep stdout/stderr open after the actor exits, so do
+      // not wait for the streams' close event before terminating them.
+      stop();
+    });
+    type ProcessInfo = { pid: number; ppid: number; pgid: number; started: string };
+    const tracked = new Map<number, ProcessInfo>();
+    let ownGroup: number | undefined;
+    function snapshot() {
+      // Remember identities before detached command shells are reparented. The
+      // start time also prevents an old PID from identifying a later process.
+      const listed = spawnSync("ps", ["-A", "-o", "pid=,ppid=,pgid=,lstart="], {
+        encoding: "utf8",
+        timeout: 2000,
+      });
+      if (listed.error || listed.status !== 0) {
+        recordCleanup(listed.error, "process scan");
+        return null;
+      }
+      const table = new Map<number, ProcessInfo>();
+      for (const line of listed.stdout.split("\n")) {
+        const match = line.trim().match(/^(\d+)\s+(\d+)\s+(\d+)\s+(.+)$/);
+        if (!match) continue;
+        const info = { pid: Number(match[1]), ppid: Number(match[2]), pgid: Number(match[3]), started: match[4]! };
+        table.set(info.pid, info);
+      }
+      ownGroup = table.get(process.pid)?.pgid;
+      const roots = new Set<number>();
+      for (const [pid, previous] of tracked) {
+        const current = table.get(pid);
+        if (current?.started === previous.started) roots.add(pid);
+        else tracked.delete(pid);
+      }
+      if (!childExited && child.pid && table.has(child.pid)) roots.add(child.pid);
+      let added = true;
+      while (added) {
+        added = false;
+        for (const info of table.values()) {
+          if (info.pid <= 1 || info.pid === process.pid || roots.has(info.pid)) continue;
+          if (roots.has(info.ppid)) {
+            roots.add(info.pid);
+            added = true;
+          }
         }
       }
+      for (const pid of roots) tracked.set(pid, table.get(pid)!);
+      return table;
+    }
+    function signal(pid: number) {
+      if (Math.abs(pid) <= 1 || pid === process.pid || (pid < 0 && (ownGroup === undefined || -pid === ownGroup))) return;
+      try {
+        process.kill(pid, "SIGKILL");
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "ESRCH") recordCleanup(error, "process signal");
+      }
+    }
+    function stop() {
+      const table = snapshot();
+      if (table) {
+        // Only signal a group while a recorded live member still belongs to it.
+        // A historical pgid on its own may have been reused after its exit.
+        const members = [...tracked.values()].filter((entry) => table.get(entry.pid)?.started === entry.started);
+        const groups = new Set(members.map((entry) => entry.pgid));
+        for (const pgid of groups) if (pgid !== child.pid) signal(-pgid);
+        for (const entry of members) if (entry.pid !== child.pid) signal(entry.pid);
+        if (child.pid && groups.has(child.pid)) signal(-child.pid);
+      }
+      // This direct child remains ours until its exit notification, including
+      // when ps failed. Do not signal a stale child PID after normal completion.
+      if (!childExited && child.pid) signal(child.pid);
+      return table !== null;
     }
     function line(raw: string) {
+      snapshot();
       if (secrets.some((secret) => raw.includes(secret))) credentialLeak = true;
       const clean = redact(raw);
       appendFileSync(transcriptPath, clean + "\n", { mode: 0o600 });
@@ -444,6 +536,8 @@ export async function nativeSession(options: NativeOptions) {
     child.stderr.on("data", (chunk) => {
       stderr += chunk.toString();
     });
+    snapshot();
+    const processTimer = setInterval(snapshot, 250);
     const timer = setTimeout(() => {
       timedOut = true;
       stop();
@@ -456,6 +550,16 @@ export async function nativeSession(options: NativeOptions) {
       });
     } finally {
       clearTimeout(timer);
+      clearInterval(processTimer);
+      stop();
+      // Finish reaping before the caller checks CMS state or starts another
+      // turn. SIGKILL delivery itself does not wait for process termination.
+      const deadline = Date.now() + 1000;
+      while (tracked.size && Date.now() < deadline) {
+        await new Promise((done) => setTimeout(done, 20));
+        if (!stop()) break;
+      }
+      if (tracked.size) recordCleanup({ code: "PROCESS_REMAINS" }, "process reap");
     }
     if (buffer) line(buffer);
     const turnEvents = events.slice(turnStart);
@@ -484,8 +588,7 @@ export async function nativeSession(options: NativeOptions) {
       if (timedOut || capped || usageLimitReached || credentialLeak || !turn.completed || turn.exitCode !== 0) break;
     }
   } finally {
-    rmSync(nativeHome, { recursive: true, force: true });
-    rmSync(actorHome, { recursive: true, force: true });
+    cleanupScratch();
   }
   const exitCode = exitCodes.find((code) => code !== 0) ?? exitCodes.at(-1) ?? null;
   writeFileSync(join(output, "stderr.log"), redact(stderr), { mode: 0o600 });
@@ -520,12 +623,12 @@ export async function nativeSession(options: NativeOptions) {
     turns,
     threadId: thread ?? events.find((e) => e.type === "thread.started")?.thread_id ?? null,
     completed: turns.length === prompts.length && turns.every((t) => t.completed),
-    errors: events.filter(
+    errors: [...events.filter(
       (e) =>
         e.type === "error" ||
         e.type === "turn.failed" ||
         e.item?.type === "error",
-    ),
+    ), ...cleanupErrors.map((message) => ({ type: "error", message }))],
   };
   writeFileSync(join(output, "session.json"), JSON.stringify(result, null, 2), {
     mode: 0o600,
