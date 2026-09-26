@@ -3,6 +3,31 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 
+export function assertConfigSiteIds(before, after) {
+  function siteIds(config) {
+    const found = new Map();
+    function visit(value, path = []) {
+      if (!value || typeof value !== "object") return;
+      for (const [key, entry] of Object.entries(value)) {
+        const next = [...path, key];
+        if (key === "siteId") found.set(JSON.stringify(next), entry);
+        else visit(entry, next);
+      }
+    }
+    visit(config);
+    return found;
+  }
+  const existing = siteIds(before);
+  for (const [path, value] of siteIds(after)) {
+    assert.ok(existing.has(path), `CLI configuration added siteId at ${path}`);
+    assert.deepEqual(value, existing.get(path), `CLI configuration changed siteId at ${path}`);
+  }
+}
+
+export function configure({ workspace, state }) {
+  state.configBefore = JSON.parse(readFileSync(join(workspace, "datocms.config.json"), "utf8"));
+}
+
 async function snapshot(client) {
   const models = await client.itemTypes.list();
   return Promise.all(
@@ -71,6 +96,11 @@ export async function check({
   environment,
   save,
 }) {
+  const checkConfig = () => assertConfigSiteIds(
+    state.configBefore,
+    JSON.parse(readFileSync(join(workspace, "datocms.config.json"), "utf8")),
+  );
+  checkConfig();
   const generated = readFileSync(
     join(workspace, "src/lib/datocms/cma-types.ts"),
     "utf8",
@@ -132,6 +162,7 @@ type Excluded = Schema.Unrelated;
     timeout: 120000,
   });
   save("generation-rerun.log", (rerun.stdout ?? "") + (rerun.stderr ?? ""));
+  checkConfig();
   assert.equal(rerun.status, 0);
   assert.equal(
     readFileSync(join(workspace, "src/lib/datocms/cma-types.ts"), "utf8"),
