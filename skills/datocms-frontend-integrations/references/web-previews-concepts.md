@@ -55,7 +55,7 @@ Preview-links endpoint receives POST requests from DatoCMS editor and returns re
 ```ts
 type WebPreviewsRequestBody = {
   item: RawApiTypes.Item;        // The record (raw JSON:API format)
-  itemType: ApiTypes.ItemType;   // The model (includes id and attributes.api_key)
+  itemType: RawApiTypes.ItemType; // The model (raw JSON:API: id, attributes.api_key)
   currentUser: object;           // The logged-in DatoCMS user
   siteId: string;                // The DatoCMS project ID
   environmentId: string;         // The environment ID
@@ -302,5 +302,5 @@ If CLI not linked, instruct user:
 
 Preview-links endpoint requires, in all four frameworks:
 
-- `@datocms/cma-client` — `RawApiTypes` / `ApiTypes` types for the endpoint body and `recordToWebsiteRoute`
+- `@datocms/cma-client` — `RawApiTypes` types for the endpoint body and `recordToWebsiteRoute`
 - `@datocms/rest-client-utils` — `deserializeRawItem` to convert raw JSON:API item before passing to `recordToWebsiteRoute`

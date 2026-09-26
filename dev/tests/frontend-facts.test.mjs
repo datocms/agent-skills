@@ -176,3 +176,9 @@ test('cache-tag wrappers preserve explicit query result types', () => {
     assert.doesNotMatch(read(`references/${framework}.md`), /await rawExecuteQuery\(query,/, `${framework}: pass the wrapper result and variable types`);
   }
 });
+
+test('Web Previews models use the raw JSON API item type shape', () => {
+  const previews = read('references/web-previews-concepts.md');
+  assert.match(previews, /itemType: RawApiTypes\.ItemType;/);
+  assert.doesNotMatch(previews, /itemType: ApiTypes\.ItemType/);
+});
