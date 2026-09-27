@@ -70,6 +70,8 @@ if (!isDeepStrictEqual(saved.body.it, originalItalian)) {
 }
 ```
 
+> In CLI mode: `cma:script` stdin-mode rejects `node:` imports; there compare the relevant leaf values (text, IDs, marks, attributes) with `===`, or use file-mode when whole-object equality is required.
+
 This compares values independently of object identity and key order. Use it for unchanged field values in the same response shape, not partial update payloads against hydrated responses. Normalize only documented representational differences when needed; never drop meaningful attributes to pass verification.
 
 The utility library's `validate()` accepts plain DAST with block IDs. Its `Document` signature does not accept hydrated CMA blocks or partial/new block request payloads. Use it before hydration for raw document work. For CMA edits, keep generated request types and the integration's API/preflight and saved-state checks; do not cast a nested payload to `Document` or serialize it to satisfy this validator.

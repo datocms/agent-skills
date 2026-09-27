@@ -176,3 +176,17 @@ test('a locale is never typed in the script that adds it', () => {
     assert.ok(!(/site\.update\(\{\s*locales/.test(body) && /items\.update</.test(body)), 'Adding a locale and typed record backfill require separate executions');
   }
 });
+
+test('CLI stdin validation rejects node:util imports', () => {
+  const { validateScriptStructure } = require('datocms/lib/utils/script-workspace/validation.js');
+  const result = validateScriptStructure('import { isDeepStrictEqual } from "node:util";\nconsole.log(1);', { requiredFormat: 'top-level' });
+  assert.equal(result.valid, false);
+  assert.match(result.errors.join('\n'), /Invalid import: "node:util"/);
+});
+
+test('standard comparator guidance explains the CLI stdin import restriction', () => {
+  const editing = skill('datocms-cma/references/editing-records.md');
+  if (editing.includes('from "node:util"')) {
+    assert.match(editing, /^> In CLI mode: .*cma:script.*stdin-mode.*node:/m);
+  }
+});
