@@ -20,12 +20,14 @@ Use this reference when you need DatoCMS Site Search outside the packaged React/
 Before a search UI can work, the Dato project needs:
 
 1. A **Search Index**
-2. A least-privilege **role** with only `can_perform_site_search` enabled
+2. A dedicated **role** with `can_perform_site_search` enabled
 3. An **API token** associated with that role
 
-Use a dedicated public-facing search token for client-side search requests. Site Search uses a CMA endpoint, so the **token** needs `can_access_cma: true`; disabling that transport gate returns 401 even when its role grants search. Keep `can_access_cda` and `can_access_cda_preview` false. The associated **role** should grant only `can_perform_site_search`, with no content, upload, configuration-management, or trigger permissions and no inherited grants. Never expose an administrator or content-management token in the browser.
+Use a dedicated public-facing search token for client-side search requests. Site Search uses a CMA endpoint, so the **token** needs `can_access_cma: true`; disabling that transport gate returns 401 even when its role grants search. Keep `can_access_cda` and `can_access_cda_preview` false. Keep write, upload, configuration-management and trigger permissions disabled; never expose an administrator or write-capable token in the browser.
 
-Verify both sides: a search request with the new token succeeds, and a content-management action is denied. Reading token flags alone does not prove that search works.
+CMA record reads can also be allowed by the token's role. Under **Configuration → Content permissions**, limit **View** access to the intended models (e.g. Posts only), removing broader or inherited grants in each accessible environment. These rules scope CMA reads; limit crawl/index scope separately to restrict search results.
+
+Verify that search works and the role's effective content permissions match the intended exposure. An allowed CMA record read is not a failed permission check.
 
 Always pass `search_index_id` explicitly, even if the project currently has a single index.
 

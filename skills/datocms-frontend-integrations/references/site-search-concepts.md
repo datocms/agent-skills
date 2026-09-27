@@ -13,11 +13,11 @@ Both React and Vue implementations require `@datocms/cma-client-browser`:
 ```js
 import { buildClient } from '@datocms/cma-client-browser';
 
-// siteSearchToken: the search-only token, read from a browser-visible env var, never inlined.
+// siteSearchToken: the dedicated search token, read from a browser-visible env var, never inlined.
 const client = buildClient({ apiToken: siteSearchToken });
 ```
 
-Use a dedicated search-only token and role, configured as described in [Site Search API prerequisites](site-search-api.md#dato-side-prerequisites). The token's CMA transport flag must be enabled even though its role grants no content-management actions.
+Configure a dedicated browser search token and role as described in [Site Search API prerequisites](site-search-api.md#dato-side-prerequisites). The CMA transport flag must be enabled; the role's content permissions govern permitted record reads.
 
 ## Initialization Options
 
