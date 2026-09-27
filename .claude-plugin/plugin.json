@@ -1,6 +1,6 @@
 {
   "name": "datocms",
-  "version": "1.6.6",
+  "version": "1.6.7",
   "description": "DatoCMS skills for content delivery, content management, content modeling, Structured Text, CLI workflows, frontend integrations, plugin development, and project setup",
   "author": {
     "name": "DatoCMS",
