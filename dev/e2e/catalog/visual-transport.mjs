@@ -60,6 +60,21 @@ export function assertSameOriginRedirect(status, locationHeader, requestUrl, ori
   return { status: code, locationOrigin: location.origin, locationPath: location.pathname };
 }
 
+export async function requestDraftHandoff(url) {
+  // A shared browser request context loses Partitioned when processing
+  // Set-Cookie. Keep this diagnostic request outside the browser cookie jar.
+  const response = await fetch(url, {
+    redirect: "manual",
+    signal: AbortSignal.timeout(30000),
+  });
+  const handoff = {
+    status: response.status,
+    locationHeader: response.headers.get("location"),
+  };
+  await response.body?.cancel();
+  return handoff;
+}
+
 export async function waitForPublicTunnel(origin, {
   fetch: request = globalThis.fetch,
   wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),

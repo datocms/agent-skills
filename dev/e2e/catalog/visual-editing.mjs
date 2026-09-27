@@ -8,7 +8,7 @@ import { chromium } from "./plugin/node_modules/playwright/index.mjs";
 import * as cda from "./cda.mjs";
 import { checkEmbeddedPreview } from "./preview-host.mjs";
 import { checkHostedVisual } from "./hosted-visual.mjs";
-import { resolveVisualTransport, assertSameOriginRedirect, waitForPublicTunnel } from "./visual-transport.mjs";
+import { resolveVisualTransport, assertSameOriginRedirect, requestDraftHandoff, waitForPublicTunnel } from "./visual-transport.mjs";
 import {
   configureFramework,
   configureEnvironment,
@@ -225,18 +225,18 @@ export async function check({
     const draftUrl = links.find(
       (link) => new URL(link.url).pathname === "/api/draft-mode/enable",
     ).url;
-    const handoff = await context.request.get(draftUrl, { maxRedirects: 0 });
-    const locationHeader = handoff.headers().location;
+    const handoff = await requestDraftHandoff(draftUrl);
+    const locationHeader = handoff.locationHeader;
     let location;
     try {
       if (locationHeader) location = new URL(locationHeader, draftUrl);
     } catch {}
     save("draft-handoff.json", {
-      status: handoff.status(),
+      status: handoff.status,
       locationOrigin: location?.origin ?? null,
       locationPath: location?.pathname ?? null,
     });
-    assertSameOriginRedirect(handoff.status(), locationHeader, draftUrl, state.origin);
+    assertSameOriginRedirect(handoff.status, locationHeader, draftUrl, state.origin);
     await page.goto(draftUrl);
     // Content Link may retain invisible stega metadata in the text node.
     await page

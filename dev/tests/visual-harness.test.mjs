@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
+import { createServer } from "node:http";
 import * as previewHost from "../e2e/catalog/preview-host.mjs";
 
 const moduleUrl = new URL("../e2e/catalog/visual-transport.mjs", import.meta.url);
@@ -48,6 +49,72 @@ test("draft handoffs accept relative redirects and reject a proxy's bind-host or
   });
   assert.throws(() => check(200, undefined, "https://x.example/api/draft-mode/enable", "https://x.example"));
   assert.throws(() => check(307, "http://[", "https://x.example/api/draft-mode/enable", "https://x.example"));
+});
+
+test("draft handoff diagnostic uses the cookie-free helper before browser navigation", () => {
+  const source = readFileSync(new URL("../e2e/catalog/visual-editing.mjs", import.meta.url), "utf8");
+  assert.match(source, /await requestDraftHandoff\(draftUrl\)/);
+  assert.doesNotMatch(source, /context\.request\.get\(draftUrl/);
+  assert.ok(source.indexOf("await requestDraftHandoff(draftUrl)") < source.indexOf("await page.goto(draftUrl)"));
+});
+
+const browserRuntime = new URL("../e2e/catalog/plugin/node_modules/playwright/index.mjs", import.meta.url);
+test("draft handoff diagnostic preserves partitioned-cookie disable behavior", { skip: !existsSync(browserRuntime) && "Playwright fixture is absent" }, async t => {
+  const probe = helper("requestDraftHandoff");
+  const { chromium } = await import(browserRuntime.href);
+  const name = "synthetic_visual_draft";
+  const attributes = "Path=/; HttpOnly; Secure; SameSite=None; Partitioned";
+  const requests = [], blocked = [];
+  const server = createServer((request, response) => {
+    requests.push(request.url);
+    if (request.url === "/enable" || request.url === "/disable") {
+      response.setHeader("set-cookie", request.url === "/enable"
+        ? `${name}=enabled; ${attributes}`
+        : `${name}=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; ${attributes}`);
+      response.writeHead(307, { location: "/article" });
+      response.end();
+      return;
+    }
+    const draft = (request.headers.cookie ?? "").split(";").some(cookie => cookie.trim() === `${name}=enabled`);
+    response.writeHead(200, { "content-type": "text/html", "cache-control": "no-store" });
+    response.end(`<!doctype html><html><head><link rel="icon" href="data:,"></head><body><h1>${draft ? "Draft" : "Published"}</h1></body></html>`);
+  });
+  let browser, context;
+  try {
+    await new Promise((done, reject) => { server.once("error", reject); server.listen(0, "127.0.0.1", done); });
+    const origin = `http://localhost:${server.address().port}`;
+    try { browser = await chromium.launch({ channel: process.env.E2E_BROWSER_CHANNEL ?? "chrome", headless: true, timeout: 30000 }); }
+    catch (error) {
+      if (/executable.*doesn.t exist|distribution.*not found|executablePath.*doesn.t exist/i.test(error.message)) { t.skip("Chrome is not installed"); return; }
+      throw error;
+    }
+    context = await browser.newContext();
+    await context.route("**/*", route => {
+      const url = new URL(route.request().url());
+      if (url.origin === origin) return route.continue();
+      blocked.push(url.origin);
+      return route.abort();
+    });
+    assert.deepEqual(await probe(origin + "/enable"), { status: 307, locationHeader: "/article" });
+    assert.deepEqual(requests, ["/enable"], "the diagnostic must not follow the redirect");
+    assert.deepEqual(await context.cookies(), [], "the diagnostic must leave the browser cookie jar untouched");
+    const page = await context.newPage();
+    await page.goto(origin + "/enable", { timeout: 10000 });
+    assert.equal(await page.locator("h1").innerText(), "Draft");
+    const enabled = await context.cookies();
+    assert.equal(enabled.length, 1);
+    assert.equal(enabled[0].partitionKey, "http://localhost", "the browser must establish the real cookie partition");
+    await page.goto(origin + "/disable", { timeout: 10000 });
+    assert.equal(await page.locator("h1").innerText(), "Published");
+    assert.deepEqual(await context.cookies(), []);
+    assert.deepEqual(blocked, []);
+  } finally {
+    try { await context?.close(); }
+    finally {
+      try { await browser?.close(); }
+      finally { server.closeAllConnections(); await new Promise(done => server.close(done)); }
+    }
+  }
 });
 
 test("public tunnel readiness retries gateway errors and accepts a forwarding root 404", async () => {
