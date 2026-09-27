@@ -143,43 +143,36 @@ connect({
 
 ```tsx
 // src/entrypoints/SeoPanel.tsx
-import type { RenderItemFormSidebarPanelCtx } from 'datocms-plugin-sdk';
+import type { Field, RenderItemFormSidebarPanelCtx } from 'datocms-plugin-sdk';
 import { Canvas, Button } from 'datocms-react-ui';
 
 type Props = {
   ctx: RenderItemFormSidebarPanelCtx;
 };
 
-/**
- * Helper to read a field value from formValues, handling both
- * localized fields (value is { en: "...", it: "..." }) and
- * non-localized fields (value is the raw value directly).
- */
 function readFieldValue(
   formValues: Record<string, unknown>,
-  fieldApiKey: string,
+  field: Field,
   locale: string,
 ): unknown {
-  const raw = formValues[fieldApiKey];
-
-  if (raw !== null && typeof raw === 'object' && !Array.isArray(raw)) {
-    // Localized field — value is an object keyed by locale
-    return (raw as Record<string, unknown>)[locale];
-  }
-
-  // Non-localized field — value is the raw value directly
-  return raw;
+  const raw = formValues[field.attributes.api_key];
+  return field.attributes.localized
+    ? (raw as Record<string, unknown> | null | undefined)?.[locale]
+    : raw;
 }
 
 export default function SeoPanel({ ctx }: Props) {
-  const title = readFieldValue(ctx.formValues, 'title', ctx.locale) as
-    | string
-    | undefined;
-
-  // Guard: the targeted model may not have a 'title' field
-  if (title === undefined && !('title' in ctx.formValues)) {
+  const titleField = Object.values(ctx.fields).find(
+    (field) => field?.relationships.item_type.data.id === ctx.itemType.id &&
+      field.attributes.api_key === 'title',
+  );
+  if (!titleField) {
     return <Canvas ctx={ctx}>{null}</Canvas>;
   }
+  const title = readFieldValue(ctx.formValues, titleField, ctx.locale) as
+    | string
+    | null
+    | undefined;
 
   const titleLength = title?.length || 0;
   const isGoodLength = titleLength >= 30 && titleLength <= 60;
@@ -205,7 +198,7 @@ export default function SeoPanel({ ctx }: Props) {
 
 ### Reading Field Values in Sidebar Panels
 
-Unlike field extensions (which have `ctx.fieldPath` to auto-resolve locale), sidebar panels access `ctx.formValues` directly. You must handle localization yourself — localized fields store values as `{ en: "...", it: "..." }` objects. Use the `readFieldValue` helper from `form-values.md` to handle both localized and non-localized fields. This same pattern applies to **outlets** and **dropdown execute hooks** — any context that has `ctx.formValues` but not `ctx.fieldPath`.
+Unlike field extensions (which have `ctx.fieldPath` to auto-resolve locale), sidebar panels access `ctx.formValues` directly. Use the `readFieldValue` helper from `form-values.md` with the current model's `Field` metadata to distinguish localized values from ordinary objects. The example uses an already-loaded field from `ctx.fields`; if your flow needs missing metadata, load it with `ctx.loadItemTypeFields(ctx.itemType.id)` first. This same pattern applies to **outlets** and **dropdown execute hooks** — any context that has `ctx.formValues` but not `ctx.fieldPath`.
 
 ## Full-Width Sidebars
 

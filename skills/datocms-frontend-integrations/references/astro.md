@@ -498,20 +498,9 @@ export async function recordToWebsiteRoute(
 }
 ```
 
-### Astro Config Web Previews Addition
+### Astro Origin Protection
 
-Add security config to `astro.config.mjs` to allow DatoCMS to POST to preview-links endpoint:
-
-```js
-export default defineConfig({
-  // ... existing config ...
-
-  // Required: Disable origin checking so DatoCMS can POST to preview-links
-  security: {
-    checkOrigin: false,
-  },
-});
-```
+Keep Astro's default `security.checkOrigin` enabled. Web Previews sends `application/json`, which Astro's form-request origin check does not block; the endpoint's shared-secret validation and CORS handling above are sufficient for this request. Disabling the check globally would also remove origin protection from unrelated form endpoints. See [Astro's origin-check reference](https://docs.astro.build/en/reference/configuration-reference/#securitycheckorigin).
 
 ### Web Previews Dependencies
 
@@ -726,10 +715,12 @@ const data = await executeQuery(myQuery, {
 });
 ---
 
-<DraftModeQueryListener query={myQuery} initialData={data}>
-  <!-- Your content here, will auto-update in draft mode -->
-</DraftModeQueryListener>
+<!-- Render your content from data here in both published and draft mode. -->
+
+<DraftModeQueryListener query={myQuery} initialData={data} />
 ```
+
+Keep the page content alongside the listener: it renders no content or slots. In draft mode, a query update reloads the page to fetch and render the new data.
 
 Key points:
 

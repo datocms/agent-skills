@@ -49,7 +49,7 @@ CLI plays follow [datocms-cli](../../datocms-cli/SKILL.md): authentication polic
 - **Check:** existing profiles (linked or token-based); per-profile token variable names (names only); existing sync helper or CI.
 - **Ask:** staging and production of one project are environments, not profiles → explain and stop; profile ids (required, no default) and which one is the blueprint; were the others duplicated from it (entity IDs aligned)? No → profiles only, no shared history; unconfirmed → `scaffolded`; per-profile authentication: OAuth link (recommended), tokens only for CI; with two or more profiles, commands without `--profile` or `DATOCMS_PROFILE` stop working → how existing scripts pick one (`--profile` in each script, recommended); CI workflow (default no).
 - **Build:** [blueprint-sync.md](../../datocms-cli/references/blueprint-sync.md); [cli-setup.md › Linking a Project](../../datocms-cli/references/cli-setup.md#linking-a-project) and [› Active Profile Selection](../../datocms-cli/references/cli-setup.md#active-profile-selection).
-- **Live:** linking each profile needs that project confirmed; sync runs fork a sandbox per project and promotion is separate: approval per run.
+- **Live:** linking each profile needs that project confirmed; each sync run needs approval to create rehearsal sandboxes. Releases need separate approval per project and follow [the fresh-fork release workflow](../../datocms-cli/references/blueprint-sync.md#4-release-each-project-from-a-fresh-fork).
 - **Verify:** `npx datocms environments:list --profile=<id>` for every profile; the sync helper with `--dry-run`.
 
 ## Webhooks and build triggers

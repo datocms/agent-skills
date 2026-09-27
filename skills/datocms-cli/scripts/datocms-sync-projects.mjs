@@ -202,4 +202,7 @@ for (const [profile, destination] of destinations) {
 
   console.log(`\n==> ${profile} -> ${destination}`);
   run(runArgs, profile);
+  if (!options.dryRun) {
+    console.log(`Rehearsal sandbox: ${destination}. Before releasing ${profile}, freeze primary and create a fresh release fork; do not promote this rehearsal.`);
+  }
 }

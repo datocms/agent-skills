@@ -119,21 +119,29 @@ npx datocms migrations:new "add event model" --ts --profile=blueprint
 npx datocms migrations:run --profile=client_a --dry-run
 ```
 
-### 3. Apply to each destination project
+### 3. Rehearse on each destination project
 
-Use fork-and-run by default:
+Use fork-and-run to check the migrations without freezing editors:
 
 ```bash
 npx datocms migrations:run --profile=client_a --destination=client-a-sync
 npx datocms migrations:run --profile=client_b --destination=client-b-sync
 ```
 
-Promote only after verifying the forked environments:
+Verify these sandboxes, but do not promote them: edits made on primary after each fork are absent from that sandbox. Promotion replaces primary; it does not merge those edits.
+
+### 4. Release each project from a fresh fork
+
+After rehearsal and release approval, freeze primary **before** creating a new release fork and keep maintenance on through migration, verification, and promotion. Always disable maintenance when the release finishes or fails. Freezing only immediately before promotion cannot recover edits already missing from an older fork.
+
+For an approved automatic release, copy the [release helper](deployment-workflow.md#release-helper) into `scripts/` and use a fresh destination for each run:
 
 ```bash
-npx datocms environments:promote client-a-sync --profile=client_a
-npx datocms environments:promote client-b-sync --profile=client_b
+node scripts/datocms-release.mjs --profile=client_a --destination=client-a-release-v2
+node scripts/datocms-release.mjs --profile=client_b --destination=client-b-release-v2
 ```
+
+To inspect each release fork before promotion, follow the [manual deployment sequence](deployment-workflow.md#safe-deployment-sequence) with that project's profile and keep maintenance on until promotion. Do not leave maintenance enabled while waiting for an open-ended review: unlock, retain the fork as a rehearsal, and create a fresh release fork later.
 
 ## Automation Guidance
 
@@ -146,10 +154,10 @@ Recommended behavior for that helper (the bundled one follows it):
 3. Optionally accept `--source=<env>` and `--destination-template=<template>`
 4. Run `migrations:run --profile=<id> --destination=<env>` (bundled: args after `--` appended)
 5. Support `--dry-run`, `--fast-fork`, and explicit `--force` (only with `--fast-fork`); refuse any other option before running anything — a mistyped `--dryrun` must not become a profile id
-6. Print the created environment ids instead of auto-promoting
+6. Print the created environment ids as rehearsal sandboxes, with a reminder to create fresh release forks under maintenance instead of promoting them
 7. Pass `--api-token` from the profile's `apiTokenEnvName`, else `DATOCMS_<PROFILE_ID>_PROFILE_API_TOKEN`, when set (linked profiles never read it); errors name only the failed command, never the arguments — they can carry the token
 
-Do not auto-promote in the sync helper by default. Promotion is a separate release decision per project.
+The sync helper leaves primary writable and never promotes. Its forks are rehearsals; use the separate release workflow above for each project.
 
 CI: [`assets/datocms-sync.github-actions.yml`](../assets/datocms-sync.github-actions.yml) → `.github/workflows/`: manual dispatch (`profiles` space-separated, `dry_run`), inputs reach the shell only through `env:`. Map one `DATOCMS_<PROFILE_ID>_PROFILE_API_TOKEN` secret (or the profile's `apiTokenEnvName`) per destination profile (replace the `CLIENT_A`/`CLIENT_B` examples); adapt install command and Node version.
 

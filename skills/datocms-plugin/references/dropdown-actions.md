@@ -178,17 +178,18 @@ executeItemFormDropdownAction(
 ### Example: Form Action
 
 ```tsx
-// See form-values.md — always use readFieldValue for localized field safety
+import type { Field } from 'datocms-plugin-sdk';
+
+// See form-values.md — use field metadata to resolve localization.
 function readFieldValue(
   formValues: Record<string, unknown>,
-  fieldApiKey: string,
+  field: Field,
   locale: string,
 ): unknown {
-  const raw = formValues[fieldApiKey];
-  if (raw !== null && typeof raw === 'object' && !Array.isArray(raw)) {
-    return (raw as Record<string, unknown>)[locale];
-  }
-  return raw;
+  const raw = formValues[field.attributes.api_key];
+  return field.attributes.localized
+    ? (raw as Record<string, unknown> | null | undefined)?.[locale]
+    : raw;
 }
 
 connect({
@@ -206,10 +207,17 @@ connect({
   },
   async executeItemFormDropdownAction(actionId, ctx) {
     if (actionId === 'auto-slug') {
-      const title = readFieldValue(ctx.formValues, 'title', ctx.locale) as string | undefined;
+      const fields = await ctx.loadItemTypeFields(ctx.itemType.id);
+      const titleField = fields.find((field) => field.attributes.api_key === 'title');
+      const slugField = fields.find((field) => field.attributes.api_key === 'slug');
+      if (!titleField || !slugField) return;
+      const title = readFieldValue(ctx.formValues, titleField, ctx.locale) as string | null | undefined;
       if (title) {
         const slug = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-        await ctx.setFieldValue('slug', slug);
+        const slugPath = slugField.attributes.localized
+          ? `${slugField.attributes.api_key}.${ctx.locale}`
+          : slugField.attributes.api_key;
+        await ctx.setFieldValue(slugPath, slug);
         ctx.notice('Slug generated!');
       }
     }

@@ -21,36 +21,37 @@ ctx.formValues.title // "Hello World"
 ctx.formValues.title // { en: "Hello World", it: "Ciao Mondo" }
 ```
 
-You cannot know at code time whether a field is localized — the user may change it at any point. **Always use `readFieldValue` when reading form values in sidebar panels, outlets, and dropdown execute hooks**:
+Use the field's `attributes.localized` flag when reading form values in sidebar panels, outlets, and dropdown execute hooks. Do not infer localization from the value's shape: non-localized file, SEO, color, location, and Single Block values can also be objects.
 
 ```ts
+import type { Field } from 'datocms-plugin-sdk';
+
 function readFieldValue(
   formValues: Record<string, unknown>,
-  fieldApiKey: string,
+  field: Field,
   locale: string,
 ): unknown {
-  const raw = formValues[fieldApiKey];
-  if (raw !== null && typeof raw === 'object' && !Array.isArray(raw)) {
-    return (raw as Record<string, unknown>)[locale];
-  }
-  return raw;
+  const raw = formValues[field.attributes.api_key];
+  return field.attributes.localized
+    ? (raw as Record<string, unknown> | null | undefined)?.[locale]
+    : raw;
 }
 ```
 
 Usage:
 
 ```ts
-// CORRECT — works for both localized and non-localized fields
-const title = readFieldValue(ctx.formValues, 'title', ctx.locale) as string | undefined;
+const fields = await ctx.loadItemTypeFields(ctx.itemType.id);
+const titleField = fields.find((field) => field.attributes.api_key === 'title');
+if (!titleField) throw new Error('Title field not found');
 
-// WRONG — breaks if the field is localized
-const title = ctx.formValues.title as string;
+const title = readFieldValue(ctx.formValues, titleField, ctx.locale) as string | null | undefined;
 ```
 
 **When to use `readFieldValue` vs `ctx.fieldPath`:**
 
 - **Field extensions** have `ctx.fieldPath` which already includes the locale — use `get(ctx.formValues, ctx.fieldPath)` from `lodash-es`
-- **Everything else** (sidebar panels, outlets, dropdown execute hooks) — use `readFieldValue` with `ctx.locale`
+- **Everything else** (sidebar panels, outlets, dropdown execute hooks) — use `readFieldValue` with the current model's `Field` entity and `ctx.locale`. `ctx.fields` is a partial map; load the model's fields if the needed metadata is missing instead of guessing localization.
 
 ### Writing localized field values
 
@@ -64,17 +65,18 @@ await ctx.setFieldValue(`title.${ctx.locale}`, 'New Title');
 await ctx.setFieldValue('title', 'New Title');
 ```
 
-To check whether a field is localized, look up its `Field` entity:
+Use that same field metadata to choose the write path:
 
 ```ts
-const fields = await ctx.loadItemTypeFields(ctx.itemType.id);
-const titleField = fields.find((f) => f.attributes.api_key === 'title');
-const isLocalized = titleField?.attributes.localized ?? false;
+const titlePath = titleField.attributes.localized
+  ? `${titleField.attributes.api_key}.${ctx.locale}`
+  : titleField.attributes.api_key;
+await ctx.setFieldValue(titlePath, 'New Title');
 ```
 
 ## Modular Content Fields
 
-Modular Content (`rich_text`) and Single Block values are arrays of block objects containing `itemId`, `itemTypeId`, and the block's field values:
+Modular Content (`rich_text`) values are arrays of block objects containing `itemId`, `itemTypeId`, and the block's field values:
 
 ```ts
 // ctx.formValues.social_profiles
@@ -108,6 +110,48 @@ await ctx.setFieldValue('social_profiles', [
 ```
 
 **Warning**: Avoid creating **Editor** field extensions for Modular Content fields. Use **Addon** extensions instead — editor extensions require reimplementing the rendering and update logic for all contained fields and blocks.
+
+### Single Block fields
+
+A `single_block` form value is **one block object or `null`**, not an array. A localized field wraps that value in a locale map, such as `{ en: { itemId, itemTypeId, heading }, it: null }`. Passing an array can serialize as `null` on save and clear the block.
+
+Read the current locale and preserve the existing block ID and untouched fields when editing:
+
+```ts
+const fields = await ctx.loadItemTypeFields(ctx.itemType.id);
+const heroField = fields.find((field) => field.attributes.api_key === 'hero');
+if (!heroField || heroField.attributes.field_type !== 'single_block') {
+  throw new Error('Expected the hero Single Block field');
+}
+const heroPath = heroField.attributes.localized
+  ? `${heroField.attributes.api_key}.${ctx.locale}`
+  : heroField.attributes.api_key;
+const hero = readFieldValue(ctx.formValues, heroField, ctx.locale) as
+  | { itemId?: string; itemTypeId: string; [key: string]: unknown }
+  | null
+  | undefined;
+
+if (hero) {
+  await ctx.setFieldValue(heroPath, { ...hero, heading: 'Updated heading' });
+}
+```
+
+To create a block in an empty slot, pass a single object and omit `itemId`. Use a block model allowed by the field's validator:
+
+```ts
+await ctx.setFieldValue(heroPath, {
+  itemTypeId: '810886',
+  heading: 'New hero',
+});
+```
+
+To clear an optional Single Block field, pass `null`:
+
+```ts
+await ctx.setFieldValue(heroPath, null);
+```
+
+These paths update only the selected locale. In a field extension, use `ctx.fieldPath` directly; it also handles nested blocks.
 
 ### Nested blocks and recursive structures
 

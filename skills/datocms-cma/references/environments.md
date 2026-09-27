@@ -43,8 +43,11 @@ This is preferable to passing the environment per-call, both because it's less e
 
 Canonical deployment pattern for schema/data migrations:
 
-1. Build a primary-environment client, fork primary into a uniquely-named sandbox (e.g. `migration-${Date.now()}`).
-2. Build a sandbox-scoped client (`environment: sandboxId`) and apply schema mutations / data backfills against it. Test against the sandbox before promoting.
-3. Use the original primary client to call `promote(sandboxId)`. The sandbox becomes primary; the old primary remains as a sandbox (clean it up later, or keep one or two as rollbacks).
+1. Build a primary-environment client and activate maintenance mode **before** forking. This freezes primary writes so subsequent edits cannot be lost at promotion. Coordinate the release window and preserve any maintenance state already owned by another operation.
+2. Fork primary into a fresh, uniquely-named sandbox (e.g. `migration-${Date.now()}`). Build a sandbox-scoped client (`environment: sandboxId`) and apply schema mutations / data backfills against it. Verify the sandbox while primary remains frozen.
+3. Use the original primary client to call `promote(sandboxId)` before unfreezing primary. The sandbox becomes primary; the old primary remains as a sandbox (clean it up later, or keep one or two as rollbacks).
+4. Use `finally` to deactivate maintenance enabled by this release, including when a migration, verification, or promotion fails.
 
-If a step fails before promotion, just destroy the sandbox — the primary was never touched. This is the property that makes the pattern safe.
+A fork created while primary stays writable is a rehearsal, not a later promotion candidate: promotion does not merge edits made since the fork. After reviewing it, start the release from a fresh fork under maintenance. Do not hold maintenance open for an indefinite review; unlock and repeat the release from a fresh fork when ready.
+
+If a step fails before promotion, primary content is unchanged; release maintenance and keep or destroy the failed sandbox as appropriate. CLI implementations of the same sequence: [deployment workflow](../../datocms-cli/references/deployment-workflow.md#safe-deployment-sequence).
