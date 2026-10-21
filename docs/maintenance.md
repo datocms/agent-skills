@@ -4,7 +4,7 @@ This page collects the contributor and maintainer workflows for the `datocms/age
 
 ## Pre-commit automation
 
-This repo uses [husky](https://typicode.github.io/husky/) to run a pre-commit hook that keeps artifacts in sync with skill changes. Dev tooling and its dependencies live in `dev/`. After cloning, run from the repo root:
+This repo uses [husky](https://typicode.github.io/husky/) to run a pre-commit hook that formats and validates skill changes. Dev tooling and its dependencies live in `dev/`. After cloning, run from the repo root:
 
 ```bash
 npm ci --prefix dev
@@ -13,9 +13,7 @@ npm ci --prefix dev
 The `prepare` script wires `core.hooksPath` to `.husky/` automatically. From that point on, every `git commit` will:
 
 1. Format staged markdown with remark (skipping `.remarkignore` paths) and re-stage it. A staged markdown file that also has unstaged changes is refused, since re-staging would commit those hunks too: stage the whole file, or `git stash push --keep-index` first.
-2. Detect skills with staged changes, deletions included (anything under `skills/<name>/` except `agents/`, which is excluded from the claude.ai zips anyway).
-3. Regenerate the `.zip` for each affected skill from a temp checkout of the **index** — so zips reflect _staged_ content only, never unstaged working-tree edits — and re-stage the regenerated zip. A skill deleted entirely has its zip removed.
-4. Run `validate_skill_repo.py`. A non-zero exit blocks the commit.
+2. Run `validate_skill_repo.py`. A non-zero exit blocks the commit.
 
 The hook intentionally does **not** bump plugin versions or run evals — both are explicit release-time decisions (see below). To skip the hook for a specific commit, use the standard `git commit --no-verify`.
 
@@ -51,20 +49,13 @@ npm --prefix dev run format:check
 
 The Dastdown checks execute the canonical examples selected by named section in the specialist references. Live Markdown-create and HTML-update coverage runs through the existing disposable-project harness with `npm --prefix dev run test:e2e`; local document checks do not establish API acceptance. Keep routing scores, document correctness, instruction-loading observations, and live persistence results separate when reporting validation.
 
-## Regenerate the claude.ai zips
+## The claude.ai zips
 
-The [`zips/`](../zips) folder ships a pre-built `.zip` per skill for the [claude.ai](https://claude.ai) upload flow. The pre-commit hook regenerates the affected zip on every commit that touches a skill, so this should rarely need to be done by hand.
+Every release attaches one `.zip` per skill for the [claude.ai](https://claude.ai) upload flow. The [release workflow](../.github/workflows/release.yml) builds them when a release is published, so git never tracks them: plugin installs copy the whole repo, and the zips would ship to every plugin user.
 
-To do a full rebuild (e.g. after editing the hook itself, or to recover from a corrupt zip):
+[`dev/scripts/build-zips.sh`](../dev/scripts/build-zips.sh) packs each skill's tracked files, minus the Codex-only `agents/` folder. To build them locally into the gitignored `zips/`, run `dev/scripts/build-zips.sh`. [`dev/tests/zips.test.mjs`](../dev/tests/zips.test.mjs) checks each archive's content, and CI runs it on every PR.
 
-```bash
-rm -rf zips && mkdir zips && for s in skills/datocms-*/; do
-  n=$(basename "$s")
-  (cd skills && zip -r "../zips/${n}.zip" "$n/" -x "${n}/agents/*")
-done
-```
-
-The `-x "${n}/agents/*"` exclusion strips the Codex `agents/openai.yaml` files, which are not relevant to the claude.ai upload flow.
+If a release lacks its zips, re-run its **Release zips** workflow run; the upload replaces existing assets.
 
 ## Bumping plugin versions
 
@@ -77,10 +68,10 @@ Without a version bump, Claude Code and Codex consider their cached copies up to
 
 ## Releasing
 
-1. Land all skill changes on `master` (the pre-commit hook keeps zips and validation in sync as you go).
+1. Land all skill changes on `master`, with CI green.
 2. Bump the plugin version in both manifests (see above).
 3. Run the validator with `--require-clean-git`.
-4. Tag and publish.
+4. Tag and publish. The release workflow attaches the zips.
 
 ## Hosted MCP dependency
 

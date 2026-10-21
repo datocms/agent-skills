@@ -88,9 +88,9 @@ Update later with `npx skills update`. For scopes, single-skill installs, and de
 
 ### Claude.ai and Claude Desktop chat
 
-For editorial work, upload [`datocms-content-modeling.zip`](zips/datocms-content-modeling.zip) for schema advice and [`datocms-cma.zip`](zips/datocms-cma.zip) for content operations. Connect the [current remote MCP server](https://www.datocms.com/docs/mcp-server) separately when live project access is needed. Modeling advice alone requires no connection; local development workflows require the relevant workspace and tools.
+For editorial work, upload [`datocms-content-modeling.zip`](https://github.com/datocms/agent-skills/releases/latest/download/datocms-content-modeling.zip) for schema advice and [`datocms-cma.zip`](https://github.com/datocms/agent-skills/releases/latest/download/datocms-cma.zip) for content operations. Connect the [current remote MCP server](https://www.datocms.com/docs/mcp-server) separately when live project access is needed. Modeling advice alone requires no connection; local development workflows require the relevant workspace and tools.
 
-Upload and enable the `.zip` files via **Customize → Skills** in [Claude](https://claude.ai). A local Claude Code skill install does not itself enable them in chat. The full set of pre-built zips lives in [`zips/`](zips/).
+Upload and enable the `.zip` files via **Customize → Skills** in [Claude](https://claude.ai). A local Claude Code skill install does not itself enable them in chat. Every [release](https://github.com/datocms/agent-skills/releases/latest) attaches the full set of pre-built zips.
 
 ---
 
@@ -165,7 +165,7 @@ npm --prefix dev run format:check
 npm --prefix dev test                         # all offline tests
 ```
 
-Tests never run automatically; run them when you need them. The pre-commit hook formats staged Markdown, rebuilds the `zips/` of changed skills, and runs the validator. Trigger evals and native agent sessions are paid, need an authenticated `claude` or `codex` CLI, and run only on request; see [`evals/README.md`](evals/README.md) and [`dev/e2e/README.md`](dev/e2e/README.md). Keep `package.json` and lockfiles out of the repo root: Claude Code would install them for every plugin user, and the validator rejects them.
+CI runs the validator, the format check, and the repo-tooling and zip tests on every PR; run the rest when you need them. The pre-commit hook formats staged Markdown and runs the validator. Trigger evals and native agent sessions are paid, need an authenticated `claude` or `codex` CLI, and run only on request; see [`evals/README.md`](evals/README.md) and [`dev/e2e/README.md`](dev/e2e/README.md). Keep `package.json` and lockfiles out of the repo root: Claude Code would install them for every plugin user, and the validator rejects them.
 
 ---
 

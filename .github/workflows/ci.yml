@@ -1,0 +1,27 @@
+# Repo invariants on every PR and push to master. The pre-commit hook runs the same validator, but contributors
+# without dev dependencies installed (or committing with --no-verify) skip it.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: dev/package-lock.json
+      - run: npm ci --prefix dev
+      - run: python3 evals/scripts/validate_skill_repo.py
+      - run: npm --prefix dev run format:check
+      - run: node --test tests/repo-tooling.test.mjs tests/zips.test.mjs
+        working-directory: dev
