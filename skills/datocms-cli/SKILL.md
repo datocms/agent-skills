@@ -137,6 +137,7 @@ Use the selected reference for command syntax, required inputs, templates and ve
 - Scaffold migrations with `migrations:new`, not hand-named files. Use the reference's exact function signature; load **datocms-cma** for API calls inside the body.
 - For migrations, specify `--source`, dry-run first, and prefer fork-and-run over primary `--in-place`. Treat `--force` as an explicit override.
 - For direct calls, load `direct-cma-calls.md` or `cma-script.md` before choosing positional arguments, stdin or file mode. Keep schema-approach and environment authorization from Step 2.
+- Projects differ by which opt-in updates they have activated, and some API defaults and data formats differ until they do. Before relying on one in a project you didn't create, check [opt-in project updates](../datocms-cma/references/project-updates.md) for backward compatibility.
 - Before execution, verify the selected authentication route, profile, environment and output paths. Reuse established OAuth or unattended token authentication; don't require both.
 - Verify the requested result and report what ran, what was checked, and any unresolved inputs. For command examples, state missing prerequisites without connecting.
 

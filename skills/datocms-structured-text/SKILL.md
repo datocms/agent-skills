@@ -34,6 +34,7 @@ Read only the selected reference. Add another when the task actually crosses its
 - Dastdown is a controlled editing/authoring notation, not a CommonMark importer. Ordinary Markdown and HTML use the conversion workflow.
 - Preserve unaffected nodes, custom marks, link metadata, and embedded reference identity. Reference placeholders do not contain block internals.
 - Report unsupported source semantics and unresolved mappings. Structural validation alone does not prove fidelity or destination acceptance.
+- Projects differ by which opt-in updates they have activated, and some API defaults and data formats differ until they do. Before relying on one in a project you didn't create, check [opt-in project updates](../datocms-cma/references/project-updates.md) for backward compatibility.
 - Use current installed library signatures. Only install the packages needed for the selected operation; keep helper dependencies in task-local scratch.
 
 ## Work with companion skills

@@ -184,6 +184,7 @@ Follow loaded references and shared rules:
 
 - Respect existing abstractions and patch in place by default
 - Make targeted changes instead of full rewrites unless current code is unusable
+- Projects differ by which opt-in updates they have activated, and some API defaults and data formats differ until they do. Before relying on one in a project you didn't create, check [opt-in project updates](../datocms-cma/references/project-updates.md) for backward compatibility.
 
 ### Security and environment rules
 

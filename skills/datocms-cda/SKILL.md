@@ -70,6 +70,8 @@ Clear request? Proceed directly. Read only relevant references from `references/
 
 Also apply every Step 4 check while writing.
 
+Projects differ by which opt-in updates they have activated, and some API defaults and data formats differ until they do. Before relying on one in a project you didn't create, check [opt-in project updates](../datocms-cma/references/project-updates.md) for backward compatibility.
+
 ### Client Usage
 
 - **Default: `executeQuery`** from `@datocms/cda-client` (or repo's existing wrapper around it)

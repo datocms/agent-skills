@@ -113,6 +113,7 @@ For design work, prefer public `datocms-react-ui` components when they match the
 - Use `ctx.setParameters()` directly in `renderManualFieldExtensionConfigScreen`.
 - Modular Content is `rich_text` in `FieldType` and API `field_type`. Do not create editor field extensions for Modular Content, single block, or Structured Text fields; use addons (Modular Content: `fieldTypes: ['rich_text']`; single block has no `FieldType`: `overrideFieldExtensions`, or `fieldTypes: 'all'` if every field type may offer it).
 - Prefer SDK helpers before browser CMA calls. If browser CMA is required, use `@datocms/cma-client-browser`, add only required permissions, and guard missing `ctx.currentUserAccessToken`.
+- A plugin runs in projects with and without each opt-in update, and some API defaults and data formats differ between them. Check [opt-in project updates](../datocms-cma/references/project-updates.md) for backward compatibility.
 - Keep modals, sidebars, and config screens compact.
 
 ## Routing

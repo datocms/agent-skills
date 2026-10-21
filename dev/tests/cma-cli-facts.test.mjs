@@ -190,3 +190,21 @@ test('standard comparator guidance explains the CLI stdin import restriction', (
     assert.match(editing, /^> In CLI mode: .*cma:script.*stdin-mode.*node:/m);
   }
 });
+
+test('project-updates covers every opt-in update flag in the CMA client site meta', () => {
+  // SiteMeta also carries non-update fields; every other key is an "Available updates" opt-in.
+  const siteMeta = installed('@datocms/cma-client/dist/types/generated/RawApiTypes.d.ts').match(/export type SiteMeta = \{([\s\S]*?)\n\};/)[1];
+  const notUpdates = ['created_at', 'custom_upload_storage_settings', 'allow_custom_theme'];
+  const flags = [...siteMeta.matchAll(/^ {4}(\w+)\??: /gm)].map((m) => m[1]).filter((name) => !notUpdates.includes(name)).sort();
+  const documented = [...skill('datocms-cma/references/project-updates.md').matchAll(/^\| \[`(\w+)`\]\(https:\/\/www\.datocms\.com\/product-updates\/[\w-]+\) \|/gm)].map((m) => m[1]).sort();
+  assert.deepEqual(documented, flags);
+});
+
+test('every skill that writes code or advice points at project-updates', () => {
+  // datocms-feedback only builds support links.
+  const skills = ['cda', 'cli', 'cma', 'content-modeling', 'frontend-integrations', 'plugin', 'setup', 'structured-text'];
+  for (const name of skills) {
+    const target = name === 'cma' ? 'references/project-updates.md' : '../datocms-cma/references/project-updates.md';
+    assert.ok(skill(`datocms-${name}/SKILL.md`).includes(`](${target})`), `datocms-${name}/SKILL.md must link ${target}`);
+  }
+});
