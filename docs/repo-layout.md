@@ -1,6 +1,6 @@
 # Repo Layout
 
-The "Repository Structure" list in [`AGENTS.md`](../AGENTS.md#repository-structure) (mirrored in `CLAUDE.md`) is the short shape of the repo. This page explains why the folders are split this way.
+The "Repository Structure" list in [`AGENTS.md`](../AGENTS.md#repository-structure) is the short shape of the repo. This page explains why the folders are split this way.
 
 ## Canonical Tree
 

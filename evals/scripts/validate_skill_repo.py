@@ -65,7 +65,6 @@ LINKED_MARKDOWN_GLOBS = (
     "docs/*.md",
     "README.md",
     "AGENTS.md",
-    "CLAUDE.md",
     ".claude/rules/*.md",
     "evals/README.md",
     "dev/**/*.md",
