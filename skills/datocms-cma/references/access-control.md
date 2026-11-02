@@ -16,7 +16,7 @@ The standard "custom role" recipe is `roles.duplicate` → rename → `update`, 
 
 `regenerateToken` invalidates the previous secret immediately. Schedule the rollout to every consumer (deploys, CI secrets, edge configs, mobile builds) **before** calling it on a production token, otherwise traffic between the rotation and the rollout 401s.
 
-Built-in factory tokens (the seeded read-only API token, etc.) carry a non-null `hardcoded_type` and reject `accessTokens.update` with `NON_EDITABLE_ACCESS_TOKEN`. They can still be deleted and rotated — useful to know when a "normalize all tokens" script trips on them.
+Older projects have hardcoded factory tokens (the seeded read-only API token): `hardcoded_type` set (deprecated), reject `accessTokens.update` with `NON_EDITABLE_ACCESS_TOKEN`, still deletable and rotatable — useful when a "normalize all tokens" script trips on them. New projects seed regular role-based tokens instead (`CDA Only (Published)`, `CDA Only (Draft)`).
 
 ## SSO
 
