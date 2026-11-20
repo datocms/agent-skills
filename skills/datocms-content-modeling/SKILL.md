@@ -6,7 +6,7 @@ description: >-
   organization. Use for modeling *decisions*, not implementation: model vs
   block; single_block vs Modular Content vs Structured Text; references vs
   embedded blocks; taxonomy shape (flat/tree/faceted); refactoring page-shaped
-  schemas to reusable content; fitting 300 KB / 500-block / 5-level record
+  schemas to reusable content; fitting per-record size / block-count / depth
   limits; model behaviour (singleton, draft mode, all_locales_required,
   sortable/tree/ordering_field, presentation_title_field,
   collection_appearance, inverse_relationships_enabled); field config
@@ -47,7 +47,7 @@ Missing sibling reference → modeling advice here still stands; for implementat
 Match decision → file:
 
 - `references/separation-of-concerns.md` — naming/shaping for meaning, not appearance; redesign test; record-meta + file/gallery-meta + position duplication anti-patterns.
-- `references/models-vs-blocks.md` — model vs block; structural rules (no orphans, no link-field references, locale inheritance); per-record limits (300 KB / 500 blocks / 5 levels); locale multiplier.
+- `references/models-vs-blocks.md` — model vs block; structural rules (no orphans, no link-field references, locale inheritance); per-record limits (1 MB / 1,000 blocks / 5 levels; Enterprise 3 MB / 3,000 / 5 levels); locale multiplier.
 - `references/block-fields-and-structured-text.md` — `single_block` vs `rich_text` (Modular Content) vs `structured_text`; inline-vs-block-vs-itemLink-vs-inlineItem matrix; native-node modeling choices; **native nodes (`blockquote`, `code`, `list`, `heading`, `thematicBreak`, `link`) — never recreate as blocks**; image/gallery/video block shape (no `caption` sibling).
 - `references/content-reuse.md` — link fields, project-level Blocks Library, built-in `seo`, frameless single-block, fieldset grouping, block-library hygiene.
 - `references/taxonomy-classification.md` — flat tags, tree models, faceted classification via multiple links, cascade strategies.

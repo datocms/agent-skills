@@ -40,8 +40,8 @@ Block fields bounded per-record. Content compounds? Limits push to models.
 
 | Limit | Default | Notes |
 | - | - | - |
-| Max record size | **300 KB** | Nested blocks count. Links/assets don't. Plan-independent; support raises only exceptionally. |
-| Max blocks per record | **500** | All block fields, all nesting. |
+| Max record size | **1 MB** | Nested blocks count. Links/assets don't. Enterprise plans: 3 MB. Legacy per-project plans keep lower limits. Support raises only exceptionally. |
+| Max blocks per record | **1,000** | All block fields, all nesting, all locales. Enterprise plans: 3,000. |
 | Max nested depth | **5 levels** | Block in block in block... 5 deep. |
 
 Near limit? **Smell**. Fix: promote blocks to linked models. Links don't count toward host size/block budget.
@@ -51,7 +51,7 @@ Near limit? **Smell**. Fix: promote blocks to linked models. Links don't count t
 Block fields localized at _containing field_. `rich_text` with `localized: true` = separate block list per locale.
 
 ```
-total blocks counted toward the 500/record cap
+total blocks counted toward the per-record cap (1,000; 3,000 on Enterprise)
   = sum over (each locale × each block-bearing field × blocks in that locale)
 ```
 
