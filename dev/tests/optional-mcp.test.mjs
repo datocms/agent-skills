@@ -13,7 +13,7 @@ import { measureContext } from '../scripts/check-skill-context.mjs';
 process.chdir(new URL('../../', import.meta.url).pathname);
 
 const contextBase = '27c410f7952bf14d12c0284a81cfb5d5d266fb6c';
-const retentionBase = 'a0d76d3a3ac3bb59f72f3d5e7fa83e6659a70ce5';
+const retentionBase = '3d6855fb87ab18a0abb556176819f5a7ee0f31a4';
 // Exact compatibility projection from remote-mcp; it consumes the whole files.
 // https://github.com/datocms/remote-mcp/blob/beeca70bdf702461ae8e226bfd9714d8e58f33ac/src/tools/getApiMethods/index.ts#L69-L74
 const project = (text) => text.split('\n').filter((line) => !line.includes('cma:')).join('\n');
@@ -76,6 +76,7 @@ const preservedWorkflows = {
     'Bulk operations are async + 200-cap',
     'Limits per record',
     'Errors on writes',
+    'Optimistic locking via meta.current_version',
   ],
   'editing-records': [
     'Workflow',
@@ -88,7 +89,6 @@ const preservedWorkflows = {
     'Localized fields and adding a locale',
     'Typing values you build up in code',
     'Verify saved content',
-    'Optimistic locking via meta.current_version',
   ],
 };
 
@@ -97,13 +97,7 @@ const preservedWorkflows = {
 // emptied when the base moves to a commit that already holds the reviewed text.
 const reviewedCorrections = {
   records: [],
-  'editing-records': [
-    // An agent wrote its script to the system /tmp in file mode, where the CLI cannot resolve imports.
-    [
-      '5. `update` returns block IDs, not objects: read again with `nested: true` to check the result.\n',
-      '5. `update` returns block IDs, not objects: read again with `nested: true` to check the result.\n\n> In CLI mode: run it through `cma:script` stdin mode (a heredoc). `client`, `Schema` and every helper used here are ambient there and the script is type-checked before it runs. File mode needs explicit imports and a file inside the project, never the system `/tmp`.\n',
-    ],
-  ],
+  'editing-records': [],
 };
 
 function withReviewedCorrections(name, source) {

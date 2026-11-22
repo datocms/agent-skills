@@ -132,7 +132,8 @@ test("creates a localized record from Markdown while preserving existing records
 			expect(record.title).toBe(TITLE);
 			expect(record.summary).toBe(SUMMARY);
 			expect(record.meta.status).toBe("draft");
-			expect(record.body.it, "Italian must remain empty").toBeNull();
+			// A record created with only the English locale has no Italian key at all: that is empty too.
+			expect(record.body.it ?? null, "Italian must remain empty").toBeNull();
 			const body = record.body.en;
 			if (!body) throw new Error("missing English Structured Text");
 			expect(

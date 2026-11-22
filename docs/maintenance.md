@@ -92,6 +92,15 @@ The hosted [DatoCMS MCP server](https://www.datocms.com/docs/mcp-server) fetches
 - The server drops every line that contains `cma:`. Put CLI-only hints (`cma:docs`, `cma:call`) on lines of their own that say they are for the CLI, so nothing else is dropped with them.
 - [`dev/tests/optional-mcp.test.mjs`](../dev/tests/optional-mcp.test.mjs) checks that the `cma:` filter keeps the Markdown structure intact, that the TypeScript examples parse, and that the main workflow sections match a reviewed baseline. An intended change to one of those sections must be added to the test's reviewed corrections. Run `npm --prefix dev test` after editing either file.
 
+## CLI dependency
+
+The DatoCMS CLI reads this repo as well, from the default branch and with no pin. `datocms agents:reference <skill> <name>` prints `skills/<skill>/references/<name>.md` as downloaded from `master`, and when `cma:script` rejects a script (structural or TypeScript validation) it tells the agent to read the `editing-records` reference of `datocms-cma`, with that command for agents that do not have the skill installed.
+
+- A push to `master` changes what those agents read at once. [`editing-records.md`](../skills/datocms-cma/references/editing-records.md) must make sense to an agent that has read nothing else: no skill body, no other reference.
+- Don't move or rename it, for this reason as well as for the hosted MCP server.
+- Keep it at 29,000 characters or less. Claude Code replaces a command output above 30,000 characters with a 2 KB preview and a path to a saved file, so a longer guide reaches the agent as its first screen only. Agents sent there by a type error often read just the top (`head -250`): Workflow, the `Schema.X` rule and the typing section stay first. [`dev/tests/cli-reference-budget.test.mjs`](../dev/tests/cli-reference-budget.test.mjs) checks both.
+- The live suite serves `agents:reference` from the skill tree under test (`dev/e2e/lib/cliLauncher.ts`); without that, an actor would read the published guide instead of the one being evaluated.
+
 ## Codex readiness
 
 For a structural checklist that confirms the repo is ready for Codex-local plugin use, see [`codex-readiness.md`](codex-readiness.md).

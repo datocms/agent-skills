@@ -105,7 +105,11 @@ export async function runClaude(
 	);
 	symlinkSync(join(DEV_ROOT, "node_modules"), join(workspace, "node_modules"));
 	// The launcher fixes the sandbox scope without storing the credential value.
-	writeFileSync(join(workspace, "bin/datocms"), cliLauncherSource(join(PROJECT_BIN, "datocms")), { mode: 0o700 });
+	writeFileSync(
+		join(workspace, "bin/datocms"),
+		cliLauncherSource(join(PROJECT_BIN, "datocms"), join(workspace, ".claude/skills")),
+		{ mode: 0o700 },
+	);
 	await cp(SKILLS_SOURCE, join(workspace, ".claude/skills"), { recursive: true });
 
 	const environment = options.environment ?? "main";
@@ -145,6 +149,8 @@ export async function runClaude(
 			...inherited,
 			DATOCMS_API_TOKEN: options.apiToken,
 			DATOCMS_ENVIRONMENT: environment,
+			// The datocms CLI keeps the operator's linked plugins in its data directory: give the actor an empty one.
+			XDG_DATA_HOME: join(workspace, ".data"),
 			PATH: `${join(workspace, "bin")}${delimiter}${PROJECT_BIN}${delimiter}${process.env.PATH ?? ""}`,
 		},
 	});
