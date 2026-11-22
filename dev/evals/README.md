@@ -1,6 +1,6 @@
 # Skill evals
 
-Three evals measure what the skills change for an agent, each against a baseline: the same agent with no skills, or with an older snapshot of `skills/`. They complement the [trigger check](../../evals/README.md) (does a skill load?) and the [end-to-end suite](../e2e/README.md) (does a Codex session complete a workflow against a live project?).
+Three evals measure what the skills change for an agent, each against a baseline: the same agent with no skills, or with an older snapshot of `skills/`. They complement the [trigger check](../../evals/README.md) (does a skill load?) and the [end-to-end suite](../e2e/README.md) (does a Claude Code or Codex session complete a workflow against a live project?). To compare two versions of the skills on real work, start there: its cases run on Sonnet and Haiku in minutes and each carries controls for its own check.
 
 | Eval | Question | Judge | Needs |
 | - | - | - | - |
