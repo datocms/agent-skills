@@ -28,7 +28,7 @@ From 2.x (the `latest` line, last 2.5.1) or a 3.x prerelease. No migration page 
 4. Replace `import { A, B } from 'datocms-react-ui'` with one import per entry (table below). There is no root entry.
 5. Keep `<Canvas ctx={ctx}>` around every frame hook; import it as a default: `import Canvas from 'datocms-react-ui/Canvas'`.
 6. Grep the plugin CSS for `var(--` and map every variable ([CSS variables](#css-variables)); an unmapped one resolves to nothing, silently.
-7. Rebuild each screen from its surface recipe (`surfaces.md`) and the component pages; run `review-checklist.md`.
+7. Rebuild each screen from its surface recipe (`surfaces/<surface>.md`) and the component pages; run `review-checklist.md`.
 
 ## Exports
 

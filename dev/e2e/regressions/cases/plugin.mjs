@@ -221,7 +221,8 @@ export default [
       'skills/datocms-plugin/references/sdk-connect-and-frames.md',
       'skills/datocms-plugin/references/sdk-context-and-cma.md',
       'skills/datocms-plugin-design/SKILL.md',
-      'skills/datocms-plugin-design/references/surfaces.md',
+      'skills/datocms-plugin-design/references/surfaces/config-screen.md',
+      'skills/datocms-plugin-design/references/surfaces/field-addon.md',
     ],
     budget: { timeoutMs: 480000, maxCommands: 70 },
     prompt: `Create a new private DatoCMS plugin in this directory using the standard DatoCMS plugin project setup (Vite + React + TypeScript, entry point src/main.tsx, index.html at the root, and \`npm run build\` producing dist/). package.json and node_modules are already here: use only the dependencies already installed and do not install or add packages. There is no DatoCMS project and there are no credentials, so do not try to install, publish or deploy the plugin.

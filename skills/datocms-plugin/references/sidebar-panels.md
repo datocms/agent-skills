@@ -181,7 +181,7 @@ export default function SeoPanel({ ctx }: Props) {
   const isGoodLength = titleLength >= 30 && titleLength <= 60;
 
   // The host draws the panel title and collapse: render only the content
-  // (datocms-plugin-design surfaces.md, "Sidebar panel")
+  // (datocms-plugin-design references/surfaces/sidebar-panel.md)
   return (
     <Canvas ctx={ctx}>
       <InfoList>
@@ -279,7 +279,7 @@ type Props = {
   ctx: RenderItemFormSidebarCtx;
 };
 
-// Fixed frame that scrolls: no noAutoResizer needed (datocms-plugin-design surfaces.md, "Full sidebar")
+// Fixed frame that scrolls: no noAutoResizer needed (datocms-plugin-design references/surfaces/full-sidebar.md)
 export default function PreviewSidebar({ ctx }: Props) {
   return (
     <Canvas ctx={ctx}>

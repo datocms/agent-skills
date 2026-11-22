@@ -119,7 +119,7 @@ type Props = {
 
 const COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
 
-// DatoCMS draws the title and the cross. Content rules: datocms-plugin-design surfaces.md, "Modal"
+// DatoCMS draws the title and the cross. Content rules: datocms-plugin-design references/surfaces/modal.md
 export default function ColorPickerModal({ ctx }: Props) {
   const currentColor = ctx.parameters.currentColor as string;
   const [selected, setSelected] = useState(currentColor || COLORS[0]);

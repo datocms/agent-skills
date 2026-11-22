@@ -76,7 +76,7 @@ For complex configuration screens, use `react-final-form` when you need validati
 }
 ```
 
-`datocms-react-ui` 4 has no `Form` component: the form is a plain `<form>`, and each field is a `FieldWrapper` around a controlled input. Alias `react-final-form`'s `Form` (`Form as FinalForm`) so it does not read like a UI component. Full shell, layout rules and mistakes: [config screen in datocms-plugin-design](../../datocms-plugin-design/references/surfaces.md#config-screen).
+`datocms-react-ui` 4 has no `Form` component: the form is a plain `<form>`, and each field is a `FieldWrapper` around a controlled input. Alias `react-final-form`'s `Form` (`Form as FinalForm`) so it does not read like a UI component. Full shell, layout rules and mistakes: [config screen in datocms-plugin-design](../../datocms-plugin-design/references/surfaces/config-screen.md).
 
 ### Complete Config Screen Example
 
@@ -311,4 +311,4 @@ Use `normalizeParameters` anywhere you read plugin settings (config screen, fiel
 - When `updatePluginParameters()` is called, the new values propagate **in real-time** to all connected users.
 - `ctx.plugin.attributes.parameters` reflects the last **saved** state — it does not update as you modify component state. It only changes after `updatePluginParameters()` completes.
 - Keep read-only permission branches simple; do not fork the screen into a second design.
-- Do not open the screen with a section title or divider: DatoCMS already shows a "Plugin settings" divider right above the frame ([config screen](../../datocms-plugin-design/references/surfaces.md#config-screen)).
+- Do not open the screen with a section title or divider: DatoCMS already shows a "Plugin settings" divider right above the frame ([config screen](../../datocms-plugin-design/references/surfaces/config-screen.md)).

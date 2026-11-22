@@ -176,7 +176,7 @@ export default function UnsplashSource({ ctx }: Props) {
     });
   };
 
-  // Full shell (no title: the host dialog has one; states; grid): datocms-plugin-design surfaces.md, "Asset source"
+  // Full shell (no title: the host dialog has one; states; grid): datocms-plugin-design references/surfaces/asset-source.md
   return (
     <Canvas ctx={ctx}>
       <form

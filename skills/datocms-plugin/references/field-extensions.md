@@ -282,7 +282,7 @@ type Props = {
   ctx: RenderFieldExtensionCtx;
 };
 
-// The host draws the field label, hint and errors. Shell: datocms-plugin-design surfaces.md, "Field editor"
+// The host draws the field label, hint and errors. Shell: datocms-plugin-design references/surfaces/field-editor.md
 export default function ColorEditor({ ctx }: Props) {
   const currentValue = (get(ctx.formValues, ctx.fieldPath) as string) || '#000000';
 

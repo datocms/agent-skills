@@ -14,11 +14,11 @@ Run over the finished UI. Each item is checkable by reading the code; the page i
 
 ## Surface and frame
 
-- [ ] Config screen: first element is content, not a heading, `Page.SectionTitle`, `<hr>` or divider. (`surfaces.md`, Config screen)
-- [ ] Sidebar panel: no `SidebarPanel` or title inside; the host draws it. (`surfaces.md`, Sidebar panel)
-- [ ] Field editor: no label or error re-drawn; the input has `aria-label` from `ctx.field.attributes.label`; `ctx.disabled` honoured. (`surfaces.md`, Field editor)
+- [ ] Config screen: first element is content, not a heading, `Page.SectionTitle`, `<hr>` or divider. (`surfaces/config-screen.md`)
+- [ ] Sidebar panel: no `SidebarPanel` or title inside; the host draws it. (`surfaces/sidebar-panel.md`)
+- [ ] Field editor: no label or error re-drawn; the input has `aria-label` from `ctx.field.attributes.label`; `ctx.disabled` honoured. (`surfaces/field-editor.md`)
 - [ ] `renderModal` content: `Modal.Body` + `Modal.Footer`, no title or cross of its own, no `Modal` inside; ghost Cancel first, calling `ctx.resolve(null)`. \[`Overlays/Modal`]
-- [ ] Asset source: no title of its own; a pick calls `ctx.select`. (`surfaces.md`, Asset source)
+- [ ] Asset source: no title of its own; a pick calls `ctx.select`. (`surfaces/asset-source.md`)
 - [ ] `Pane` / `ListDetail.Page` only in Fixed frames (page, inspector, full sidebar, fullWidth modal); `SplitPane` / `ListFormPage` inside a parent with a set height. (`surfaces.md`, Frame facts)
 - [ ] No outer padding added around Canvas content (Canvas applies `ctx.bodyPadding`).
 - [ ] `Main` only in `renderPage` and `renderInspector`. \[`Layout/Landmarks`]

@@ -142,7 +142,7 @@
     "question": "I'm designing a plugin's config screen. Should the screen start with a section title such as \"Settings\"?",
     "judge": "Says no: the dashboard already draws a \"Plugin settings\" title right above the plugin's frame, so the screen should start directly with its content (fields); section titles are fine from the second section on.",
     "key": "No. The host already draws \"Plugin settings\" above the frame; start with the fields.",
-    "source": "cms/src (plugin config screen host), datocms-plugin-design/references/surfaces.md"
+    "source": "cms/src (plugin config screen host), datocms-plugin-design/references/surfaces/config-screen.md"
   },
   {
     "id": "d-shortcuts",

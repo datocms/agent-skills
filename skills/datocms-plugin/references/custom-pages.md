@@ -244,7 +244,7 @@ type Props = {
   ctx: RenderPageCtx;
 };
 
-// Canvas is in main.tsx. Page shells and patterns: datocms-plugin-design surfaces.md, "Custom page"
+// Canvas is in main.tsx. Page shells and patterns: datocms-plugin-design references/surfaces/custom-page.md
 export default function ModelOverview({ ctx }: Props) {
   const modelCount = Object.keys(ctx.itemTypes).length;
 
@@ -338,7 +338,7 @@ connect({
 
 ## Key Notes
 
-- Pages use `ImposedSizePluginFrameCtx`: the frame fills the page and scrolls, and Canvas starts no auto-resizer there (no `noAutoResizer` needed). Shell: [custom page](../../datocms-plugin-design/references/surfaces.md#custom-page)
+- Pages use `ImposedSizePluginFrameCtx`: the frame fills the page and scrolls, and Canvas starts no auto-resizer there (no `noAutoResizer` needed). Shell: [custom page](../../datocms-plugin-design/references/surfaces/custom-page.md)
 - Use `ctx.location` for internal routing via query params
 - Use lazy loading with `React.lazy` + `Suspense` for code splitting on large pages
 - Pages have access to all base context properties and methods (toasts, dialogs, navigation, etc.)

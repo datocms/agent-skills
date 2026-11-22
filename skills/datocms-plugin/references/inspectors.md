@@ -194,7 +194,7 @@ type Props = {
   ctx: RenderInspectorCtx;
 };
 
-// Shell and frame facts: datocms-plugin-design surfaces.md, "Inspector"
+// Shell and frame facts: datocms-plugin-design references/surfaces/inspector.md
 export default function ContentBrowser({ ctx }: Props) {
   const models = Object.values(ctx.itemTypes).filter(Boolean);
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);

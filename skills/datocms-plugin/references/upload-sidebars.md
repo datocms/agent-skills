@@ -199,7 +199,7 @@ connect({
 });
 ```
 
-**Important**: Full-width upload sidebars use `ImposedSizePluginFrameCtx`: the frame fills the sidebar and scrolls, and Canvas starts no auto-resizer there, so plain `<Canvas ctx={ctx}>` is right. Shell: [full sidebar](../../datocms-plugin-design/references/surfaces.md#full-sidebar).
+**Important**: Full-width upload sidebars use `ImposedSizePluginFrameCtx`: the frame fills the sidebar and scrolls, and Canvas starts no auto-resizer there, so plain `<Canvas ctx={ctx}>` is right. Shell: [full sidebar](../../datocms-plugin-design/references/surfaces/full-sidebar.md).
 
 ## Key Notes
 

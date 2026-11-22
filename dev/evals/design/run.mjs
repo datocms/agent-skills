@@ -136,13 +136,15 @@ const specific = {
   factsInInfoList: ['shows read-only facts with InfoList', (files) =>
     /from\s+['"]datocms-react-ui\/InfoList['"]/.test(files.main) ? null : 'no `InfoList` for the facts'],
   emptyState: ['uses the empty-state component for an empty area', (files) =>
-    /from\s+['"]datocms-react-ui\/(BlankSlate|EmptySlot)['"]/.test(files.main) ? null : 'no `BlankSlate` or `EmptySlot`'],
+    // `Pane.FilterBlankSlate` is the pane's own slate for a filter with no results (Layout/Pane, "Filter and presets").
+    /from\s+['"]datocms-react-ui\/(BlankSlate|EmptySlot)['"]|\bFilterBlankSlate\b/.test(files.main) ? null : 'no `BlankSlate`, `EmptySlot` or `Pane.FilterBlankSlate`'],
   noStretchedButton: ['does not stretch a button to the full width', (files) =>
     /<Button\b[^>]*\bexpand\b/.test(files.main.replace(/=>/g, '\u21d2')) ? 'a `Button` uses `expand`' : null],
   mainLandmark: ['marks the page content with the Main landmark', (files) =>
     /from\s+['"]datocms-react-ui\/Main['"]/.test(files.main) ? null : 'no `Main` landmark'],
-  segmentedFilter: ['offers a choice among a few visible options with SegmentedControl', (files) =>
-    /from\s+['"]datocms-react-ui\/SegmentedControl['"]/.test(files.main) ? null : 'no `SegmentedControl` for All / Open / Resolved'],
+  // Named views of a list are its presets (Layout/Toolbar, "Presets"); a few always-visible options are a SegmentedControl.
+  segmentedFilter: ['offers the All / Open / Resolved views as list presets or a SegmentedControl', (files) =>
+    /from\s+['"]datocms-react-ui\/SegmentedControl['"]|\bpresets=\{|\bPresetsTitle\b/.test(files.main) ? null : 'no list presets and no `SegmentedControl` for All / Open / Resolved'],
   smartDates: ['shows dates in the user\'s format with SmartDate', (files) => {
     if (/toLocale(Date|Time)?String\(|Intl\.DateTimeFormat/.test(files.main)) return 'formats dates by hand';
     return /from\s+['"]datocms-react-ui\/(SmartDate|utils\/formatDate|Table\/cells\/TimeCell)['"]/.test(files.main) ? null : 'no `SmartDate` (or the table\'s time cell)';

@@ -10,7 +10,8 @@ import { DOCS_DIR, SKILL_DIR, compareSets, localPages, parseSkillIndex } from '.
 const fixture = JSON.parse(readFileSync(new URL('./fixtures/react-ui-entries.json', import.meta.url), 'utf8'));
 const entries = new Set(fixture.entries);
 const skill = readFileSync(join(SKILL_DIR, 'SKILL.md'), 'utf8');
-const handWritten = ['SKILL.md', 'references/surfaces.md', 'references/upgrade-from-2.md', 'references/review-checklist.md'];
+const surfaceRecipes = readdirSync(join(SKILL_DIR, 'references/surfaces')).filter((file) => file.endsWith('.md')).sort();
+const handWritten = ['SKILL.md', 'references/surfaces.md', ...surfaceRecipes.map((file) => `references/surfaces/${file}`), 'references/upgrade-from-2.md', 'references/review-checklist.md'];
 const SKILLS_ROOT = join(SKILL_DIR, '..');
 const markdownUnder = (dir) => readdirSync(dir, { recursive: true })
   .filter((file) => file.endsWith('.md'))

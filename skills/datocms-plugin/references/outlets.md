@@ -237,7 +237,7 @@ export default function CollectionBanner({ ctx }: Props) {
 
 ## Key Notes
 
-- Outlets use `SelfResizingPluginFrameCtx` — they auto-resize to fit content. Padding, spacing and what to render: [outlets](../../datocms-plugin-design/references/surfaces.md#outlets)
+- Outlets use `SelfResizingPluginFrameCtx` — they auto-resize to fit content. Padding, spacing and what to render: [outlets](../../datocms-plugin-design/references/surfaces/outlets.md)
 - Item form outlets have full access to item form properties and methods (same as field extensions and sidebar panels)
 - Item collection outlets do NOT have item form methods — they only have the model (`ctx.itemType`) and base context
 - Use `initialHeight: 0` for outlets that may render nothing (e.g., conditionally shown banners) to avoid blank space
