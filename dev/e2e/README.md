@@ -24,6 +24,16 @@ E2E_AGENT=claude E2E_MODEL=claude-haiku-5-5 E2E_RUN_ID=haiku-1 npm --prefix dev 
 
 It needs a logged-in `claude` CLI (`claude auth status`). Each session runs `claude -p` in a temporary workspace outside the checkout that holds this checkout's skills as project skills, the case's files and the `datocms` launcher; `--setting-sources project` keeps the operator's own plugins, skills and memory out of it. Evidence is `raw.jsonl`, a readable `transcript.simplified.log` and a `session.json` in the shape of the default track's (commands, `skillReads`, usage, `oracleAccess`). `E2E_WORKERS` raises the number of cases run at once. `E2E_SKILLS_ROOT` runs the cases on another skill tree, such as a snapshot of an earlier version (`git archive <commit> skills | tar -x -C local/baseline`), to compare two versions. `node dev/e2e/compare-runs.mjs <run dir> <run dir>=<skills root>` puts runs side by side: passes, scripts, failed commands, tokens and the skill text read.
 
+A case can carry its own controls, which run with no model: a `solution` (plain CMA client calls that do what the task asks) and `traps` (the wrong solutions the case is built to catch).
+
+```bash
+E2E_CONTROL=reference npm --prefix dev run test:e2e -- e2e/cases/<case>.e2e.test.ts   # the solution satisfies the check
+E2E_CONTROL=noop      npm --prefix dev run test:e2e -- e2e/cases/<case>.e2e.test.ts   # the untouched fixture does not
+E2E_CONTROL=traps     npm --prefix dev run test:e2e -- e2e/cases/<case>.e2e.test.ts   # nor does any trap
+```
+
+The test is green when the control holds. Run all three before giving a new case to an agent: a check that accepts the untouched fixture, or rejects a correct solution, measures nothing. An empty directory as `E2E_SKILLS_ROOT` is the no-skill baseline.
+
 Each case verifies the project ID, forks a uniquely named sandbox, seeds fixtures, runs the agent, independently asserts final state, and destroys only its sandbox. Sandbox removal runs after failures and verifies deletion. The harness never deletes projects. The default is one worker; increase workers only when the disposable project's sandbox capacity allows it. `E2E_KEEP_PROJECT=1` retains environments for deliberate debugging.
 
 The agent receives the confirmed environment and CLI authentication context. Credentials are supplied only through environment variables. The runner installs this checkout's skills in an isolated workspace, disables host configuration/plugins/memory, uses temporary authentication links, and removes its workspace and authentication directory afterward. Unless a caller passes its own `HOME`, the actor gets a fresh one (so host CLI logins stay out of reach) whose login shells resolve a stub `open`, so no actor can open the operator's browser. Shell environment snapshots are disabled so credentials are not copied into runtime snapshot files. Transcripts are redacted; observed credential output fails the run.
