@@ -172,12 +172,12 @@ Block validators accept only block models (`modular_block: true`) in `item_types
 | `date_range` | `min`?, `max`? as `"YYYY-MM-DD"` — at least one |
 | `date_time_range` | `min`?, `max`? as ISO 8601 with offset — at least one |
 | `enum` | `values`: string\[] |
-| `format` | `predefined_pattern`: `"email"` \| `"url"`, or `custom_pattern`: regex string with optional `description` (the message editors see) — exactly one of the two patterns |
+| `format` | `predefined_pattern`: `"email"` \| `"url"`, or `custom_pattern`: regex string with optional `description` (the message editors see) — exactly one of the two patterns. A custom pattern matches anywhere in the value: anchor it (`^[A-Z0-9]{6}$`) to constrain the whole value |
 | `slug_format` | `predefined_pattern`: `"webpage_slug"`, or `custom_pattern` with optional `description` |
 | `slug_title_field` | `title_field_id`: ID of a `string` field of the same model |
 | `sanitized_html` | `sanitize_before_validation`=false |
 | `extension` | `predefined_list`: `"image"` \| `"transformable_image"` \| `"video"` \| `"document"`, or `extensions`: string\[] |
-| `file_size` | `min_value` + `min_unit` and/or `max_value` + `max_unit`; units `"B"` \| `"KB"` \| `"MB"` |
+| `file_size` | `min_value` + `min_unit` and/or `max_value` + `max_unit`; units `"B"` \| `"KB"` \| `"MB"` (1 MB = 1024 × 1024 bytes) |
 | `image_dimensions` | `width_min_value` + `height_min_value` and/or `width_max_value` + `height_max_value` (pixels; width and height together) |
 | `image_aspect_ratio` | `min_ar_numerator` + `min_ar_denominator`, `eq_ar_*`, `max_ar_*` — positive integers, at least one pair |
 | `required_alt_title` | `alt`=false, `title`=false — at least one true |

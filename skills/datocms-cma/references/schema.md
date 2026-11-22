@@ -142,11 +142,11 @@ Which validators and editors a type accepts, their exact names and parameters, v
 
 - **Update:** `validators` replaces the whole object (send all of them); `appearance.parameters` merge while the editor stays the same.
 
-- **Changing `field_type`:** only `string`↔`text`, `integer`↔`float`, `file`↔`gallery`, `link`↔`links`, `rich_text`↔`single_block`. The request ignores every other attribute, and validators and appearance are reset (`rich_text` → `single_block` keeps the first block only). `string` → `text` is refused with `USED_AS_SLUG_SOURCE` while a slug derives from it. Any other change of type: create a new field and migrate the values.
+- **Changing `field_type`:** only `string`↔`text`, `integer`↔`float`, `file`↔`gallery`, `link`↔`links`, `rich_text`↔`single_block`. The request ignores every other attribute sent with it; values, `hint` and `default_value` are kept. Validators carried over: `string` → `text` all but `enum`, `unique`, `length`; `text` → `string` all but `length`; `integer`↔`float` all but `number_range`; `link`↔`links` and `rich_text`↔`single_block` only the item-type allowlist; `file`↔`gallery` none. The editor becomes the new type's default (`link_select`↔`links_select`, `link_embed`↔`links_embed`), keeping only the parameters both editors share. Re-apply what was dropped in a second request (`rich_text` → `single_block` keeps the first block only). `string` → `text` is refused with `USED_AS_SLUG_SOURCE` while a slug derives from it. Any other change of type: create a new field and migrate the values.
 
 - **Toggling `localized`:** `false` → `true` copies the current value into every locale; `true` → `false` keeps the main locale's value and drops the others.
 
-- **Narrowing an allowlist** (removing a model from `item_types` of a link or block validator) deletes the existing links to that model or destroys the existing blocks of it.
+- **Narrowing an allowlist** (removing a model from `item_types` of a link or block validator, or sending the list empty) rewrites every record at once: links to that model are removed, its blocks are destroyed, and in Structured Text an `itemLink` becomes plain text. Widening the list again brings nothing back.
 
 - Tightening validators does not reject: existing records are re-validated in the background and may become invalid (they then fail on their next save or publish).
 

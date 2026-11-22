@@ -19,31 +19,17 @@ description: >-
 
 # DatoCMS Content Management API Skill
 
-Use this workflow for CMA operations and scripts. For advice or code explanations, skip execution and setup. Short follow-ups such as “publish them” retain the earlier DatoCMS task, selected route, project, environment, and scope.
+CMA operations and scripts. For advice or code explanations, skip execution and setup. A short follow-up ("publish them") keeps the earlier task, route, project, environment and scope.
 
 ## 1. Select execution before setup
 
-**Retired MCP request: no execution.** If the user requests a retired/legacy MCP or reports that their old local integration no longer works, reply: "That integration is retired. Use the [current DatoCMS MCP setup](https://www.datocms.com/docs/mcp-server)." Keep that link in the final answer. End that task without calling either legacy or current DatoCMS tools: the available current connection is not permission to substitute routes. Do not probe, repair, reinstall, or reconfigure the retired integration. Apply this stop condition before the normal route rules below, unless the user asks for the CLI or current MCP instead. A connection/authentication error alone does not establish that an integration is retired.
+**Retired MCP request: no execution.** If the user requests a retired/legacy MCP or reports that their old local integration no longer works, reply: "That integration is retired. Use the [current DatoCMS MCP setup](https://www.datocms.com/docs/mcp-server)." Keep that link in the final answer and end the task without calling legacy or current DatoCMS tools, probing or repairing the old integration. Apply this stop condition before the normal route rules below, unless the user asks for the CLI or current MCP instead. A connection/authentication error alone does not establish that an integration is retired.
 
-**CLI is the default whenever usable, even with MCP connected.** Override this only for the user's explicit tool choice or a route already used in this conversation. An installed or authenticated connection is availability, not an established workflow.
+**CLI is the default whenever usable, even with MCP connected.** Override this only for the user's explicit tool choice or a route already used in this conversation. Usable means usable now, not merely installable; don't run startup connection checks or scan MCP client configuration.
 
-Inspect only task-relevant exposed capabilities. Available means usable now, not merely installable; don't run startup connection checks or scan MCP client configuration.
-
-- **Explicit route:** honor the user's choice of current MCP or CLI, including MCP when CLI is available. A follow-up keeps its established route unless the user changes it.
-- **Route lock:** once chosen, the live-operation route holds for the whole conversation, later requests on other topics included, until the user explicitly switches. MCP chosen → don't load **datocms-cli** or run CLI commands for live work, even schema lookups; CLI chosen → don't load `references/mcp.md` or call DatoCMS MCP tools. Local deliverables below keep their workflow.
-- **No preference or established route:** when both CLI and current MCP are usable, select CLI. A connected MCP alone is not a request to use it. If only current MCP is usable, select MCP without package installation, CLI login, or project linking. If only CLI is usable, select CLI.
-- **Neither ready:** explain the missing prerequisite appropriate to this environment. Local CLI work may need CLI setup; a client without local execution needs a supported project connection for live operations. MCP is optional, not a prerequisite for all skills.
-- **Local deliverable:** migrations, repo configuration, and application code retain their local development workflow. Remote execution cannot substitute for a versioned migration or create the requested local artifacts. For app/server or unattended CMA code, inspect and reuse existing client configuration and generated types; add setup only when missing and required.
-
-After choosing:
-
-| Route or deliverable | Load only as needed |
-| - | - |
-| CLI script: loops, pagination, dependent calls, localized/block/Structured Text edits | The quick path below. `../datocms-cli/references/cma-script.md` only for file mode, flags, or a script the quick path does not get running. |
-| CLI single calls or endpoint documentation | `../datocms-cli/references/direct-cma-calls.md`. |
-| Current MCP | `references/mcp.md`; the exposed tools supply their current runtime contract. |
-| Missing prerequisites for selected CLI work | **datocms-cli** setup workflow. Always confirm the target project before linking; an inferred single candidate is not consent. |
-| Code constructing its own client (app/server, CI, cron, shared unattended script) | `references/client-setup-and-errors.md` for package choice, token/environment configuration, and error handling. |
+- **Route lock:** once chosen, the live-operation route holds for the whole conversation, later requests on other topics included, until the user explicitly switches. MCP chosen → don't load **datocms-cli** or run CLI commands for live work, even schema lookups; CLI chosen → don't load `references/mcp.md` or call DatoCMS MCP tools.
+- **Only the current MCP usable:** use it (`references/mcp.md`; its tools state their own contract), with no package installation, CLI login or project linking. **Neither usable:** name the missing prerequisite for this environment; MCP is optional, never a prerequisite. Missing CLI setup: **datocms-cli**, confirming the target project before linking (a single inferred candidate is not consent).
+- **Local deliverable:** migrations, repo configuration and application code keep their local workflow; a remote call cannot stand in for a versioned migration or a file. Code that builds its own client (app/server, CI, cron): `references/client-setup-and-errors.md`, reusing existing client configuration and generated types.
 
 **CLI quick path.** Look first with plain commands, which have nothing to type-check:
 
@@ -69,23 +55,17 @@ A single write of plain values (no blocks, locales or Structured Text) needs no 
 - `Schema.<Model>` is the model or block API key in PascalCase (`faq_entry` → `Schema.FaqEntry`). Put it on every `items` call: without it every field is `unknown`. Field values are nullable, and one locale of a localized value can be `undefined`: guard before use.
 - Print what you need with `console.log`; nothing else comes back. A project must be linked or a token set.
 
-Use the selected tool's current documentation for method signatures, payloads, authentication, project/environment selection, and execution requirements. CLI documentation hints in shared references apply only to CLI work. MCP tasks must not acquire a CLI prerequisite through a linked reference.
+`../datocms-cli/references/direct-cma-calls.md` documents `cma:call` and `cma:docs <resource> <action>` (the signature and payload of any method); `../datocms-cli/references/cma-script.md` only for file mode, flags, or a script the quick path does not get running. CLI hints in shared references apply to CLI work only: an MCP task never acquires a CLI prerequisite through them.
 
 ## 2. Establish scope and schema approach
 
-Reuse the known project and environment. Resolve only missing information; ask when the target or requested operation is ambiguous. Choosing another tool does not authorize more actions, a different environment, or publication. Schema mutations require schema-edit permission (`can_edit_schema`); explicitly confirm direct schema changes against primary before execution.
+Reuse the known project and environment; ask only when the target or the operation is ambiguous. Another tool never authorizes more actions, a different environment or publication. Inspect only the models and records the task touches (`../datocms-cli/references/schema-inspect.md` for `schema:inspect` filters; the schema tools in MCP mode).
 
-Inspect the relevant models, fields, validators, and current record values before schema-dependent mutations. In CLI mode, use targeted `schema:inspect` guidance in `../datocms-cli/references/schema-inspect.md`; in MCP mode use the exposed schema tools. Don't retrieve the whole project for a narrow edit.
+- **Destructive schema change** (dropping fields or models, lossy field-type changes, narrowing a link or block validator's `item_types`, `bulk_destroy`): **datocms-cli** migration against a forked sandbox first. Never against primary without explicit, repeated user confirmation.
+- **Other schema change:** needs `can_edit_schema`; confirm before changing primary directly. Unless already decided, ask whether the user wants a reviewable migration or a direct sandbox change; prefer migrations when the repo uses them; after an opt-out do not suggest them again. Versioned and replayable across environments → **datocms-cli** migration and local files.
+- **Content operation** (publish/unpublish, record edits and deletion, bulk value updates, upload metadata): the selected route, no migration. Touch only the authorized records, fields, locales and publication state.
 
-| Task | Approach |
-| - | - |
-| Destructive schema change: drop fields/models, lossy field-type changes, narrowing a link or block validator's `item_types`, or `bulk_destroy` records | **datocms-cli** migration against a forked sandbox first. Never execute against primary without explicit, repeated user confirmation. |
-| Reversible schema change: add/rename fields or models, change validators, reorder fieldsets | Ask whether the user wants a reviewable migration or direct sandbox mutation unless already decided. Prefer migrations when the repo uses them or work is on a secondary branch; direct mutation is valid for quick sandbox iteration. |
-| Explicit one-off or migration opt-out | Honor direct mutation unless the change is destructive. Do not repeatedly suggest migrations. |
-| Content operation: publish/unpublish, individual record deletion, field edits, bulk value updates, upload metadata | Use the selected route; no migration needed. Preserve the authorized records, fields, locales, and publication state. |
-| Change requested as versioned and replayable across environments | Use **datocms-cli** migration guidance and local artifacts. |
-
-Load sibling guidance yourself when available; do not bounce the user between skills. If a local deliverable cannot be produced here, explain the missing local capability rather than silently replacing it with a remote mutation.
+Load sibling guidance yourself; do not send the user from skill to skill. A local deliverable that cannot be produced here is reported as such, never replaced by a remote mutation.
 
 ## 3. Rules that reject writes or lose data
 
@@ -95,7 +75,7 @@ The API is strict where guesses usually go wrong. Hold these before building any
 
 - Modular Content's `field_type` is `rich_text`. `link`, `links`, `rich_text`, `single_block` and `structured_text` fields are rejected without their item-type validator; `structured_text` needs `structured_text_blocks` and `structured_text_links`, and allows inline blocks only when `structured_text_inline_blocks` lists them.
 - Validators and editors are per field type and their names and parameters are exact (`string_select` takes `options`, `string_radio_group` takes `radios`; `boolean`, `gallery`, `links` and `rich_text` have no `required`). Look them up, don't infer them. `appearance` always carries `editor`, `parameters` and `addons`.
-- `fields.update` replaces the whole `validators` object. Removing a model from a link or block validator deletes the existing links or blocks. `field_type` converts only within five pairs and resets validators and appearance.
+- `fields.update` replaces the whole `validators` object. Removing a model from a link or block validator deletes the existing links or blocks. `field_type` converts only within five pairs, ignores every other attribute of that request, and drops validators and editor settings the new type does not carry over (`references/schema.md`): re-apply them in a second request.
 - Model `api_key` must be singular; no key may have `_` right before a digit. Block models cannot have localized fields, `unique`, or fieldsets, and a model never converts to or from a block model.
 
 **Content** — values per field type and limits in `references/records.md`; blocks, Structured Text and locales in `references/editing-records.md`.
@@ -111,45 +91,35 @@ The API is strict where guesses usually go wrong. Hold these before building any
 
 ## 4. Load only the relevant workflow
 
-Method documentation supplies API shapes; these references supply DatoCMS editing workflows and gotchas. Consult current method details only for the operation being built. If the selected tool already returned the relevant guidance, reuse it instead of loading a duplicate. Do not preload every reference or reread unchanged references on follow-ups.
+Method documentation gives API shapes; these references give DatoCMS workflows and gotchas. Load what the operation needs, once.
 
 | Task | Reference |
 | - | - |
 | Record lifecycle, publication, versions, value of each field type, per-record limits, write errors | `references/records.md` |
-| Modular Content, Single Block, nested blocks, Structured Text record create/update/backfill | `references/editing-records.md`. Its sections stand alone: block edits need it up to "Single block", Structured Text edits the three "Structured text" sections, and the typing and verification sections only when a type error or a preservation check calls for them. Pure DAST work (conversion, deep document questions): `../datocms-structured-text/references/document-model.md` plus its editing or conversion reference. |
-| Create or change models, block models, fields, fieldsets | `references/schema.md` |
-| Which validators and editors a field type accepts, their parameters, `default_value`, `api_key` rules | `references/field-types.md` |
+| Modular Content, Single Block, nested blocks, Structured Text edits | `references/editing-records.md` (sections stand alone). Pure DAST work: `../datocms-structured-text/references/document-model.md` |
+| Models, block models, fields, fieldsets | `references/schema.md` |
+| Validators and editors per field type, their parameters, `default_value`, `api_key` rules | `references/field-types.md` |
+| Localized fields, adding or backfilling a locale | `references/localization.md` with `references/editing-records.md` |
 | Uploads and asset metadata | `references/uploads.md` |
-| Filtering (including creator audits), querying, collection pagination | `references/filtering-and-pagination.md`; check filter operators here even when the installed SDK accepts a broad object. |
-| Localized fields and locale backfills | `references/localization.md`; also `references/editing-records.md` when adding or backfilling a locale. |
-| Environment operations | `references/environments.md` |
-| Roles, tokens, collaborators | `references/access-control.md` |
-| Requested migration scripts | `references/migration-patterns.md` plus **datocms-cli** migration guidance |
-| Local generated CMA types | `references/type-generation.md` |
-| Raw methods, advanced client behavior, platform limits | `references/client-types-and-behaviors.md` |
-| Project settings, maintenance mode, subscription limits, usage | `references/project-settings-and-usage.md` |
+| Filtering (creator audits included), querying, pagination | `references/filtering-and-pagination.md`, even when the SDK type accepts a broad object |
+| Environments · roles, tokens, collaborators | `references/environments.md` · `references/access-control.md` |
+| Migration scripts · local generated types | `references/migration-patterns.md` plus **datocms-cli** · `references/type-generation.md` |
+| Raw methods, client behavior, platform limits · project settings, maintenance mode, usage | `references/client-types-and-behaviors.md` · `references/project-settings-and-usage.md` |
 | Webhooks/build triggers, scheduling/workflows, menus, plugins, saved filters, upload tracks/tags, audit logs | Matching section of `references/resource-gotchas.md` |
-
-Combine references only when the task spans their subjects: for example, a localized Structured Text edit needs localization and editing guidance. Don't load migration or type-generation guidance merely because a content operation uses a script.
 
 ## 5. Build the operation
 
-- Use the selected runtime's authenticated client, helper availability, and script form. Do not transplant CLI globals, imports, or file-mode conventions into another runtime. For client construction, read credentials from environment variables, never chat or hardcoded strings; use the least privileges needed and explicitly target the sandbox when applicable.
-- Prefer the simplified API. Use raw methods only when the task needs JSON:API payloads or relationship metadata. Use `listPagedIterator()` with `for await...of` for complete collection traversal when available. For `items` with `nested: true`, keep `perPage` ≤ 30 (default): API rejects larger pages; iterator won't lower it. Nested records: own fields flattened (`record.title`), embedded blocks keep theirs under `block.attributes`.
-- For localized, block, or Structured Text edits, use one script that reads then transforms the current record (`cma:script` in CLI mode). Fetch nested blocks when needed and use typed block helpers. Preserve unrelated fields, locales, blocks, links, and upload metadata; avoid reconstructing whole records from partial reads.
-- For Structured Text, follow the editing reference's text round-trip, typed node/block mutation, then root-append order. Preserve existing block identities and references unless replacement is requested.
-- Use precise project types on record calls and helpers. Prefer inference and type guards; never use `any`, `unknown`, or casts that hide a mismatch. Supplied project types need no local generation step. Only local code that needs its own type module follows type-generation guidance.
-- Handle API errors at the operation boundary using the selected runtime's facilities, including `ApiError` and `TimeoutError` when exposed. Report authentication and permission failures accurately; do not bypass them through another route. A timeout or missing write response has an uncertain outcome: inspect resulting state before any retry, and never replay that write through another route or tool.
-- For long-running scripts, report progress and final totals using the selected runtime's output facilities.
+- Complete collections: `listPagedIterator()` with `for await...of`. For `items` with `nested: true`, keep `perPage` ≤ 30 (default): API rejects larger pages; iterator won't lower it. Nested records: own fields flattened (`record.title`), embedded blocks keep theirs under `block.attributes`.
+- Never rebuild a record from a partial read: read with `nested: true`, change what was asked, keep the rest (fields, locales, blocks, links, upload metadata). Structured Text: text round-trip, then typed node/block changes, then root appends, as `references/editing-records.md` orders them.
+- Simplified API by default; raw methods only for JSON:API payloads or relationship metadata. Client code of your own reads credentials from environment variables, uses least privilege and targets the sandbox explicitly; CLI globals and file-mode conventions do not carry into another runtime.
+- Errors: `ApiError` and `TimeoutError` at the operation boundary. Report authentication and permission failures as they are; never route around them. After a timeout or a missing write response the outcome is unknown: read the state before any retry, and never replay the write through another route or tool.
 
 ## 6. Verify and report
 
-Verify against the same project, environment, and authorized scope. Compare saved field/node values with an independent snapshot of the original read, using deep equality for objects; object identity and serialized update payloads cannot establish preservation. Nested reads expand block IDs and partial updates into full objects. Check requested changes, unrelated content, locales, links, and publication state. Publishing requires separate authorization. Validate script types, helpers, pagination, and error handling against the chosen runtime contract.
-
-Report what was actually executed and verified, including partial or uncertain outcomes. For local code deliverables, distinguish validation from live execution. Missing local CLI setup is relevant only when that deliverable or selected route needs it.
+Read back from the same project and environment: the requested change, and that unrelated content, locales, links and publication state are as they were (compare saved values with a snapshot of the original read; object identity and the payload sent prove nothing, since nested reads expand IDs and partial updates). Publishing requires its own authorization. Report what was executed and verified, partial or uncertain outcomes included; for local code, say whether it was validated or run live.
 
 ## Other tasks
 
-Use **datocms-cli** for CLI configuration, migrations, schema generation, CLI environment workflows, onboarding imports, plugin management, multi-project sync, and CI/CD. Use **datocms-setup** when the user wants a setup planned or walked through (migrations plus release, multi-project sync, imports into a project, webhooks/build triggers). Use **datocms-structured-text** for pure DAST construction, inspection, editing, and conversion, before any project setup; combine it with this skill when a CMA operation persists the document (routine record operations don't need it). Use **datocms-cda** for GraphQL content reads, **datocms-frontend-integrations** for framework code, **datocms-plugin** for plugin development, and **datocms-content-modeling** for modeling decisions without implementation.
+**datocms-cli**: CLI configuration, migrations, schema generation, environments, imports, plugin management, multi-project sync, CI/CD. **datocms-setup**: a setup planned or walked through. **datocms-structured-text**: pure DAST construction, inspection, editing, conversion (combine with this skill when a CMA operation persists the document). **datocms-cda**: GraphQL reads. **datocms-frontend-integrations**: framework code. **datocms-plugin**: plugins. **datocms-content-modeling**: modeling decisions.
 
 Missing sibling reference → install that skill from `datocms/agent-skills` or update the full bundle.

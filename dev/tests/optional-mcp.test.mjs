@@ -96,8 +96,24 @@ const preservedWorkflows = {
 // An intended change to a section listed above is added here in the same commit; the list is
 // emptied when the base moves to a commit that already holds the reviewed text.
 const reviewedCorrections = {
-  records: [],
-  'editing-records': [],
+  records: [
+    // Measured on the API: a date-time without an offset is stored as UTC.
+    [
+      "| `date_time` | ISO 8601 with offset, `\"2026-03-01T09:30:00+01:00\"`, or `null` |",
+      "| `date_time` | ISO 8601 with offset, `\"2026-03-01T09:30:00+01:00\"`, or `null`. Without an offset the time is taken as UTC, not as the editor's timezone |",
+    ],
+  ],
+  'editing-records': [
+    // Measured on the API: a locale left out of one field is rejected; left out of all, it is deleted.
+    [
+      "- **Localized block field:** the value is `{ en: [...], it: [...] }` with separate blocks per locale. Send every locale: a locale you leave out is deleted with its blocks.",
+      "- **Localized block field:** the value is `{ en: [...], it: [...] }` with separate blocks per locale. Send every locale the record has: leaving one out is rejected (`INVALID_LOCALES`) unless every localized field you send leaves it out, and then that locale is deleted with its blocks.",
+    ],
+    [
+      "- **Send every locale of a field you update.** A locale left out of the object is removed: spread the current value and change what you need (`{ ...it.question, es: \"...\" }`).",
+      "- **Send every locale of a field you update:** spread the current value and change what you need (`{ ...it.question, es: \"...\" }`). A locale left out of one field is rejected with `INVALID_LOCALES`; left out of every localized field you send, it is removed from the record (that is how a translation is deleted: an empty string keeps the locale).",
+    ],
+  ],
 };
 
 function withReviewedCorrections(name, source) {

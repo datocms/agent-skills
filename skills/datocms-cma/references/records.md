@@ -49,7 +49,7 @@ What `create` / `update` take and reads return. A localized field wraps the same
 | `integer`, `float` | number or `null` |
 | `boolean` | `true` / `false` (`null` is stored as `false`) |
 | `date` | `"YYYY-MM-DD"` or `null` |
-| `date_time` | ISO 8601 with offset, `"2026-03-01T09:30:00+01:00"`, or `null` |
+| `date_time` | ISO 8601 with offset, `"2026-03-01T09:30:00+01:00"`, or `null`. Without an offset the time is taken as UTC, not as the editor's timezone |
 | `json` | a JSON-encoded **string** (`JSON.stringify(data)`); read back as a string |
 | `color` | `{ red, green, blue, alpha }`, integers 0–255, all four required (alpha 255 = opaque) |
 | `lat_lon` | `{ latitude, longitude }` |

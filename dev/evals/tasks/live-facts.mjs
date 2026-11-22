@@ -129,11 +129,49 @@ try {
     return expectRejection(await rejection(() => client.fields.update(created.id, { field_type: 'slug' })), { code: 'INVALID_FIELD', field: 'field_type' });
   });
 
+  await check('`string` to `text` keeps `required` and `format`, drops `length`, `unique` and `enum`, and keeps the shared editor parameter', async () => {
+    const created = await field({ label: 'V1', api_key: 'v_one', field_type: 'string', validators: { required: {}, unique: {}, length: { max: 60 }, format: { predefined_pattern: 'email' } }, appearance: { editor: 'single_line', parameters: { heading: true, placeholder: 'ph' }, addons: [] } });
+    const updated = await client.fields.update(created.id, { field_type: 'text' });
+    const kept = Object.keys(updated.validators).sort().join();
+    if (kept !== 'format,required') return `validators kept: ${kept}`;
+    return updated.appearance.editor === 'textarea' && updated.appearance.parameters.placeholder === 'ph' ? null : `appearance is ${JSON.stringify(updated.appearance)}`;
+  });
+  await check('`integer` to `float` keeps `required` and drops `number_range`', async () => {
+    const created = await field({ label: 'V2', api_key: 'v_two', field_type: 'integer', validators: { required: {}, number_range: { min: 1, max: 9 } } });
+    const kept = Object.keys((await client.fields.update(created.id, { field_type: 'float' })).validators).join();
+    return kept === 'required' ? null : `validators kept: ${kept}`;
+  });
+  await check('`image_dimensions` needs width and height together', async () => {
+    const alone = await rejection(() => field({ label: 'V3', api_key: 'v_three', field_type: 'file', validators: { image_dimensions: { width_min_value: 1200 } } }));
+    if (!alone) return 'the API accepted a width alone';
+    const both = await rejection(() => field({ label: 'V4', api_key: 'v_four', field_type: 'file', validators: { image_dimensions: { width_min_value: 1200, height_min_value: 1 } } }));
+    return both ? `width and height were rejected: ${JSON.stringify(both)}` : null;
+  });
+  await check('a model created without `draft_mode_active` has draft mode on', async () =>
+    (probe.draft_mode_active === true ? null : `draft_mode_active is ${probe.draft_mode_active}`));
+  await check('a custom pattern matches anywhere in the value unless anchored', async () => {
+    const loose = await client.itemTypes.create({ name: 'Loose', api_key: 'loose' });
+    const sku = await client.fields.create(loose.id, { label: 'Sku', api_key: 'sku', field_type: 'string', validators: { format: { custom_pattern: '[A-Z0-9]{6}' } } });
+    const create = () => client.items.create({ item_type: { type: 'item_type', id: loose.id }, sku: 'xxAB12CDxx' });
+    if (await rejection(create)) return 'the unanchored pattern rejected a value that contains a match';
+    await client.fields.update(sku.id, { validators: { format: { custom_pattern: '^[A-Z0-9]{6}$' } } });
+    return (await rejection(create)) ? null : 'the anchored pattern accepted a longer value';
+  });
+  await check('on a model without draft mode every write is published at once', async () => {
+    const live = await client.itemTypes.create({ name: 'Live', api_key: 'live', draft_mode_active: false });
+    await client.fields.create(live.id, { label: 'Title', api_key: 'title', field_type: 'string' });
+    const created = await client.items.create({ item_type: { type: 'item_type', id: live.id }, title: 'a' });
+    await client.items.update(created.id, { title: 'b' });
+    const published = await client.items.find(created.id, { version: 'published' });
+    return created.meta.status === 'published' && published.title === 'b' ? null : `status ${created.meta.status}, published title ${published.title}`;
+  });
+
   // ---- record values (records.md)
   await pageField({ label: 'Subtitle', api_key: 'subtitle', field_type: 'string' });
   await pageField({ label: 'Flag', api_key: 'flag', field_type: 'boolean' });
   await pageField({ label: 'Data', api_key: 'data', field_type: 'json' });
   await pageField({ label: 'Tint', api_key: 'tint', field_type: 'color' });
+  await pageField({ label: 'Starts at', api_key: 'starts_at', field_type: 'date_time' });
   await pageField({ label: 'Tagline', api_key: 'tagline', field_type: 'string', localized: true });
   await pageField({ label: 'Summary', api_key: 'summary', field_type: 'string', localized: true });
   const sections = await pageField({ label: 'Sections', api_key: 'sections', field_type: 'rich_text', validators: { rich_text_blocks: { item_types: [block.id, other.id] } } });
@@ -216,6 +254,20 @@ try {
   await check('adding a locale to every localized field in one update is accepted', async () => {
     const details = await rejection(() => client.items.update(record.id, { tagline: { en: 'Hello', it: 'Ciao' }, summary: { en: 'Short', it: 'Breve' } }));
     return details ? `rejected: ${JSON.stringify(details)}` : null;
+  });
+
+  await check('a locale left out of one localized field is rejected; left out of all of them, it is removed', async () => {
+    const one = await rejection(() => client.items.update(record.id, { tagline: { en: 'Hello' } }));
+    if (!one || !JSON.stringify(one).includes('INVALID_LOCALES')) return `one field: ${JSON.stringify(one)}`;
+    const all = await rejection(() => client.items.update(record.id, { tagline: { en: 'Hello' }, summary: { en: 'Short' } }));
+    if (all) return `all fields: ${JSON.stringify(all)}`;
+    const read = await client.items.find(record.id);
+    return 'it' in read.tagline ? 'the locale is still on the record' : null;
+  });
+  await check('a date-time sent without an offset is stored as UTC', async () => {
+    await client.items.update(record.id, { starts_at: '2027-03-01T20:30:00' });
+    const stored = (await client.items.find(record.id)).starts_at;
+    return new Date(stored).toISOString() === '2027-03-01T20:30:00.000Z' ? null : `stored ${stored}`;
   });
 
   // ---- Structured Text (editing-records.md)
