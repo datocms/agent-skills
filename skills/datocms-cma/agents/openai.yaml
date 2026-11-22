@@ -1,5 +1,5 @@
 # synced_from_name: datocms-cma
-# synced_from_description_sha256: 3e05d4fbb7fad1f8720cc547e4e9d7d88b0fe971ace204309319e30f903891c8
+# synced_from_description_sha256: dcafdff9fce27a2d5db0a0c65631f5d867ef22357bd91026c4f0a0755d90bda5
 interface:
   display_name: "DatoCMS CMA"
   short_description: "Manage DatoCMS content via scripts, the CLI or MCP"

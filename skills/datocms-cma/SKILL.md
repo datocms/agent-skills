@@ -1,20 +1,20 @@
 ---
 name: datocms-cma
 description: >-
-  Read and write DatoCMS content and schema through the Content Management API
-  (CMA): records, blocks and nested blocks, Structured Text, localized fields,
-  uploads, publish/unpublish, bulk imports/exports, CSV scripts; models, block
-  models, fields, every field type with its validators and editors
-  (presentations); roles/tokens, webhooks, scheduling, environments; API limits
-  and error codes; typed Node.js/TypeScript CMA scripts. Includes short
-  follow-ups such as "publish them" or "fix those slugs", token/OAuth setup
-  before content operations, and model/field changes needing a
-  migration-versus-direct decision. Works with the CLI or an available DatoCMS
-  MCP; neither MCP installation nor local execution is assumed. Route
-  schema-inspection-only requests, versioned migrations, and standalone CLI
-  configuration to `datocms-cli`, GraphQL reads to `datocms-cda`, modeling
-  advice to `datocms-content-modeling`, and frontend or plugin code to their
-  dedicated skills.
+  Load BEFORE the first command of any task that reads or changes DatoCMS
+  content or schema through the Content Management API (CMA), the `datocms`
+  CLI (`cma:call`, `cma:script`) or a DatoCMS MCP, even a one-record edit:
+  writes to blocks, nested blocks, Structured Text and localized fields
+  replace whole values, what a payload leaves out is deleted, and some
+  operations publish. Covers records, blocks, Structured Text, locales,
+  uploads, publish/unpublish, scheduling, versions and restore, bulk
+  imports/exports, CSV scripts; models, block models, fields, every field type
+  with its validators and editors (presentations); roles/tokens, webhooks,
+  environments; API limits and error codes; typed TypeScript CMA scripts.
+  Includes short follow-ups such as "publish them" or "fix those slugs". Route
+  schema-inspection-only requests, versioned migrations and CLI setup to
+  `datocms-cli`, GraphQL reads to `datocms-cda`, modeling advice to
+  `datocms-content-modeling`, frontend or plugin code to their own skills.
 ---
 
 # DatoCMS Content Management API Skill
@@ -45,19 +45,28 @@ After choosing:
 | Missing prerequisites for selected CLI work | **datocms-cli** setup workflow. Always confirm the target project before linking; an inferred single candidate is not consent. |
 | Code constructing its own client (app/server, CI, cron, shared unattended script) | `references/client-setup-and-errors.md` for package choice, token/environment configuration, and error handling. |
 
-**CLI quick path.** One heredoc reads, changes and writes; this is all most content work needs from the CLI:
+**CLI quick path.** Look first with plain commands, which have nothing to type-check:
+
+```bash
+npx datocms schema:inspect <model_api_key> --environment=<env>   # fields, validators, editors, allowed blocks
+npx datocms cma:call items find <RECORD_ID> --params '{"nested": true}' --environment=<env>
+```
+
+Then change with ONE script that reads, builds the new values and writes once:
 
 ```bash
 npx datocms cma:script --environment=<env> <<'EOF'
 const record = await client.items.find<Schema.Article>("RECORD_ID", { nested: true });
-// build the new field values, then write once:
+// build the new field values from `record`, then:
 await client.items.update<Schema.Article>(record.id, { /* changed fields only */ });
 EOF
 ```
 
-- `client`, `Schema.*` and every export of `@datocms/cma-client-node`, `datocms-structured-text-utils` and `datocms-structured-text-dastdown` are ambient: no imports, top-level `await`, no `export default`, no `node:` modules.
-- `Schema.<Model>` is the model or block API key in PascalCase (`faq_entry` → `Schema.FaqEntry`). Put it on every `items` call, a first read-only look included (`client.items.list<Schema.FaqEntry>({ filter: { type: "faq_entry" } })`): without it every field is `unknown` and the first field access fails the type-check. A localized value is a locale map; one locale's value can be `undefined` or `null`, so guard it.
-- The script is type-checked before it runs, against an ES2020 library (no `.at()`, no `replaceAll`). Explicit `any` / `unknown`, `as never` and `@ts-ignore` are rejected: fix the types, never skip validation.
+A single write of plain values (no blocks, locales or Structured Text) needs no script: `cma:call items update <RECORD_ID> --data '{"title": "New"}'`. Schema changes too: `cma:call itemTypes create`, `cma:call fields create <MODEL_ID>`.
+
+- `client`, `Schema.*` and every export of `@datocms/cma-client-node`, `datocms-structured-text-utils` and `datocms-structured-text-dastdown`, functions and types (`buildBlockRecord`, `mapNodes`, `Span`, `Paragraph`…), are ambient: no imports, top-level `await`, no `export default`, no `node:` modules.
+- A script containing `any`, `unknown`, `as never` or `@ts-ignore` is rejected before it runs, and it is type-checked against an ES2020 library (no `.at()`, no `replaceAll`). Let types be inferred from `record`. Type a helper's parameters with `typeof record.field`, a `Schema.X` or a node type. Narrow blocks and nodes with the guards (`isBlockOfType(Schema.X.ID, block)`, `isSpan(node)`), never with property checks or casts.
+- `Schema.<Model>` is the model or block API key in PascalCase (`faq_entry` → `Schema.FaqEntry`). Put it on every `items` call: without it every field is `unknown`. Field values are nullable, and one locale of a localized value can be `undefined`: guard before use.
 - Print what you need with `console.log`; nothing else comes back. A project must be linked or a token set.
 
 Use the selected tool's current documentation for method signatures, payloads, authentication, project/environment selection, and execution requirements. CLI documentation hints in shared references apply only to CLI work. MCP tasks must not acquire a CLI prerequisite through a linked reference.
@@ -92,11 +101,12 @@ The API is strict where guesses usually go wrong. Hold these before building any
 **Content** — values per field type and limits in `references/records.md`; blocks, Structured Text and locales in `references/editing-records.md`.
 
 - Odd value shapes: `json` is a JSON string, `color` is `{ red, green, blue, alpha }` 0–255, `file` is `{ upload_id, ... }`, a `null` string reads back as `""`, slugs are never generated by the API.
-- A field you send replaces its whole value: blocks you leave out are deleted, and so are locales you leave out. In a block field an ID string keeps a block, `{ id, ...changes }` edits it, an object with `item_type` adds one. When creating a record every block is an object. A block ID cannot move to another field, locale or record.
+- A field you send replaces its whole value: blocks you leave out are deleted, and so is a locale that every localized field you send leaves out (leaving it out of some fields only is rejected with `INVALID_LOCALES`). In a block field an ID string keeps a block, `{ id, ...changes }` edits it, an object with `item_type` adds one. When creating a record every block is an object. A block ID cannot move to another field, locale or record.
 - All localized fields of a record share one set of locales: adding a locale means sending every localized field.
 - Per record: 1,000 blocks, 5 block levels, 1 MB by default (`TECHNICAL_LIMIT_REACHED`; the project's real limits come from `client.publicInfo.find()`).
-- Structured Text: `block` nodes only under `root`, `inlineBlock` inside text. The API normalizes the document it stores and does not enforce the editor's `nodes` / `marks` / `heading_levels`.
+- Structured Text: `block` nodes only under `root`, `inlineBlock` inside text. Marks are `strong`, `emphasis`, `code`, `underline`, `strikethrough`, `highlight` (never `bold` / `italic`: the API stores an unknown name as a custom mark instead of rejecting it). The API normalizes the document it stores and does not enforce the editor's `nodes` / `marks` / `heading_levels`.
 - `update` never publishes. Blocks cannot be written, published or deleted on their own, only through their record.
+- A model without draft mode (`draft_mode_active: false`) has no drafts: every write is live at once, and `itemVersions.restore` publishes the version it restores (with draft mode it adds an unpublished version). Read the model's setting before a restore or an edit that must not reach the website; when it cannot be done without going live, say so and change nothing.
 - Rejections are `INVALID_FIELD` errors: `details.field` is the path (`sections.0.ctas.0.title`), `details.code` the reason (`VALIDATION_REQUIRED`, `INVALID_FORMAT`…).
 
 ## 4. Load only the relevant workflow
