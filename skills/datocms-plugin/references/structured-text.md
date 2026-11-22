@@ -48,7 +48,7 @@ connect({
       {
         id: 'spoiler',
         label: 'Spoiler',
-        icon: 'eye-slash',
+        icon: 'highlighter',
         keyboardShortcut: 'mod+shift+s',
         appliedStyle: {
           backgroundColor: 'var(--color--ink)',

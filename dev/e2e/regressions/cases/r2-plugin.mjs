@@ -7,7 +7,7 @@ import { dirname, extname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { build } from 'esbuild';
 
-// Reuses the plugin fixture: datocms-plugin-sdk 2.4.2 (first line with the >=2.4 upload metadata shape), react-ui, vite, playwright.
+// Reuses the plugin fixture: datocms-plugin-sdk 2.5.0 (>=2.4 upload metadata shape), datocms-react-ui 4, vite, playwright.
 const fixture = resolve(import.meta.dirname, '../../catalog/plugin');
 const modules = join(fixture, 'node_modules');
 const sdk = () => createRequire(join(fixture, 'package.json'))('datocms-plugin-sdk');
@@ -47,7 +47,7 @@ export function render(component: ReactNode) {
 }
 `,
     'src/entrypoints/ConfigScreen.tsx': `import type { RenderConfigScreenCtx } from 'datocms-plugin-sdk';
-import { Canvas } from 'datocms-react-ui';
+import Canvas from 'datocms-react-ui/Canvas';
 
 export default function ConfigScreen({ ctx }: { ctx: RenderConfigScreenCtx }) {
   return <Canvas ctx={ctx}><p>No settings yet.</p></Canvas>;
@@ -189,7 +189,7 @@ const assetSourceFiles = (metadata) => ({
   },`,
   }),
   'src/entrypoints/StudioPhotos.tsx': `import type { RenderAssetSourceCtx } from 'datocms-plugin-sdk';
-import { Canvas } from 'datocms-react-ui';
+import Canvas from 'datocms-react-ui/Canvas';
 import { photos, type Photo } from '../photos';
 
 export default function StudioPhotos({ ctx }: { ctx: RenderAssetSourceCtx }) {
@@ -239,23 +239,26 @@ const navigationFiles = (path) => ({
   },`,
   }),
   'src/entrypoints/ConfigScreen.tsx': `import type { RenderConfigScreenCtx } from 'datocms-plugin-sdk';
-import { Button, Canvas } from 'datocms-react-ui';
+import Button from 'datocms-react-ui/Button';
+import Canvas from 'datocms-react-ui/Canvas';
 
 export default function ConfigScreen({ ctx }: { ctx: RenderConfigScreenCtx }) {
   const environmentPrefix = ctx.isEnvironmentPrimary ? '' : \`/environments/\${ctx.environment}\`;
   return (
     <Canvas ctx={ctx}>
-      <Button onClick={() => ctx.navigateTo(\`\${environmentPrefix}${path}?year=2025\`)}>Open 2025 reports</Button>
+      <Button label="Open 2025 reports" onClick={() => ctx.navigateTo(\`\${environmentPrefix}${path}?year=2025\`)} />
     </Canvas>
   );
 }
 `,
   'src/entrypoints/ReportsPage.tsx': `import type { RenderPageCtx } from 'datocms-plugin-sdk';
-import { Canvas } from 'datocms-react-ui';
+import Canvas from 'datocms-react-ui/Canvas';
+import Heading from 'datocms-react-ui/Heading';
+import Main from 'datocms-react-ui/Main';
 
 export default function ReportsPage({ ctx }: { ctx: RenderPageCtx }) {
   const year = new URLSearchParams(ctx.location.search).get('year');
-  return <Canvas ctx={ctx} noAutoResizer><h1>{year ? \`Reports for \${year}\` : 'Reports'}</h1></Canvas>;
+  return <Canvas ctx={ctx}><Main><Heading level={1}>{year ? \`Reports for \${year}\` : 'Reports'}</Heading></Main></Canvas>;
 }
 `,
 });
@@ -270,7 +273,7 @@ const HINT = 'Keep this block under 200 words.';
 const singleBlockFiles = (hooks) => ({
   'src/main.tsx': mainSource({ imports: "import BlockHint from './entrypoints/BlockHint';\n", hooks }),
   'src/entrypoints/BlockHint.tsx': `import type { RenderFieldExtensionCtx } from 'datocms-plugin-sdk';
-import { Canvas } from 'datocms-react-ui';
+import Canvas from 'datocms-react-ui/Canvas';
 
 export default function BlockHint({ ctx }: { ctx: RenderFieldExtensionCtx }) {
   return <Canvas ctx={ctx}><p style={{ color: 'var(--color--ink-subtle)' }}>${HINT}</p></Canvas>;

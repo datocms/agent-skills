@@ -44,9 +44,8 @@ See `upload-sidebars.md` and `modals.md`.
 
 ## Restraint in plugin UI
 
-Start with existing `datocms-react-ui` components and the target plugin's current layout.
+Start with existing `datocms-react-ui` 4 components and the target plugin's current layout; component choice and look: [datocms-plugin-design](../../datocms-plugin-design/SKILL.md).
 
-- Use `datocms-react-ui` for forms, buttons, layout primitives, loading states, and notices.
 - Add local components only for thin composition.
 - Introduce heavier custom UI only for tool-like interactions such as visual pickers, canvas tools, media grids, or drag/drop.
 - Keep modals and internal screens compact.

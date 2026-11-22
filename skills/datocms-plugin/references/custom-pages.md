@@ -23,7 +23,7 @@ mainNavigationTabs(ctx: MainNavigationTabsCtx): MainNavigationTab[]
 ```ts
 {
   label: string;           // Tab label (must be unique)
-  icon: Icon;              // FontAwesome name or SVG definition
+  icon: Icon;              // icon name or SVG definition; see sdk-connect-and-frames.md#icon-names
   pointsTo:
     | { pageId: string }   // Links to a page rendered by renderPage
     | {                     // Links to an inspector panel
@@ -76,7 +76,7 @@ settingsAreaSidebarItemGroups(
   label: string;           // Group header label (must be unique)
   items: Array<{
     label: string;         // Item label (must be unique)
-    icon: Icon;            // FontAwesome name or SVG definition
+    icon: Icon;            // icon name or SVG definition; see sdk-connect-and-frames.md#icon-names
     pointsTo: { pageId: string };
   }>;
   placement?: ['before' | 'after', 'properties' | 'permissions'];
@@ -95,12 +95,12 @@ connect({
         items: [
           {
             label: 'Import',
-            icon: 'file-import',
+            icon: 'download',
             pointsTo: { pageId: 'import' },
           },
           {
             label: 'Export',
-            icon: 'file-export',
+            icon: 'upload',
             pointsTo: { pageId: 'export' },
           },
         ],
@@ -125,14 +125,14 @@ contentAreaSidebarItems(
 ```ts
 {
   label: string;           // Item label (must be unique)
-  icon: IconWithEmoji;     // FontAwesome name, SVG definition, or emoji
+  icon: IconWithEmoji;     // icon name, SVG definition, or emoji; see sdk-connect-and-frames.md#icon-names
   pointsTo: { pageId: string };
   placement?: ['before' | 'after', 'menuItems' | 'seoPreferences'];
   rank?: number;
 }
 ```
 
-Note: `ContentAreaSidebarItem` supports emoji icons in addition to FontAwesome/SVG:
+Note: `ContentAreaSidebarItem` supports emoji icons in addition to icon names/SVG:
 
 ```ts
 icon: { type: 'emoji', emoji: '📊' }
@@ -146,7 +146,7 @@ connect({
     return [
       {
         label: 'Model overview',
-        icon: 'tachometer-alt',
+        icon: 'gauge',
         pointsTo: { pageId: 'model-overview' },
         placement: ['before', 'menuItems'],
       },
@@ -198,7 +198,8 @@ ctx.navigateTo(`${pagePath}?itemTypeId=${someId}`);
 // src/main.tsx
 import { connect } from 'datocms-plugin-sdk';
 import { render } from './utils/render';
-import { Spinner } from 'datocms-react-ui';
+import Canvas from 'datocms-react-ui/Canvas';
+import Spinner from 'datocms-react-ui/Spinner';
 import { lazy, Suspense } from 'react';
 import 'datocms-react-ui/styles.css';
 
@@ -209,7 +210,7 @@ connect({
     return [
       {
         label: 'Model overview',
-        icon: 'tachometer-alt',
+        icon: 'gauge',
         pointsTo: { pageId: 'model-overview' },
       },
     ];
@@ -217,10 +218,13 @@ connect({
   renderPage(pageId, ctx) {
     switch (pageId) {
       case 'model-overview':
+        // Canvas goes outside Suspense: the Spinner fallback needs it too
         render(
-          <Suspense fallback={<Spinner size={60} placement="centered" />}>
-            <LazyModelOverview ctx={ctx} />
-          </Suspense>,
+          <Canvas ctx={ctx}>
+            <Suspense fallback={<Spinner.Overlay veil={false} />}>
+              <LazyModelOverview ctx={ctx} />
+            </Suspense>
+          </Canvas>,
         );
         break;
     }
@@ -231,24 +235,40 @@ connect({
 ```tsx
 // src/entrypoints/ModelOverview.tsx
 import type { RenderPageCtx } from 'datocms-plugin-sdk';
-import { Canvas } from 'datocms-react-ui';
+import InfoList from 'datocms-react-ui/InfoList';
+import Main from 'datocms-react-ui/Main';
+import { Page } from 'datocms-react-ui/Page';
+import Pane from 'datocms-react-ui/Pane';
 
 type Props = {
   ctx: RenderPageCtx;
 };
 
+// Canvas is in main.tsx. Page shells and patterns: datocms-plugin-design surfaces.md, "Custom page"
 export default function ModelOverview({ ctx }: Props) {
   const modelCount = Object.keys(ctx.itemTypes).length;
 
   return (
-    <Canvas ctx={ctx} noAutoResizer>
-      <div style={{ padding: '2rem' }}>
-        <h1>Model overview</h1>
-        <p>This project has {modelCount} models.</p>
-        <p>Environment: {ctx.environment}</p>
-        <p>Current path: {ctx.location.pathname}</p>
-      </div>
-    </Canvas>
+    <Main>
+      <Pane
+        ariaLabel="Model overview"
+        header={
+          <Pane.Header>
+            <Pane.Header.Title level={1}>Model overview</Pane.Header.Title>
+          </Pane.Header>
+        }
+      >
+        <Page>
+          <Page.Content>
+            <InfoList>
+              <InfoList.Row title="Models">{modelCount}</InfoList.Row>
+              <InfoList.Row title="Environment">{ctx.environment}</InfoList.Row>
+              <InfoList.Row title="Current path">{ctx.location.pathname}</InfoList.Row>
+            </InfoList>
+          </Page.Content>
+        </Page>
+      </Pane>
+    </Main>
   );
 }
 ```
@@ -290,8 +310,8 @@ connect({
       {
         label: 'Schema Tools',
         items: [
-          { label: 'Import', icon: 'file-import', pointsTo: { pageId: 'import' } },
-          { label: 'Export', icon: 'file-export', pointsTo: { pageId: 'export' } },
+          { label: 'Import', icon: 'download', pointsTo: { pageId: 'import' } },
+          { label: 'Export', icon: 'upload', pointsTo: { pageId: 'export' } },
         ],
       },
     ];
@@ -318,7 +338,7 @@ connect({
 
 ## Key Notes
 
-- Pages use `ImposedSizePluginFrameCtx` — pass `noAutoResizer` to Canvas
+- Pages use `ImposedSizePluginFrameCtx`: the frame fills the page and scrolls, and Canvas starts no auto-resizer there (no `noAutoResizer` needed). Shell: [custom page](../../datocms-plugin-design/references/surfaces.md#custom-page)
 - Use `ctx.location` for internal routing via query params
 - Use lazy loading with `React.lazy` + `Suspense` for code splitting on large pages
 - Pages have access to all base context properties and methods (toasts, dialogs, navigation, etc.)

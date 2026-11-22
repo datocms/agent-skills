@@ -105,6 +105,7 @@ ctx.toggleField(path, show)
 ctx.disableField(path, disable)
 ctx.scrollToField(path, locale?)
 ctx.saveCurrentItem(showToast?)
+ctx.openItemFormSidebar(sidebarId, { parameters? })  // Open one of this plugin's itemFormSidebars; parameters merge into its ctx.parameters (3.0.0-next)
 ctx.formValuesToItem(formValues, skipUnchanged?)
 ctx.itemToFormValues(item)
 ```
@@ -144,7 +145,9 @@ connect({
 ```tsx
 // src/entrypoints/SeoPanel.tsx
 import type { Field, RenderItemFormSidebarPanelCtx } from 'datocms-plugin-sdk';
-import { Canvas, Button } from 'datocms-react-ui';
+import Button from 'datocms-react-ui/Button';
+import Canvas from 'datocms-react-ui/Canvas';
+import InfoList from 'datocms-react-ui/InfoList';
 
 type Props = {
   ctx: RenderItemFormSidebarPanelCtx;
@@ -177,20 +180,16 @@ export default function SeoPanel({ ctx }: Props) {
   const titleLength = title?.length || 0;
   const isGoodLength = titleLength >= 30 && titleLength <= 60;
 
+  // The host draws the panel title and collapse: render only the content
+  // (datocms-plugin-design surfaces.md, "Sidebar panel")
   return (
     <Canvas ctx={ctx}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <div>
-          Title length: {titleLength} characters
-          {isGoodLength ? ' ✓' : ' (aim for 30-60)'}
-        </div>
-        <Button
-          buttonSize="xxs"
-          onClick={() => ctx.scrollToField('title')}
-        >
-          Go to title field
-        </Button>
-      </div>
+      <InfoList>
+        <InfoList.Row title="Title length">
+          {titleLength} characters{isGoodLength ? '' : ' (aim for 30–60)'}
+        </InfoList.Row>
+      </InfoList>
+      <Button label="Go to title field" onClick={() => ctx.scrollToField('title')} />
     </Canvas>
   );
 }
@@ -272,19 +271,23 @@ connect({
 ```tsx
 // src/entrypoints/PreviewSidebar.tsx
 import type { RenderItemFormSidebarCtx } from 'datocms-plugin-sdk';
-import { Canvas } from 'datocms-react-ui';
+import Canvas from 'datocms-react-ui/Canvas';
+import InfoList from 'datocms-react-ui/InfoList';
+import SidebarPanel from 'datocms-react-ui/SidebarPanel';
 
 type Props = {
   ctx: RenderItemFormSidebarCtx;
 };
 
+// Fixed frame that scrolls: no noAutoResizer needed (datocms-plugin-design surfaces.md, "Full sidebar")
 export default function PreviewSidebar({ ctx }: Props) {
   return (
-    <Canvas ctx={ctx} noAutoResizer>
-      <div style={{ padding: '16px', height: '100%', overflow: 'auto' }}>
-        <h2>Preview</h2>
-        <p>Environment: {ctx.environment}</p>
-      </div>
+    <Canvas ctx={ctx}>
+      <SidebarPanel title="Preview" titleLevel={2}>
+        <InfoList>
+          <InfoList.Row title="Environment">{ctx.environment}</InfoList.Row>
+        </InfoList>
+      </SidebarPanel>
     </Canvas>
   );
 }

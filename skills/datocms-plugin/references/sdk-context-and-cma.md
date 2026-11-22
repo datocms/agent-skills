@@ -26,12 +26,17 @@ ctx.plugin;
 ctx.site;
 ctx.environment;
 ctx.isEnvironmentPrimary;
-ctx.owner;
+ctx.owner; // Account | Organization
+ctx.account; // deprecated, Account | undefined; use ctx.owner
 ctx.ui.locale;
+ctx.ui.dateFormat; // date-fns pattern, e.g. 'dd/MM/yyyy' (3.0.0-next; not in 2.5.0 types)
+ctx.ui.timezone; // IANA name, e.g. 'Europe/Rome' (3.0.0-next)
+ctx.ui.twentyFourHour; // boolean (3.0.0-next)
 ctx.cdaEndpointUrl;
 ctx.cmaBaseUrl;
 ctx.cssDesignTokens;
 ctx.colorScheme; // 'light' | 'dark'
+ctx.rootFontSize; // px of the host <html>; undefined on older hosts (2.5.0+)
 ctx.theme; // legacy, prefer cssDesignTokens
 ```
 
@@ -43,10 +48,13 @@ ctx.loadItemTypeFieldsets(itemTypeId);
 ctx.loadFieldsUsingPlugin();
 ctx.loadUsers();
 ctx.loadSsoUsers();
+ctx.loadItems(itemIds); // 3.0.0-next: Array<Item | null>, same order as input
+ctx.loadUploads(uploadIds); // 3.0.0-next: Array<Upload | null>
+ctx.loadItemPresentationInfo(itemsOrIds, options); // 3.0.0-next: Array<ResolvedItemPresentationInfo | null>
 ctx.updatePluginParameters(params);
 ctx.updateFieldAppearance(fieldId, changes);
-ctx.alert(message);
-ctx.notice(message);
+ctx.alert(message); // do not await: settles when the user closes the toast
+ctx.notice(message); // do not await: settles when the toast closes (~6 s)
 ctx.customToast(toast);
 ctx.createNewItem(itemTypeId);
 ctx.selectItem(itemTypeId, options);
@@ -58,6 +66,8 @@ ctx.openModal(modal);
 ctx.openConfirm(options);
 ctx.navigateTo(path);
 ```
+
+`loadItems`, `loadUploads` and `loadItemPresentationInfo` first ship in `datocms-plugin-sdk` 3.0.0-next.4 and return `null` for a missing or unreadable entry; an older host lacks them, so check `typeof ctx.loadItems === 'function'` first. In item-form contexts, `ctx.openItemFormSidebar(sidebarId, { parameters })` opens one of the plugin's `itemFormSidebars`; `parameters` are merged into that sidebar's `ctx.parameters` (3.0.0-next; 2.6.0-next.2).
 
 ## Entity repositories
 
@@ -96,7 +106,7 @@ When direct browser CMA is required:
 import { buildClient } from '@datocms/cma-client-browser';
 
 if (!ctx.currentUserAccessToken) {
-  await ctx.alert('This action requires API access. Check the plugin permissions.');
+  ctx.alert('This action requires API access. Check the plugin permissions.');
   return;
 }
 
@@ -131,7 +141,7 @@ Field appearance updates and plugin parameters require schema edit permissions. 
 
 ```ts
 if (!ctx.currentRole.meta.final_permissions.can_edit_schema) {
-  await ctx.alert('You do not have permission to edit this configuration.');
+  ctx.alert('You do not have permission to edit this configuration.');
   return;
 }
 ```
@@ -140,15 +150,15 @@ For `renderManualFieldExtensionConfigScreen`, do not use an independent form lib
 
 ## Async errors
 
-Wrap SDK and CMA mutations in `try/catch`. Surface concise user-facing errors with `ctx.alert()` and successes with `ctx.notice()`.
+Wrap SDK and CMA mutations in `try/catch`. Surface concise user-facing errors with `ctx.alert()` and successes with `ctx.notice()`. Do not `await` either one: the promise settles only when the toast closes (`notice` after about six seconds, `alert` when the user closes it), so awaiting keeps buttons busy and, inside `onBeforeItem*` hooks, makes the CMS warn that the plugin is taking longer than usual.
 
 ```ts
 try {
   await ctx.updatePluginParameters(nextParams);
-  await ctx.notice('Settings saved');
+  ctx.notice('Settings saved');
 } catch (error) {
   const message = error instanceof Error ? error.message : 'Unknown error';
-  await ctx.alert(`Could not save settings: ${message}`);
+  ctx.alert(`Could not save settings: ${message}`);
 }
 ```
 
@@ -186,11 +196,6 @@ Do not create editor field extensions for modular content, single block, or Stru
 
 ## CSS and theme context
 
-Inside `<Canvas>`, prefer semantic Canvas tokens from `ctx.cssDesignTokens`, for example:
-
-- neutral: `--color--surface`, `--color--surface-muted`, `--color--ink`, `--color--ink-subtle`, `--color--border`
-- paired contexts: `--color--primary--surface` + `--color--primary--ink`, `--color--danger-soft--surface` + `--color--danger-soft--ink`
-- focus: `--color--focus--border`, `--color--focus--outline`
-- type/spacing: `--base-font-family`, `--font-size-*`, `--font-weight-bold`, `--spacing-*`
+`ctx.cssDesignTokens` carries the semantic color tokens (`--color--surface`, `--color--ink-subtle`, `--color--danger-soft--surface` + `--color--danger-soft--ink`…), which `<Canvas>` writes as CSS variables; sizes come from the `:root` variables of `datocms-react-ui/styles.css` (`--spacing-*`, `--font-size-*`, `--font-weight-strong`, `--radius-*`). Token and variable rules: [datocms-plugin-design](../../datocms-plugin-design/SKILL.md#rules-that-make-it-native).
 
 Use `ctx.colorScheme` only for non-CSS branching such as third-party themes, syntax highlighting, or image assets.

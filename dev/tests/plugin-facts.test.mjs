@@ -56,20 +56,23 @@ test('current-plugin-patterns points at the public plugins repo without version 
   assert.deepEqual(named.filter((name) => !folders.includes(name)), []);
 });
 
-test('in-frame dimming overlay uses the token datocms-react-ui uses, not a hardcoded color', fixture, () => {
-  const surfaces = ref('design-plugin-surfaces.md');
-  const backdrops = surfaces.slice(surfaces.indexOf('### Backdrops'), surfaces.indexOf('\n## ', surfaces.indexOf('### Backdrops')));
-  const hardcoded = new RegExp(ref('dark-mode-upgrade.md').match(/-E '(\(#\[0-9a-fA-F\][^']+)'/)[1]);
-  assert.doesNotMatch(backdrops, hardcoded);
-  const overlay = pkg('datocms-react-ui/src/VerticalSplit/styles.module.css').match(/\.VerticalSplitPaneOverlay \{[^}]*background: (var\(--[\w-]+\))/)[1];
-  assert.ok(backdrops.includes(overlay), `expected ${overlay}`);
+// The UI facts moved to datocms-plugin-design (datocms-react-ui 4); its bundled Colors page is the token list.
+const design = (name) => readFileSync(resolve(repoRoot, 'skills/datocms-plugin-design/references', name), 'utf8');
+const v4Tokens = new Set(design('docs/Foundations/Colors.md').match(/--color--[\w-]+/g));
+
+test('in-frame dimming uses the v4 overlay token, not a hardcoded color', () => {
+  const layers = design('surfaces.md').split('\n').find((line) => line.startsWith('- **Dimming and layers:**'));
+  assert.ok(layers, 'surfaces.md has no "Dimming and layers" rule');
+  assert.doesNotMatch(layers, /#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(/);
+  // Spinner.Overlay's veil paints --color--overlay--surface (styles.css of 4.0.0-next.8, .SpinnerOverlay--veil).
+  assert.match(layers, /Spinner\.Overlay[^\n]*`--color--overlay--surface`/);
+  assert.ok(v4Tokens.has('--color--overlay--surface'));
 });
 
-test('disabled-copy token is consistent across design references and exists in Canvas', fixture, () => {
-  const upgrade = ref('dark-mode-upgrade.md').match(/disabled copy[^`\n]*`(--color--[\w-]+)`/)[1];
-  const foundations = ref('design-foundations.md').match(/`(--color--[\w-]+)` for disabled copy/)[1];
-  assert.equal(upgrade, foundations);
-  assert.ok(pkg('datocms-react-ui/src/Canvas/index.tsx').includes(`'${upgrade}'`));
+test('disabled-copy token named by the design checklist exists in the v4 color tokens', () => {
+  const token = design('review-checklist.md').match(/disabled text is `(--color--[\w-]+)`/)[1];
+  assert.equal(token, '--color--ink-disabled');
+  assert.ok(v4Tokens.has(token), `${token} is not a datocms-react-ui 4 token`);
 });
 
 test('development-copy rollback verifies the restored fields as its own step, before removing the copy', () => {

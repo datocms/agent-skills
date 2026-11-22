@@ -214,11 +214,13 @@ export async function checkPlugin(workspace, output) {
     );
     assert.match(await frame.locator("body").innerText(), /\b0\b/);
     checks.push("unlocalized field and clearing a value after re-enabling");
+    // datocms-react-ui 4: the host draws the field label, so the input is named by aria-label or a label; its
+    // text follows the host's dark --color--ink (2.x checked the 2.x FormLabel's ink-subtle color instead).
+    const named = frame.getByRole("textbox", { name: /title/i });
+    assert.equal(await named.count(), 1, "The text input has no accessible name from the field label");
     assert.equal(
-      await frame
-        .locator("label")
-        .evaluate((element) => getComputedStyle(element).color),
-      "rgb(200, 200, 200)",
+      await named.evaluate((element) => getComputedStyle(element).color),
+      "rgb(240, 240, 240)",
     );
     await page.screenshot({ path: join(output, "plugin-browser.png") });
     assert.deepEqual(errors, [], "Browser runtime errors");

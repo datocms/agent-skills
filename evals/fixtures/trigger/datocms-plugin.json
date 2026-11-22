@@ -29,7 +29,11 @@
   },
   {
     "query": "Restyle this DatoCMS plugin sidebar panel with local CSS so it matches DatoCMS density, borders, and typography.",
-    "should_trigger": true
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin-design"
+    ]
   },
   {
     "query": "Our DatoCMS plugin should make editors confirm before they delete any published article.",
@@ -37,7 +41,11 @@
   },
   {
     "query": "Upgrade this existing DatoCMS plugin from legacy CSS variables to semantic Canvas tokens so it works in dark mode.",
-    "should_trigger": true
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin-design"
+    ]
   },
   {
     "query": "Also add a star-rating field extension to that plugin for the integer rating field.",
@@ -45,7 +53,11 @@
   },
   {
     "query": "Patch this existing DatoCMS plugin settings page and make the updated UI feel native while keeping the behavior the same.",
-    "should_trigger": true
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin-design"
+    ]
   },
   {
     "query": "Use datocms-plugin to create a new DatoCMS plugin project with Vite, React, and a connect() entrypoint.",

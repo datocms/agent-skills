@@ -9,5 +9,10 @@ export const hostLoaders = (settings) => {
     loadFieldsUsingPlugin: async () => [],
     loadUsers: async () => Object.values(settings().users),
     loadSsoUsers: async () => [],
+    // SDK 3.0.0-next.4 loaders (datocms-react-ui 4 Canvas also calls them when present): one entry per
+    // requested ID, in order, null when the host has no such record or asset.
+    loadItems: async (ids) => ids.map((id) => settings().items?.[id] ?? null),
+    loadUploads: async (ids) => ids.map((id) => settings().uploads?.[id] ?? null),
+    loadItemPresentationInfo: async (itemsOrIds) => itemsOrIds.map(() => null),
   };
 };

@@ -1,0 +1,144 @@
+[
+  {
+    "query": "The config screen of our DatoCMS plugin looks off next to the rest of the dashboard. Rebuild it with datocms-react-ui so it looks native.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Which datocms-react-ui component should I use for a list of webhooks with a detail panel on the right, inside my plugin's custom page?",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "My plugin's sidebar panel shows two titles and two collapse arrows. What am I doing wrong in the panel UI?",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Our plugin hard-codes #ff5e49 and #f5f5f5 in its CSS and looks broken in dark mode. Switch it to the right color tokens.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "We still import TextField and ButtonLink from datocms-react-ui 2. Move the plugin to version 4 components.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Design the asset picker UI for our Unsplash asset source: search box, grid of results, empty and loading states.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "The modal my plugin opens has its own title and close button inside, duplicated by DatoCMS. Fix the modal content layout.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Review the UI of this DatoCMS plugin field addon against the react-ui.datocms.com rules before we publish it.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "The Pane on my plugin page collapses to zero height inside a SplitPane. How should the layout be set up?",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Use datocms-plugin-design to lay out the settings form of our translation plugin.",
+    "should_trigger": true,
+    "query_mode": "explicit"
+  },
+  {
+    "query": "Restyle this DatoCMS plugin sidebar panel with local CSS so it matches DatoCMS density, borders, and typography.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Upgrade this existing DatoCMS plugin from legacy CSS variables to semantic Canvas tokens so it works in dark mode.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Patch this existing DatoCMS plugin settings page and make the updated UI feel native while keeping the behavior the same.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Register an itemFormDropdownActions entry that duplicates the current record, with no UI.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "Scaffold a new DatoCMS plugin project with Vite and a connect() entry point.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "Add an onBeforeItemUpsert hook to our plugin that blocks saving when the slug is empty.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "Which plugin permission do I need to read the current user's access token from ctx?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "Make our field extension read and write a nested localized field value with ctx.setFieldValue.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "Render the DatoCMS responsive Image component on our Next.js blog post page.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Our marketing site should match the look of the DatoCMS dashboard. Style the Nuxt header with the same colors.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Install the SEO Analysis plugin on our project and set its global parameters through the API.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Change the editor appearance of 40 text fields to our color-picker plugin with a script.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Write a Node script that exports every record of the article model to CSV.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  }
+]

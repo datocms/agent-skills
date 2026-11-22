@@ -70,7 +70,8 @@ ctx.resolve(returnValue)  // Close the modal and return value to openModal()
 ```tsx
 // src/entrypoints/SidebarPanel.tsx
 import type { RenderItemFormSidebarPanelCtx } from 'datocms-plugin-sdk';
-import { Canvas, Button } from 'datocms-react-ui';
+import Button from 'datocms-react-ui/Button';
+import Canvas from 'datocms-react-ui/Canvas';
 
 type Props = {
   ctx: RenderItemFormSidebarPanelCtx;
@@ -95,9 +96,7 @@ export default function SidebarPanel({ ctx }: Props) {
 
   return (
     <Canvas ctx={ctx}>
-      <Button onClick={handleOpenModal}>
-        Pick theme color
-      </Button>
+      <Button label="Pick theme color" onClick={handleOpenModal} />
     </Canvas>
   );
 }
@@ -108,7 +107,10 @@ export default function SidebarPanel({ ctx }: Props) {
 ```tsx
 // src/entrypoints/ColorPickerModal.tsx
 import type { RenderModalCtx } from 'datocms-plugin-sdk';
-import { Canvas, Button, FieldGroup } from 'datocms-react-ui';
+import Button from 'datocms-react-ui/Button';
+import Canvas from 'datocms-react-ui/Canvas';
+import Modal from 'datocms-react-ui/Modal';
+import RawButton from 'datocms-react-ui/RawButton';
 import { useState } from 'react';
 
 type Props = {
@@ -117,29 +119,26 @@ type Props = {
 
 const COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
 
+// DatoCMS draws the title and the cross. Content rules: datocms-plugin-design surfaces.md, "Modal"
 export default function ColorPickerModal({ ctx }: Props) {
   const currentColor = ctx.parameters.currentColor as string;
   const [selected, setSelected] = useState(currentColor || COLORS[0]);
 
   return (
     <Canvas ctx={ctx}>
-      <FieldGroup>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+      <Modal.Body>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--spacing-s)' }}>
           {COLORS.map((color) => (
-            <button
+            // The swatch colors are content, not interface roles
+            <RawButton
               key={color}
-              type="button"
-              aria-label={`Select ${color}`}
-              aria-pressed={selected === color}
+              ariaLabel={`Select ${color}`}
+              radio={{ checked: selected === color }}
               onClick={() => setSelected(color)}
               style={{
-                width: '100%',
-                height: '60px',
-                padding: 0,
-                appearance: 'none',
+                height: 60,
                 backgroundColor: color,
-                borderRadius: '4px',
-                cursor: 'pointer',
+                borderRadius: 'var(--radius-s)',
                 border:
                   selected === color
                     ? '3px solid var(--color--selected--border)'
@@ -148,14 +147,11 @@ export default function ColorPickerModal({ ctx }: Props) {
             />
           ))}
         </div>
-      </FieldGroup>
-      <Button
-        buttonType="primary"
-        fullWidth
-        onClick={() => ctx.resolve(selected)}
-      >
-        Confirm: {selected}
-      </Button>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button tone="ghost" size="small" label="Cancel" onClick={() => ctx.resolve(null)} />
+        <Button tone="primary" size="small" label="Use this color" onClick={() => ctx.resolve(selected)} />
+      </Modal.Footer>
     </Canvas>
   );
 }
@@ -198,17 +194,21 @@ connect({
 
 ```tsx
 import type { RenderModalCtx } from 'datocms-plugin-sdk';
-import { Canvas, Button, TextField, FieldGroup } from 'datocms-react-ui';
+import Button from 'datocms-react-ui/Button';
+import Canvas from 'datocms-react-ui/Canvas';
+import FieldWrapper from 'datocms-react-ui/FieldWrapper';
+import Modal from 'datocms-react-ui/Modal';
+import StringInput from 'datocms-react-ui/StringInput';
 import { useState } from 'react';
 
 type Props = { ctx: RenderModalCtx };
 
 export default function InputModal({ ctx }: Props) {
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState<string | null>(null);
   const [error, setError] = useState<string>();
 
   const handleSubmit = () => {
-    if (!value.trim()) {
+    if (!value?.trim()) {
       setError('Value is required');
       return;
     }
@@ -217,19 +217,28 @@ export default function InputModal({ ctx }: Props) {
 
   return (
     <Canvas ctx={ctx}>
-      <FieldGroup>
-        <TextField
-          id="input"
-          name="input"
-          label={ctx.parameters.label as string || 'Enter value'}
-          value={value}
-          onChange={(v) => { setValue(v); setError(undefined); }}
-          error={error}
-        />
-      </FieldGroup>
-      <Button buttonType="primary" fullWidth onClick={handleSubmit}>
-        Confirm
-      </Button>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleSubmit();
+        }}
+      >
+        <Modal.Body>
+          <FieldWrapper label={(ctx.parameters.label as string) || 'Value'} error={error} required>
+            <StringInput
+              value={value}
+              onChange={(v) => {
+                setValue(v);
+                setError(undefined);
+              }}
+            />
+          </FieldWrapper>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button tone="ghost" size="small" label="Cancel" onClick={() => ctx.resolve(null)} />
+          <Button tone="primary" size="small" submit label="Confirm" />
+        </Modal.Footer>
+      </form>
     </Canvas>
   );
 }
@@ -260,6 +269,8 @@ if (result === 'delete') {
   // proceed with deletion
 }
 ```
+
+For an action that cannot be undone, add `explicitConfirmation: { label, confirmString }` (the user must type `confirmString` before the choices turn on) and/or `acknowledgement: 'label'` (a switch the user must turn on first). Both are optional and exist in 3.0.0-next (2.6.0-next.0); an older CMS ignores them and shows the plain panel.
 
 ## Key Notes
 

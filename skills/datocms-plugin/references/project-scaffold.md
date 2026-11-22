@@ -76,7 +76,7 @@ dist/
   },
   "dependencies": {
     "datocms-plugin-sdk": "^2.5.0",
-    "datocms-react-ui": "^2.5.0",
+    "datocms-react-ui": "4.0.0-next.8",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
@@ -86,18 +86,11 @@ dist/
     "@vitejs/plugin-react": "^6.0.2",
     "typescript": "^6.0.3",
     "vite": "^8.0.16"
-  },
-  "overrides": {
-    "datocms-react-ui": {
-      "react-intersection-observer": "^10.0.3",
-      "react": "$react",
-      "react-dom": "$react-dom"
-    }
   }
 }
 ```
 
-Use the `overrides` block for React 19 scaffolds when `datocms-react-ui` internals must share the plugin's React instance.
+`datocms-react-ui` follows the exact-version rule: a bare `npm install datocms-react-ui` gets the 2.x line, a different API. If `npm view datocms-react-ui version` is below 4, pin the exact prerelease `4.0.0-next.8`; from 4 on, use `^4`. Its peers are React `^18 || ^19` and `datocms-plugin-sdk` `^2.2.7 || ^3.0.0-next.0`, so the 2.x `overrides` block is not needed. Entries resolve only through `exports`: keep `"moduleResolution": "bundler"` in both tsconfig files.
 
 ### Optional Dependencies
 
@@ -336,7 +329,8 @@ connect({
 ```tsx
 import { connect } from 'datocms-plugin-sdk';
 import { render } from './utils/render';
-import { Spinner } from 'datocms-react-ui';
+import Canvas from 'datocms-react-ui/Canvas';
+import Spinner from 'datocms-react-ui/Spinner';
 import { lazy, Suspense } from 'react';
 import 'datocms-react-ui/styles.css';
 
@@ -350,19 +344,24 @@ connect({
   renderPage(pageId, ctx) {
     switch (pageId) {
       case 'main':
+        // Canvas outside Suspense: the Spinner fallback needs it; the lazy entry renders no Canvas
         render(
-          <Suspense fallback={<Spinner size={60} placement="centered" />}>
-            <LazyPage ctx={ctx} />
-          </Suspense>,
+          <Canvas ctx={ctx}>
+            <Suspense fallback={<Spinner.Overlay veil={false} />}>
+              <LazyPage ctx={ctx} />
+            </Suspense>
+          </Canvas>,
         );
         break;
     }
   },
   renderConfigScreen(ctx) {
     render(
-      <Suspense fallback={<Spinner size={60} placement="centered" />}>
-        <LazyConfig ctx={ctx} />
-      </Suspense>,
+      <Canvas ctx={ctx}>
+        <Suspense fallback={<Spinner />}>
+          <LazyConfig ctx={ctx} />
+        </Suspense>
+      </Canvas>,
     );
   },
 });
@@ -370,7 +369,7 @@ connect({
 
 ## Styling
 
-For inline styles, use CSS custom properties from `<Canvas>` (see `sdk-context-and-cma.md`). For component-scoped styles, use **CSS Modules** (`.module.css` files) — Vite supports them out of the box:
+Import `datocms-react-ui/styles.css` once, in `src/main.tsx` (as in the templates above): it is the only stylesheet of the components. For your own CSS, use the color tokens and `:root` variables that [datocms-plugin-design](../../datocms-plugin-design/SKILL.md) lists, in **CSS Modules** (`.module.css` files), which Vite supports out of the box:
 
 ```tsx
 import styles from './MyComponent.module.css';

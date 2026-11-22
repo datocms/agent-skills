@@ -22,6 +22,7 @@ skills/
   datocms-frontend-integrations/
   datocms-feedback/
   datocms-plugin/
+  datocms-plugin-design/
   datocms-setup/
     agents/
     references/
@@ -46,7 +47,8 @@ zips/
 - `.codex-plugin/plugin.json` is the Codex plugin manifest. It points `skills` at `./skills/` so Codex discovers the shipped skills automatically. It also includes the plugin install-surface metadata used by Codex.
 - `skills/` contains the shipped skill folders. Their names match each skill's canonical `name:` value.
 - `skills/datocms-structured-text/` owns the DAST document lifecycle through focused references and a narrow Markdown/HTML conversion helper. Other skills link to those references while retaining their API, renderer, schema, or editor responsibilities.
-- `skills/datocms-plugin/` is the public plugin entrypoint. It covers new plugin scaffolds, existing plugin maintenance, SDK hook work, and plugin UI work that should match DatoCMS patterns.
+- `skills/datocms-plugin/` is the public plugin entrypoint. It covers new plugin scaffolds, existing plugin maintenance, and SDK hook work.
+- `skills/datocms-plugin-design/` owns plugin UI with `datocms-react-ui` 4. `references/docs/` holds the react-ui.datocms.com pages verbatim (refreshed by `dev/scripts/sync-react-ui-docs.mjs`, excluded from remark formatting); `SKILL.md` indexes every page.
 - `skills/datocms-setup/` is the guided setup skill. Its `SKILL.md` owns the conversation, and `references/website.md` and `references/project.md` link each play to the sibling files and headings that hold the implementation. It ships no code, so nothing is duplicated between setup and the skills that own each concern.
 - `docs/` is for longer reference material that would make the root README too heavy.
 - `zips/` holds one archive per skill for uploading to Claude chat; the pre-commit hook rebuilds the archives of skills with staged changes.

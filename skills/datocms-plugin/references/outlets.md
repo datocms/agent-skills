@@ -63,6 +63,7 @@ ctx.toggleField(path, show)
 ctx.disableField(path, disable)
 ctx.scrollToField(path, locale?)
 ctx.saveCurrentItem(showToast?)
+ctx.openItemFormSidebar(sidebarId, { parameters? })  // Open one of this plugin's itemFormSidebars; parameters merge into its ctx.parameters (3.0.0-next)
 ctx.formValuesToItem(formValues, skipUnchanged?)
 ctx.itemToFormValues(item)
 ```
@@ -101,7 +102,8 @@ connect({
 ```tsx
 // src/entrypoints/DraftBanner.tsx
 import type { RenderItemFormOutletCtx } from 'datocms-plugin-sdk';
-import { Canvas } from 'datocms-react-ui';
+import Callout from 'datocms-react-ui/Callout';
+import Canvas from 'datocms-react-ui/Canvas';
 
 type Props = {
   ctx: RenderItemFormOutletCtx;
@@ -114,18 +116,10 @@ export default function DraftBanner({ ctx }: Props) {
 
   return (
     <Canvas ctx={ctx}>
-      <div
-        style={{
-          padding: '12px 16px',
-          backgroundColor: 'var(--color--warning-soft--surface)',
-          borderRadius: '4px',
-          fontSize: 'var(--font-size-s)',
-          color: 'var(--color--warning-soft--ink)',
-        }}
-      >
+      <Callout tone="warning">
         This record is still a draft. It will not appear on the live site until
         published.
-      </div>
+      </Callout>
     </Canvas>
   );
 }
@@ -212,7 +206,8 @@ connect({
 ```tsx
 // src/entrypoints/CollectionBanner.tsx
 import type { RenderItemCollectionOutletCtx } from 'datocms-plugin-sdk';
-import { Canvas, Button } from 'datocms-react-ui';
+import Button from 'datocms-react-ui/Button';
+import Canvas from 'datocms-react-ui/Canvas';
 
 type Props = {
   ctx: RenderItemCollectionOutletCtx;
@@ -226,17 +221,14 @@ export default function CollectionBanner({ ctx }: Props) {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '12px 16px',
+          gap: 'var(--spacing-m)',
+          padding: 'var(--spacing-m) var(--spacing-l)',
           backgroundColor: 'var(--color--surface-muted)',
-          borderRadius: '4px',
+          borderRadius: 'var(--radius-s)',
         }}
       >
-        <span style={{ fontSize: 'var(--font-size-s)' }}>
-          Viewing {ctx.itemType.attributes.name} records
-        </span>
-        <Button buttonSize="xxs" onClick={() => ctx.notice('Action triggered!')}>
-          Custom Action
-        </Button>
+        <span>Viewing {ctx.itemType.attributes.name} records</span>
+        <Button label="Custom action" onClick={() => ctx.notice('Action triggered!')} />
       </div>
     </Canvas>
   );
@@ -245,7 +237,7 @@ export default function CollectionBanner({ ctx }: Props) {
 
 ## Key Notes
 
-- Outlets use `SelfResizingPluginFrameCtx` — they auto-resize to fit content
+- Outlets use `SelfResizingPluginFrameCtx` — they auto-resize to fit content. Padding, spacing and what to render: [outlets](../../datocms-plugin-design/references/surfaces.md#outlets)
 - Item form outlets have full access to item form properties and methods (same as field extensions and sidebar panels)
 - Item collection outlets do NOT have item form methods — they only have the model (`ctx.itemType`) and base context
 - Use `initialHeight: 0` for outlets that may render nothing (e.g., conditionally shown banners) to avoid blank space

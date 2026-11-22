@@ -5,3 +5,4 @@ local/
 .agents/
 __pycache__/
 evals/results/
+skills/datocms-plugin-design/references/docs/

@@ -214,6 +214,7 @@ ctx.toggleField(path, show)        // Show/hide a field
 ctx.disableField(path, disable)    // Enable/disable a field
 ctx.scrollToField(path, locale?)   // Scroll to a field
 ctx.saveCurrentItem(showToast?)    // Trigger form save
+ctx.openItemFormSidebar(sidebarId, { parameters? })  // Open one of this plugin's itemFormSidebars; parameters merge into its ctx.parameters (3.0.0-next)
 ctx.formValuesToItem(formValues, skipUnchanged?) // Convert form state to API Item
 ctx.itemToFormValues(item)         // Convert API Item to form state
 ```
@@ -274,13 +275,14 @@ connect({
 ```tsx
 // src/entrypoints/ColorEditor.tsx
 import type { RenderFieldExtensionCtx } from 'datocms-plugin-sdk';
-import { Canvas } from 'datocms-react-ui';
+import Canvas from 'datocms-react-ui/Canvas';
 import { get } from 'lodash-es';
 
 type Props = {
   ctx: RenderFieldExtensionCtx;
 };
 
+// The host draws the field label, hint and errors. Shell: datocms-plugin-design surfaces.md, "Field editor"
 export default function ColorEditor({ ctx }: Props) {
   const currentValue = (get(ctx.formValues, ctx.fieldPath) as string) || '#000000';
 
@@ -290,9 +292,10 @@ export default function ColorEditor({ ctx }: Props) {
 
   return (
     <Canvas ctx={ctx}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-s)' }}>
         <input
           type="color"
+          aria-label={ctx.field.attributes.label}
           value={currentValue}
           onChange={handleChange}
           disabled={ctx.disabled}
@@ -340,7 +343,7 @@ connect({
 ```tsx
 // src/entrypoints/WordCount.tsx
 import type { RenderFieldExtensionCtx } from 'datocms-plugin-sdk';
-import { Canvas } from 'datocms-react-ui';
+import Canvas from 'datocms-react-ui/Canvas';
 import { get } from 'lodash-es';
 
 type Props = {
@@ -354,7 +357,7 @@ export default function WordCount({ ctx }: Props) {
   return (
     <Canvas ctx={ctx}>
       {wordCount > 0 && (
-        <div style={{ fontSize: 'var(--font-size-s)', color: 'var(--color--ink-subtle)' }}>
+        <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color--ink-subtle)' }}>
           {wordCount} {wordCount === 1 ? 'word' : 'words'}
         </div>
       )}
@@ -514,23 +517,24 @@ connect({
 ```tsx
 // Per-field config component (NOT the plugin-wide ConfigScreen — use a distinct name to avoid collision)
 import type { RenderManualFieldExtensionConfigScreenCtx } from 'datocms-plugin-sdk';
-import { Canvas, TextField } from 'datocms-react-ui';
+import Canvas from 'datocms-react-ui/Canvas';
+import FieldWrapper from 'datocms-react-ui/FieldWrapper';
+import NumberInput from 'datocms-react-ui/NumberInput';
 
 type Props = { ctx: RenderManualFieldExtensionConfigScreenCtx };
 
+// No Save button: the field's appearance form saves the parameters
 export default function FieldExtensionConfig({ ctx }: Props) {
   return (
     <Canvas ctx={ctx}>
-      <TextField
-        id="maxLength"
-        name="maxLength"
-        label="Maximum length"
-        value={String(ctx.parameters.maxLength || '')}
-        onChange={(newValue) => {
-          ctx.setParameters({ ...ctx.parameters, maxLength: Number(newValue) });
-        }}
-        error={ctx.errors.maxLength as string}
-      />
+      <FieldWrapper label="Maximum length" error={ctx.errors.maxLength as string | undefined}>
+        <NumberInput
+          value={(ctx.parameters.maxLength as number | undefined) ?? null}
+          onChange={(maxLength) => {
+            ctx.setParameters({ ...ctx.parameters, maxLength });
+          }}
+        />
+      </FieldWrapper>
     </Canvas>
   );
 }

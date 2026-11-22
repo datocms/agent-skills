@@ -103,7 +103,9 @@ connect({
 ```tsx
 // src/entrypoints/AssetInfoPanel.tsx
 import type { RenderUploadSidebarPanelCtx } from 'datocms-plugin-sdk';
-import { Canvas } from 'datocms-react-ui';
+import Canvas from 'datocms-react-ui/Canvas';
+import InfoList from 'datocms-react-ui/InfoList';
+import SmartDate from 'datocms-react-ui/SmartDate';
 
 type Props = {
   ctx: RenderUploadSidebarPanelCtx;
@@ -115,18 +117,18 @@ export default function AssetInfoPanel({ ctx }: Props) {
 
   return (
     <Canvas ctx={ctx}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: 'var(--font-size-s)' }}>
-        <div>Format: {upload.attributes.format}</div>
-        <div>Size: {sizeKB} KB</div>
+      <InfoList>
+        <InfoList.Row title="Format">{upload.attributes.format}</InfoList.Row>
+        <InfoList.Row title="Size">{sizeKB} KB</InfoList.Row>
         {upload.attributes.width && (
-          <div>
-            Dimensions: {upload.attributes.width} x {upload.attributes.height}
-          </div>
+          <InfoList.Row title="Dimensions">
+            {upload.attributes.width} × {upload.attributes.height}
+          </InfoList.Row>
         )}
-        <div>
-          Created: {new Date(upload.attributes.created_at).toLocaleDateString()}
-        </div>
-      </div>
+        <InfoList.Row title="Created">
+          <SmartDate value={upload.attributes.created_at} show="date" />
+        </InfoList.Row>
+      </InfoList>
     </Canvas>
   );
 }
@@ -197,13 +199,7 @@ connect({
 });
 ```
 
-**Important**: Since full-width upload sidebars use `ImposedSizePluginFrameCtx`, pass `noAutoResizer` to Canvas:
-
-```tsx
-<Canvas ctx={ctx} noAutoResizer>
-  {/* content fills the imposed size */}
-</Canvas>
-```
+**Important**: Full-width upload sidebars use `ImposedSizePluginFrameCtx`: the frame fills the sidebar and scrolls, and Canvas starts no auto-resizer there, so plain `<Canvas ctx={ctx}>` is right. Shell: [full sidebar](../../datocms-plugin-design/references/surfaces.md#full-sidebar).
 
 ## Key Notes
 

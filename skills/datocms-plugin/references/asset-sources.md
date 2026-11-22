@@ -21,7 +21,7 @@ assetSources(ctx: AssetSourcesCtx): AssetSource[] | undefined
 {
   id: string;              // Unique ID — passed to renderAssetSource
   name: string;            // Display name shown to the user
-  icon: Icon;              // FontAwesome name or SVG definition
+  icon: Icon;              // icon name or SVG definition; see sdk-connect-and-frames.md#icon-names
   modal?: {
     width?: 's' | 'm' | 'l' | 'xl' | number; // Modal width
     initialHeight?: number; // Initial iframe height
@@ -122,7 +122,12 @@ connect({
 ```tsx
 // src/entrypoints/UnsplashSource.tsx
 import type { RenderAssetSourceCtx } from 'datocms-plugin-sdk';
-import { Canvas, TextField, Button, Spinner } from 'datocms-react-ui';
+import BlankSlate from 'datocms-react-ui/BlankSlate';
+import Button from 'datocms-react-ui/Button';
+import Canvas from 'datocms-react-ui/Canvas';
+import FieldWrapper from 'datocms-react-ui/FieldWrapper';
+import MediaCard from 'datocms-react-ui/MediaCard';
+import StringInput from 'datocms-react-ui/StringInput';
 import { useState } from 'react';
 
 type Props = {
@@ -137,7 +142,7 @@ type UnsplashPhoto = {
 };
 
 export default function UnsplashSource({ ctx }: Props) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState<string | null>(null);
   const [results, setResults] = useState<UnsplashPhoto[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -145,6 +150,7 @@ export default function UnsplashSource({ ctx }: Props) {
     .unsplashApiKey as string;
 
   const handleSearch = async () => {
+    if (!query) return;
     setLoading(true);
     const response = await fetch(
       `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=12`,
@@ -170,46 +176,40 @@ export default function UnsplashSource({ ctx }: Props) {
     });
   };
 
+  // Full shell (no title: the host dialog has one; states; grid): datocms-plugin-design surfaces.md, "Asset source"
   return (
     <Canvas ctx={ctx}>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-        <TextField
-          id="search"
-          name="search"
-          label="Search Unsplash"
-          value={query}
-          onChange={(val) => setQuery(val)}
-        />
-        <Button onClick={handleSearch} disabled={!query}>
-          Search
-        </Button>
-      </div>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleSearch();
+        }}
+      >
+        <FieldWrapper label="Search Unsplash">
+          <StringInput value={query} onChange={setQuery} placeholder="mountains" />
+        </FieldWrapper>
+        <Button submit label="Search" disabled={!query} />
+      </form>
 
-      {loading && <Spinner />}
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-        {results.map((photo) => (
-          <button
-            key={photo.id}
-            type="button"
-            onClick={() => handleSelect(photo)}
-            style={{
-              padding: 0,
-              border: '1px solid var(--color--border)',
-              borderRadius: '4px',
-              background: 'transparent',
-              cursor: 'pointer',
-              overflow: 'hidden',
-            }}
-          >
-            <img
-              src={photo.urls.regular}
-              alt={photo.alt_description || ''}
-              style={{ display: 'block', width: '100%' }}
-            />
-          </button>
-        ))}
-      </div>
+      {loading ? (
+        <BlankSlate placement="inline" loading title="Searching Unsplash" />
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--spacing-m)' }}>
+          {results.map((photo) => (
+            <MediaCard
+              key={photo.id}
+              caption={{ text: photo.user.name }}
+              selection={{ selected: false, onSelect: () => handleSelect(photo) }}
+            >
+              <img
+                src={photo.urls.regular}
+                alt={photo.alt_description || ''}
+                style={{ display: 'block', width: '100%' }}
+              />
+            </MediaCard>
+          ))}
+        </div>
+      )}
     </Canvas>
   );
 }

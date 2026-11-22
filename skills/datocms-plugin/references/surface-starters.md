@@ -28,7 +28,7 @@ Use this file to choose the first hook pair for a new plugin. Keep the first ver
 - Create one render helper and reuse it.
 - Import `'datocms-react-ui/styles.css'` once in the entry file.
 - Wrap rendered UI in `<Canvas ctx={ctx}>`.
-- Use `noAutoResizer` for pages, inspectors, and full-width sidebars.
+- UI inside the surface (shell, components, frame height): [surfaces](../../datocms-plugin-design/references/surfaces.md).
 - Use `switch` for ID-based render hooks even when there is only one case.
 - Use `import type { ... }` for SDK types.
 - Add optional dependencies only when the starter implementation uses them.

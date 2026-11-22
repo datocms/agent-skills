@@ -58,7 +58,7 @@ await ctx.updatePluginParameters({
   apiKey: 'new-key',
   debugMode: true,
 });
-await ctx.notice('Settings saved!');
+ctx.notice('Settings saved!'); // do not await: settles only when the toast closes
 ```
 
 ## Pattern with `react-final-form`
@@ -76,7 +76,7 @@ For complex configuration screens, use `react-final-form` when you need validati
 }
 ```
 
-**Important**: Both `datocms-react-ui` and `react-final-form` export a component named `Form`. You need both — `Form` from `datocms-react-ui` is the styled wrapper, while `Form` from `react-final-form` manages form state. Always alias the `react-final-form` import (e.g., `Form as FinalForm`) to avoid the collision.
+`datocms-react-ui` 4 has no `Form` component: the form is a plain `<form>`, and each field is a `FieldWrapper` around a controlled input. Alias `react-final-form`'s `Form` (`Form as FinalForm`) so it does not read like a UI component. Full shell, layout rules and mistakes: [config screen in datocms-plugin-design](../../datocms-plugin-design/references/surfaces.md#config-screen).
 
 ### Complete Config Screen Example
 
@@ -98,7 +98,11 @@ connect({
 ```tsx
 // src/entrypoints/ConfigScreen.tsx
 import type { RenderConfigScreenCtx } from 'datocms-plugin-sdk';
-import { Canvas, Button, TextField, SwitchField, FieldGroup, Form } from 'datocms-react-ui';
+import Button from 'datocms-react-ui/Button';
+import Canvas from 'datocms-react-ui/Canvas';
+import FieldWrapper from 'datocms-react-ui/FieldWrapper';
+import StringInput from 'datocms-react-ui/StringInput';
+import SwitchInput from 'datocms-react-ui/SwitchInput';
 import { Form as FinalForm, Field } from 'react-final-form';
 
 type Props = {
@@ -148,68 +152,67 @@ export default function ConfigScreen({ ctx }: Props) {
         onSubmit={handleSubmit}
       >
         {({ handleSubmit, submitting, dirty }) => (
-          <Form onSubmit={handleSubmit}>
-            <FieldGroup>
-              <Field name="apiKey">
-                {({ input, meta }) => (
-                  <TextField
-                    id="apiKey"
-                    name="apiKey"
-                    label="API Key"
-                    hint="Your external service API key"
+          <form onSubmit={handleSubmit}>
+            <Field<string> name="apiKey">
+              {({ input, meta }) => (
+                <FieldWrapper
+                  label="API key"
+                  hint="Your external service API key"
+                  required
+                  error={meta.touched && meta.error ? meta.error : undefined}
+                >
+                  <StringInput
                     placeholder="sk-..."
-                    required
                     disabled={!canEdit}
                     value={input.value}
-                    onChange={input.onChange}
-                    error={meta.touched && meta.error ? meta.error : undefined}
+                    onChange={(value) => input.onChange(value ?? '')}
+                    onBlur={() => input.onBlur()}
                   />
-                )}
-              </Field>
+                </FieldWrapper>
+              )}
+            </Field>
 
-              <Field name="webhookUrl">
-                {({ input, meta }) => (
-                  <TextField
-                    id="webhookUrl"
-                    name="webhookUrl"
-                    label="Webhook URL"
-                    hint="Optional webhook endpoint"
-                    placeholder="https://..."
+            <Field<string> name="webhookUrl">
+              {({ input, meta }) => (
+                <FieldWrapper
+                  label="Webhook URL"
+                  hint="Optional webhook endpoint"
+                  error={meta.touched && meta.error ? meta.error : undefined}
+                >
+                  <StringInput
+                    placeholder="https://example.com/hook"
                     disabled={!canEdit}
                     value={input.value}
-                    onChange={input.onChange}
-                    error={meta.touched && meta.error ? meta.error : undefined}
+                    onChange={(value) => input.onChange(value ?? '')}
+                    onBlur={() => input.onBlur()}
                   />
-                )}
-              </Field>
+                </FieldWrapper>
+              )}
+            </Field>
 
-              <Field name="debugMode" type="checkbox">
-                {({ input }) => (
-                  <SwitchField
-                    id="debugMode"
-                    name="debugMode"
-                    label="Debug Mode"
-                    hint="Enable verbose logging"
+            <Field<boolean> name="debugMode" type="checkbox">
+              {({ input }) => (
+                <FieldWrapper hint="Enable verbose logging">
+                  <SwitchInput
+                    label="Debug mode"
                     disabled={!canEdit}
-                    value={input.checked || false}
-                    onChange={input.onChange}
+                    value={input.checked ?? false}
+                    onChange={(value) => input.onChange(Boolean(value))}
                   />
-                )}
-              </Field>
-            </FieldGroup>
+                </FieldWrapper>
+              )}
+            </Field>
 
             {canEdit && (
               <Button
-                type="submit"
-                fullWidth
-                buttonSize="l"
-                buttonType="primary"
-                disabled={submitting || !dirty}
-              >
-                {submitting ? 'Saving...' : 'Save settings'}
-              </Button>
+                tone="primary"
+                submit
+                label="Save settings"
+                busy={submitting}
+                disabled={!dirty}
+              />
             )}
-          </Form>
+          </form>
         )}
       </FinalForm>
     </Canvas>
@@ -223,7 +226,10 @@ For simple configurations, you can use plain React state:
 
 ```tsx
 import type { RenderConfigScreenCtx } from 'datocms-plugin-sdk';
-import { Canvas, Button, TextField, FieldGroup } from 'datocms-react-ui';
+import Button from 'datocms-react-ui/Button';
+import Canvas from 'datocms-react-ui/Canvas';
+import FieldWrapper from 'datocms-react-ui/FieldWrapper';
+import StringInput from 'datocms-react-ui/StringInput';
 import { useState } from 'react';
 
 type Props = {
@@ -232,41 +238,23 @@ type Props = {
 
 export default function ConfigScreen({ ctx }: Props) {
   const saved = ctx.plugin.attributes.parameters as Record<string, unknown>;
-  const [apiKey, setApiKey] = useState((saved.apiKey as string) || '');
-  const [saving, setSaving] = useState(false);
+  const [apiKey, setApiKey] = useState<string | null>((saved.apiKey as string) || null);
 
   const canEdit = ctx.currentRole.meta.final_permissions.can_edit_schema;
 
+  // A Button whose onClick returns a promise shows itself busy until it settles.
   const handleSave = async () => {
-    setSaving(true);
-    try {
-      await ctx.updatePluginParameters({ apiKey });
-      await ctx.notice('Settings saved!');
-    } finally {
-      setSaving(false);
-    }
+    await ctx.updatePluginParameters({ apiKey });
+    ctx.notice('Settings saved!');
   };
 
   return (
     <Canvas ctx={ctx}>
-      <FieldGroup>
-        <TextField
-          id="apiKey"
-          name="apiKey"
-          label="API Key"
-          value={apiKey}
-          onChange={setApiKey}
-          disabled={!canEdit}
-        />
-      </FieldGroup>
+      <FieldWrapper label="API key">
+        <StringInput value={apiKey} onChange={setApiKey} disabled={!canEdit} />
+      </FieldWrapper>
       {canEdit && (
-        <Button
-          onClick={handleSave}
-          buttonType="primary"
-          disabled={saving || !apiKey}
-        >
-          {saving ? 'Saving...' : 'Save'}
-        </Button>
+        <Button tone="primary" label="Save" onClick={handleSave} disabled={!apiKey} />
       )}
     </Canvas>
   );
@@ -275,17 +263,16 @@ export default function ConfigScreen({ ctx }: Props) {
 
 ## Informational Config Screen
 
-If your plugin doesn't need settings, you can use the config screen to display usage instructions:
+If your plugin doesn't need settings, use the config screen for usage instructions. Start with the text, not a heading: DatoCMS already draws the "Plugin settings" title above the frame.
 
 ```tsx
+import type { RenderConfigScreenCtx } from 'datocms-plugin-sdk';
+import Canvas from 'datocms-react-ui/Canvas';
+
 export function Config({ ctx }: { ctx: RenderConfigScreenCtx }) {
   return (
     <Canvas ctx={ctx}>
-      <h3>How this plugin works</h3>
-      <ul>
-        <li>This plugin automatically adds a word counter to all text fields.</li>
-        <li>No configuration is needed.</li>
-      </ul>
+      <p>This plugin adds a word counter to all text fields. No configuration is needed.</p>
     </Canvas>
   );
 }
@@ -324,3 +311,4 @@ Use `normalizeParameters` anywhere you read plugin settings (config screen, fiel
 - When `updatePluginParameters()` is called, the new values propagate **in real-time** to all connected users.
 - `ctx.plugin.attributes.parameters` reflects the last **saved** state — it does not update as you modify component state. It only changes after `updatePluginParameters()` completes.
 - Keep read-only permission branches simple; do not fork the screen into a second design.
+- Do not open the screen with a section title or divider: DatoCMS already shows a "Plugin settings" divider right above the frame ([config screen](../../datocms-plugin-design/references/surfaces.md#config-screen)).

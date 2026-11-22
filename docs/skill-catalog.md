@@ -6,7 +6,8 @@ The root [README](../README.md#whats-covered) is the short version. This page ke
 
 | Skill | Repo path | Scope |
 | - | - | - |
-| `datocms-plugin` | `skills/datocms-plugin` | Create, patch, extend, or restyle DatoCMS plugin projects |
+| `datocms-plugin` | `skills/datocms-plugin` | Create, patch, or extend DatoCMS plugin projects: SDK hooks, ctx, scaffolding, permissions, package metadata, testing and releasing |
+| `datocms-plugin-design` | `skills/datocms-plugin-design` | Plugin UI that looks native to the dashboard with `datocms-react-ui` 4: components, surface shells, color tokens, dark mode, upgrades from react-ui 2.x; bundles the react-ui.datocms.com pages |
 | `datocms-structured-text` | `skills/datocms-structured-text` | DAST structure, construction, validation, preservation during edits, Markdown/HTML conversion, and format export; CMA writes, queries, renderer wiring, and Slate editor integration stay with their existing skills |
 | `datocms-cma` | `skills/datocms-cma` | Content management scripts, records, schema, environments, and webhooks |
 | `datocms-cli` | `skills/datocms-cli` | CLI workflows, migrations, environments, and imports |
@@ -29,7 +30,7 @@ $datocms-content-modeling should testimonials be a model or a block?
 $datocms-cli scaffold a migration workflow for this project
 $datocms-frontend-integrations show how to wire DatoCMS draft mode into this Next.js app
 $datocms-plugin patch the config screen in this plugin
-$datocms-plugin make this plugin config screen match DatoCMS spacing, forms, and actions
+$datocms-plugin-design make this plugin config screen match DatoCMS spacing, forms, and actions
 $datocms-plugin scaffold a new sidebar panel plugin for this project
 $datocms-setup walk me through previews and click-to-edit for this site
 $datocms-feedback report this stuck MCP workflow to DatoCMS support

@@ -1,7 +1,7 @@
 {
   "name": "datocms",
   "version": "1.6.8",
-  "description": "DatoCMS skills for content delivery, content management, content modeling, Structured Text, CLI workflows, frontend integrations, plugin development, and project setup",
+  "description": "DatoCMS skills for content delivery, content management, content modeling, Structured Text, CLI workflows, frontend integrations, plugin development, plugin UI design, and project setup",
   "author": {
     "name": "DatoCMS",
     "url": "https://www.datocms.com"

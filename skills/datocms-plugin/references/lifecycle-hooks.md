@@ -93,10 +93,10 @@ ctx.scrollToField(path, locale?)  // Scroll to a specific field
 
 ### Payload shape
 
-The payload is a `SchemaTypes.ItemUpdateSchema` (existing record) or `SchemaTypes.ItemCreateSchema` (new record) — raw JSON:API format with a `data` wrapper:
+The payload is a `RawApiTypes.ItemUpdateSchema` (existing record) or `RawApiTypes.ItemCreateSchema` (new record) — raw JSON:API format with a `data` wrapper:
 
 ```ts
-import type { SchemaTypes } from '@datocms/cma-client';
+import type { RawApiTypes } from '@datocms/cma-client';
 ```
 
 Key paths:

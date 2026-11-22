@@ -1,15 +1,18 @@
 ---
 name: datocms-plugin
 description: >-
-  Build, scaffold, maintain, or restyle DatoCMS plugins built with
-  datocms-plugin-sdk and datocms-react-ui. Use when users ask to create a new
-  DatoCMS plugin project, patch an existing plugin, add or adjust plugin hooks,
-  field extensions, config screens, sidebars, pages, modals, asset sources,
-  dropdown actions, lifecycle hooks, browser CMA flows, plugin permissions,
-  package metadata, dark mode upgrades, testing local plugin changes without
-  affecting the live installation, or UI changes that should match the
-  DatoCMS dashboard. Route standalone CMA scripts to datocms-cma and frontend
-  website integrations to datocms-frontend-integrations.
+  Build, scaffold, wire, maintain, test, and release DatoCMS plugins with
+  datocms-plugin-sdk. Use when users ask to create a new DatoCMS plugin
+  project, patch an existing plugin, add or adjust connect() hooks and their
+  ctx (field extensions, config screens, sidebars, pages, modals, inspectors,
+  outlets, asset sources, dropdown actions, lifecycle hooks), read or write
+  form values and plugin parameters, browser CMA flows, plugin permissions,
+  package metadata, testing local plugin changes without affecting the live
+  installation, or publishing and switching plugin versions. How a plugin's
+  UI looks, which datocms-react-ui components to use, dark mode, and
+  upgrading datocms-react-ui belong to datocms-plugin-design. Route
+  standalone CMA scripts to datocms-cma and frontend website integrations to
+  datocms-frontend-integrations.
 ---
 
 # DatoCMS Plugin
@@ -26,8 +29,7 @@ Plugin code: patch in place; scaffold only when requested or absent. A project's
 2. Classify the request:
    - **Existing plugin:** package already exists and user asks to patch, add, maintain, fix, release-prep, or restyle. Default here.
    - **New plugin:** user asks to create/scaffold/bootstrap a plugin folder, or no plugin project exists.
-   - **Design pass:** request mentions styling, layout, density, spacing, theme, dark mode, Canvas tokens, legacy CSS variables, hardcoded colors, forms, tables, panels, controls, or matching DatoCMS UI patterns.
-   - **Mixed:** combine hook/scaffold work with design changes in one pass.
+   - **UI work** (layout, components, styling, dark mode, react-ui upgrade): also load `datocms-plugin-design`; this skill keeps the hook wiring.
 3. Ask only when inspection cannot resolve a behavior-changing choice:
    - plugin/folder name for a new scaffold
    - private vs marketplace plugin when package metadata changes
@@ -81,28 +83,19 @@ Plugin code: patch in place; scaffold only when requested or absent. A project's
 | Structured Text customization | `references/structured-text.md` |
 | Record presentation or picker query | `references/record-presentation.md` |
 
-### Design
+### UI
 
 | Need | Load |
 | - | - |
-| Dark-mode-only migration | `references/dark-mode-upgrade.md` |
-| First design pass | `references/design-foundations.md` + `references/design-datocms-react-ui-bridge.md` |
-| Token/variable lookup | `references/design-tokens.md` |
-| Layouts, pages, split views, toolbars | `references/design-layouts.md` |
-| Forms, controls, settings | `references/design-forms-and-controls.md` |
-| Dropdowns, tabs, tables, lists, notices | `references/design-navigation-feedback-and-data-display.md` |
-| Surface shell rules | `references/design-plugin-surfaces.md` |
-| Raw CSS fallback snippets | `references/design-raw-css-fallbacks.md` |
-
-For design work, prefer public `datocms-react-ui` components when they match the required shape. Fall back to local React/CSS only when public components do not express the layout cleanly. Use Canvas tokens and variables directly; customize beyond them only for explicit product styling, vendor widgets, media treatments, data visualization, or effects they cannot express.
+| Any surface that renders UI, restyling, dark mode, upgrade from `datocms-react-ui` 2.x | `../datocms-plugin-design/SKILL.md` (setup contract, rules, surface shells, all react-ui.datocms.com pages) |
 
 ## Guardrails
 
 - Keep exactly one top-level `connect()` call.
 - Inspect existing `connect()` before adding hooks.
+- `datocms-react-ui` 4 only: if `npm view datocms-react-ui version` is below 4, install exactly `4.0.0-next.8` (a bare install gets 2.x); one import per entry (`datocms-react-ui/Button`), never the root.
 - Import `datocms-react-ui/styles.css` once in the plugin entry file; keep `src/vite-env.d.ts` (`/// <reference types="vite/client" />`) or TS rejects it.
-- Wrap every rendered surface in `<Canvas ctx={ctx}>`.
-- Use `<Canvas ctx={ctx} noAutoResizer>` for pages, inspectors, and full-width sidebars.
+- Wrap every rendered surface in `<Canvas ctx={ctx}>` (no `noAutoResizer` unless the plugin sets its own height).
 - Use `switch` for ID-dispatched render hooks.
 - Use `import type { ... }` for SDK types.
 - Guard `ctx.item` before reading saved-record data.
@@ -113,7 +106,6 @@ For design work, prefer public `datocms-react-ui` components when they match the
 - Use `ctx.setParameters()` directly in `renderManualFieldExtensionConfigScreen`.
 - Modular Content is `rich_text` in `FieldType` and API `field_type`. Do not create editor field extensions for Modular Content, single block, or Structured Text fields; use addons (Modular Content: `fieldTypes: ['rich_text']`; single block has no `FieldType`: `overrideFieldExtensions`, or `fieldTypes: 'all'` if every field type may offer it).
 - Prefer SDK helpers before browser CMA calls. If browser CMA is required, use `@datocms/cma-client-browser`, add only required permissions, and guard missing `ctx.currentUserAccessToken`.
-- Keep modals, sidebars, and config screens compact.
 
 ## Routing
 

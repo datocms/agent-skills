@@ -45,7 +45,8 @@ The skills are designed to work together — they cross-link and reinforce each 
 
 **Extending the DatoCMS dashboard**
 
-- **Plugin development** — create, patch, extend, or restyle DatoCMS plugins with SDK hooks, Vite/React, browser CMA flows, permissions, and DatoCMS UI patterns.
+- **Plugin development** — create, patch, or extend DatoCMS plugins with SDK hooks, Vite/React, browser CMA flows, permissions, and package metadata.
+- **Plugin design** — plugin UI that looks native to the dashboard with `datocms-react-ui` 4: component choice, surface layouts, color tokens and dark mode, and upgrades from react-ui 2.x, with every react-ui.datocms.com page bundled.
 
 For the full list of skill names and which skill owns each setup concern see [`docs/skill-catalog.md`](docs/skill-catalog.md).
 

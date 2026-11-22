@@ -161,6 +161,7 @@ cp -R "$repo_root/skills/datocms-cda/." "$skills_dir/datocms-cda"
 - `skills/datocms-frontend-integrations`
 - `skills/datocms-feedback`
 - `skills/datocms-plugin`
+- `skills/datocms-plugin-design`
 - `skills/datocms-setup`
 
 `datocms-setup` links to the sibling skill folders by relative path, so keep them installed next to it under the same parent folder.

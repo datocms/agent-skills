@@ -50,6 +50,10 @@ Return data and do not render UI:
 - `customMarksForStructuredTextField`, `customBlockStylesForStructuredTextField`
 - `buildItemPresentationInfo`, `initialLocationQueryForItemSelector`, `validateManualFieldExtensionParameters`
 
+### Icon names
+
+`icon` (main navigation tabs, content/settings sidebar items, asset sources, Structured Text marks, dropdown actions and groups) is an icon name or an `SvgDefinition` (`{ type: 'svg', viewBox, content }`). The name set depends on the SDK major: `datocms-plugin-sdk` 2.x (`latest`) types it as a Font Awesome name (`AwesomeFontIconIdentifier`, e.g. `eye-slash`, `info-circle`, `file-export`, `tachometer-alt`); 3.0.0-next (`next`) types it as a [Lucide](https://lucide.dev/icons) name (`LucideIconIdentifier`, e.g. `eye-off`, `info`, `file-output`, `gauge`) and Font Awesome names fail type-checking, although the runtime still accepts them and the CMS maps them. Check the installed SDK's type before choosing a name. Examples in these references use names that exist in both sets (`star`, `link`, `flag`, `cog`, `search`, `camera`, `chart-bar`, `info`, `gauge`, `globe`, `pen`, `highlighter`, `upload`, `download`); `settings`, `type`, `languages` exist only in Lucide.
+
 ### Render hooks
 
 Render a React UI into the plugin iframe:
@@ -104,38 +108,30 @@ Create the root once. Each render hook re-renders into that root. This is correc
 
 ## `<Canvas>`
 
-Wrap every rendered plugin surface in `<Canvas ctx={ctx}>` and import `datocms-react-ui/styles.css` once in the entry file.
+Wrap every rendered plugin surface in `<Canvas ctx={ctx}>` and import `datocms-react-ui/styles.css` once in the entry file. `datocms-react-ui` 4 has one import path per entry and no root import.
 
 ```tsx
-import { Canvas } from 'datocms-react-ui';
+import type { RenderConfigScreenCtx } from 'datocms-plugin-sdk';
+import Canvas from 'datocms-react-ui/Canvas';
 import 'datocms-react-ui/styles.css';
 
 export function ConfigScreen({ ctx }: { ctx: RenderConfigScreenCtx }) {
-  return <Canvas ctx={ctx}>...</Canvas>;
+  return <Canvas ctx={ctx}>…</Canvas>;
 }
 ```
 
 Canvas provides:
 
-- semantic Canvas tokens and legacy theme variables inside the wrapper
-- automatic height resizing for self-resizing frames
-- `useCtx<T>()` for nested components that should avoid prop drilling
-- document-level `data-color-scheme` and CSS `color-scheme` through the SDK runtime
+- the semantic color tokens of `ctx.cssDesignTokens` and `data-color-scheme`, on its element and around each menu, tooltip and dialog
+- `ctx.bodyPadding` as its padding, and the auto-resizer in self-resizing frames
+- `useCtx<T>()` (from `datocms-react-ui/Canvas`) for nested components that should avoid prop drilling
+- the router, texts and date settings the components read; component notices routed to `ctx.notice`/`ctx.alert`
+
+Everything inside Canvas (layout, components, tokens, per-surface shells): [datocms-plugin-design](../../datocms-plugin-design/SKILL.md).
 
 ## Frame sizing
 
-Use plain `<Canvas ctx={ctx}>` for self-resizing surfaces:
-
-- field extensions, config screens, modals, asset sources
-- sidebar panels, outlets, upload sidebar panels
-
-Use `<Canvas ctx={ctx} noAutoResizer>` for imposed-size surfaces:
-
-- `renderPage`
-- `renderItemFormSidebar`
-- `renderUploadSidebar`
-- `renderInspector`
-- `renderInspectorPanel`
+Use plain `<Canvas ctx={ctx}>` everywhere. In self-resizing surfaces (field extensions, config screens, modals, asset sources, sidebar panels, outlets, upload sidebar panels) it starts the auto-resizer; imposed-size surfaces (`renderPage`, `renderItemFormSidebar`, `renderUploadSidebar`, `renderInspector`, `renderInspectorPanel`) have no sizing methods, so it starts none. `noAutoResizer` only when the plugin calls `ctx.setHeight` itself.
 
 Use Canvas auto-resizing first. Add `initialHeight`, `ctx.updateHeight()`, or a `ResizeObserver` that calls `ctx.updateHeight()` only when async content or custom layout defeats it.
 

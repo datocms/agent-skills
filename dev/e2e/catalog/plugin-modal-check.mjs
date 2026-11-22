@@ -187,12 +187,14 @@ export async function checkPlugin(workspace, output) {
       "latest host values are used and an empty confirmed title is not mistaken for cancellation",
     );
     await page.evaluate(() => window.update({ isSubmitting: true }));
-    await page.waitForFunction(
-      () =>
-        document
-          .querySelector("#sidebar")
-          .contentDocument.querySelector("button")?.disabled === true,
-    );
+    // datocms-react-ui 4: `disabled` is native; `disabled={{ reason }}` keeps the button focusable with aria-disabled.
+    await page.waitForFunction(() => {
+      const button = document.querySelector("#sidebar").contentDocument.querySelector("button");
+      return button?.disabled === true || button?.getAttribute("aria-disabled") === "true";
+    });
+    const requestsWhileSubmitting = await page.evaluate(() => window.modalRequests.length);
+    await sidebar.getByRole("button", { name: "Edit title", exact: true }).click({ force: true }).catch(() => {});
+    assert.equal(await page.evaluate(() => window.modalRequests.length), requestsWhileSubmitting, "The disabled action still opened the modal");
     assert.equal(await page.evaluate(() => window.saveCalls), 0);
     const heights = await page.evaluate(() => window.heights);
     for (const kind of ["sidebar", "modal"])

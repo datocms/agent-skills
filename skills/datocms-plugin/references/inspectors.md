@@ -184,13 +184,17 @@ connect({
 ```tsx
 // src/entrypoints/ContentBrowser.tsx
 import type { RenderInspectorCtx } from 'datocms-plugin-sdk';
-import { Canvas, Button } from 'datocms-react-ui';
-import { useState, useEffect } from 'react';
+import Canvas from 'datocms-react-ui/Canvas';
+import Main from 'datocms-react-ui/Main';
+import Pane from 'datocms-react-ui/Pane';
+import RowList from 'datocms-react-ui/RowList';
+import { useState } from 'react';
 
 type Props = {
   ctx: RenderInspectorCtx;
 };
 
+// Shell and frame facts: datocms-plugin-design surfaces.md, "Inspector"
 export default function ContentBrowser({ ctx }: Props) {
   const models = Object.values(ctx.itemTypes).filter(Boolean);
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
@@ -223,50 +227,35 @@ export default function ContentBrowser({ ctx }: Props) {
   };
 
   return (
-    <Canvas ctx={ctx} noAutoResizer>
-      <div style={{ padding: '16px', height: '100%', overflow: 'auto' }}>
-        <h2 style={{ marginBottom: '16px' }}>Models</h2>
-        {models.map((model) => (
-          <button
-            key={model!.id}
-            type="button"
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              marginBottom: '4px',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              textAlign: 'left',
-              appearance: 'none',
-              font: 'inherit',
-              color: 'var(--color--ink)',
-              border:
-                selectedModelId === model!.id
-                  ? '1px solid var(--color--selected--border)'
-                  : '1px solid transparent',
-              backgroundColor:
-                selectedModelId === model!.id
-                  ? 'var(--color--selected--surface)'
-                  : 'transparent',
-              color:
-                selectedModelId === model!.id
-                  ? 'var(--color--selected--ink)'
-                  : 'var(--color--ink)',
-            }}
-            onClick={() => handleShowRecords(model!.id)}
-          >
-            {model!.attributes.name}
-          </button>
-        ))}
+    <Canvas ctx={ctx}>
+      <Main>
+        <Pane
+          ariaLabel="Models"
+          header={
+            <Pane.Header>
+              <Pane.Header.Title level={1}>Models</Pane.Header.Title>
+            </Pane.Header>
+          }
+        >
+          <RowList>
+            {models.map((model) => (
+              <RowList.Item
+                key={model!.id}
+                selected={selectedModelId === model!.id}
+                onClick={() => handleShowRecords(model!.id)}
+              >
+                {model!.attributes.name}
+              </RowList.Item>
+            ))}
+          </RowList>
 
-        {ctx.highlightedItemId && (
-          <div style={{ marginTop: '16px' }}>
-            <p style={{ fontSize: 'var(--font-size-s)', color: 'var(--color--ink-subtle)' }}>
+          {ctx.highlightedItemId && (
+            <p style={{ color: 'var(--color--ink-subtle)' }}>
               Highlighted: {ctx.highlightedItemId}
             </p>
-          </div>
-        )}
-      </div>
+          )}
+        </Pane>
+      </Main>
     </Canvas>
   );
 }
@@ -275,7 +264,10 @@ export default function ContentBrowser({ ctx }: Props) {
 ```tsx
 // src/entrypoints/DetailPanel.tsx
 import type { RenderInspectorPanelCtx } from 'datocms-plugin-sdk';
-import { Canvas } from 'datocms-react-ui';
+import ApiKey from 'datocms-react-ui/ApiKey';
+import Canvas from 'datocms-react-ui/Canvas';
+import InfoList from 'datocms-react-ui/InfoList';
+import Pane from 'datocms-react-ui/Pane';
 
 type Props = {
   ctx: RenderInspectorPanelCtx;
@@ -286,11 +278,19 @@ export default function DetailPanel({ ctx }: Props) {
   const model = ctx.itemTypes[modelId];
 
   return (
-    <Canvas ctx={ctx} noAutoResizer>
-      <div style={{ padding: '16px' }}>
-        <h2>{model?.attributes.name || 'Unknown model'}</h2>
-        <p>API key: {model?.attributes.api_key}</p>
-      </div>
+    <Canvas ctx={ctx}>
+      <Pane
+        ariaLabel="Model details"
+        header={
+          <Pane.Header>
+            <Pane.Header.Title>{model?.attributes.name || 'Unknown model'}</Pane.Header.Title>
+          </Pane.Header>
+        }
+      >
+        <InfoList>
+          <InfoList.Row title="API key">{model ? <ApiKey>{model.attributes.api_key}</ApiKey> : '—'}</InfoList.Row>
+        </InfoList>
+      </Pane>
     </Canvas>
   );
 }
@@ -299,7 +299,7 @@ export default function DetailPanel({ ctx }: Props) {
 ## Key Notes
 
 - Inspectors are declared through `mainNavigationTabs` with `inspectorId` (not `pageId`)
-- Both `renderInspector` and `renderInspectorPanel` use `ImposedSizePluginFrameCtx` — pass `noAutoResizer` to Canvas
+- Both `renderInspector` and `renderInspectorPanel` use `ImposedSizePluginFrameCtx`: fixed frames, Canvas starts no auto-resizer (no `noAutoResizer` needed)
 - Use `ctx.highlightedItemId` to react to users hovering/clicking records in the right-side list
 - Use `ignoreIfUnsavedChanges: true` for "low intent" mode changes (e.g., highlighting on hover) to avoid interrupting editing
 - Inspector panels don't need a separate declaration hook — just handle them in `renderInspectorPanel`

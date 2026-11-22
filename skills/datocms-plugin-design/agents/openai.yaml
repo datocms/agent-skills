@@ -1,0 +1,8 @@
+# synced_from_name: datocms-plugin-design
+# synced_from_description_sha256: 64c802de3561eebc1ea2afba1749600f146ac2872cd60f3b945e1e4ac384aad5
+interface:
+  display_name: "DatoCMS Plugin Design"
+  short_description: "Native-looking plugin UI with datocms-react-ui 4"
+  default_prompt: "Use $datocms-plugin-design to build or review DatoCMS plugin UI with datocms-react-ui so it looks native to the dashboard."
+policy:
+  allow_implicit_invocation: true

@@ -153,7 +153,7 @@ export function render(component: ReactNode) {
 }
 `,
   'src/entrypoints/WordCount.tsx': `import type { RenderFieldExtensionCtx } from 'datocms-plugin-sdk';
-import { Canvas } from 'datocms-react-ui';
+import Canvas from 'datocms-react-ui/Canvas';
 import { get } from 'lodash-es';
 const count = (value: unknown): number =>
   typeof value === 'string' ? value.split(/\\s+/).filter(Boolean).length
@@ -163,21 +163,26 @@ export default function WordCount({ ctx }: { ctx: RenderFieldExtensionCtx }) {
 }
 `,
   'src/entrypoints/ConfigScreen.tsx': `import type { RenderConfigScreenCtx } from 'datocms-plugin-sdk';
-import { Button, Canvas, Form, TextField } from 'datocms-react-ui';
+import Button from 'datocms-react-ui/Button';
+import Canvas from 'datocms-react-ui/Canvas';
+import FieldWrapper from 'datocms-react-ui/FieldWrapper';
+import NumberInput from 'datocms-react-ui/NumberInput';
 import { useState } from 'react';
 export default function ConfigScreen({ ctx }: { ctx: RenderConfigScreenCtx }) {
   const saved = ctx.plugin.attributes.parameters as { targetWordCount?: number };
-  const [target, setTarget] = useState(String(saved.targetWordCount ?? ''));
+  const [target, setTarget] = useState<number | null>(saved.targetWordCount ?? null);
   const save = async () => {
-    await ctx.updatePluginParameters({ targetWordCount: Number(target) });
-    await ctx.notice('Settings saved');
+    await ctx.updatePluginParameters({ targetWordCount: target });
+    ctx.notice('Settings saved');
   };
   return (
     <Canvas ctx={ctx}>
-      <Form onSubmit={save}>
-        <TextField id="target" name="target" label="Target word count" value={target} onChange={setTarget} textInputProps={{ type: 'number' }} />
-        <Button type="submit" buttonType="primary">Save</Button>
-      </Form>
+      <form onSubmit={(event) => { event.preventDefault(); void save(); }}>
+        <FieldWrapper label="Target word count">
+          <NumberInput value={target} onChange={setTarget} />
+        </FieldWrapper>
+        <Button tone="primary" submit label="Save" />
+      </form>
     </Canvas>
   );
 }
@@ -215,7 +220,8 @@ export default [
       'skills/datocms-plugin/references/dropdown-actions.md',
       'skills/datocms-plugin/references/sdk-connect-and-frames.md',
       'skills/datocms-plugin/references/sdk-context-and-cma.md',
-      'skills/datocms-plugin/references/design-datocms-react-ui-bridge.md',
+      'skills/datocms-plugin-design/SKILL.md',
+      'skills/datocms-plugin-design/references/surfaces.md',
     ],
     budget: { timeoutMs: 480000, maxCommands: 70 },
     prompt: `Create a new private DatoCMS plugin in this directory using the standard DatoCMS plugin project setup (Vite + React + TypeScript, entry point src/main.tsx, index.html at the root, and \`npm run build\` producing dist/). package.json and node_modules are already here: use only the dependencies already installed and do not install or add packages. There is no DatoCMS project and there are no credentials, so do not try to install, publish or deploy the plugin.
@@ -272,9 +278,9 @@ Make sure the production build passes before you finish.`,
             ...files,
             'src/main.tsx': main(),
             'src/entrypoints/ConfigScreen.tsx': files['src/entrypoints/ConfigScreen.tsx']
-              .replace("await ctx.notice('Settings saved');", 'setToast(true);')
+              .replace("ctx.notice('Settings saved');", 'setToast(true);')
               .replace("const save = async", 'const [toast, setToast] = useState(false);\n  const save = async')
-              .replace('</Form>', '</Form>\n      {toast && <div role="status" style={{ position: \'fixed\', bottom: 16, right: 16, background: \'var(--color--success-soft--surface)\', color: \'var(--color--success-soft--ink)\' }}>Settings saved</div>}'),
+              .replace('</form>', '</form>\n      {toast && <div role="status" style={{ position: \'fixed\', bottom: 16, right: 16, background: \'var(--color--success-soft--surface)\', color: \'var(--color--success-soft--ink)\' }}>Settings saved</div>}'),
           },
         },
       ],

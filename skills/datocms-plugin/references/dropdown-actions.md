@@ -36,7 +36,7 @@ Dropdown actions add custom actions to context menus throughout DatoCMS. Each sc
 {
   id: string;              // Action ID — passed to execute hook
   label: string;           // Display label (must be unique)
-  icon: Icon;              // FontAwesome name or SVG definition
+  icon: Icon;              // icon name or SVG definition; see sdk-connect-and-frames.md#icon-names
   parameters?: Record<string, unknown>; // Arbitrary params passed to execute
   active?: boolean;        // Whether action appears "active" (highlighted)
   alert?: boolean;         // Whether action appears in alert/danger style
@@ -53,7 +53,7 @@ Groups actions into a submenu:
 ```ts
 {
   label: string;           // Group label (must be unique)
-  icon: Icon;              // FontAwesome name or SVG definition
+  icon: Icon;              // icon name or SVG definition; see sdk-connect-and-frames.md#icon-names
   actions: DropdownAction[]; // Grouped actions
   rank?: number;           // Sort order (ascending)
 }
@@ -83,6 +83,8 @@ executeFieldDropdownAction(
 
 The execute context also has item form methods (`setFieldValue`, `toggleField`, `disableField`, `scrollToField`, `saveCurrentItem`, etc.).
 
+In 3.0.0-next, actions from `itemFormDropdownActions`, `itemsDropdownActions`, `uploadsDropdownActions` and `schemaItemTypeDropdownActions` also appear in the CMS command palette, and `connect()` forwards key presses the plugin does not handle to the CMS (⌘K, `G` chords); call `preventDefault()` on `keydown` to keep a key for the plugin.
+
 ### Example: Field Action
 
 ```tsx
@@ -97,7 +99,7 @@ connect({
       {
         id: 'uppercase',
         label: 'Convert to uppercase',
-        icon: 'font',
+        icon: 'pen',
       },
     ];
   },
@@ -254,13 +256,13 @@ connect({
       {
         id: 'show-id',
         label: 'Show asset ID',
-        icon: 'info-circle',
+        icon: 'info',
       },
     ];
   },
   async executeUploadsDropdownAction(actionId, uploads, ctx) {
     if (actionId === 'show-id' && uploads.length === 1) {
-      await ctx.notice(`Asset ID: ${uploads[0].id}`);
+      ctx.notice(`Asset ID: ${uploads[0].id}`);
     }
   },
 });
@@ -296,7 +298,7 @@ connect({
       {
         id: 'export-model',
         label: 'Export as JSON...',
-        icon: 'file-export',
+        icon: 'upload',
       },
     ];
   },
@@ -322,7 +324,7 @@ connect({
     return [
       {
         label: 'Translations',
-        icon: 'language',
+        icon: 'globe',
         actions: [
           { id: 'translate-en', label: 'Translate to English', icon: 'flag' },
           { id: 'translate-fr', label: 'Translate to French', icon: 'flag' },
