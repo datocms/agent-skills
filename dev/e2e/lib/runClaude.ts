@@ -1,7 +1,23 @@
 import { spawn } from "node:child_process";
-import { appendFileSync } from "node:fs";
-import { cp, mkdir, rm } from "node:fs/promises";
-import { delimiter, join } from "node:path";
+import {
+	appendFileSync,
+	mkdirSync,
+	mkdtempSync,
+	readFileSync,
+	rmSync,
+	symlinkSync,
+	writeFileSync,
+} from "node:fs";
+import { cp } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { delimiter, dirname, join, resolve } from "node:path";
+import { cliLauncherSource } from "./cliLauncher.js";
+import {
+	DEV_ROOT,
+	REPO_ROOT,
+	oracleAccess,
+	skillReads,
+} from "./nativeSession.js";
 import {
 	E2E_TRANSCRIPTS_ROOT,
 	PROJECT_BIN,
@@ -19,42 +35,95 @@ export {
 	type ToolCallRecord,
 };
 
-const DEFAULT_TIMEOUT_MS = 250 * 1000;
+// Same budget as the Codex adapter, so the two tracks stop a run at the same point.
+const DEFAULT_TIMEOUT_MS = 420 * 1000;
+export const CLAUDE_MODEL = "claude-sonnet-5-5";
+const REDACTED = "[REDACTED_SECRET]";
 
-function isCmaScriptInvocation(toolCall: ToolCallRecord): boolean {
-	if (toolCall.name !== "Bash") return false;
-	const input = toolCall.input as { command?: unknown } | null;
-	const command = typeof input?.command === "string" ? input.command : "";
-	return /\bdatocms\b[^\n]*\bcma:script\b/.test(command);
+type CommandRecord = {
+	id: string;
+	type: string;
+	command: string;
+	aggregated_output: string;
+	exit_code: number | null;
+};
+
+/** The text a tool call names: what `skillReads` and `oracleAccess` search for paths. */
+function commandText(call: ToolCallRecord): string {
+	const input = (call.input ?? {}) as Record<string, unknown>;
+	const text = (key: string) => (typeof input[key] === "string" ? (input[key] as string) : "");
+	if (call.name === "Bash") return text("command");
+	if (call.name === "Skill") return `skills/${text("skill").replace(/^.*:/, "")}/SKILL.md`;
+	if (call.name === "Read" || call.name === "Write" || call.name === "Edit") return text("file_path");
+	return [text("path"), text("pattern"), text("glob")].filter(Boolean).join(" ");
 }
 
+function isCmaScriptInvocation(call: ToolCallRecord): boolean {
+	return call.name === "Bash" && /\bdatocms\b[^\n]*\bcma:script\b/.test(commandText(call));
+}
+
+function resultText(content: unknown): string {
+	if (typeof content === "string") return content;
+	if (!Array.isArray(content)) return "";
+	return content
+		.map((part) => (part && typeof part === "object" && typeof (part as { text?: unknown }).text === "string" ? (part as { text: string }).text : ""))
+		.join("");
+}
+
+/**
+ * Runs one case with Claude Code (`claude -p`) as the actor. `E2E_MODEL` picks
+ * the model (`claude-sonnet-5-5`, `claude-haiku-5-5`, or an alias).
+ *
+ * The session runs in a temporary workspace outside the checkout that holds
+ * only this checkout's skills (as project skills), the case's files and a
+ * `datocms` launcher bound to the evaluation environment. User settings are
+ * not loaded (`--setting-sources project`), so plugins and skills installed
+ * for the operator do not reach the actor. Authentication is the operator's
+ * own `claude` login.
+ */
 export async function runClaude(
 	options: RunAgentOptions,
 ): Promise<RunAgentResult> {
 	const slug = options.name.replace(/[^a-z0-9-]+/gi, "-");
-	const workDir = join(E2E_TRANSCRIPTS_ROOT, slug);
-	await mkdir(workDir, { recursive: true });
-	const transcriptPath = join(workDir, "raw.jsonl");
+	const output = join(E2E_TRANSCRIPTS_ROOT, slug);
+	mkdirSync(output, { recursive: true });
+	const transcriptPath = join(output, "raw.jsonl");
+	rmSync(transcriptPath, { force: true });
 
-	// Mirror the repo's `skills/` tree into the isolated workDir under
-	// `.claude/skills/` so every local skill is discoverable by the spawned
-	// agent. Adding a new skill at the project level requires no change here.
-	const skillsDest = join(workDir, ".claude", "skills");
-	await mkdir(skillsDest, { recursive: true });
-	await cp(SKILLS_SOURCE, skillsDest, { recursive: true });
+	const workspace = mkdtempSync(join(tmpdir(), "dato-live-e2e-"));
+	mkdirSync(join(workspace, "bin"));
+	for (const [path, content] of Object.entries(options.files ?? {})) {
+		const target = resolve(workspace, path);
+		if (!target.startsWith(`${workspace}/`)) throw Error("Fixture path escapes workspace");
+		mkdirSync(dirname(target), { recursive: true });
+		writeFileSync(target, content);
+	}
+	const cliVersion = JSON.parse(readFileSync(join(DEV_ROOT, "node_modules/datocms/package.json"), "utf8")).version;
+	writeFileSync(
+		join(workspace, "package.json"),
+		JSON.stringify({ private: true, type: "module", devDependencies: { datocms: cliVersion } }),
+	);
+	symlinkSync(join(DEV_ROOT, "node_modules"), join(workspace, "node_modules"));
+	// The launcher fixes the sandbox scope without storing the credential value.
+	writeFileSync(join(workspace, "bin/datocms"), cliLauncherSource(join(PROJECT_BIN, "datocms")), { mode: 0o700 });
+	await cp(SKILLS_SOURCE, join(workspace, ".claude/skills"), { recursive: true });
 
-	// Tool whitelist: Bash to invoke `datocms cma:script`, Read/Glob/Grep so the
-	// agent can open the SKILL.md and inspect anything else in workDir. No
-	// Edit/Write — scripts are passed through stdin, not committed to disk.
+	const environment = options.environment ?? "main";
+	const model = options.model ?? process.env.E2E_MODEL ?? CLAUDE_MODEL;
+	const instructions = `Only the confirmed disposable DatoCMS environment ${environment} may be changed. Use the installed datocms command for CMS access; it already supplies authentication and the environment. Do not inspect the launcher. Do not modify API tokens, roles, billing, environments, or other projects. Schema/content/settings changes requested in the task are authorized in this sandbox.`;
 	const args = [
 		"-p",
 		options.prompt,
+		"--append-system-prompt",
+		instructions,
+		// Only the workspace's own configuration: no operator plugins, skills or memory.
+		"--setting-sources",
+		"project",
 		"--strict-mcp-config",
 		"--mcp-config",
-		// No MCP servers; passing an empty config + --strict makes that explicit.
 		JSON.stringify({ mcpServers: {} }),
 		"--tools",
-		"Bash,Read,Glob,Grep,Skill",
+		"Bash,Read,Glob,Grep,Skill,Write,Edit",
 		"--permission-mode",
 		"bypassPermissions",
 		"--output-format",
@@ -62,71 +131,92 @@ export async function runClaude(
 		"--verbose",
 		"--no-session-persistence",
 		"--model",
-		options.model ?? process.env.E2E_MODEL ?? "claude-opus-4-6",
+		model,
 	];
 
+	// The harness's own credentials and the invoking session's markers stay out of the actor's environment.
+	const inherited = Object.fromEntries(
+		Object.entries(process.env).filter(([key]) => !/^(E2E_|CLAUDECODE$|CLAUDE_CODE_)/.test(key)),
+	);
 	const child = spawn("claude", args, {
-		cwd: workDir,
+		cwd: workspace,
 		stdio: ["ignore", "pipe", "pipe"],
 		env: {
-			...process.env,
+			...inherited,
 			DATOCMS_API_TOKEN: options.apiToken,
-			// Prepend the project's node_modules/.bin so plain `datocms` (and
-			// `npx datocms`) resolves the locally-installed CLI even though
-			// workDir lives several levels below it.
-			PATH: `${PROJECT_BIN}${delimiter}${process.env.PATH ?? ""}`,
+			DATOCMS_ENVIRONMENT: environment,
+			PATH: `${join(workspace, "bin")}${delimiter}${PROJECT_BIN}${delimiter}${process.env.PATH ?? ""}`,
 		},
 	});
 
 	const toolCalls: ToolCallRecord[] = [];
-	const seenToolUseIds = new Set<string>();
+	const commands = new Map<string, CommandRecord>();
+	const usage: Record<string, unknown>[] = [];
+	const errors: string[] = [];
 	let finalText: string | undefined;
+	let completed = false;
 	let terminatedByCap = false;
+	let timedOut = false;
+	let credentialLeak = false;
 	let stdoutBuffer = "";
 	let stderrBuffer = "";
 
 	const timeout = setTimeout(() => {
 		terminatedByCap = true;
+		timedOut = true;
 		child.kill("SIGKILL");
 	}, options.timeoutMs ?? DEFAULT_TIMEOUT_MS);
 
-	function handleLine(line: string): void {
-		if (!line) return;
+	function handleLine(rawLine: string): void {
+		if (!rawLine) return;
+		if (rawLine.includes(options.apiToken)) credentialLeak = true;
+		const line = rawLine.split(options.apiToken).join(REDACTED);
 		appendFileSync(transcriptPath, `${line}\n`);
 
-		let parsed: unknown;
+		let event: Record<string, any>;
 		try {
-			parsed = JSON.parse(line);
+			event = JSON.parse(line);
 		} catch {
 			return;
 		}
-		if (!parsed || typeof parsed !== "object") return;
-		const event = parsed as Record<string, unknown>;
+		if (!event || typeof event !== "object") return;
 
 		if (event.type === "assistant") {
-			const message = event.message as
-				| { content?: Array<Record<string, unknown>> }
-				| undefined;
-			for (const block of message?.content ?? []) {
+			for (const block of event.message?.content ?? []) {
 				if (block.type !== "tool_use") continue;
 				const id = String(block.id);
-				if (seenToolUseIds.has(id)) continue;
-				seenToolUseIds.add(id);
-				const name = String(block.name);
-				const record: ToolCallRecord = { id, name, input: block.input };
+				if (commands.has(id)) continue;
+				const record: ToolCallRecord = { id, name: String(block.name), input: block.input };
 				toolCalls.push(record);
-
-				if (isCmaScriptInvocation(record)) {
-					const scriptAttempts = toolCalls.filter(isCmaScriptInvocation).length;
-					if (scriptAttempts > options.maxAttempts) {
-						terminatedByCap = true;
-						child.kill("SIGKILL");
-					}
+				commands.set(id, { id, type: record.name, command: commandText(record), aggregated_output: "", exit_code: null });
+				if (isCmaScriptInvocation(record) && toolCalls.filter(isCmaScriptInvocation).length > options.maxAttempts) {
+					terminatedByCap = true;
+					child.kill("SIGKILL");
 				}
 			}
+		} else if (event.type === "user") {
+			for (const block of Array.isArray(event.message?.content) ? event.message.content : []) {
+				if (block.type !== "tool_result") continue;
+				const command = commands.get(String(block.tool_use_id));
+				if (!command) continue;
+				command.aggregated_output = resultText(block.content);
+				command.exit_code = block.is_error ? 1 : 0;
+			}
 		} else if (event.type === "result") {
-			const result = event.result;
-			if (typeof result === "string") finalText = result;
+			if (typeof event.result === "string") finalText = event.result;
+			completed = event.subtype === "success" && !event.is_error;
+			if (!completed) errors.push(String(event.subtype ?? "error"));
+			const u = event.usage ?? {};
+			const cached = Number(u.cache_read_input_tokens ?? 0);
+			usage.push({
+				// The Codex record's shape: input_tokens counts every prompt token, cached ones included.
+				input_tokens: Number(u.input_tokens ?? 0) + Number(u.cache_creation_input_tokens ?? 0) + cached,
+				cached_input_tokens: cached,
+				output_tokens: Number(u.output_tokens ?? 0),
+				total_cost_usd: event.total_cost_usd,
+				num_turns: event.num_turns,
+				duration_ms: event.duration_ms,
+			});
 		}
 	}
 
@@ -134,45 +224,67 @@ export async function runClaude(
 		stdoutBuffer += chunk.toString("utf8");
 		let newlineIndex = stdoutBuffer.indexOf("\n");
 		while (newlineIndex !== -1) {
-			const line = stdoutBuffer.slice(0, newlineIndex);
+			handleLine(stdoutBuffer.slice(0, newlineIndex));
 			stdoutBuffer = stdoutBuffer.slice(newlineIndex + 1);
-			handleLine(line);
 			newlineIndex = stdoutBuffer.indexOf("\n");
 		}
 	});
-
 	child.stderr.on("data", (chunk: Buffer) => {
 		stderrBuffer += chunk.toString("utf8");
 	});
 
-	const exitCode = await new Promise<number | null>((resolve) => {
-		child.on("exit", (code) => resolve(code));
-	});
-	clearTimeout(timeout);
-
-	if (stdoutBuffer) handleLine(stdoutBuffer);
-	if (stderrBuffer) {
-		appendFileSync(transcriptPath, `\n--- stderr ---\n${stderrBuffer}\n`);
+	let exitCode: number | null;
+	try {
+		exitCode = await new Promise<number | null>((done, fail) => {
+			child.on("error", fail);
+			child.on("exit", (code) => done(code));
+		});
+	} finally {
+		clearTimeout(timeout);
 	}
+	if (stdoutBuffer) handleLine(stdoutBuffer);
+	const stderr = stderrBuffer.split(options.apiToken).join(REDACTED);
+	if (stderr) writeFileSync(join(output, "stderr.log"), stderr);
 
-	const simplifiedPath = join(workDir, "transcript.simplified.log");
-	await simplifyTranscript(transcriptPath, simplifiedPath).catch((err) => {
+	await simplifyTranscript(transcriptPath, join(output, "transcript.simplified.log")).catch((err) => {
 		// Non-fatal: the raw transcript is still on disk for inspection.
 		console.warn(`[simplifyTranscript] failed: ${(err as Error).message}`);
 	});
 
-	// The copied `.claude/skills/` tree was only there to make skills
-	// discoverable to the spawned agent — drop it now so the workDir only
-	// contains test artifacts (raw + simplified transcripts).
-	await rm(join(workDir, ".claude"), { recursive: true, force: true });
-
-	const attempts = toolCalls.filter(isCmaScriptInvocation).length;
+	const commandList = [...commands.values()];
+	const flagged = oracleAccess(commandList, { workspace, output, repoRoot: REPO_ROOT });
+	writeFileSync(
+		join(output, "session.json"),
+		`${JSON.stringify(
+			{
+				agent: "claude",
+				model,
+				exitCode,
+				stderr: stderr.slice(-2000),
+				timedOut,
+				capped: terminatedByCap && !timedOut,
+				credentialLeak,
+				oracleAccess: flagged,
+				transcriptPath,
+				skillReads: skillReads(commandList),
+				commands: commandList,
+				usage,
+				finalText,
+				completed,
+				errors,
+			},
+			null,
+			2,
+		)}\n`,
+	);
+	rmSync(workspace, { recursive: true, force: true });
 
 	return {
-		attempts,
+		attempts: toolCalls.filter(isCmaScriptInvocation).length,
 		toolCalls,
 		finalText,
-		exitCode,
+		exitCode: exitCode === 0 && completed && !credentialLeak ? 0 : 1,
+		oracleAccess: flagged.map((access) => access.command),
 		terminatedByCap,
 		transcriptPath,
 	};

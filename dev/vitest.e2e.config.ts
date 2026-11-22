@@ -14,7 +14,8 @@ export default defineConfig({
 		globalSetup: ["./e2e/globalSetup.ts"],
 		testTimeout: 15 * 60 * 1000,
 		hookTimeout: 5 * 60 * 1000,
-		maxWorkers: process.env.E2E_DATOCMS_API_TOKEN ? 1 : 4,
+		// One sandbox per running case: raise E2E_WORKERS only as far as the project's sandbox capacity allows.
+		maxWorkers: Number(process.env.E2E_WORKERS) || (process.env.E2E_DATOCMS_API_TOKEN ? 1 : 4),
 		minWorkers: 1,
 		reporters: ["default"],
 	},

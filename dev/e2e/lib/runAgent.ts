@@ -7,7 +7,11 @@ export const E2E_TRANSCRIPTS_ROOT = resolve(
 );
 export const PROJECT_BIN = join(DEV_ROOT, "node_modules", ".bin");
 // Each adapter installs this checkout's skill tree in its isolated workspace.
-export const SKILLS_SOURCE = join(REPO_ROOT, "skills");
+// E2E_SKILLS_ROOT points the Claude track at another tree (an older snapshot of
+// skills/) to compare two versions on the same cases.
+export const SKILLS_SOURCE = resolve(
+	process.env.E2E_SKILLS_ROOT ?? join(REPO_ROOT, "skills"),
+);
 
 export type ToolCallRecord = {
 	name: string;
