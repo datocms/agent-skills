@@ -64,6 +64,14 @@ node dev/evals/tasks/live.mjs cleanup                  # destroys the eval envir
 
 When the emulator and the API disagree, the API is right: fix the emulator and add the case to `tasks/controls/`.
 
+The statements the CMA references make about the API (which field configurations are rejected and with which code, how values read back, what happens to block slots, locales and Structured Text on save) are checked the same way, one request per statement, in a sandbox that is destroyed afterwards:
+
+```bash
+node dev/evals/tasks/live-facts.mjs                    # no model; a failing line names the statement that no longer holds
+```
+
+Add a check when a reference gains a rule that an agent would act on. A failing check means the reference is wrong or the API changed: fix the reference and `dev/tests/fixtures/field-types.json`, not the check.
+
 ## Design
 
 `design/run.mjs` holds three plugin surfaces to build (config screen, record sidebar panel, custom page) in a small plugin project (`design/fixture/`). `check` type-checks the result against the installed `datocms-react-ui` and `datocms-plugin-sdk`, then applies rules of the design language that can be read from code: per-entry imports, `Canvas`, no raw colors or heading tags, no title stacked under the one the host draws, no page shell inside an embedded frame, the right component for facts, filters, dates and empty areas.

@@ -44,6 +44,8 @@ Change record fields that hold blocks (Modular Content `rich_text`, Single Block
 
 5. `update` returns block IDs, not objects: read again with `nested: true` to check the result.
 
+> In CLI mode: run it through `cma:script` stdin mode (a heredoc). `client`, `Schema` and every helper used here are ambient there and the script is type-checked before it runs. File mode needs explicit imports and a file inside the project, never the system `/tmp`.
+
 The same slots apply at every depth: a block's own block fields are edited the same way, inside the `buildBlockRecord` of their parent block. Without the helper a block object is `{ type: "item", id?, attributes: {...}, relationships: { item_type: { data: { type: "item_type", id } } } }`; `relationships` is needed only for a new block.
 
 Two limits on ID strings: when **creating** a record every block must be an object, and a block ID works only in the field and locale it already lives in (see "Block rules in detail").

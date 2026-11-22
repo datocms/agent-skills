@@ -39,11 +39,25 @@ After choosing:
 
 | Route or deliverable | Load only as needed |
 | - | - |
+| CLI script: loops, pagination, dependent calls, localized/block/Structured Text edits | The quick path below. `../datocms-cli/references/cma-script.md` only for file mode, flags, or a script the quick path does not get running. |
 | CLI single calls or endpoint documentation | `../datocms-cli/references/direct-cma-calls.md`. |
-| CLI loops, pagination, dependent calls, or localized/block/Structured Text edits | `../datocms-cli/references/cma-script.md` for stdin/file mode and runtime globals. |
 | Current MCP | `references/mcp.md`; the exposed tools supply their current runtime contract. |
 | Missing prerequisites for selected CLI work | **datocms-cli** setup workflow. Always confirm the target project before linking; an inferred single candidate is not consent. |
 | Code constructing its own client (app/server, CI, cron, shared unattended script) | `references/client-setup-and-errors.md` for package choice, token/environment configuration, and error handling. |
+
+**CLI quick path.** One heredoc reads, changes and writes; this is all most content work needs from the CLI:
+
+```bash
+npx datocms cma:script --environment=<env> <<'EOF'
+const record = await client.items.find<Schema.Article>("RECORD_ID", { nested: true });
+// build the new field values, then write once:
+await client.items.update<Schema.Article>(record.id, { /* changed fields only */ });
+EOF
+```
+
+- `client`, `Schema.*` and every export of `@datocms/cma-client-node`, `datocms-structured-text-utils` and `datocms-structured-text-dastdown` are ambient: no imports, top-level `await`, no `export default`, no `node:` modules.
+- The script is type-checked before it runs, against an ES2020 library (no `.at()`, no `replaceAll`). Explicit `any` / `unknown`, `as never` and `@ts-ignore` are rejected: fix the types, never skip validation.
+- Print what you need with `console.log`; nothing else comes back. A project must be linked or a token set.
 
 Use the selected tool's current documentation for method signatures, payloads, authentication, project/environment selection, and execution requirements. CLI documentation hints in shared references apply only to CLI work. MCP tasks must not acquire a CLI prerequisite through a linked reference.
 

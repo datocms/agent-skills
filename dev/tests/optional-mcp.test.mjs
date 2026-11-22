@@ -95,7 +95,16 @@ const preservedWorkflows = {
 // Reviewed corrections to the base, per guide: [before, after] pairs applied exactly once each.
 // An intended change to a section listed above is added here in the same commit; the list is
 // emptied when the base moves to a commit that already holds the reviewed text.
-const reviewedCorrections = { records: [], 'editing-records': [] };
+const reviewedCorrections = {
+  records: [],
+  'editing-records': [
+    // An agent wrote its script to the system /tmp in file mode, where the CLI cannot resolve imports.
+    [
+      '5. `update` returns block IDs, not objects: read again with `nested: true` to check the result.\n',
+      '5. `update` returns block IDs, not objects: read again with `nested: true` to check the result.\n\n> In CLI mode: run it through `cma:script` stdin mode (a heredoc). `client`, `Schema` and every helper used here are ambient there and the script is type-checked before it runs. File mode needs explicit imports and a file inside the project, never the system `/tmp`.\n',
+    ],
+  ],
+};
 
 function withReviewedCorrections(name, source) {
   for (const [before, after] of reviewedCorrections[name]) {
