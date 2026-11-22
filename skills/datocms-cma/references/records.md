@@ -15,6 +15,7 @@ Records are the instances of a model: read, create, publish, restore. Editing bl
 - Bulk operations are async + 200-cap
 - Limits per record
 - Errors on writes
+- Optimistic locking via `meta.current_version`
 - Typed records via generated `Schema.X`
 
 ## Reading: `nested: true` is the primary knob
@@ -181,6 +182,20 @@ A rejected value is an `ApiError` whose errors have `code: "INVALID_FIELD"` and 
 - `details.code` is `INVALID_FORMAT` for a wrong shape, or `VALIDATION_<VALIDATOR>` (`VALIDATION_REQUIRED`, `VALIDATION_LENGTH`, `VALIDATION_UNIQUE`, `VALIDATION_RICH_TEXT_BLOCKS`…) for a failed validator. A block of a model the field does not allow is reported on the field itself, not on the block.
 - Errors of several blocks come back together in one response.
 - Other codes: `INVALID_LOCALES` / `MISSING_LOCALES` (locale keys), `INVALID_ATTRIBUTES` (a key that is not a field of the model), `STALE_ITEM_VERSION` (optimistic lock), `TECHNICAL_LIMIT_REACHED`.
+
+## Optimistic locking via `meta.current_version`
+
+`update` is **last-write-wins by default**. When two clients update same record concurrently, second silently overwrites first — no error. To get 409 conflict instead, echo `meta.current_version` you read back into update:
+
+```ts
+const before = await client.items.find<Schema.Article>(id);
+await client.items.update<Schema.Article>(id, {
+  title: "new",
+  meta: { current_version: before.meta.current_version },
+});
+```
+
+Use it whenever updates can race (workers, retry loops, editors in the UI). Catch `ApiError`, check `e.findError("STALE_ITEM_VERSION")`, retry with a fresh read.
 
 ## Typed records via generated `Schema.X`
 
