@@ -43,10 +43,3 @@ it. The title of each group is one level below. The texts of the inspector
 have keys (`contextInspector.runExample`, `contextInspector.everyHook`...):
 the `texts` prop of [`Canvas`](https://react-ui.datocms.com/Plugin/Canvas.md) changes them.
 
-## Props
-
-### ContextInspector
-
-| Prop | Type | Required | Default | Description |
-| - | - | - | - | - |
-| `titleLevel` | `Exclude<HeadingLevel, 6>` | No | `2` | The level of the two headings of the inspector, after the headings around it. The title of each group is one level below. |

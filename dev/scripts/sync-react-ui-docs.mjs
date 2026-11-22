@@ -5,8 +5,11 @@
 //   node dev/scripts/sync-react-ui-docs.mjs --check    fetch and compare only (no writes)
 //   node dev/scripts/sync-react-ui-docs.mjs --version 4.0.0   also set the package version in SOURCE.md
 //
-// Pages are stored byte for byte. Exits 1 when SKILL.md's page index does not list exactly the
-// mirrored pages, when a fetch fails, or (with --check) when the local mirror differs from the site.
+// Pages are stored byte for byte, in two files: `<Page>.md` holds the page up to its "## Props"
+// heading (rules, examples) and `<Page>.props.md` the rest (the props tables), so that reading a
+// page does not load its props tables. The two files joined are the page as the site serves it.
+// Exits 1 when SKILL.md's page index does not list exactly the mirrored pages, when a fetch
+// fails, or (with --check) when the local mirror differs from the site.
 // No dependencies: Node >= 18 (global fetch).
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -18,6 +21,32 @@ const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 export const SKILL_DIR = join(REPO, 'skills/datocms-plugin-design');
 export const DOCS_DIR = join(SKILL_DIR, 'references/docs');
 const PAGE_PATH = /^[A-Z][A-Za-z]*\/[A-Za-z]+$/;
+const PROPS_HEADING = Buffer.from('\n## Props\n');
+const PROPS_SUFFIX = '.props.md';
+
+/** A page's bytes as the two parts stored on disk; `props` is null for a page with no props tables. */
+export function splitPage(body) {
+  const at = body.indexOf(PROPS_HEADING);
+  if (at === -1) return { page: body, props: null };
+  return { page: body.subarray(0, at + 1), props: body.subarray(at + 1) };
+}
+
+/** The bytes of a mirrored page as the site serves it: its two files joined. */
+export function readPage(path, dir = DOCS_DIR) {
+  const page = readFileSync(join(dir, `${path}.md`));
+  const propsFile = join(dir, `${path}${PROPS_SUFFIX}`);
+  return existsSync(propsFile) ? Buffer.concat([page, readFileSync(propsFile)]) : page;
+}
+
+function writePage(path, body) {
+  const { page, props } = splitPage(body);
+  const file = join(DOCS_DIR, `${path}.md`);
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync(file, page);
+  const propsFile = join(DOCS_DIR, `${path}${PROPS_SUFFIX}`);
+  if (props) writeFileSync(propsFile, props);
+  else rmSync(propsFile, { force: true });
+}
 
 /** Page paths (`Section/Page`) listed in llms.txt, in order. */
 export function parseLlmsTxt(text) {
@@ -45,7 +74,7 @@ export function localPages(dir = DOCS_DIR) {
   for (const section of readdirSync(dir, { withFileTypes: true })) {
     if (!section.isDirectory()) continue;
     for (const file of readdirSync(join(dir, section.name))) {
-      if (file.endsWith('.md')) pages.push(`${section.name}/${file.slice(0, -3)}`);
+      if (file.endsWith('.md') && !file.endsWith(PROPS_SUFFIX)) pages.push(`${section.name}/${file.slice(0, -3)}`);
     }
   }
   return pages.sort();
@@ -102,9 +131,8 @@ async function main(argv) {
       continue;
     }
     fetched.set(path, body);
-    const file = join(DOCS_DIR, `${path}.md`);
     if (!local.has(path)) added.push(path);
-    else if (!readFileSync(file).equals(body)) changed.push(path);
+    else if (!readPage(path).equals(body)) changed.push(path);
   }
   const removed = [...local].filter((p) => !remote.includes(p)).sort();
 
@@ -115,12 +143,11 @@ async function main(argv) {
   if (check) {
     if (added.length || removed.length || changed.length) failed = true;
   } else if (!failed) {
-    for (const path of [...added, ...changed]) {
-      const file = join(DOCS_DIR, `${path}.md`);
-      mkdirSync(dirname(file), { recursive: true });
-      writeFileSync(file, fetched.get(path));
+    for (const path of [...added, ...changed]) writePage(path, fetched.get(path));
+    for (const path of removed) {
+      rmSync(join(DOCS_DIR, `${path}.md`));
+      rmSync(join(DOCS_DIR, `${path}${PROPS_SUFFIX}`), { force: true });
     }
-    for (const path of removed) rmSync(join(DOCS_DIR, `${path}.md`));
     for (const section of readdirSync(DOCS_DIR, { withFileTypes: true })) {
       if (section.isDirectory() && readdirSync(join(DOCS_DIR, section.name)).length === 0) {
         rmSync(join(DOCS_DIR, section.name), { recursive: true });

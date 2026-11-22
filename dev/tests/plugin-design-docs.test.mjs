@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import test from 'node:test';
-import { DOCS_DIR, SKILL_DIR, compareSets, localPages, parseSkillIndex } from '../scripts/sync-react-ui-docs.mjs';
+import { DOCS_DIR, SKILL_DIR, compareSets, localPages, parseSkillIndex, readPage, splitPage } from '../scripts/sync-react-ui-docs.mjs';
 
 const fixture = JSON.parse(readFileSync(new URL('./fixtures/react-ui-entries.json', import.meta.url), 'utf8'));
 const entries = new Set(fixture.entries);
@@ -34,6 +34,21 @@ test('SKILL.md page index lists every mirrored page once, and nothing else', () 
   assert.deepEqual(missing, [], `pages missing from the index: ${missing.join(', ')}`);
   assert.deepEqual(extra, [], `index entries with no mirrored page: ${extra.join(', ')}`);
   assert.equal(new Set(index).size, index.length, 'an index entry is repeated');
+});
+
+test('each mirrored page is stored split at its props tables, and the parts join back into the page', () => {
+  let withProps = 0;
+  for (const path of localPages(DOCS_DIR)) {
+    const page = readFileSync(join(DOCS_DIR, `${path}.md`), 'utf8');
+    assert.doesNotMatch(page, /^## Props$/m, `${path}.md still holds its props tables`);
+    const joined = readPage(path);
+    const parts = splitPage(joined);
+    assert.equal(parts.page.toString('utf8'), page, `${path}: the stored page is not the part before "## Props"`);
+    if (!parts.props) continue;
+    withProps += 1;
+    assert.ok(readFileSync(join(DOCS_DIR, `${path}.props.md`), 'utf8').startsWith('## Props\n'), `${path}.props.md does not start with "## Props"`);
+  }
+  assert.equal(withProps, 66, 'pages with props tables');
 });
 
 test('every datocms-react-ui import path resolves to a public entry', () => {

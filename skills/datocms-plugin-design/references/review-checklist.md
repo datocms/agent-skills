@@ -37,7 +37,7 @@ Run over the finished UI. Each item is checkable by reading the code; the page i
 
 ## Components and layout
 
-- [ ] Each component used: its page was read and its first example followed; every prop exists in the installed `.d.ts`. \[component page]
+- [ ] Each component used: its page was read and its first example followed; every prop exists in the page's `.props.md` (or the installed types). \[component page]
 - [ ] No hand-made lookalike of an existing component (custom card list, tab bar, toast, switch, empty state). \[`Lists/InfoList` chooser, component pages]
 - [ ] No `<main>`, `<nav>`, `<aside>`, `role="search"`, `<h1>`–`<h6>`, `<section>` in JSX. \[`Layout/Landmarks`]
 - [ ] Heading levels explicit and never skipped (`level`, `titleLevel`); headings only inside `Main` or a dialog. \[`Layout/Landmarks`, `Layout/SidebarPanel`]
