@@ -66,11 +66,11 @@ See `image-concepts.md` for the full query, field definitions, and best practice
 | - | - | - | - |
 | `data` | `ResponsiveImage` | **(required)** | Response from `responsiveImage` GraphQL query |
 | `pictureClass` | string | null | Additional CSS class for root `<picture>` tag |
-| `pictureStyle` | CSS properties | null | Additional CSS for root `<picture>` tag |
+| `pictureStyle` | string | null | Additional CSS for root `<picture>` tag |
 | `imgClass` | string | null | Additional CSS class for the `<img>` tag |
-| `imgStyle` | CSS properties | null | Additional CSS for the `<img>` tag |
+| `imgStyle` | string | null | Additional CSS for the `<img>` tag |
 | `priority` | boolean | false | Disables lazy loading, sets `fetchPriority="high"` |
-| `sizes` | string | undefined | HTML5 `sizes` attribute (falls back to `data.sizes`) |
+| `sizes` | string | null | HTML5 `sizes` attribute. Falls back to `data.sizes`, then to `"auto, 100vw"` unless `priority` |
 | `usePlaceholder` | boolean | true | Whether to show blurred image placeholder |
 | `srcSetCandidates` | Array<number> | `[0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4]` | Width multipliers for auto-generated `srcset` (used when `data` has no `srcSet`) |
 | `referrerPolicy` | string | `no-referrer-when-downgrade` | Defines which referrer is sent when fetching the image |
@@ -92,18 +92,17 @@ See `image-concepts.md` for the full query, field definitions, and best practice
 | `pictureStyle` | string | null | Additional CSS for the inner `<picture>` tag |
 | `imgClass` | string | null | Additional CSS class for the image inside `<picture>` |
 | `imgStyle` | string | null | Additional CSS for the image inside `<picture>` |
+| `placeholderClass` | string | null | Additional CSS class for the placeholder element |
+| `placeholderStyle` | string | null | Additional CSS for the placeholder element |
 | `layout` | `'intrinsic' \| 'fixed' \| 'responsive' \| 'fill'` | `"intrinsic"` | Layout behavior as viewport changes size |
 | `fadeInDuration` | integer | 500 | Duration (ms) of fade-in transition on load |
 | `intersectionThreshold` | float | 0 | Visibility percentage to trigger loading (0 = one pixel visible, 1 = fully visible) |
-| `intersectionMargin` | string | `"0px 0px 0px 0px"` | Margin around placeholder for intersection calculation |
-| `lazyLoad` | boolean | true | Whether to enable lazy loading |
-| `explicitWidth` | boolean | false | Whether the image wrapper should explicitly declare the width |
+| `intersectionMargin` | string | `"0px"` | Margin around placeholder for intersection calculation |
 | `objectFit` | string | null | How the image fits its parent when using `layout="fill"` |
 | `objectPosition` | string | null | How the image is positioned within its parent when using `layout="fill"` |
 | `priority` | boolean | false | Disables lazy loading, sets `fetchPriority="high"` |
 | `srcSetCandidates` | Array<number> | `[0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4]` | Width multipliers for auto-generated `srcset` |
-| `sizes` | string | undefined | HTML5 `sizes` attribute (falls back to `data.sizes`) |
-| `onLoad` | `() => void` | undefined | Callback when image finishes loading |
+| `sizes` | string | null | HTML5 `sizes` attribute. Falls back to `data.sizes`, then to `"auto, 100vw"` unless `priority` |
 | `usePlaceholder` | boolean | true | Whether to show blurred image placeholder |
 | `referrerPolicy` | string | `no-referrer-when-downgrade` | Defines which referrer is sent when fetching the image |
 

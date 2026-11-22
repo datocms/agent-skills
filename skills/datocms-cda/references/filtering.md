@@ -116,8 +116,8 @@ filter: {
 | `neq` | `String` | Not equal |
 | `in` | `[String]` | One of specified values |
 | `notIn` | `[String]` | None of specified values |
-| `matches` | `{ pattern: String, caseSensitive: Boolean }` | Regex match |
-| `notMatches` | `{ pattern: String, caseSensitive: Boolean }` | Regex exclusion |
+| `matches` | `{ pattern: String, caseSensitive: Boolean, regexp: Boolean }` | Regex match |
+| `notMatches` | `{ pattern: String, caseSensitive: Boolean, regexp: Boolean }` | Regex exclusion |
 | `isBlank` | `BooleanType` | `true` = null or empty string; `false` = has content |
 | `isPresent` | `BooleanType` | `true` = neither null nor empty |
 | `exists` | `BooleanType` | **Deprecated** — use `isBlank` / `isPresent` instead |
@@ -135,8 +135,8 @@ filter: {
 
 | Operator | Value Type | Description |
 | - | - | - |
-| `matches` | `{ pattern: String, caseSensitive: Boolean }` | Regex match |
-| `notMatches` | `{ pattern: String, caseSensitive: Boolean }` | Regex exclusion |
+| `matches` | `{ pattern: String, caseSensitive: Boolean, regexp: Boolean }` | Regex match |
+| `notMatches` | `{ pattern: String, caseSensitive: Boolean, regexp: Boolean }` | Regex exclusion |
 | `isBlank` | `BooleanType` | Null or empty |
 | `isPresent` | `BooleanType` | Has content |
 | `exists` | `BooleanType` | **Deprecated** |
@@ -204,8 +204,8 @@ filter: {
 
 | Operator | Value Type | Description |
 | - | - | - |
-| `matches` | `{ pattern: String, caseSensitive: Boolean }` | Regex match on text content |
-| `notMatches` | `{ pattern: String, caseSensitive: Boolean }` | Regex exclusion |
+| `matches` | `{ pattern: String, caseSensitive: Boolean, regexp: Boolean }` | Regex match on text content |
+| `notMatches` | `{ pattern: String, caseSensitive: Boolean, regexp: Boolean }` | Regex exclusion |
 | `isBlank` | `BooleanType` | `true` = null or single empty paragraph |
 | `isPresent` | `BooleanType` | Has content |
 | `exists` | `BooleanType` | **Deprecated** |
@@ -214,7 +214,7 @@ filter: {
 
 ## `matches` / `notMatches` Details
 
-The `pattern` value is a **regular expression**:
+The `pattern` value is a **regular expression** by default (`regexp: true`). With `regexp: false` it is a plain substring match:
 
 ```graphql
 filter: {
@@ -224,7 +224,7 @@ filter: {
 }
 ```
 
-`caseSensitive` defaults to `false` if omitted.
+`caseSensitive` defaults to `false` and `regexp` to `true` if omitted.
 
 ## Meta Field Filters
 
@@ -245,6 +245,8 @@ Available on all models:
 | `position` | `eq`, `neq`, `lt`, `lte`, `gt`, `gte` (sortable/tree models only) |
 
 ### Locale Filter
+
+Only present on models with at least one localized field that are not `all_locales_required`.
 
 | Meta Field | Available Operators |
 | - | - |
@@ -407,7 +409,7 @@ Not all upload string fields support the same operators:
 | `author`, `copyright`, `notes` | `matches`, `notMatches`, `exists` |
 | `basename`, `filename` | `matches`, `notMatches` |
 
-Operator value types: `matches`/`notMatches` take `{ pattern: String, caseSensitive: Boolean }`, `eq`/`neq` take `String`, `in`/`notIn` take `[String]`, `exists` takes `BooleanType`.
+Operator value types: `matches`/`notMatches` take `{ pattern: String, caseSensitive: Boolean, regexp: Boolean }`, `eq`/`neq` take `String`, `in`/`notIn` take `[String]`, `exists` takes `BooleanType`.
 
 #### Numeric Fields: `height`, `width` (pixels), `size` (bytes)
 

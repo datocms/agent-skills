@@ -112,11 +112,13 @@ try {
 | Property | Type | Description |
 | - | - | - |
 | `query` | `string` | The GraphQL query that was sent |
-| `options` | `BuildRequestHeadersOptions` | The options used to build the request |
+| `options` | `BuildRequestHeadersOptions` | The options used to build the request, with `token` replaced by `[REDACTED, ending in <last 4>]` |
 | `response.status` | `number` | HTTP status code |
 | `response.statusText` | `string` | HTTP status text |
 | `response.headers` | `Headers` | Response headers |
 | `response.body` | `unknown \| undefined` | Parsed response body (contains `errors[]` for GraphQL errors; may be undefined) |
+
+`query`, `options` and `response` are non-enumerable: `console.error(error)`, `JSON.stringify(error)`, object spread and error trackers do not show them, so read them explicitly (as above) when logging.
 
 ### Error Response Structures
 

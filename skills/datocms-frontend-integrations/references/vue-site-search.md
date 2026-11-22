@@ -43,7 +43,6 @@ const { state, error, data } = useSiteSearch({
   <div>
     <input type="search" v-model="state.query" placeholder="Search..." />
 
-    <div v-if="!data && !error">Loading...</div>
     <div v-if="error">Error: {{ error }}</div>
 
     <ul v-if="data">
@@ -77,8 +76,8 @@ See `site-search-concepts.md` for shared options. Vue additionally supports:
     locale: string | undefined;
     page: number;
   };
-  error?: string;
-  data?: {
+  error: Ref<string | undefined>;
+  data: Ref<{
     pageResults: Array<{
       id: string;
       title: string;
@@ -90,7 +89,7 @@ See `site-search-concepts.md` for shared options. Vue additionally supports:
     }>;
     totalResults: number;
     totalPages: number;
-  };
+  }>;
 }
 ```
 
@@ -108,8 +107,9 @@ type HighlightPiece = {
 ```
 
 - **`state`** — Reactive form state. Changing any value triggers a new API request.
-- **`error`** — Error message string on API failure, otherwise `undefined`.
-- **`data`** — Search results, `undefined` while loading.
+- **`error`** — Ref with the error message string on API failure, otherwise `undefined`.
+- **`data`** — Computed ref, always an object: `pageResults: []`, `totalResults: 0`, `totalPages: 0` for an empty query or while a request is in flight. There is no loading flag.
+- **`state.page`** — 0-based: the last page is `totalPages - 1`.
 - If both `error` and `data` are `undefined`/`null`, the form is loading — show a spinner.
 
 ## Rendering Highlights
@@ -176,7 +176,6 @@ const { state, error, data } = useSiteSearch({
       </select>
     </div>
 
-    <div v-if="!data && !error">Loading...</div>
     <div v-if="error">Error! {{ error }}</div>
 
     <div v-if="data">
@@ -211,7 +210,7 @@ const { state, error, data } = useSiteSearch({
           Previous
         </button>
         <button
-          v-if="state.page < data.totalPages"
+          v-if="state.page < data.totalPages - 1"
           @click="state.page = state.page + 1"
         >
           Next

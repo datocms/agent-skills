@@ -21,6 +21,8 @@ DatoCMS Site Search uses its own crawler:
 - Supported matching helpers: `*` wildcard and `$` end-of-path marker
 - Unsupported: `crawl-delay`, page-level `nofollow`, page-level `noindex`
 - Unsupported: multiple robots groups for the same user agent — emit exactly one group per crawler user agent
+- Excluding part of a page: put `data-datocms-noindex` on the element; its contents are ignored when indexing (page-level `noindex` stays unsupported)
+- The crawler does not execute JavaScript, it parses plain HTML only: client-rendered SPAs need prerendering to be indexed
 
 ## Order matters
 

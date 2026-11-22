@@ -33,7 +33,7 @@ function BlogPost({ data }) {
 
 | Prop | Type | Required | Description |
 | - | - | - | - |
-| `data` | `Video` object | Yes | Response from DatoCMS `video` GraphQL query |
+| `data` | `Video` object | No (defaults to `{}`) | Response from DatoCMS `video` GraphQL query |
 
 ### Default Prop Differences from `<MuxPlayer />`
 

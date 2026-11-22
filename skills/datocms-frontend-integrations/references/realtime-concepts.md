@@ -85,7 +85,7 @@ All framework implementations accept same core options:
 | `environment` | string | No | primary | DatoCMS environment name |
 | `contentLink` | `'v1'` \| undefined | No | — | Enables Content Link metadata embedding |
 | `baseEditingUrl` | string | No | — | Base URL of DatoCMS project (for Content Link) |
-| `cacheTags` | boolean | No | — | If true, receives Cache Tags with query |
+| `returnCacheTags` | boolean | No | — | If true, receives Cache Tags with query |
 | `initialData` | Object | No | — | Initial data for first render (e.g., server-fetched) |
 | `reconnectionPeriod` | number | No | `1000` | Milliseconds to wait before reconnecting on network error |
 | `fetcher` | fetch-like function | No | `window.fetch` | Custom fetch function for registration query |

@@ -180,7 +180,7 @@ Key points:
 
 - JWT payload `{ enabled: true }` (same as SvelteKit)
 - Cookie name from `astro:env/client`, JWT secret from `astro:env/server`
-- `partitioned: true` spread with cast `as AstroCookieSetOptions`: Astro 7.3 types include it; cast keeps older typings compiling
+- `partitioned: true` spread with cast `as AstroCookieSetOptions`: `AstroCookieSetOptions` includes it from Astro 5.17; cast keeps older typings compiling
 - Keep draft cookie out of Astro Sessions: `session.cookie` config strips `partitioned` (not iframe-safe)
 - `isDraftModeEnabled` accepts both `APIContext` (API routes) and `AstroCookies` (Astro components via `Astro.cookies`)
 - Cookie value accessed via `cookie.value` (Astro's `AstroCookie` object, not raw string)
@@ -419,11 +419,12 @@ type WebPreviewsResponse = {
  *
  * https://www.datocms.com/marketplace/plugins/i/datocms-plugin-web-previews#the-previews-webhook
  */
-export const POST: APIRoute = async ({ url, request }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
-    const token = url.searchParams.get('token');
+    // The plugin sends the secret as a request header (Custom Headers: `Authorization: Bearer <secret>`)
+    const token = request.headers.get('authorization')?.replace(/^Bearer /, '');
 
-    if (!SECRET_API_TOKEN || token !== SECRET_API_TOKEN) {
+    if (!token || token !== SECRET_API_TOKEN) {
       return invalidRequestResponse('Invalid token', 401);
     }
 
@@ -473,7 +474,7 @@ Requires generated `cma-types` ([how](./web-previews-concepts.md#recordtowebsite
 
 ```ts
 import type { RawApiTypes } from '@datocms/cma-client';
-import * as Schema from '@/lib/datocms/cma-types';
+import * as Schema from '~/lib/datocms/cma-types';
 
 /**
  * Maps a DatoCMS record to its frontend URL. Used by the preview-links endpoint.
@@ -671,7 +672,7 @@ interface Props {
   environment?: string;
   contentLink?: 'v1';
   baseEditingUrl?: string;
-  cacheTags?: boolean;
+  returnCacheTags?: boolean;
   initialData?: unknown;
   reconnectionPeriod?: number;
   baseUrl?: string;

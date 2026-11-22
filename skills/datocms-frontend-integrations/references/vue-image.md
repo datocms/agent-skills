@@ -34,10 +34,10 @@ See `image-concepts.md` for the shared GraphQL query, ResponsiveImage fields, be
 Register globally:
 
 ```js
-import { DatocmsImagePlugin, DatocmsNakedImagePlugin } from 'vue-datocms';
+import { DatocmsImagePlugin, NakedImage } from 'vue-datocms';
 
 app.use(DatocmsImagePlugin);
-app.use(DatocmsNakedImagePlugin);
+app.component('DatocmsNakedImage', NakedImage);
 ```
 
 Or use locally:
@@ -48,7 +48,7 @@ import { Image, NakedImage } from 'vue-datocms';
 </script>
 ```
 
-When using local imports with `<script setup>`, the components are available as `<Image>` and `<NakedImage>`. To use kebab-case names (`<datocms-image>`, `<datocms-naked-image>`), register them via the plugin or in a `components` option.
+When using local imports with `<script setup>`, the components are available as `<Image>` and `<NakedImage>`. To use kebab-case names (`<datocms-image>`, `<datocms-naked-image>`), register them as above or in a `components` option. Do not use `DatocmsNakedImagePlugin`: it registers `datocms-naked-image` with the wrong component.
 
 ## GraphQL Query
 
@@ -86,7 +86,7 @@ const props = defineProps<{ data: any }>();
 | `img-class` | string | null | Additional CSS class for `<img>` tag |
 | `img-style` | CSS properties | null | Additional CSS for `<img>` tag |
 | `priority` | boolean | false | Disables lazy loading, sets `fetchPriority="high"` |
-| `sizes` | string | undefined | HTML5 `sizes` attribute (falls back to `data.sizes`) |
+| `sizes` | string | undefined | HTML5 `sizes` attribute. Falls back to `data.sizes`, then to `"auto, 100vw"` unless `priority` |
 | `use-placeholder` | boolean | true | Whether to show blurred image placeholder |
 | `src-set-candidates` | Array<number> | `[0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4]` | Width multipliers for auto-generated `srcset` (used when `data` has no `srcSet`) |
 
@@ -112,7 +112,7 @@ const props = defineProps<{ data: any }>();
 | `intersection-threshold` | float | 0 | Visibility percentage to trigger loading (0 = one pixel visible, 1 = fully visible) |
 | `intersection-margin` | string | `"0px 0px 0px 0px"` | Margin around placeholder for intersection calculation |
 | `priority` | boolean | false | Disables lazy loading, sets `fetchPriority="high"` |
-| `sizes` | string | undefined | HTML5 `sizes` attribute (falls back to `data.sizes`) |
+| `sizes` | string | undefined | HTML5 `sizes` attribute. Falls back to `data.sizes`, then to `"auto, 100vw"` unless `priority` |
 | `use-placeholder` | boolean | true | Whether to show blurred image placeholder |
 | `src-set-candidates` | Array<number> | `[0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4]` | Width multipliers for auto-generated `srcset` |
 | `class` | string | null | Additional CSS class for root node |
@@ -123,6 +123,8 @@ const props = defineProps<{ data: any }>();
 | `img-style` | CSS properties | null | Additional CSS for image inside `<picture>` |
 | `placeholder-class` | string | null | Additional CSS class for placeholder image |
 | `placeholder-style` | CSS properties | null | Additional CSS for placeholder image |
+| `object-fit` | string | undefined | CSS `object-fit` for `layout="fill"` (`style` goes on the root div, not the image) |
+| `object-position` | string | undefined | CSS `object-position` for `layout="fill"` |
 
 ### Events
 
@@ -149,7 +151,8 @@ See `image-concepts.md` for the layout mode table. Use the `layout` prop on `<da
     <Image
       :data="imageData"
       layout="fill"
-      :style="{ objectFit: 'cover', objectPosition: '50% 50%' }"
+      object-fit="cover"
+      object-position="50% 50%"
     />
   </div>
 </template>

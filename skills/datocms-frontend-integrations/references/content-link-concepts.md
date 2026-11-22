@@ -482,6 +482,6 @@ If site not running inside Web Previews plugin iframe (opened directly in browse
 
 | Variable | Description | Where to find it |
 | - | - | - |
-| Base Editing URL | DatoCMS editor URL for Content Link | DatoCMS → Settings → Environment settings |
+| Base Editing URL | DatoCMS editor URL for Content Link | `https://<project domain>`: Project settings → Global properties |
 
 Framework-specific variable names in each framework reference file.

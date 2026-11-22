@@ -189,7 +189,6 @@ Default page size for collections is 20. Page size = `first` argument value.
 | SEO image | 5 |
 | `_seoMetaTags` | 5 |
 | `blurUpThumb` (on uploads) | 5 |
-| `responsiveImage` sub-selection | 5 |
 
 ### Additional Cost Factors
 

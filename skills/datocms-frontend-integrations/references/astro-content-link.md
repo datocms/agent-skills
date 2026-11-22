@@ -100,8 +100,9 @@ Hold **Alt** (Windows/Linux) or **Option** (Mac) to temporarily invert click-to-
 | - | - | - | - |
 | `enableClickToEdit` | `boolean \| { scrollToNearestTarget?: boolean; hoverOnly?: boolean }` | — | Enable click-to-edit overlays persistently |
 | `stripStega` | boolean | `false` | Strip stega-encoded invisible characters from text content |
+| `hue` | number | `17` | Overlay hue, 0-359 |
 
-**Note:** Unlike React/Vue/Svelte which also accept `onNavigateTo`, `currentPath`, and `root` props, Astro's `<ContentLink />` only has 2 props. Navigation is handled automatically.
+**Note:** Unlike React/Vue/Svelte which also accept `onNavigateTo`, `currentPath`, and `root` props, Astro's `<ContentLink />` only has 3 props (`enableClickToEdit`, `stripStega`, `hue`). Navigation is handled automatically.
 
 ## Data Attributes and Target Resolution
 

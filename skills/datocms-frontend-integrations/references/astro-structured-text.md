@@ -24,7 +24,13 @@ Astro component for rendering DatoCMS [Structured Text (DAST)](https://www.datoc
 import { StructuredText } from '@datocms/astro/StructuredText';
 ```
 
-**Note:** `@datocms/astro` uses subpath imports — always import from `@datocms/astro/StructuredText`, not from `@datocms/astro`.
+**Note:** `@datocms/astro` uses subpath imports — always import from `@datocms/astro/StructuredText`, not from `@datocms/astro` (the root re-exports every component, including this one with its Shiki dependency).
+
+The default entry renders `code` nodes with Astro's `<Code />` (Shiki, \~11 MB in the server bundle). For edge runtimes with script-size limits, or when code highlighting is not needed, import the same API from `@datocms/astro/StructuredText/WithoutSyntaxHighlighting`: code nodes render as plain `<pre><code>` and Shiki stays out of the bundle.
+
+```js
+import { StructuredText } from '@datocms/astro/StructuredText/WithoutSyntaxHighlighting';
+```
 
 ## Basic Usage
 

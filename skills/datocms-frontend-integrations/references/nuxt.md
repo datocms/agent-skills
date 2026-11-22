@@ -427,9 +427,10 @@ export default eventHandler(async (event) => {
 
     const config = useRuntimeConfig();
 
-    const { token } = getQuery(event);
+    // The plugin sends the secret as a request header (Custom Headers: `Authorization: Bearer <secret>`)
+    const token = getHeader(event, 'authorization')?.replace(/^Bearer /, '');
 
-    if (!config.secretApiToken || token !== config.secretApiToken) {
+    if (!token || token !== config.secretApiToken) {
       throw createError({ message: 'Invalid token', status: 401 });
     }
 

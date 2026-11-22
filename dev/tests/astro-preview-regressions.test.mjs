@@ -165,9 +165,9 @@ const server = createServer(handler); server.listen(0, '127.0.0.1', () => consol
     });
   }
   await t.test('an authorized cross-origin JSON preview request returns the record link', async () => {
-    const response = await fetch(`${origin}/api/preview-links?token=preview-fixture`, {
+    const response = await fetch(`${origin}/api/preview-links`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json', origin: 'https://plugins-cdn.datocms.com' },
+      headers: { 'content-type': 'application/json', origin: 'https://plugins-cdn.datocms.com', authorization: 'Bearer preview-fixture' },
       body: JSON.stringify({
         item: { id: 'fixture-record', type: 'item', attributes: { slug: 'example' }, meta: { status: 'published' }, relationships: { item_type: { data: { id: 'fixture-model', type: 'item_type' } } } },
         locale: 'en',

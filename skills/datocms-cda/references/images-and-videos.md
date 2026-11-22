@@ -214,7 +214,7 @@ query {
 
 **HLS streaming is recommended over MP4** for better adaptive bitrate and performance. Use `muxPlaybackId` with a Mux-compatible player or `streamingUrl` with HLS.js.
 
-**Limit streaming resolution:** Append `?max_resolution=1080p` to the HLS URL (e.g., `https://stream.mux.com/{ID}.m3u8?max_resolution=1080p`) to cap the maximum resolution. Accepted values: `720p`, `1080p`, `1440p`, `2160p`.
+**Limit streaming resolution:** Append `?max_resolution=1080p` to the HLS URL (e.g., `https://stream.mux.com/{ID}.m3u8?max_resolution=1080p`) to cap the maximum resolution. Accepted values: `270p`, `360p`, `480p`, `540p`, `720p`, `1080p`, `1440p`, `2160p`.
 
 **Raw video URLs return 422:** DatoCMS blocks direct access to raw video files by default ("Block Serving Raw Videos" setting). Always use HLS streaming or MP4 download URLs from the `video` field instead.
 

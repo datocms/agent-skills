@@ -153,8 +153,8 @@ Core env variables (names vary by framework):
 
 | Variable | Description | Where to find it |
 | - | - | - |
-| Published Content CDA Token | Read-only token for published content | DatoCMS → Settings → API tokens → Create with "Published" access |
-| Draft Content CDA Token | Read-only token for draft content | DatoCMS → Settings → API tokens → Create with "Include drafts" checked |
+| Published Content CDA Token | Read-only token for published content | DatoCMS → Project settings → Permissions → API tokens → Create with "Published" access |
+| Draft Content CDA Token | Read-only token for draft content | DatoCMS → Project settings → Permissions → API tokens → Create with "Include drafts" checked |
 | Secret API Token | Shared secret for endpoint authentication | Generate with `openssl rand -hex 32` |
 | Signed Cookie JWT Secret | Secret for signing the draft mode JWT cookie (non-Next.js only) | Generate with `openssl rand -hex 32` |
 | Draft Mode Cookie Name | Name of the draft mode cookie (non-Next.js only) | Choose any name, e.g., `datocms-draft-mode` |

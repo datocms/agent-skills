@@ -19,7 +19,7 @@
 https://graphql.datocms.com/
 ```
 
-POST-only, read-only — **no mutations**. All content changes go through the CMA (Content Management API).
+Accepts GET and POST, read-only — **no mutations**. All content changes go through the CMA (Content Management API).
 
 ## Query Naming Conventions
 
@@ -139,7 +139,7 @@ Every record exposes these meta fields (prefixed with underscore):
 | `_modelApiKey` | `String` | The API key of the model this record belongs to |
 | `_status` | `ItemStatus` | Record publication status. Without `includeDrafts`, always `published`. With `includeDrafts: true`: `draft` (never published), `published` (published, showing published version), or `updated` (published but has unpublished changes, showing latest draft) |
 | `_seoMetaTags` | `[Tag]` | Computed SEO meta tags (see `references/seo-and-meta.md`) |
-| `_locales` | `[SiteLocale]` | Which localizations are present on this record (see `references/localization.md`) |
+| `_locales` | `[SiteLocale]` | Which localizations are present on this record; only on models with a localized field that are not `all_locales_required` (see `references/localization.md`) |
 
 ```graphql
 query {

@@ -43,7 +43,7 @@ Each element in the array:
 - **Description:** `description`, `og:description`, `twitter:description`
 - **Image:** `og:image`, `og:image:width`, `og:image:height`, `og:image:alt`, `twitter:image`, `twitter:image:alt`
 - **Index control:** `robots` with `noindex` when indexing is disabled
-- **Social:** `og:locale`, `og:type` (`"website"`), `og:site_name`, `twitter:site`, `twitter:card`, `article:modified_time`, `article:publisher`
+- **Social:** `og:locale`, `og:type` (`"website"` for singleton models, `"article"` otherwise), `og:site_name`, `twitter:site`, `twitter:card`, `article:modified_time`, `article:publisher`
 
 The title suffix from global SEO settings is appended to the `title` tag only if the combined length is 60 characters or fewer. It is **not** appended to `og:title` or `twitter:title`.
 

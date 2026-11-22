@@ -29,10 +29,10 @@ All need a **preview-links endpoint** that maps records to URLs.
 
 Web Previews plugin configures one or more "frontends". Each needs:
 
-- **Preview webhook URL** — Preview-links endpoint URL (e.g., `https://your-site.com/api/preview-links?token=YOUR_SECRET`)
+- **Preview webhook URL** — Preview-links endpoint URL (e.g., `https://your-site.com/api/preview-links`). Optional: a frontend with only Visual editing needs none
 - **Draft mode URL** — The enable endpoint (e.g., `https://your-site.com/api/draft-mode/enable?token=YOUR_SECRET`), configured as `visualEditing.enableDraftModeUrl`. Required for the Visual editing tab and sidebar click-to-edit, together with Content Link query headers and the frontend controller. Ordinary sidebar links/iframes do not require `visualEditing` configuration.
 - **Initial path** — Optional default path when Visual editing tab opens (defaults to `/`)
-- **Custom headers** — Optional HTTP headers sent to preview-links endpoint
+- **Custom headers** — Optional HTTP headers sent to preview-links endpoint. Put the shared secret here as `Authorization: Bearer <SECRET_API_TOKEN>`: starter kits read it from that header and return 401 for a `?token=` query. Only the enable-draft-mode URL keeps `?token=` (editors open it in the browser)
 - **Viewport presets** — Optional iframe preview sizes (sidebar and Visual tab)
 - **Iframe `allow` attribute** — Optional iframe permissions (microphone, camera). See [MDN iframe allow](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#allow).
 
@@ -42,7 +42,7 @@ Sidebar Edit mode is opt-in and off by default. Configure the frontend's `visual
 
 When both Published and Draft previews exist, select Draft to enter Edit mode; keep an explicitly selected Published preview published. When only Published exists, enabling Edit mode loads that page through the configured draft-mode route.
 
-The sidebar integration recognizes the destination in a `redirect` query parameter. For endpoints using `url` (as in the Nuxt examples), accept `redirect` when supplied and otherwise retain `url` as a compatibility fallback in both draft-mode endpoints; validate the selected value before redirecting. Emit `redirect` in the preview links used for sidebar click-to-edit so the plugin can identify draft previews and their destinations.
+The sidebar integration recognizes the destination in a `redirect` query parameter. Endpoints that read a different parameter (such as `url`) should accept `redirect` when supplied and otherwise retain the old name as a compatibility fallback in both draft-mode endpoints; validate the selected value before redirecting. Emit `redirect` in the preview links used for sidebar click-to-edit so the plugin can identify draft previews and their destinations.
 
 Preserve unrelated frontends, plugin settings, and existing draft/preview endpoints when adding this capability.
 
@@ -112,7 +112,7 @@ if (url) {
 }
 ```
 
-**Note:** The Nuxt examples use `url` instead of `redirect`. For sidebar click-to-edit, apply the `redirect` compatibility described above while preserving existing `url` callers.
+**Published URL:** the plugin sends only the current version, so when `item.meta.status === 'updated'` the published URL can differ (e.g. an unpublished slug change). Starter kits compute it from `client.items.rawFind(item.id, { version: 'published' })` (environment from `environmentId`) and fall back to the draft URL if that fails.
 
 ### Endpoint Error Behavior
 
@@ -250,7 +250,7 @@ if (!baseUrl || !SECRET_API_TOKEN) throw new Error('Missing site URL or preview 
 
 const frontend = {
   name: 'Production',
-  previewWebhook: `${baseUrl}/api/preview-links?token=${SECRET_API_TOKEN}`,
+  previewWebhook: `${baseUrl}/api/preview-links`,
   visualEditing: {
     enableDraftModeUrl: `${baseUrl}/api/draft-mode/enable?token=${SECRET_API_TOKEN}`,
     initialPath: '/',
@@ -268,8 +268,14 @@ const otherFrontends = Array.isArray(frontends)
   ? frontends.filter((f) => f?.name !== frontend.name)
   : [];
 
+// The secret travels as a header, replacing any saved Authorization header and keeping the others.
+const customHeaders = [
+  ...(saved?.customHeaders ?? []).filter((h) => h.name.toLowerCase() !== 'authorization'),
+  { name: 'Authorization', value: `Bearer ${SECRET_API_TOKEN}` },
+];
+
 await client.plugins.update(plugin.id, {
-  parameters: { startOpen: true, ...settings, frontends: [...otherFrontends, { ...saved, ...frontend }] },
+  parameters: { startOpen: true, ...settings, frontends: [...otherFrontends, { ...saved, ...frontend, customHeaders }] },
 });
 ```
 
@@ -280,11 +286,12 @@ Plugin-specific, not in `cma:docs plugins create`. One entry per frontend:
 | Key | Type | Required | Notes |
 | - | - | - | - |
 | `name` | string | yes | Frontend label (`Production`, `Staging`, etc.) |
-| `previewWebhook` | string | yes | Absolute URL of preview-links endpoint, including secret token query param |
+| `previewWebhook` | string | no | Absolute URL of preview-links endpoint, without the secret. Omit for Visual-only frontends |
+| `customHeaders` | `{ name, value }[]` | no | Headers sent to the preview-links endpoint; carries `Authorization: Bearer <secret>` |
 | `visualEditing.enableDraftModeUrl` | string | for Visual editing tab or sidebar click-to-edit | Absolute URL of draft-mode enable endpoint with secret token. Omit `visualEditing` for ordinary sidebar links/iframes when neither editing feature is requested |
 | `visualEditing.initialPath` | string | no | Default path when Visual editing tab opens (defaults to `/`) |
 
-Top-level `parameters.startOpen: true` opens sidebar preview by default.
+Top-level `parameters.startOpen: true` opens the sidebar panel by default (it only applies to the sidebar panel).
 
 ### Confirm before executing
 
@@ -294,9 +301,9 @@ Plugin install writes to live DatoCMS project. Echo resolved `frontends[]` confi
 
 If CLI not linked, instruct user:
 
-1. DatoCMS → Settings → Plugins → Add new
+1. DatoCMS → Configuration → Plugins → Add new
 2. Search "Web Previews" in marketplace, install
-3. Open plugin settings, paste the same `frontends[]` values into the form (preview webhook URL, draft mode URL, initial path, viewport presets, custom headers)
+3. Open plugin settings, paste the same `frontends[]` values into the form (preview webhook URL, draft mode URL, initial path, viewport presets, custom headers including the `Authorization` header)
 
 ## Dependencies
 

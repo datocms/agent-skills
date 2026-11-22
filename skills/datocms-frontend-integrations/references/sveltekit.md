@@ -2,6 +2,8 @@
 
 This reference contains the exact code patterns for implementing draft mode in a SvelteKit project with DatoCMS. Sections are organized by feature — always follow `## Core`, then follow optional sections only for features the user selected.
 
+The snippets are written for SvelteKit 2 (`@sveltejs/kit@2`, tag `version-2`). Kit 3 (`latest`; needs Svelte >=5.57.1, Node >=22.17, Vite >=8.0.12) still runs them, with these differences: `$env/dynamic/private|public` work but are deprecated in favour of `$app/env/private|public`, `json` from `@sveltejs/kit` is deprecated in favour of `Response.json`, and the `cookie` types moved to cookie v2 (see the draft mode helper). Check the installed `@sveltejs/kit` version before editing.
+
 ## Contents
 
 - Core
@@ -108,9 +110,10 @@ export const GET: RequestHandler = (event) => {
 ```ts
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
-import type { RequestEvent } from '@sveltejs/kit';
+import type { Cookies, RequestEvent } from '@sveltejs/kit';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
-import type { CookieSerializeOptions } from 'cookie';
+
+type CookieOptions = NonNullable<Parameters<Cookies['set']>[2]>;
 
 /**
  * Generates a JSON Web Token (JWT) that is used as a signed cookie for
@@ -120,7 +123,7 @@ function jwtToken() {
   return jwt.sign({ enabled: true }, env.PRIVATE_SIGNED_COOKIE_JWT_SECRET);
 }
 
-const DRAFT_MODE_COOKIE_SERIALIZE_OPTIONS: CookieSerializeOptions & { path: string } = {
+const DRAFT_MODE_COOKIE_SERIALIZE_OPTIONS: CookieOptions & { path: string } = {
   path: '/',
   partitioned: true,
   sameSite: 'none',
@@ -181,7 +184,7 @@ Key points:
 
 - JWT payload is `{ enabled: true }` (simpler than Nuxt, which stores the draft token in the JWT)
 - Private env vars from `$env/dynamic/private`, public from `$env/dynamic/public`
-- Cookie options type includes `& { path: string }` because SvelteKit's cookie API requires `path`
+- Cookie options type is derived from `Cookies['set']` because the `cookie` package types differ by Kit major (Kit 2: cookie 0.x `CookieSerializeOptions`; Kit 3: cookie 2 `SerializeOptions`, where importing `CookieSerializeOptions` fails). `& { path: string }` is required by Kit 2's cookie API; Kit 3 defaults `path` to `/`
 - `httpOnly: false` — the cookie needs to be readable by client-side JavaScript for draft mode detection
 
 ### Utils
@@ -369,11 +372,12 @@ type WebPreviewsResponse = {
  *
  * https://www.datocms.com/marketplace/plugins/i/datocms-plugin-web-previews#the-previews-webhook
  */
-export const POST: RequestHandler = async ({ url, request }) => {
+export const POST: RequestHandler = async ({ request }) => {
   try {
-    const token = url.searchParams.get('token');
+    // The plugin sends the secret as a request header (Custom Headers: `Authorization: Bearer <secret>`)
+    const token = request.headers.get('authorization')?.replace(/^Bearer /, '');
 
-    if (!privateEnv.PRIVATE_SECRET_API_TOKEN || token !== privateEnv.PRIVATE_SECRET_API_TOKEN) {
+    if (!token || token !== privateEnv.PRIVATE_SECRET_API_TOKEN) {
       return invalidRequestResponse('Invalid token', 401);
     }
 

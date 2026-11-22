@@ -65,7 +65,7 @@ function BlogPost({ data }) {
 | `imgClassName` | string | null | Additional className for `<img>` tag |
 | `imgStyle` | CSS properties | null | Additional CSS for `<img>` tag |
 | `priority` | boolean | false | Disables lazy loading, sets `fetchPriority="high"` |
-| `sizes` | string | undefined | HTML5 `sizes` attribute (falls back to `data.sizes`) |
+| `sizes` | string | undefined | HTML5 `sizes` attribute. Falls back to `data.sizes`, then to `"auto, 100vw"` unless `priority` |
 | `usePlaceholder` | boolean | true | Whether to show blurred image placeholder |
 | `srcSetCandidates` | Array<number> | `[0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4]` | Width multipliers for auto-generated `srcset` (used when `data` has no `srcSet`) |
 
@@ -79,7 +79,7 @@ function BlogPost({ data }) {
 | `intersectionThreshold` | float | 0 | Visibility percentage to trigger loading (0 = one pixel visible, 1 = fully visible) |
 | `intersectionMargin` | string | `"0px 0px 0px 0px"` | Margin around placeholder for intersection calculation |
 | `priority` | boolean | false | Disables lazy loading, sets `fetchPriority="high"` |
-| `sizes` | string | undefined | HTML5 `sizes` attribute (falls back to `data.sizes`) |
+| `sizes` | string | undefined | HTML5 `sizes` attribute. Falls back to `data.sizes`, then to `"auto, 100vw"` unless `priority` |
 | `onLoad` | `() => void` | undefined | Callback when image finishes loading |
 | `usePlaceholder` | boolean | true | Whether to show blurred image placeholder |
 | `srcSetCandidates` | Array<number> | `[0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4]` | Width multipliers for auto-generated `srcset` |

@@ -11,7 +11,7 @@
 
 ## How Modular Content Works in GraphQL
 
-Modular content fields are represented as GraphQL **union types**. Each block model becomes a `<BlockModelApiKey>Record` type. You query specific block types using **inline fragments**.
+Modular content fields are represented as GraphQL **union types**. Each block model becomes a `<BlockModelApiKey>Record` type. You query specific block types using **inline fragments**. A Modular Content or Single Block field that allows exactly one block model is typed as that record type, not a union; it becomes a union when a second model is allowed. Always select with `... on XxxRecord` fragments (valid in both cases) so the query survives that change.
 
 ## Fragment Querying
 
@@ -52,6 +52,8 @@ query {
 ```
 
 **Important:** You must include a fragment for every block type you want to render. Blocks without a matching fragment are returned as empty objects (only the `__typename` field is available).
+
+Block models have no root queries (no `allTextBlocks`): blocks are reachable only through the field of their record. Blocks without a published version are dropped from the array when drafts are not included (`includeDrafts` off); a Single Block field returns `null`.
 
 ## RecordInterface
 

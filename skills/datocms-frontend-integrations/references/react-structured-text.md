@@ -101,6 +101,8 @@ query {
 
 **Critical:** Always include `id` and `__typename` on every `links`, `blocks`, and `inlineBlocks` entry via `... on RecordInterface`. The component uses `__typename` for the switch statements in custom renderers.
 
+**Missing ids:** `value` references every linked record and block by id, but the CDA omits unpublished or unreadable linked records from `links` (and unpublished blocks from `blocks` / `inlineBlocks`) when drafts are not included, and `excludeInvalid` does not filter them. The renderer then throws `RenderError` ("cannot find a record with ID … inside data.links" / `data.blocks` / `data.inlineBlocks`) for the missing id. The render callbacks never run for that id, so they cannot recover: publish the linked records, query with drafts in preview, or catch `RenderError` around the component.
+
 ## Custom Renderers
 
 Use `renderBlock`, `renderInlineRecord`, `renderLinkToRecord`, and `renderInlineBlock` to handle embedded content. Always switch on `record.__typename`:

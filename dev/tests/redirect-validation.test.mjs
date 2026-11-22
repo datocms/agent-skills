@@ -141,7 +141,10 @@ function loadPreviewEndpoint(framework, kind, secretApiToken, token, options = {
   const effects = [];
   const exports = {};
   const url = new URL(options.requestUrl ?? 'https://app.example.test/api/preview');
-  if (token !== undefined) url.searchParams.set('token', token);
+  // Draft-mode routes take the secret from `?token=`; the preview-links endpoint takes it from `Authorization: Bearer`.
+  const viaHeader = kind === 'preview links';
+  if (token !== undefined && !viaHeader) url.searchParams.set('token', token);
+  const headers = new Headers(token !== undefined && viaHeader ? { authorization: 'Bearer ' + token } : {});
   const enableDraftMode = () => effects.push('enableDraftMode');
   const disableDraftMode = () => effects.push('disableDraftMode');
   const redirect = (location) => {
@@ -192,6 +195,7 @@ function loadPreviewEndpoint(framework, kind, secretApiToken, token, options = {
     eventHandler: (handler) => handler,
     useRuntimeConfig: () => secretApiToken === undefined ? {} : { secretApiToken },
     getQuery: () => Object.fromEntries(url.searchParams),
+    getHeader: (_event, name) => headers.get(name) ?? undefined,
     createError: ({ message, status, statusCode }) => Object.assign(new Error(message), { status: status ?? statusCode }),
     sendRedirect: async (_event, location) => redirect(location),
     readBody,
@@ -200,7 +204,7 @@ function loadPreviewEndpoint(framework, kind, secretApiToken, token, options = {
   return {
     effects,
     async invoke(method) {
-      const request = { url: url.toString(), nextUrl: url, json: readBody };
+      const request = { url: url.toString(), nextUrl: url, json: readBody, headers };
       const event = { method, url, request, redirect };
       const handler = exports.default ?? exports[method];
       try {

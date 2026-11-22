@@ -72,7 +72,7 @@ query {
 
 ## The `blocks` Field
 
-Query embedded block records using inline fragments. Each block node in the DAST references a block by its `item` ID, which corresponds to a record in the `blocks` array.
+Query embedded block records using inline fragments. Each block node in the DAST references a block by its `item` ID, which corresponds to a record in the `blocks` array. Blocks without a published version are dropped from `blocks` and `inlineBlocks` when drafts are not included, so `value` can reference ids missing from the arrays.
 
 ```graphql
 blocks {
@@ -103,6 +103,8 @@ blocks {
 ## The `links` Field
 
 Query linked records (referenced by `itemLink` and `inlineItem` nodes in the DAST). These are full DatoCMS records from any model.
+
+Linked records that are unpublished (when drafts are not included) or not readable by the token's role are omitted from `links`, while `value` still references their ids. `excludeInvalid` (`X-Exclude-Invalid`) does not filter `links` or blocks. A renderer that resolves `itemLink`/`inlineItem` by id then fails: `react-datocms` throws `RenderError` ([react-structured-text.md](../../datocms-frontend-integrations/references/react-structured-text.md)).
 
 ```graphql
 links {

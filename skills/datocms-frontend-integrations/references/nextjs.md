@@ -2,6 +2,8 @@
 
 Exact code patterns for draft mode with DatoCMS. Follow `## Core` first, then optional sections for selected features.
 
+Check `next.config` for `cacheComponents: true` (Next 16+) before using the route-segment and `fetch` caching snippets below. With it, exporting `dynamic`, `revalidate` or `fetchCache` errors (drop `dynamic = 'force-dynamic'`; uncached data is already request-time), and `fetch` `cache: 'force-cache'` + `next.tags` becomes a `'use cache'` function with `cacheLife(...)` and `cacheTag(...)`. `'use cache'` is in-memory per deployment, so durable tag-based reuse needs `'use cache: remote'` or a cache handler. Invalidate with `revalidateTag(tag, 'max')` from a Route Handler.
+
 ## Contents
 
 - Core
@@ -299,9 +301,10 @@ type WebPreviewsResponse = {
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    const token = request.nextUrl.searchParams.get('token');
+    // The plugin sends the secret as a request header (Custom Headers: `Authorization: Bearer <secret>`)
+    const token = request.headers.get('authorization')?.replace(/^Bearer /, '');
 
-    if (!process.env.SECRET_API_TOKEN || token !== process.env.SECRET_API_TOKEN) {
+    if (!token || token !== process.env.SECRET_API_TOKEN) {
       return invalidRequestResponse('Invalid token', 401);
     }
 

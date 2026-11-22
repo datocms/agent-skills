@@ -24,7 +24,7 @@ Returns an array of locale codes in the order configured in the project (e.g., `
 
 ## Record Available Locales
 
-The `_locales` field on any record returns which localizations are actually present:
+The `_locales` field returns which localizations are actually present. It exists only on models with at least one localized field that are not `all_locales_required`, and it is derived from the model's first localized field:
 
 ```graphql
 query {
