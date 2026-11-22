@@ -176,7 +176,7 @@ Block validators accept only block models (`modular_block: true`) in `item_types
 | `slug_format` | `predefined_pattern`: `"webpage_slug"`, or `custom_pattern` with optional `description` |
 | `slug_title_field` | `title_field_id`: ID of a `string` field of the same model |
 | `sanitized_html` | `sanitize_before_validation`=false |
-| `extension` | `predefined_list`: `"image"` \| `"transformable_image"` \| `"video"` \| `"document"`, or `extensions`: string\[] |
+| `extension` | `predefined_list`: `"image"` \| `"transformable_image"` \| `"video"` \| `"document"`, or `extensions`: string\[] without the dot (`["pdf", "docx"]`; `".pdf"` is stored as given and then matches no file). `"document"` covers office formats too, not only PDF |
 | `file_size` | `min_value` + `min_unit` and/or `max_value` + `max_unit`; units `"B"` \| `"KB"` \| `"MB"` (1 MB = 1024 × 1024 bytes) |
 | `image_dimensions` | `width_min_value` + `height_min_value` and/or `width_max_value` + `height_max_value` (pixels; width and height together) |
 | `image_aspect_ratio` | `min_ar_numerator` + `min_ar_denominator`, `eq_ar_*`, `max_ar_*` — positive integers, at least one pair |

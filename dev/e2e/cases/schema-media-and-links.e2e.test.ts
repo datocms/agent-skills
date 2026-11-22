@@ -150,6 +150,9 @@ test("adds asset and link fields whose rules and reference strategies hold in be
 				addFields(cmaClient, context, { attachmentTypes: { predefined_list: "document" } }),
 			"publishing an article also publishes its author": ({ cmaClient, context }) =>
 				addFields(cmaClient, context, { onUnpublishedAuthor: "publish_references" }),
+			// The API stores a dotted extension as given, and then no file matches it.
+			"PDF extension written with its dot": ({ cmaClient, context }) =>
+				addFields(cmaClient, context, { attachmentTypes: { extensions: [".pdf"] } }),
 		},
 		assert: async ({ cmaClient, context }) => {
 			const fields = await cmaClient.fields.list(context.articleModelId);
