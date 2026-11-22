@@ -1,0 +1,72 @@
+[
+  {
+    "id": "r-optimistic-lock",
+    "question": "Two scripts may update the same record at once. How do I make my `client.items.update` fail instead of silently overwriting, and which error code tells me to retry?",
+    "all": ["current_version", "STALE_ITEM_VERSION"],
+    "key": "Send `meta: { current_version }` from the read; on conflict the API answers `STALE_ITEM_VERSION`.",
+    "source": "api/app/commands/api/cma/item/update.rb:920-927"
+  },
+  {
+    "id": "r-bulk-cap",
+    "question": "How many records can one `client.items.bulkPublish` call take?",
+    "all": ["200"],
+    "key": "200 per request.",
+    "source": "skills/datocms-cma/references/records.md"
+  },
+  {
+    "id": "r-locale-sync",
+    "question": "A record has three localized fields, all with `en` and `it`. I want to add a Spanish value to just one of them with `client.items.update`. Can I send only that field?",
+    "judge": "Says no: all localized fields of a record must share the same set of locales, so adding a locale means sending every localized field with the new locale key (with a value or null) in the same update.",
+    "key": "No. Adding a locale changes the record's locale set: send every localized field with the `es` key (value or null).",
+    "source": "api/app/commands/api/cma/attributes/validate.rb:157-205"
+  },
+  {
+    "id": "r-published-not-found",
+    "question": "I call `client.items.find(id, { version: \"published\" })` on a record that was never published. What do I get?",
+    "judge": "Says the call fails with a not-found error (NOT_FOUND / 404); it does not fall back to the current draft.",
+    "key": "`NOT_FOUND`: there is no fallback to the draft.",
+    "source": "skills/datocms-cma/references/records.md"
+  },
+  {
+    "id": "r-selective-publish",
+    "question": "How do I publish only the English content of a record, leaving other locales unpublished?",
+    "all": ["content_in_locales", "non_localized_content"],
+    "key": "`client.items.publish(id, { content_in_locales: [\"en\"], non_localized_content: true })`.",
+    "source": "skills/datocms-cma/references/records.md"
+  },
+  {
+    "id": "r-preflight",
+    "question": "Which CMA client method checks whether a new record would pass validation without saving it?",
+    "all": ["validateNew"],
+    "key": "`client.items.validateNew(...)` (and `validateExisting` for updates).",
+    "source": "api/app/commands/api/cma/item/validate.rb:86"
+  },
+  {
+    "id": "r-restore-publishes",
+    "question": "I restore an old version of a record with `client.itemVersions.restore`. The model has draft mode turned off. Is the restored content published?",
+    "judge": "Says yes: when the model has draft mode disabled, restoring a version publishes the restored content automatically.",
+    "key": "Yes. Without draft mode, restore auto-publishes.",
+    "source": "skills/datocms-cma/references/records.md"
+  },
+  {
+    "id": "r-tree-publish",
+    "question": "Publishing a child record of a tree model fails with `UNPUBLISHED_PARENT`. Which option publishes the parents along with it?",
+    "all": ["recursive"],
+    "key": "`client.items.publish(id, undefined, { recursive: true })`.",
+    "source": "skills/datocms-cma/references/records.md"
+  },
+  {
+    "id": "r-required-all-locales",
+    "question": "A model has `all_locales_required: true` and the project has locales en and it. Can I create a record sending a localized title only for `en`?",
+    "judge": "Says no: every locale key is required in each localized field (the value of a locale may be null, but the key must be present).",
+    "key": "No. Every locale key must be present (null allowed as the value).",
+    "source": "api/app/commands/api/cma/attributes/validate.rb:120-233"
+  },
+  {
+    "id": "r-invalid-draft",
+    "question": "On which condition does the CMA save a record that fails validators such as `required` instead of rejecting it?",
+    "all": ["draft_saving_active"],
+    "key": "When the model has `draft_saving_active: true` (with draft mode): it is saved as an invalid draft; publishing still enforces validators.",
+    "source": "api/app/commands/api/cma/item/create.rb:134-137"
+  }
+]

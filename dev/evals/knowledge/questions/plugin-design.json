@@ -1,0 +1,192 @@
+[
+  {
+    "id": "d-imports",
+    "question": "In the current datocms-react-ui (the release whose components are the dashboard's own), how do I import `Button` and the `Page` layout component? Does `import { Button } from 'datocms-react-ui'` still work?",
+    "all": [
+      "datocms-react-ui/Button",
+      "datocms-react-ui/Page"
+    ],
+    "judge": "Says each component is imported from its own path (`datocms-react-ui/Button`, `datocms-react-ui/Page`) and that importing from the package root no longer works.",
+    "key": "`import Button from 'datocms-react-ui/Button'`, `import { Page } from 'datocms-react-ui/Page'`. There is no root import.",
+    "source": "https://react-ui.datocms.com/Plugin/Canvas.md"
+  },
+  {
+    "id": "d-stylesheet",
+    "question": "Which stylesheet does a plugin built on the current datocms-react-ui have to import, and where?",
+    "all": [
+      "datocms-react-ui/styles\\.css"
+    ],
+    "key": "`import 'datocms-react-ui/styles.css'` once, in the entry file.",
+    "source": "https://react-ui.datocms.com/Plugin/Canvas.md"
+  },
+  {
+    "id": "d-canvas",
+    "question": "What must wrap the content of every plugin hook that renders in a frame, and which hook gives a component inside it the `ctx`?",
+    "all": [
+      "Canvas",
+      "useCtx"
+    ],
+    "key": "`<Canvas ctx={ctx}>`; `useCtx<...>()` reads the ctx.",
+    "source": "https://react-ui.datocms.com/Plugin/Canvas.md"
+  },
+  {
+    "id": "d-module-resolution",
+    "question": "TypeScript cannot resolve `datocms-react-ui/Button` in my plugin. Which `moduleResolution` values make the per-component imports resolve?",
+    "all": [
+      "bundler|node16|nodenext"
+    ],
+    "key": "`bundler`, `node16` or `nodenext` (entries resolve only through the package `exports`).",
+    "source": "https://react-ui.datocms.com/Plugin/Canvas.md"
+  },
+  {
+    "id": "d-color-tokens",
+    "question": "In the current datocms-react-ui, which CSS custom property gives the color of secondary (subtle) text, and which pair of properties gives the background and the text color of a soft danger area?",
+    "all": [
+      "--color--ink-subtle",
+      "--color--danger-soft--surface",
+      "--color--danger-soft--ink"
+    ],
+    "key": "`--color--ink-subtle`; `--color--danger-soft--surface` with `--color--danger-soft--ink`.",
+    "source": "https://react-ui.datocms.com/Foundations/Colors.md"
+  },
+  {
+    "id": "d-old-variables",
+    "question": "My plugin's CSS uses `var(--accent-color)`, `var(--border-color)` and `var(--spacing-xs)` from datocms-react-ui 2. Do they still work after upgrading to the current release?",
+    "judge": "Says no: these 2.x variables no longer exist in the current release (they resolve to nothing) and must be replaced by the semantic color tokens and the current spacing variables.",
+    "key": "No. They are gone and resolve to nothing; map each to a `--color--*` token or a current `--spacing-*` variable.",
+    "source": "https://react-ui.datocms.com/Foundations/CssVariables.md"
+  },
+  {
+    "id": "d-spacing",
+    "question": "Which spacing CSS variables does the current datocms-react-ui define for plugin CSS?",
+    "all": [
+      "--spacing-s",
+      "--spacing-m",
+      "--spacing-l",
+      "--spacing-xl"
+    ],
+    "key": "`--spacing-s`, `-m`, `-l`, `-xl`, `-xxl`, `-xxxl` (and the `--negative-spacing-*` counterparts).",
+    "source": "https://react-ui.datocms.com/Foundations/CssVariables.md"
+  },
+  {
+    "id": "d-notices",
+    "question": "My plugin needs to show a success toast after saving and a confirmation dialog before deleting. Should I build these with components inside the plugin frame?",
+    "all": [
+      "ctx\\.notice",
+      "ctx\\.openConfirm"
+    ],
+    "judge": "Says no: the host draws them. Use `ctx.notice` (or `ctx.alert`) for the toast and `ctx.openConfirm` for the confirmation, because anything drawn in the frame covers only the frame.",
+    "key": "No. `ctx.notice` / `ctx.alert` and `ctx.openConfirm`: the host draws them.",
+    "source": "https://react-ui.datocms.com/Plugin/Canvas.md"
+  },
+  {
+    "id": "d-button",
+    "question": "With the current datocms-react-ui `Button`, how do I set its text and its icon, and which size does a button in a toolbar use?",
+    "all": [
+      "label",
+      "icon",
+      "milli"
+    ],
+    "judge": "Says the text is the `label` prop (not children), the icon is passed as a component through the `icon` prop, and a toolbar button uses the `milli` size.",
+    "key": "`label=\"...\"`, `icon={AddIcon}` (a component), size `milli` in a toolbar.",
+    "source": "https://react-ui.datocms.com/Actions/Button.md"
+  },
+  {
+    "id": "d-text-field",
+    "question": "datocms-react-ui 2 had `TextField` and `SwitchField`. What replaces them in the current release?",
+    "all": [
+      "FieldWrapper",
+      "StringInput",
+      "SwitchInput"
+    ],
+    "key": "`FieldWrapper` around `StringInput`; `SwitchInput` (it names itself with its own `label`).",
+    "source": "https://react-ui.datocms.com/Forms/Form.md"
+  },
+  {
+    "id": "d-on-change",
+    "question": "What does `onChange` receive on the inputs of the current datocms-react-ui (for example `StringInput`), and what does `SelectInput` use as its `value`?",
+    "judge": "Says `onChange` receives the new value directly (not a DOM event), and `SelectInput`'s value is the option's `value` string (not the option object).",
+    "key": "The value, not an event. `SelectInput` value = the option's `value` string.",
+    "source": "https://react-ui.datocms.com/Forms/Form.md"
+  },
+  {
+    "id": "d-icons",
+    "question": "Does the current datocms-react-ui ship an icon set for plugins to use?",
+    "judge": "Says no: the library bundles no icons; the plugin brings its own icon components (drawn with `currentColor`).",
+    "key": "No. Bring your own SVG icon components that use `currentColor`.",
+    "source": "https://react-ui.datocms.com/Plugin/Canvas.md"
+  },
+  {
+    "id": "d-empty-states",
+    "question": "Which datocms-react-ui component shows that a section has nothing to list yet, and which one shows an empty field or an empty list inside a form?",
+    "all": [
+      "BlankSlate",
+      "EmptySlot"
+    ],
+    "key": "`BlankSlate` for an empty section; `EmptySlot` for an empty field or in-form list.",
+    "source": "https://react-ui.datocms.com/Feedback/BlankSlate.md"
+  },
+  {
+    "id": "d-headings",
+    "question": "Can I write `<h2>` and `<main>` directly in a plugin page built with the current datocms-react-ui?",
+    "all": [
+      "Heading",
+      "Main"
+    ],
+    "judge": "Says no: use the `Heading` and `Main` (landmark) components instead of raw heading and landmark tags.",
+    "key": "No. Use `Heading` and the landmark components (`Main`, `Nav`, `Aside`, `Search`).",
+    "source": "https://react-ui.datocms.com/Layout/Landmarks.md"
+  },
+  {
+    "id": "d-config-screen-title",
+    "question": "I'm designing a plugin's config screen. Should the screen start with a section title such as \"Settings\"?",
+    "judge": "Says no: the dashboard already draws a \"Plugin settings\" title right above the plugin's frame, so the screen should start directly with its content (fields); section titles are fine from the second section on.",
+    "key": "No. The host already draws \"Plugin settings\" above the frame; start with the fields.",
+    "source": "cms/src (plugin config screen host), datocms-plugin-design/references/surfaces.md"
+  },
+  {
+    "id": "d-shortcuts",
+    "question": "How does a plugin built on the current datocms-react-ui add a keyboard shortcut and show its keys in a tooltip?",
+    "all": [
+      "useRegisterActions"
+    ],
+    "key": "Register an action with `useRegisterActions`; show its keys by action id (`tooltip={{ action }}` or `Shortcut`).",
+    "source": "https://react-ui.datocms.com/Actions/Actions.md"
+  },
+  {
+    "id": "d-dates",
+    "question": "Which component shows a date in a plugin the way the dashboard shows dates to the current user?",
+    "all": [
+      "SmartDate"
+    ],
+    "key": "`SmartDate` (never `toLocaleDateString`).",
+    "source": "https://react-ui.datocms.com/Content/SmartDate.md"
+  },
+  {
+    "id": "d-modal-content",
+    "question": "What goes inside the frame rendered by `renderModal` after `ctx.openModal`: do I draw the dialog box and its backdrop myself?",
+    "all": [
+      "Modal\\.Body",
+      "Modal\\.Footer"
+    ],
+    "judge": "Says no: the host draws the dialog, its title and close button; the frame content uses `Modal.Body` and `Modal.Footer`.",
+    "key": "No. The host draws the dialog; render `Modal.Body` and `Modal.Footer`.",
+    "source": "https://react-ui.datocms.com/Overlays/Modal.md"
+  },
+  {
+    "id": "d-segmented",
+    "question": "A plugin page needs a control to switch between three always-visible views (All, Open, Resolved). Which datocms-react-ui component is meant for that?",
+    "all": [
+      "SegmentedControl"
+    ],
+    "key": "`SegmentedControl`.",
+    "source": "https://react-ui.datocms.com/Navigation/SegmentedControl.md"
+  },
+  {
+    "id": "d-frame-height",
+    "question": "In which plugin surfaces does the frame grow with its content, and in which does it have a fixed height where a full-height layout such as `Pane` is appropriate?",
+    "judge": "Says embedded surfaces (config screen, field editor/addon, sidebar panel, modal by default, outlets) auto-resize to their content, while custom pages, full sidebars and inspectors have a fixed frame that fills its area, which is where `Pane` belongs.",
+    "key": "Auto-resizing: config screen, field extensions, sidebar panels, modals, outlets. Fixed: custom pages, full sidebars, inspectors (use `Pane` there).",
+    "source": "plugins-sdk/packages/sdk/src/ctx/commonExtras/sizing.ts, cms/src (frame hosts)"
+  }
+]

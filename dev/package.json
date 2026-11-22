@@ -25,7 +25,11 @@
     "e2e:catalog:plugin": "cd .. && node dev/e2e/catalog/plugin.mjs",
     "e2e:catalog:live": "cd .. && tsx dev/e2e/catalog/live.mjs",
     "e2e:deployed": "cd .. && tsx dev/e2e/deployed/actor.mjs",
-    "e2e:regressions": "cd .. && node dev/e2e/regressions/run.mjs"
+    "e2e:regressions": "cd .. && node dev/e2e/regressions/run.mjs",
+    "eval:knowledge:summary": "cd .. && node dev/evals/knowledge/summarize.mjs",
+    "eval:tasks:controls": "cd .. && node dev/evals/tasks/run.mjs controls",
+    "eval:tasks:live-controls": "cd .. && node dev/evals/tasks/live.mjs controls",
+    "sync:react-ui-docs": "cd .. && node dev/scripts/sync-react-ui-docs.mjs"
   },
   "devDependencies": {
     "@datocms/cma-client-node": "^6.1.0",

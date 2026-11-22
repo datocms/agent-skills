@@ -1,0 +1,172 @@
+[
+  {
+    "id": "b-create-needs-objects",
+    "question": "I'm creating a brand-new record with `client.items.create` and want to reuse two existing blocks from another record by putting their block IDs in the modular content field. Will that work?",
+    "judge": "Says no: when creating a record, blocks must be sent as full block objects (ID strings are rejected), and a block from another record cannot be reused by ID at all; new blocks must be created (for example by duplicating).",
+    "key": "No. On create every block must be a full object; IDs are rejected, and block IDs never work across records.",
+    "source": "api/app/commands/api/cma/nested_blocks/persist_and_replace_ids.rb:262-268,155-156"
+  },
+  {
+    "id": "b-raw-block-shape",
+    "question": "Without using any client helper, what is the raw JSON shape of one new block inside a modular content (`rich_text`) field array in a CMA request?",
+    "all": ["\"?type\"?\\s*:\\s*[\"']item[\"']", "attributes", "relationships", "item_type"],
+    "key": "`{ type: \"item\", attributes: {...}, relationships: { item_type: { data: { type: \"item_type\", id: <block model id> } } } }`.",
+    "source": "api/lib/dato/block_record.rb:12-51"
+  },
+  {
+    "id": "b-partial-block-update",
+    "question": "A record has a modular content field `sections` with five blocks. I only want to change the `title` of the second block. What exactly do I send for `sections` in `client.items.update`?",
+    "judge": "Says to send the full array of five entries in order: the IDs (strings) of the four unchanged blocks, and for the second block an object carrying its `id` and only the changed attribute (for example `buildBlockRecord({ id, title })`). Must make clear that all five blocks have to be listed.",
+    "key": "All five entries: ID strings for the unchanged ones; `{ id, type: \"item\", attributes: { title } }` (or `buildBlockRecord<...>({ id, title })`) for the edited one.",
+    "source": "api/spec/commands/api/cma/item/update_with_block_records_spec.rb:1010-1077"
+  },
+  {
+    "id": "b-omitted-blocks-deleted",
+    "question": "When I update a modular content field and my array leaves out some of the blocks that were there before, what happens to those blocks?",
+    "judge": "Says the omitted blocks are deleted (removed from the record), because the array sent replaces the whole field value.",
+    "key": "They are deleted: the field value is replaced by the array sent.",
+    "source": "api/app/commands/api/cma/item/update.rb:709-740"
+  },
+  {
+    "id": "b-move-between-fields",
+    "question": "On one record I want to move a block from the `sidebar` modular content field to the `body` modular content field by putting its ID in `body` and removing it from `sidebar`. Does that work?",
+    "judge": "Says no: a block ID is only valid in the field (and locale) it already belongs to, so the API rejects it; the block must be re-created in the target field as a new block object without its id (for example with `duplicateBlockRecord`) and left out of the source field.",
+    "key": "No. Block IDs are bound to their field and locale. Re-create it without an id in `body`, omit it from `sidebar`.",
+    "source": "api/app/commands/api/cma/nested_blocks/persist_and_replace_ids.rb:314-336"
+  },
+  {
+    "id": "b-copy-across-locales",
+    "question": "A localized modular content field has blocks under `en`. Can I copy them to `it` by reusing the same block IDs under the `it` key?",
+    "judge": "Says no: block IDs cannot be shared across locales; the `it` locale needs new blocks (new objects without ids, e.g. duplicated copies).",
+    "key": "No. IDs are per locale; create new blocks for `it` (e.g. `duplicateBlockRecord`).",
+    "source": "api/app/commands/api/cma/nested_blocks/persist_and_replace_ids.rb:314-336"
+  },
+  {
+    "id": "b-one-locale-sent",
+    "question": "A localized modular content field holds `{ en: [...], it: [...] }`. I update it sending only `{ en: [...] }`. What happens to the Italian blocks?",
+    "judge": "Says the Italian content is removed/deleted (or the request is rejected for a locale mismatch); in either case makes clear that you must send every locale, because sending one locale does not preserve the others.",
+    "key": "They are deleted. Always send every locale of a localized field.",
+    "source": "api/schemas/site_api/item_update/description.md:287-326"
+  },
+  {
+    "id": "b-depth-limit",
+    "question": "How deep can blocks be nested inside blocks in one record, and does the record itself count as a level?",
+    "all": ["\\b5\\b|five"],
+    "judge": "Says 5 levels of blocks, and that the record itself does not count as a level.",
+    "key": "5 block levels; the record is not a level.",
+    "source": "api/app/models/item_version.rb:477-491"
+  },
+  {
+    "id": "b-default-limits",
+    "question": "On a standard (non-Enterprise) plan, what are the current limits for the number of blocks in one record and for the record's total size?",
+    "all": ["1[,.]?000", "1\\s?MB"],
+    "key": "1,000 blocks and 1 MB per record (Enterprise: 3,000 and 3 MB).",
+    "source": "https://www.datocms.com/docs/content-management-api/technical-limits"
+  },
+  {
+    "id": "b-limits-endpoint",
+    "question": "Limits depend on the plan. Which CMA resource returns this project's real per-record block count and nesting limits?",
+    "all": ["public[-_ ]?info"],
+    "key": "`GET /public-info` (`client.publicInfo.find()`): `blocks_per_item`, `blocks_depth`.",
+    "source": "api/app/serializers/public_info_serializer.rb:34-43"
+  },
+  {
+    "id": "b-limit-error",
+    "question": "What error code does the CMA return when a record has too many blocks or is too big?",
+    "all": ["TECHNICAL_LIMIT_REACHED"],
+    "key": "`TECHNICAL_LIMIT_REACHED` (details.limit: blocks_per_item | blocks_depth | item_size_bytes).",
+    "source": "api/app/commands/concerns/api/cma/item_limits.rb:8-58"
+  },
+  {
+    "id": "b-direct-block-access",
+    "question": "I have the ID of a block. Can I call `client.items.update(blockId, ...)` to change it directly? Can I read it with `client.items.find(blockId)`?",
+    "judge": "Says the update fails (404 / not found: blocks are only changed through their parent record) and that reading the block by ID with find works.",
+    "key": "Update: no (404), change it through the parent record. Find: yes.",
+    "source": "api/app/controllers/site_api/items_controller.rb:20-26,41-44"
+  },
+  {
+    "id": "b-nested-read",
+    "question": "By default `client.items.list` returns block fields as IDs. How do I get the full block content, and what is the maximum page size when I do?",
+    "all": ["nested", "\\b30\\b"],
+    "key": "`nested: true`; page size at most 30.",
+    "source": "api/app/controllers/site_api/items_controller.rb:63-72"
+  },
+  {
+    "id": "b-own-block-id",
+    "question": "Can I choose the ID of a new block myself instead of letting the server assign it? If so, what format must it have?",
+    "all": ["uuid|generateId"],
+    "judge": "Says yes, and that the ID must be a UUID v4 in URL-safe base64 form (or produced with the client's `generateId()`), unused in the environment.",
+    "key": "Yes: a URL-safe base64 UUIDv4 (`generateId()`), unused in the environment, on a block object that also carries `item_type`.",
+    "source": "api/app/commands/api/cma/nested_blocks/persist_and_replace_ids.rb:157-175,270-280"
+  },
+  {
+    "id": "b-error-path",
+    "question": "An update fails because the required `title` of the first block in `ctas` is empty; `ctas` is a modular content field of the first block of the record's `sections` field. What does `details.field` look like in the API error?",
+    "all": ["sections\\.0\\.ctas\\.0\\.title"],
+    "key": "`sections.0.ctas.0.title` (a locale segment follows the field name when localized: `sections.en.0...`).",
+    "source": "api/spec/commands/api/cma/item/update_with_block_records_spec.rb:847-903"
+  },
+  {
+    "id": "b-duplicate-helper",
+    "question": "Which CMA client helper makes a copy of an existing block, including its nested blocks, ready to be inserted as a new block? What arguments does it take?",
+    "all": ["duplicateBlockRecord", "SchemaRepository"],
+    "key": "`await duplicateBlockRecord<Schema.X>(block, new SchemaRepository(client))`; the block must come from a `nested: true` read.",
+    "source": "js-rest-api-clients/packages/cma-client/src/utilities/duplicateBlockRecord.ts:11-67"
+  },
+  {
+    "id": "b-partial-update-item-type",
+    "question": "When I send an object to update a field of an existing block, do I have to include `relationships.item_type` (or `item_type` in `buildBlockRecord`)?",
+    "judge": "Says no: for an existing block the id is enough (the block model is already known); `item_type` is only needed for new blocks.",
+    "key": "No. Only new blocks need `item_type`.",
+    "source": "api/lib/dato/block_record.rb:61-67"
+  },
+  {
+    "id": "b-update-response",
+    "question": "After `client.items.update` on a record with blocks, does the returned record contain the blocks as full objects?",
+    "judge": "Says no: the returned record has block IDs; to get the block content you must read the record again with `nested: true`.",
+    "key": "No, IDs. Re-read with `nested: true`.",
+    "source": "api/app/controllers/site_api/items_controller.rb:306-330"
+  },
+  {
+    "id": "b-count-across-locales",
+    "question": "For the per-record block limit, are the blocks of each locale of a localized field counted separately or only once?",
+    "judge": "Says every block in every locale counts toward the limit (blocks at every depth, in every field and every locale).",
+    "key": "Every block at every depth, in every field and every locale counts.",
+    "source": "api/app/models/item_version.rb:477-482"
+  },
+  {
+    "id": "b-block-model-in-use",
+    "question": "What error do I get when I try to delete a block model that is still allowed in some field?",
+    "all": ["MODULAR_BLOCK_IN_USE"],
+    "key": "`MODULAR_BLOCK_IN_USE`.",
+    "source": "api/app/commands/api/cma/item_type/destroy.rb:57-73"
+  },
+  {
+    "id": "b-published-removal",
+    "question": "A record is published. I remove a block from it with the CMA and do not publish. Is the block gone from what the published site receives?",
+    "judge": "Says no: the published version still has the block until the record is published again.",
+    "key": "No. The published version keeps it until the record is republished.",
+    "source": "api/app/commands/api/cma/item/update.rb:716-735"
+  },
+  {
+    "id": "b-cda-single-model-type",
+    "question": "In the GraphQL Content Delivery API, a modular content field allows exactly one block model. Is the field typed as a union? What changes in my query if a second block model is allowed later?",
+    "judge": "Says that with exactly one allowed block model the field is typed as that record type (not a union), and that it becomes a union when a second model is allowed, so the query needs `... on XxxRecord` fragments (using fragments from the start is the safe choice).",
+    "key": "One model: typed as that record, no union. Two or more: a union, so select with `... on XxxRecord` fragments.",
+    "source": "api/lib/gql/item_field/rich_text.rb:25-41"
+  },
+  {
+    "id": "b-cda-root-query",
+    "question": "Can I query block records directly at the root of the GraphQL Content Delivery API (for example `allHeroBlocks`)?",
+    "judge": "Says no: block models have no root queries; blocks are reachable only through the field of the record that contains them.",
+    "key": "No. Only through the parent record's field.",
+    "source": "api/lib/gql/root.rb:57,481-483"
+  },
+  {
+    "id": "b-single-block-clear",
+    "question": "How do I remove the block from a `single_block` field with the CMA?",
+    "all": ["null"],
+    "key": "Set the field to `null`.",
+    "source": "api/lib/dato/field_type/single_block.rb:46-58"
+  }
+]

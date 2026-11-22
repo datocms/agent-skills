@@ -1,0 +1,333 @@
+[
+  {
+    "id": "f-required-links-validator",
+    "question": "I'm adding a `links` (multiple links) field to a model through the CMA. Which validator must be present or the API rejects the field, and what goes inside it?",
+    "all": ["items_item_type", "item_types"],
+    "key": "`items_item_type` with `item_types: [model IDs]` (non-block models).",
+    "source": "api/lib/dato/validator/check_format.rb:60-75"
+  },
+  {
+    "id": "f-required-st-validators",
+    "question": "Which validators are mandatory when creating a `structured_text` field through the CMA?",
+    "all": ["structured_text_blocks", "structured_text_links"],
+    "key": "`structured_text_blocks` and `structured_text_links` (both with `item_types`, which may be empty arrays).",
+    "source": "api/lib/dato/field_type/structured_text.rb:59-66"
+  },
+  {
+    "id": "f-st-inline-blocks-optional",
+    "question": "On a `structured_text` field, is the `structured_text_inline_blocks` validator required by the API? What does the field allow if I leave it out?",
+    "judge": "Says it is NOT required by the API (optional), and that leaving it out means no inline blocks are allowed (treated as an empty list).",
+    "key": "Optional. Omitted = no inline blocks allowed.",
+    "source": "api/app/commands/api/cma/attributes/validate.rb:379-387"
+  },
+  {
+    "id": "f-appearance-keys",
+    "question": "When I send an `appearance` object to `fields.create`, which keys must it always contain?",
+    "all": ["editor", "parameters", "addons"],
+    "key": "`editor`, `parameters`, `addons` (plus `field_extension` for plugin editors).",
+    "source": "api/lib/dato/editor/check_format.rb:82-90,229-238"
+  },
+  {
+    "id": "f-text-default-editor",
+    "question": "If I create a `text` field without specifying `appearance`, which editor does it get?",
+    "all": ["markdown"],
+    "key": "`markdown`.",
+    "source": "api/lib/dato/field_type/text.rb:17-23"
+  },
+  {
+    "id": "f-string-select",
+    "question": "What is the exact `appearance.editor` name that shows a `string` field as a dropdown, and which parameter key holds the choices?",
+    "all": ["string_select", "options"],
+    "key": "`string_select` with `parameters.options: [{ label, value, hint? }]`.",
+    "source": "api/lib/dato/editor/string_select.rb:15-41"
+  },
+  {
+    "id": "f-string-radio",
+    "question": "Same question for radio buttons on a `string` field: exact editor name and the parameter key that holds the choices.",
+    "all": ["string_radio_group", "radios"],
+    "key": "`string_radio_group` with `parameters.radios: [{ label, value, hint? }]`.",
+    "source": "api/lib/dato/editor/string_radio_group.rb:15-41"
+  },
+  {
+    "id": "f-multi-select",
+    "question": "I want editors to pick several values from a fixed list of strings, stored as an array. Which field type and which built-in editor do that?",
+    "all": ["json", "string_multi_select|string_checkbox_group"],
+    "key": "`json` field with editor `string_multi_select` (or `string_checkbox_group`).",
+    "source": "api/lib/dato/field_type/json.rb:12-18"
+  },
+  {
+    "id": "f-color-value",
+    "question": "What exact value shape does the CMA expect for a `color` field?",
+    "all": ["red", "green", "blue", "alpha", "255"],
+    "key": "`{ red, green, blue, alpha }`, integers 0-255, all four required (alpha is 0-255 too).",
+    "source": "api/lib/dato/field_type/color.rb:9-26"
+  },
+  {
+    "id": "f-json-value",
+    "question": "I need to store the object {\"a\": 1} in a `json` field with `client.items.update`. What exactly do I pass as the field value?",
+    "judge": "Says the value must be a JSON-encoded string (for example via JSON.stringify), not a raw object.",
+    "key": "A JSON string: `JSON.stringify({ a: 1 })`.",
+    "source": "api/lib/dato/field_type/json.rb:20-31"
+  },
+  {
+    "id": "f-null-string-readback",
+    "question": "I set a `string` field to null with the CMA. What value comes back when I read the record again?",
+    "judge": "Says it reads back as an empty string (\"\"), not null.",
+    "key": "`\"\"` (empty string).",
+    "source": "api/lib/dato/field_type/text.rb:30-36"
+  },
+  {
+    "id": "f-default-value-unsupported",
+    "question": "Can a `slug` field or a `link` field have a `default_value`? If not, what error code does the CMA return?",
+    "all": ["FIELD_DOES_NOT_SUPPORT_DEFAULT_VALUE"],
+    "key": "No. `default_value` only works on boolean, color, date, date_time, float, integer, json, lat_lon, string, text. Error code `FIELD_DOES_NOT_SUPPORT_DEFAULT_VALUE`.",
+    "source": "api/app/commands/api/cma/field/upsert.rb:21-32"
+  },
+  {
+    "id": "f-gallery-required",
+    "question": "How do I make a `gallery` field mandatory (at least one asset)? Is the `required` validator available on it?",
+    "all": ["size", "min"],
+    "judge": "Says `required` is not available on gallery fields and that the way is the `size` validator with `min: 1`.",
+    "key": "No `required` on gallery. Use `size: { min: 1 }`.",
+    "source": "api/lib/dato/field_type/gallery.rb:8-17"
+  },
+  {
+    "id": "f-boolean-validators",
+    "question": "Which validators can I put on a `boolean` field?",
+    "judge": "Says boolean fields accept no validators at all (not even `required`).",
+    "key": "None.",
+    "source": "api/lib/dato/field_type/boolean.rb"
+  },
+  {
+    "id": "f-file-size",
+    "question": "Give the exact `validators` entry that caps a `file` field at 2 MB.",
+    "all": ["file_size", "max_value", "max_unit", "MB"],
+    "key": "`file_size: { max_value: 2, max_unit: \"MB\" }`.",
+    "source": "api/lib/dato/validator/file_size.rb"
+  },
+  {
+    "id": "f-transformable-image",
+    "question": "Which validator and parameter restrict a `file` field to images that can be transformed (resized, cropped) by the image pipeline?",
+    "all": ["extension", "predefined_list", "transformable_image"],
+    "key": "`extension: { predefined_list: \"transformable_image\" }`.",
+    "source": "api/lib/dato/validator/extension.rb"
+  },
+  {
+    "id": "f-slug-format",
+    "question": "What is the name of the built-in pattern for the `slug_format` validator?",
+    "all": ["webpage_slug"],
+    "key": "`predefined_pattern: \"webpage_slug\"`.",
+    "source": "api/lib/dato/validator/slug_format.rb"
+  },
+  {
+    "id": "f-format-patterns",
+    "question": "Which predefined patterns does the `format` validator support on string fields?",
+    "all": ["email", "url"],
+    "key": "`email` and `url`.",
+    "source": "api/lib/dato/validator/format.rb:61-77"
+  },
+  {
+    "id": "f-number-range",
+    "question": "What is the exact validator key to limit an `integer` field to values between 0 and 100?",
+    "all": ["number_range"],
+    "key": "`number_range: { min: 0, max: 100 }`.",
+    "source": "api/lib/dato/validator/number_range.rb:19-28"
+  },
+  {
+    "id": "f-type-conversions",
+    "question": "Which `field_type` changes can be made in place on an existing field?",
+    "all": ["text", "float", "gallery", "links", "single_block"],
+    "key": "Only string<->text, integer<->float, file<->gallery, link<->links, rich_text<->single_block.",
+    "source": "api/app/commands/api/cma/field/upsert.rb:8-19"
+  },
+  {
+    "id": "f-type-conversion-side-effects",
+    "question": "I want to change a field from `string` to `text` and rename its label in the same `fields.update` call. Will both apply, and what happens to its validators and appearance?",
+    "judge": "Says the other attributes in the same request (the label) are ignored when field_type changes, and that validators and appearance are reset to the new type's defaults.",
+    "key": "When `field_type` changes, every other attribute in that request is ignored, and validators + appearance are reset. Rename in a second call.",
+    "source": "api/app/commands/api/cma/field/upsert.rb:155-159,465-484"
+  },
+  {
+    "id": "f-api-key-rules",
+    "question": "Which of these field api_keys does the CMA accept: `field_1`, `field1`, `a`, `my__key`, `title_`?",
+    "judge": "Says only `field1` is accepted: `field_1` is rejected (underscore directly before a digit), `a` is rejected (too short, needs at least 2 characters), `my__key` is rejected (double underscore), `title_` is rejected (trailing underscore).",
+    "key": "Only `field1`.",
+    "source": "api/app/models/field.rb:75-76"
+  },
+  {
+    "id": "f-model-api-key-singular",
+    "question": "I tried to create a model with api_key `blog_posts` and the API rejected it. Why?",
+    "all": ["singular|VALIDATION_PLURAL"],
+    "key": "Model api_keys must be singular (`blog_post`); error `VALIDATION_PLURAL`.",
+    "source": "api/app/models/item_type.rb:308-315"
+  },
+  {
+    "id": "f-block-field-restrictions",
+    "question": "Inside a block model, can a field be `localized: true`? Can it use the `unique` validator? Can it sit in a fieldset?",
+    "judge": "Says no to all three: fields in block models cannot be localized, cannot use `unique`, and block models cannot have fieldsets.",
+    "key": "No, no, no.",
+    "source": "api/app/models/field.rb:244-251; api/lib/dato/validator/unique.rb:8; api/app/models/fieldset.rb:37-41"
+  },
+  {
+    "id": "f-st-heading-levels",
+    "question": "On a `structured_text` field, which `appearance.parameters` key limits editors to H2 and H3 headings?",
+    "all": ["heading_levels"],
+    "key": "`heading_levels: [2, 3]`.",
+    "source": "api/lib/dato/editor/structured_text.rb:6-16"
+  },
+  {
+    "id": "f-st-nodes-values",
+    "question": "List every value accepted by the `nodes` parameter of the `structured_text` editor.",
+    "all": ["blockquote", "code", "heading", "link", "list", "thematicBreak", "inlineItem", "itemLink"],
+    "key": "blockquote, code, heading, link, list, thematicBreak, inlineItem, itemLink.",
+    "source": "api/lib/dato/editor/structured_text.rb:6"
+  },
+  {
+    "id": "f-single-block-editors",
+    "question": "What are the built-in editors for a `single_block` field, and which of them accepts the `start_collapsed` parameter?",
+    "all": ["framed_single_block", "frameless_single_block"],
+    "judge": "Names both `framed_single_block` and `frameless_single_block`, and says only `framed_single_block` accepts `start_collapsed` (frameless takes no parameters).",
+    "key": "`framed_single_block` { start_collapsed } (default) and `frameless_single_block` (no parameters).",
+    "source": "api/lib/dato/editor/frameless_single_block.rb"
+  },
+  {
+    "id": "f-link-delete-strategy",
+    "question": "A `link` field points to an Author record. With default validator settings, what happens to the link when that Author is deleted? Name the setting and its default value.",
+    "all": ["on_reference_delete_strategy", "delete_references"],
+    "key": "`on_reference_delete_strategy` defaults to `delete_references`: the link is removed (the referrer is kept). Alternative: `fail`.",
+    "source": "api/lib/dato/validator/item_item_type.rb:25-44"
+  },
+  {
+    "id": "f-publish-references-strategy",
+    "question": "Which link validator setting makes publishing a record also publish the unpublished records it links to, and what are its allowed values?",
+    "all": ["on_publish_with_unpublished_references_strategy", "publish_references", "fail"],
+    "key": "`on_publish_with_unpublished_references_strategy`: `fail` (default) or `publish_references`.",
+    "source": "api/lib/dato/validator/item_item_type.rb:25-44"
+  },
+  {
+    "id": "f-update-merge-semantics",
+    "question": "When I call `fields.update` with a `validators` object containing only one validator, are the field's other existing validators kept? And if I send `appearance` with the same editor but only one parameter, are the other parameters kept?",
+    "judge": "Says `validators` replaces the whole object (other validators are removed), while appearance parameters are merged/preserved when the editor is unchanged.",
+    "key": "Validators: replaced wholesale. Appearance parameters: merged when the editor stays the same.",
+    "source": "api/app/commands/api/cma/field/upsert.rb:396-404,446-463"
+  },
+  {
+    "id": "f-seo-validators",
+    "question": "Which validators exist for an `seo` field to require sub-fields and limit title and description length?",
+    "all": ["required_seo_fields", "title_length", "description_length"],
+    "key": "`required_seo_fields`, `title_length`, `description_length` (also file_size, image_dimensions, image_aspect_ratio).",
+    "source": "api/lib/dato/field_type/seo.rb:23-31"
+  },
+  {
+    "id": "f-slug-title-field",
+    "question": "Which validator links a `slug` field to its source field, what is its parameter name, and which field type must the source be?",
+    "all": ["slug_title_field", "title_field_id", "string"],
+    "key": "`slug_title_field: { title_field_id }`; the source must be a `string` field.",
+    "source": "api/lib/dato/validator/slug_title_field.rb:23-31"
+  },
+  {
+    "id": "f-slug-server-generation",
+    "question": "If I create a record through the CMA with a title but no slug, on a model whose slug field has `slug_title_field` set, does the API generate the slug?",
+    "judge": "Says no: the API does not generate slugs; `slug_title_field` only drives the dashboard editor, so the script must send the slug value itself.",
+    "key": "No. Auto-fill is editor-side only; send the slug explicitly.",
+    "source": "api/lib/dato/validator/slug_title_field.rb:44-46"
+  },
+  {
+    "id": "f-color-picker-params",
+    "question": "What parameters does the `color_picker` editor accept?",
+    "all": ["enable_alpha", "preset_colors"],
+    "key": "`enable_alpha` (bool) and `preset_colors` (array of strings).",
+    "source": "api/lib/dato/editor/color_picker.rb"
+  },
+  {
+    "id": "f-ordering-direction",
+    "question": "I want a model's records ordered by a date field, newest first, by default. Which model attributes do I set?",
+    "all": ["ordering_field", "ordering_direction", "desc"],
+    "key": "`ordering_field` (relationship to the field) plus `ordering_direction: \"desc\"`.",
+    "source": "api/app/models/item_type.rb:20-31"
+  },
+  {
+    "id": "f-all-locales-required-default",
+    "question": "When I create a model through the CMA without setting `all_locales_required`, what value does it get?",
+    "all": ["false"],
+    "key": "`false`.",
+    "source": "api/app/commands/api/cma/item_type/upsert.rb:56"
+  },
+  {
+    "id": "f-modular-block-immutable",
+    "question": "Can I turn an existing regular model into a block model by updating `modular_block` to true?",
+    "judge": "Says no: `modular_block` cannot be changed after the model is created.",
+    "key": "No. Immutable after create.",
+    "source": "api/app/commands/api/cma/item_type/upsert.rb:131-141"
+  },
+  {
+    "id": "f-plugin-data-limit",
+    "question": "Is there a size limit for plugin configuration stored in a field's appearance (editor parameters plus addons)? Give the limit and the error code.",
+    "all": ["10", "FIELD_APPEARANCE_PLUGIN_DATA_TOO_LARGE"],
+    "key": "10 KB; `FIELD_APPEARANCE_PLUGIN_DATA_TOO_LARGE`.",
+    "source": "api/app/models/field.rb:271-286"
+  },
+  {
+    "id": "f-addon-shape",
+    "question": "What is the shape of one entry in a field's `appearance.addons` array for a plugin add-on?",
+    "all": ["\\bid\\b", "field_extension", "parameters"],
+    "key": "`{ id: <plugin id>, field_extension: <extension id>, parameters: {...} }`.",
+    "source": "api/lib/dato/editor/check_format.rb:117-120"
+  },
+  {
+    "id": "f-validator-removal-deletes",
+    "question": "A `rich_text` field allows Hero and CTA blocks. If I update `rich_text_blocks.item_types` to drop the CTA block model, what happens to CTA blocks already in records?",
+    "judge": "Says the existing CTA blocks in records are deleted/destroyed.",
+    "key": "They are destroyed.",
+    "source": "api/app/commands/api/cma/field/upsert.rb:247-275"
+  },
+  {
+    "id": "f-video-value",
+    "question": "What keys does the CMA expect in the value of an external `video` field?",
+    "all": ["provider", "provider_uid", "url", "width", "height", "thumbnail_url", "title"],
+    "key": "`{ provider: youtube|vimeo|facebook, provider_uid, url, width, height, thumbnail_url, title }`, all required.",
+    "source": "api/lib/dato/field_type/video.rb:9-24"
+  },
+  {
+    "id": "f-file-value",
+    "question": "What is the minimal value for a `file` field on write, and which optional keys can override the asset's default metadata?",
+    "all": ["upload_id", "alt", "title", "custom_data", "focal_point"],
+    "key": "`{ upload_id }`; optional `alt`, `title`, `custom_data`, `focal_point` (and `poster_time` for video).",
+    "source": "api/lib/dato/field_type/file.rb:49-113"
+  },
+  {
+    "id": "f-deep-filtering",
+    "question": "On which field types can `deep_filtering_enabled` be turned on?",
+    "all": ["rich_text", "single_block", "structured_text"],
+    "key": "rich_text, single_block, structured_text (and not on fields inside block models).",
+    "source": "api/app/models/field.rb:61-65,253-258"
+  },
+  {
+    "id": "f-localized-default-mismatch",
+    "question": "A localized field's `default_value` must match the project's locales. What error code do I get when the keys don't match?",
+    "all": ["FIELD_DEFAULT_VALUE_LOCALES_MISMATCH_ENVIRONMENT_LOCALES"],
+    "key": "`FIELD_DEFAULT_VALUE_LOCALES_MISMATCH_ENVIRONMENT_LOCALES` (keys must be exactly the environment's locales).",
+    "source": "api/app/commands/api/cma/field/upsert.rb:497-529"
+  },
+  {
+    "id": "f-boolean-radio-params",
+    "question": "What parameters does the `boolean_radio_group` editor take?",
+    "all": ["positive_radio", "negative_radio"],
+    "key": "`positive_radio: { label, hint? }`, `negative_radio: { label, hint? }`.",
+    "source": "api/lib/dato/editor/boolean_radio_group.rb"
+  },
+  {
+    "id": "f-seo-editor-params",
+    "question": "Which parameters does the `seo` editor accept to hide sub-fields and choose social previews?",
+    "all": ["fields", "previews"],
+    "key": "`fields` (subset of title, description, image, no_index, twitter_card) and `previews` (google, twitter, facebook, telegram, whatsapp, slack, linkedin).",
+    "source": "api/lib/dato/editor/seo.rb"
+  },
+  {
+    "id": "f-link-validators-block-models",
+    "question": "Can I list a block model's ID in the `item_item_type.item_types` of a `link` field?",
+    "judge": "Says no: link validators accept only regular (non-block) models; block models go in the block validators (`rich_text_blocks`, `single_block_blocks`, `structured_text_blocks`).",
+    "key": "No. Link validators take only non-block models.",
+    "source": "api/lib/dato/validator/item_item_type.rb:78"
+  }
+]

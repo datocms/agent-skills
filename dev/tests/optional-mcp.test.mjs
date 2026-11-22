@@ -13,7 +13,7 @@ import { measureContext } from '../scripts/check-skill-context.mjs';
 process.chdir(new URL('../../', import.meta.url).pathname);
 
 const contextBase = '27c410f7952bf14d12c0284a81cfb5d5d266fb6c';
-const retentionBase = '94e4bd8128e52963829f65bce8f202fcd68ac8d6';
+const retentionBase = 'a0d76d3a3ac3bb59f72f3d5e7fa83e6659a70ce5';
 // Exact compatibility projection from remote-mcp; it consumes the whole files.
 // https://github.com/datocms/remote-mcp/blob/beeca70bdf702461ae8e226bfd9714d8e58f33ac/src/tools/getApiMethods/index.ts#L69-L74
 const project = (text) => text.split('\n').filter((line) => !line.includes('cma:')).join('\n');
@@ -61,151 +61,48 @@ function section(tree, title) {
   const heading = tree.children[start];
   let end = start + 1;
   while (end < tree.children.length && !(tree.children[end].type === 'heading' && tree.children[end].depth <= heading.depth)) end++;
-  return tree.children.slice(start, end).map(semanticTree).map((node) => {
-    if (node.type !== 'code') return node;
-    // Allow only the reviewed request-type, content-preservation and pagination fixes.
-    // All other code and prose must still match the base exactly.
-    return { ...node, value: node.value.replace(
-      'marks.add("strong"); // Preserve existing custom marks too.',
-      "marks.add(\"strong\"); // 'strong'|'emphasis'|'code'|'underline'|'strikethrough'|'highlight'",
-    ).replace(
-      '  // Keep the nested response type if continuing through mapNodes.\n  const content = parse(edited, currentItem.content);',
-      '  // Use the writable field type when continuing through `mapNodes`.\n  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    parse(edited, currentItem.content);',
-    ).replace(
-      '  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    mapNodes(currentItem.content, (node, parent) => {',
-      '  let content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    currentItem.content;\n  content = mapNodes(content, (node, parent) => {',
-    ).replace(
-      '  // `parse` reuses the original `item` for surviving block/inlineBlock IDs.\n  // Use the writable field type when continuing through `mapNodes`.\n  const content: NonNullable<FieldValueInRequest<typeof currentItem, "content">> =\n    parse(edited, currentItem.content);',
-      '  // `content` keeps the static type of `currentItem.content` and reuses the original\n  // `item` object for every block/inlineBlock whose id survives the edit.\n  const content = parse(edited, currentItem.content);',
-    ).replace(
-      '      !node.children.some((child) => child.type === "inlineItem" || child.type === "inlineBlock" || child.type === "itemLink") &&\n',
-      '',
-    ).replace(
-      '  content = mapNodes(content, (node, parent) => {',
-      '  content = mapNodes(content, (node) => {',
-    ).replace(
-      '      parent?.type === "root" &&\n',
-      '',
-    ).replace(
-      '      return null; // Drop empty root paragraphs; lists and blockquotes need their paragraphs.',
-      '      return null; // 1:0 — reduceNodes descends into links/itemLinks; bottom-up: drop the paragraph',
-    ).replace(
-      'for await (const it of client.items.listPagedIterator<Schema.FaqEntry>({\n  filter: { type: "faq_entry" }, version: "current",\n  order_by: "id_ASC", // Keep pagination order stable while updating translations.\n})) {',
-      'const items = await client.items.list<Schema.FaqEntry>({ filter: { type: "faq_entry" }, version: "current" });\nfor (const it of items) {',
-    ) };
-  });
+  return tree.children.slice(start, end).map(semanticTree);
 }
 
-// Preserve domain workflows, allowing only the explicit corrections above.
-// Compare their full prose, lists, tables and remaining code with the reviewed base.
+// Preserve domain workflows, allowing only the reviewed corrections listed below.
+// Compare their full prose, lists, tables and code with the reviewed base.
 const preservedWorkflows = {
   records: [
+    'Field value formats',
     'Selective publish / unpublish',
     'validateNew / validateExisting — preflight without commit',
     'Versions and restore',
-    'Field value formats — beyond the simple types',
     "dastdown syntax — what's NOT plain markdown",
     'Bulk operations are async + 200-cap',
+    'Limits per record',
+    'Errors on writes',
   ],
   'editing-records': [
     'Workflow',
-    'Typing values you build up in code',
-    'Prerequisites the workflow assumes',
+    'Block rules in detail',
     'Modular content (rich_text)',
     'Single block (single_block)',
     'Structured text (structured_text)',
+    'Structured text: Pass 1, dastdown round-trip',
+    'Structured text: Pass 2, mapNodes walk',
     'Localized fields and adding a locale',
+    'Typing values you build up in code',
+    'Verify saved content',
     'Optimistic locking via meta.current_version',
   ],
 };
 
-function withReviewedEditingCorrections(source) {
-  const corrections = [
-    ["Marks: `'strong' | 'emphasis' | 'code' | 'underline' | 'strikethrough' | 'highlight'`.", "Default marks include `strong`, `emphasis`, `code`, `underline`, `strikethrough`, and `highlight`. Custom marks are possible: preserve the fetched `string[]` instead of narrowing snapshots to a union of defaults."],
-    [
-      'Forgetting `nested: true` is #1 cause of broken update payloads — mapping over array of strings produces garbage. Block fields are only field type that change shape between two modes; asset fields + record-link fields always return IDs.',
-      'Forgetting `nested: true` is #1 cause of broken update payloads — mapping over array of strings produces garbage. Block fields are the field type that changes shape between these modes. Asset fields retain file-value objects (`upload_id`, alt/title, custom data, focal point, poster time), or `null`; record-link fields retain record IDs. Infer asset snapshot types from the fetched value instead of declaring them as strings.',
-    ],
-    [
-      '**Prefer dastdown over AST building/manipulation when possible!** Much less chance of logic/typing errors.',
-      'Prefer dastdown for text-shaped edits after the unedited round-trip check below. If it throws or changes existing text, apply the requested edit with `mapNodes` on the original document before making any write.',
-    ],
-    [
-      'import { parse, serialize } from "datocms-structured-text-dastdown";\n\nconst currentItem',
-      'import { parse, serialize } from "datocms-structured-text-dastdown";\nimport { isSpan, reduceNodes } from "datocms-structured-text-utils";\n\nconst currentItem',
-    ],
-    [
-      '  const text = serialize(currentItem.content);\n  const edited',
-      '  const text = serialize(currentItem.content);\n  const unedited = parse(text, currentItem.content);\n  const originalText = reduceNodes(currentItem.content, (text, node) => text + (isSpan(node) ? node.value : ""), "");\n  const roundTripText = reduceNodes(unedited, (text, node) => text + (isSpan(node) ? node.value : ""), "");\n  if (originalText !== roundTripText) {\n    throw new Error("Dastdown changes existing text; use mapNodes on the original document.");\n  }\n  const edited',
-    ],
-    // #41 API corrections: the paged iterator never lowers perPage (nested reads above 30
-    // are rejected), and datocms-structured-text-utils exports collectNodes, not findAllNodes.
-    [
-      '| Max page size 500 | Max page size 30 (iterators auto-adjust → \\~16× more page fetches) |',
-      "| Max page size 500 | Max page size 30 (iterators don't lower `perPage` — keep ≤ 30 → \\~16× more page fetches) |",
-    ],
-    ['(use w/ `findFirstNode` / `findAllNodes` / `Array#filter`)', '(use w/ `findFirstNode` / `collectNodes` / `Array#filter`)'],
-    // A null guard replaces the cast the reference itself forbids; checked against cma-client 6.1.3 types.
-    [
-      'If TS rejects spread (typically because per-locale value nullable + `Update` shape requires non-null), cast precisely w/ request schema rather than reaching for `Record<string, string>`:\n\n```ts\nquestion: { ...(currentItem.question as NonNullable<FieldValueInRequest<typeof currentItem, "question">>), es: "..." },\n```',
-      'If TS rejects spread (typically because field value may be `null` while `Update` shape requires object), guard the null instead of casting or reaching for `Record<string, string>`:\n\n```ts\nquestion: { ...(currentItem.question ?? {}), es: "..." },\n```',
-    ],
-    [
-      'Creating brand new structured text content,',
-      'Dastdown 6.0.0 changes newlines inside code-marked spans into literal `<br/>` text. This pre-write check catches that while tolerating span merging and mark normalization; it supplements the structure, marks, links, and reference checks, not the saved-content verification. If it fails, transform the original AST instead. Omit the imports when the selected runtime already supplies these helpers.\n\nCreating brand new structured text content,',
-    ],
-    [
-      [
-        'Site update + per-item backfill in ONE script. Spread existing per-locale objects.',
-        '', '```ts',
-        'await client.site.update({ locales: ["en", "it", "es"] });',
-        '',
-        'const items = await client.items.list<Schema.FaqEntry>({ filter: { type: "faq_entry" }, version: "current" });',
-        'for (const it of items) {',
-        '  await client.items.update<Schema.FaqEntry>(it.id, {',
-        '    question: { ...it.question, es: "..." },',
-        '    answer:   { ...it.answer,   es: "..." },',
-        '  });',
-        '}', '```',
-      ].join('\n'),
-      [
-        "Adding a locale = two executions: record types come from the environment's locales before a script runs, so the script that adds a locale cannot type it. 1) Append the locale (keep order; first = primary), read `site.locales` back. 2) New execution (regenerate any local schema file first): backfill. Spread existing per-locale objects.",
-        '', '```ts',
-        '// Execution 1',
-        'const site = await client.site.find();',
-        'await client.site.update({ locales: [...site.locales, "es"] });',
-        'console.log((await client.site.find()).locales);',
-        '```', '', '```ts',
-        '// Execution 2: types now include es',
-        'const items = await client.items.list<Schema.FaqEntry>({ filter: { type: "faq_entry" }, version: "current" });',
-        'for (const it of items) {',
-        '  await client.items.update<Schema.FaqEntry>(it.id, {',
-        '    question: { ...it.question, es: "..." },',
-        '    answer:   { ...it.answer,   es: "..." },',
-        '  });',
-        '}', '```',
-      ].join('\n'),
-    ],
-  ];
-  for (const [before, after] of corrections) {
+// Reviewed corrections to the base, per guide: [before, after] pairs applied exactly once each.
+// An intended change to a section listed above is added here in the same commit; the list is
+// emptied when the base moves to a commit that already holds the reviewed text.
+const reviewedCorrections = { records: [], 'editing-records': [] };
+
+function withReviewedCorrections(name, source) {
+  for (const [before, after] of reviewedCorrections[name]) {
     assert.equal(source.split(before).length, 2, 'apply each reviewed correction exactly once');
     source = source.replace(before, after);
   }
   return source;
-}
-
-function withReviewedRestoreGuidance(source) {
-  const before = '`itemVersions.listPagedIterator(recordId)` walks history. `itemVersions.restore(versionId)` creates a **new version** whose content matches the restored one — it does not delete history, and it does not re-publish: the record\'s publication state stays where it was. If the record was published before the restore and you want the restored content live, call `publish` explicitly afterward.';
-  const after = [
-    '`itemVersions.listPagedIterator(recordId)` walks history. `itemVersions.restore(versionId)` creates a **new current version** from the selected version without deleting history. Publication depends on the model\'s `draft_mode_active` setting:',
-    '',
-    '- **Draft mode enabled:** the restored version is unpublished; any previously published version stays live. Publish the restored content only when authorized.',
-    '- **Draft mode disabled:** restoring automatically publishes the restored content. A request to restore without changing live content cannot use this operation on that model; explain the constraint before writing, and do not change the model\'s draft-mode setting without authorization.',
-    '',
-    'Check the model setting before restoring and verify the current and published content afterward. Do not promise that restoration leaves publication unchanged.',
-  ].join('\n');
-  assert.equal(source.split(before).length, 2, 'apply the reviewed restore correction exactly once');
-  return source.replace(before, after);
 }
 
 test('optional MCP keeps the agreed discovery and entrypoint context budgets', () => {
@@ -217,9 +114,9 @@ for (const [name, workflows] of Object.entries(preservedWorkflows)) {
   const path = `skills/datocms-cma/references/${name}.md`;
   const source = readFileSync(path, 'utf8');
   const baseline = execFileSync('git', ['show', `${retentionBase}:${path}`], { encoding: 'utf8' });
-  const previous = markdown.parse(name === 'editing-records'
-    ? withReviewedEditingCorrections(baseline)
-    : withReviewedRestoreGuidance(baseline));
+  const reviewed = withReviewedCorrections(name, baseline);
+  // The server drops CLI-only lines from the base too, so each mode compares like with like.
+  const previous = { raw: markdown.parse(reviewed), projected: markdown.parse(project(reviewed)) };
 
   test(`${name}: exact MCP filter preserves the full Markdown structure and shared content`, () => {
     const raw = parseMarkdown(source, `${name} raw`);
@@ -230,7 +127,7 @@ for (const [name, workflows] of Object.entries(preservedWorkflows)) {
   for (const [mode, content] of [['raw', source], ['projected', project(source)]]) {
     test(`${name} ${mode}: domain workflows retain the reviewed base content`, () => {
       const tree = parseMarkdown(content, `${name} ${mode}`);
-      for (const title of workflows) assert.deepEqual(section(tree, title), section(previous, title), `Changed domain workflow: ${title}`);
+      for (const title of workflows) assert.deepEqual(section(tree, title), section(previous[mode], title), `Changed domain workflow: ${title}`);
     });
 
     test(`${name} ${mode}: TypeScript examples have valid syntax`, () => {

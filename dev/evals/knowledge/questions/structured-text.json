@@ -1,0 +1,173 @@
+[
+  {
+    "id": "s-value-shape",
+    "question": "What is the top-level shape of a Structured Text field value in the CMA?",
+    "all": ["schema", "dast", "document", "root"],
+    "key": "`{ schema: \"dast\", document: { type: \"root\", children: [...] } }`.",
+    "source": "structured-text/packages/utils/src/types.ts:458-461"
+  },
+  {
+    "id": "s-block-position",
+    "question": "In a Structured Text document, where is a `block` node allowed? How do I embed a block in the middle of a sentence?",
+    "all": ["inlineBlock"],
+    "judge": "Says a `block` node is only allowed as a direct child of `root`, and that inside a paragraph you use an `inlineBlock` node instead.",
+    "key": "`block` only as a direct child of `root`. Mid-sentence: `inlineBlock` among a paragraph's children.",
+    "source": "structured-text/packages/utils/src/types.ts:269-298"
+  },
+  {
+    "id": "s-root-children",
+    "question": "Which node types may be direct children of the `root` node?",
+    "all": ["paragraph", "heading", "list", "code", "blockquote", "block", "thematicBreak"],
+    "key": "paragraph, heading, list, code, blockquote, block, thematicBreak.",
+    "source": "structured-text/packages/utils/src/definitions.ts:37-60"
+  },
+  {
+    "id": "s-list-item-children",
+    "question": "What may a `listItem` node contain? Can I put a `span` directly inside it?",
+    "all": ["paragraph", "list"],
+    "judge": "Says a listItem contains `paragraph` and/or `list` nodes, and that a span cannot go directly in a listItem (it must be wrapped in a paragraph).",
+    "key": "`paragraph` and `list` only; text goes in a paragraph.",
+    "source": "structured-text/packages/utils/src/types.ts:186-191"
+  },
+  {
+    "id": "s-blockquote",
+    "question": "What does a `blockquote` node contain, and how do I record who said the quote?",
+    "all": ["paragraph", "attribution"],
+    "key": "Children: `paragraph` only. Optional `attribution` string attribute.",
+    "source": "structured-text/packages/utils/src/types.ts:255-260"
+  },
+  {
+    "id": "s-line-break",
+    "question": "How is a line break inside a paragraph represented in DAST?",
+    "judge": "Says a line break is a newline character (\\n) inside the `value` of a span; there is no dedicated break node.",
+    "key": "A `\\n` inside `span.value`.",
+    "source": "structured-text/packages/utils/src/types.ts:314-333"
+  },
+  {
+    "id": "s-list-style",
+    "question": "What are the allowed values of the `style` attribute of a `list` node?",
+    "all": ["bulleted", "numbered"],
+    "key": "`bulleted` or `numbered`.",
+    "source": "structured-text/packages/utils/src/types.ts:158-162"
+  },
+  {
+    "id": "s-code-node",
+    "question": "Which attributes does a `code` node have?",
+    "all": ["\\bcode\\b", "language", "highlight"],
+    "key": "`code` (string, required), `language`?, `highlight`? (zero-based line numbers).",
+    "source": "structured-text/packages/utils/src/types.ts:223-231"
+  },
+  {
+    "id": "s-default-marks",
+    "question": "List the default marks a `span` can carry.",
+    "all": ["strong", "emphasis", "code", "underline", "strikethrough", "highlight"],
+    "key": "strong, emphasis, code, underline, strikethrough, highlight (custom marks are also possible).",
+    "source": "structured-text/packages/utils/src/definitions.ts:89-96"
+  },
+  {
+    "id": "s-item-link-vs-inline-item",
+    "question": "What is the difference between `itemLink` and `inlineItem` nodes, and what does their `item` attribute hold?",
+    "judge": "Says `itemLink` is a link to a record that wraps text (has span children), `inlineItem` is a standalone inline reference to a record with no children, and `item` in both is the record's ID (a string).",
+    "key": "`itemLink` wraps text (children: spans) and links it to a record; `inlineItem` is a leaf that embeds a record reference. `item` is a record ID string in both.",
+    "source": "structured-text/packages/utils/src/types.ts:407-439"
+  },
+  {
+    "id": "s-link-meta",
+    "question": "How do I make a `link` node open in a new tab or carry `rel=\"nofollow\"` in DAST?",
+    "all": ["meta", "target|rel"],
+    "judge": "Says to use the link's `meta` attribute, an array of `{ id, value }` entries such as `{ id: \"target\", value: \"_blank\" }` or `{ id: \"rel\", value: \"nofollow\" }`.",
+    "key": "`meta: [{ id: \"target\", value: \"_blank\" }, { id: \"rel\", value: \"nofollow\" }]`.",
+    "source": "structured-text/packages/utils/src/types.ts:364-375"
+  },
+  {
+    "id": "s-links-validator",
+    "question": "Which field validator decides which models an `itemLink` or `inlineItem` may point to?",
+    "all": ["structured_text_links"],
+    "key": "`structured_text_links`.",
+    "source": "api/lib/dato/validator/structured_text_links.rb:24-36"
+  },
+  {
+    "id": "s-inline-block-rejected",
+    "question": "My update is rejected with `VALIDATION_STRUCTURED_TEXT_INLINE_BLOCKS` even though the block model is listed in the field's `structured_text_blocks` validator. What is wrong?",
+    "all": ["structured_text_inline_blocks"],
+    "key": "Inline blocks are governed by a separate validator: add the block model to `structured_text_inline_blocks.item_types` (absent validator = no inline blocks).",
+    "source": "api/spec/commands/api/cma/item/update_with_block_records_spec.rb:2568-2603"
+  },
+  {
+    "id": "s-editor-params-not-enforced",
+    "question": "A Structured Text field's editor is configured with `heading_levels: [2, 3]`. If my script sends a level-1 heading through the CMA, is the write rejected?",
+    "judge": "Says no: `heading_levels` (like `nodes` and `marks`) only restricts the dashboard editor; the API does not enforce it, so the write is accepted.",
+    "key": "No. Editor settings are not enforced by the API.",
+    "source": "api/lib/dato/editor/structured_text.rb:6-16"
+  },
+  {
+    "id": "s-normalization",
+    "question": "I saved a Structured Text document with two adjacent bold spans and read it back: it now has one span. Is that a bug in my code?",
+    "judge": "Says no: the API normalizes Structured Text on write (it merges adjacent spans with the same marks, among other clean-ups), so the stored tree can differ from the one sent.",
+    "key": "No. The API normalizes on write: merges adjacent same-mark spans, drops empty nodes and unknown attributes.",
+    "source": "api/app/commands/api/cma/dast_tree/normalize.rb:25-112"
+  },
+  {
+    "id": "s-empty-document",
+    "question": "What gets stored if I save `{ schema: \"dast\", document: { type: \"root\", children: [] } }` in a Structured Text field?",
+    "all": ["null"],
+    "key": "`null` (an empty document is stored as null).",
+    "source": "api/app/commands/api/cma/dast_tree/normalize.rb:84-86"
+  },
+  {
+    "id": "s-url-schemes",
+    "question": "Which link URL schemes does the CMA refuse inside Structured Text?",
+    "all": ["javascript", "data"],
+    "key": "`javascript:`, `vbscript:`, `data:`.",
+    "source": "api/lib/dato/field_type/structured_text.rb:23-24,145-168"
+  },
+  {
+    "id": "s-duplicate-block-id",
+    "question": "Can the same block ID appear in two `block` nodes of one Structured Text document, to show the same block twice?",
+    "judge": "Says no: a block ID may appear only once in a document (the API rejects duplicated block IDs); showing it twice needs a second, new block (a duplicate).",
+    "key": "No. Block IDs must be unique in the document; duplicate the block instead.",
+    "source": "api/lib/dato/field_type/structured_text.rb:119-120"
+  },
+  {
+    "id": "s-utils-validate",
+    "question": "`validate()` from `datocms-structured-text-utils` returns `valid: true` for my document. Does that guarantee the CMA will accept it?",
+    "judge": "Says no: the utility's validation is looser than the API's (it does not check things like block/record references or field validators), so the API can still reject the document.",
+    "key": "No. It is a looser structural check; the API also checks references, allowed models, URL schemes and the stricter schema.",
+    "source": "structured-text/packages/utils/src/validate.ts:17-134"
+  },
+  {
+    "id": "s-dastdown-new-blocks",
+    "question": "I edit a Structured Text field through dastdown (`serialize`, edit the text, `parse`). Can I add a brand-new block by writing a `<block id=\"...\"/>` placeholder with an ID I make up?",
+    "judge": "Says no: `parse` throws on a block ID that is not in the original document; new blocks have to be added afterwards on the tree (as block objects, e.g. with `buildBlockRecord`).",
+    "key": "No. `parse(text, original)` throws on unknown block IDs; add new blocks on the tree after parsing.",
+    "source": "structured-text/packages/dastdown/src/parse.ts:902-964"
+  },
+  {
+    "id": "s-dastdown-marks",
+    "question": "In dastdown, what is the syntax for highlighted text and for underlined text?",
+    "all": ["==", "\\+\\+"],
+    "key": "`==highlight==` and `++underline++`.",
+    "source": "structured-text/packages/dastdown/src/serialize.ts"
+  },
+  {
+    "id": "s-cda-selection",
+    "question": "In the GraphQL Content Delivery API, which sub-fields does a Structured Text field expose?",
+    "all": ["value", "blocks", "inlineBlocks", "links"],
+    "key": "`value`, `blocks`, `inlineBlocks`, `links`.",
+    "source": "api/lib/gql/item_field/structured_text.rb:18-128"
+  },
+  {
+    "id": "s-cda-missing-link",
+    "question": "A published article's Structured Text links (via `itemLink`) to a record that is not published. In the CDA response without draft headers, what do `value` and `links` contain for that record, and what happens when `react-datocms` renders it?",
+    "judge": "Says the unpublished record is missing from `links` while `value` still references its ID, and that the `react-datocms` StructuredText renderer throws an error (RenderError) because it cannot find the record.",
+    "key": "`links` omits it, `value` still references it; the renderer throws `RenderError`.",
+    "source": "api/lib/gql/item_field/structured_text.rb:296-327"
+  },
+  {
+    "id": "s-length-validator",
+    "question": "What does the `length` validator count on a Structured Text field?",
+    "judge": "Says it counts text characters (the text of spans and code nodes), not blocks or nodes.",
+    "key": "Characters of text (span values and code), not blocks.",
+    "source": "api/lib/dato/validator/size.rb:68-82"
+  }
+]
