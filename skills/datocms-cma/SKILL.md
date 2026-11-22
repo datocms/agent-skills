@@ -56,6 +56,7 @@ EOF
 ```
 
 - `client`, `Schema.*` and every export of `@datocms/cma-client-node`, `datocms-structured-text-utils` and `datocms-structured-text-dastdown` are ambient: no imports, top-level `await`, no `export default`, no `node:` modules.
+- `Schema.<Model>` is the model or block API key in PascalCase (`faq_entry` → `Schema.FaqEntry`). Put it on every `items` call, a first read-only look included (`client.items.list<Schema.FaqEntry>({ filter: { type: "faq_entry" } })`): without it every field is `unknown` and the first field access fails the type-check. A localized value is a locale map; one locale's value can be `undefined` or `null`, so guard it.
 - The script is type-checked before it runs, against an ES2020 library (no `.at()`, no `replaceAll`). Explicit `any` / `unknown`, `as never` and `@ts-ignore` are rejected: fix the types, never skip validation.
 - Print what you need with `console.log`; nothing else comes back. A project must be linked or a token set.
 
