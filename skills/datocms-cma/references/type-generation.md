@@ -94,7 +94,7 @@ export type AnyBlockOrModel = AnyBlock | AnyModel;
 - `AnyModel` — union of all regular models
 - `AnyBlockOrModel` — union of both
 
-4. **Paired value per model/block** — `export const X = { ID, REF } as const`, emitted right after its same-name type, so `Schema.X` is both type and value: `Schema.X.ID` = literal id, `Schema.X.REF` = `{ type: 'item_type', id }` (`item_type:` value). Consume via `import * as Schema from './cma-types'`; more uses in [editing-records.md › Imports](editing-records.md#imports).
+4. **Paired value per model/block** — `export const X = { ID, REF } as const`, emitted right after its same-name type, so `Schema.X` is both type and value: `Schema.X.ID` = literal id, `Schema.X.REF` = `{ type: 'item_type', id }` (`item_type:` value). Consume via `import * as Schema from './cma-types'`; more uses in [editing-records.md › `Schema.X` is mandatory on every typed call](editing-records.md#schemax-is-mandatory-on-every-typed-call).
 
 ```ts
 export const Page = {

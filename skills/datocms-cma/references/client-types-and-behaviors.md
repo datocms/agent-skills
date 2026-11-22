@@ -182,7 +182,7 @@ In CLI mode, use `npx datocms cma:docs <resource> <action>`; request a specific 
 
 ### Rate Limit Retry
 
-When `autoRetry` is `true` (the default), the client automatically retries 429 responses with linear incremental backoff. Do not add your own rate-limit retry loop unless you have a very specific reason.
+When `autoRetry` is `true` (the default), the client automatically retries 429 responses with linear incremental backoff (the general request limit only; the daily invitation-e-mail cap returns 429 too and is not fixed by retrying). Do not add your own rate-limit retry loop unless you have a very specific reason.
 
 ### Transient Error Retry
 
@@ -192,9 +192,9 @@ Transient server errors (5xx with `transient: true`) are also retried automatica
 
 | Limit | Value |
 | - | - |
-| Max record size | 300 KB including nested blocks, excluding assets and linked records |
-| Max blocks per record | 500 |
-| Max nested block depth | 5 levels |
+| Max record size | 1 MB (3 MB on Enterprise plans) including nested blocks, excluding assets and linked records |
+| Max blocks per record | 1,000 (3,000 on Enterprise plans) |
+| Max nested block depth | 5 levels (record limits are plan-dependent; `client.publicInfo.find()` returns the project's `blocks_per_item` and `blocks_depth`) |
 | Max upload size | 1 GB per asset |
 | Rate limit | 60 requests per 3 seconds |
 | Bulk operation batch | 200 items per request |

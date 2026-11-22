@@ -80,7 +80,7 @@ CLI lookup: `cma:docs plugins` covers create/update/instances/self/destroy/field
 Operational notes:
 
 - Pass exactly one of `package_name` (marketplace) or `url` (custom) to `client.plugins.create()` — never both.
-- `parameters` is project-specific global configuration; modern plugins define its shape in their code. `parameter_definitions` describes legacy plugins only.
+- `parameters` is project-specific global configuration; modern plugins define its shape in their code. `parameter_definitions` describes legacy plugins only. An API token or OAuth app whose role cannot edit the schema reads `parameters` as `null` (collaborators and roles with schema or CMS-internals access get the object). Never write back a `parameters` value you read through such a credential: `null` overwrites the stored configuration, so omit the attribute or check it is non-null first.
 - `client.plugins.fields(pluginId)` finds fields using that installation. Duplicating a plugin in the CMS does not copy those editor/addon assignments; reassign the intended test fields explicitly.
 - Update `enabled` to disable or re-enable an installation without deleting its configuration. Disabled plugins do not run.
 

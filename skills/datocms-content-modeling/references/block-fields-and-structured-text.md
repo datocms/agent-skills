@@ -26,7 +26,7 @@ Once you've decided something is a block (see `models-vs-blocks.md`), the next q
 
 **`rich_text` with one block type as poor `single_block`.** "Add block" UI produces one thing. Query handles 0-or-1 array. Use `single_block`.
 
-**Blocks recreating native DAST nodes.** Structured Text already has `blockquote`, `code` (with `language`, `highlight`), `list` / `listItem`, `heading`, `thematicBreak`, `link`. No need for `quote_block`, `code_block`, `list_block`, `heading_block`, `divider_block`, `link_block`. Duplicates editor toolbar, eats 500-block budget, two render paths. Use native via editor `nodes` parameter. Block models for _non-native_ shapes DAST doesn't cover — images, galleries, callouts with `tone` enum, embeds. See the [document model](../../datocms-structured-text/references/document-model.md) for exact node rules.
+**Blocks recreating native DAST nodes.** Structured Text already has `blockquote`, `code` (with `language`, `highlight`), `list` / `listItem`, `heading`, `thematicBreak`, `link`. No need for `quote_block`, `code_block`, `list_block`, `heading_block`, `divider_block`, `link_block`. Duplicates editor toolbar, eats the per-record block budget, two render paths. Use native via editor `nodes` parameter. Block models for _non-native_ shapes DAST doesn't cover — images, galleries, callouts with `tone` enum, embeds. See the [document model](../../datocms-structured-text/references/document-model.md) for exact node rules.
 
 **Image/gallery/video blocks with `caption` (or `image_alt` / `image_credit` / `image_label`) sibling fields.** Asset metadata already covers it through upload-level defaults and per-record File/Gallery overrides. Caption → `title` (short) or `custom_data` (rich). Image block = `file` field, optional layout enum (`tone`/`size`/`alignment`); never `file` + `caption` string. See `separation-of-concerns.md` § Don't recreate file/gallery metadata; exact metadata shapes live in `../../datocms-cma/references/uploads.md`.
 
@@ -38,7 +38,7 @@ Once you've decided something is a block (see `models-vs-blocks.md`), the next q
 - `structured_text_inline_blocks` — which block models as inline (`type: "inlineBlock"`) nodes.
 - `structured_text_links` — which models as `itemLink` / `inlineItem` nodes (cascade-strategy fields live here).
 
-`structured_text_blocks` does **not** authorize inline blocks or record links. Wire each. "No embedded blocks" → `[]` not omit.
+`structured_text_blocks` does **not** authorize inline blocks or record links. Wire each. "No embedded blocks" → `[]` not omit. A field without `structured_text_inline_blocks` accepts no inline blocks: any `inlineBlock` is rejected with `VALIDATION_STRUCTURED_TEXT_INLINE_BLOCKS`, so list the inline block model there before writing one.
 
 Full validator shapes and cascade-strategy: `../../datocms-cma/references/schema.md`. Editor parameters (`nodes` / `marks` / `heading_levels`): `field-configuration.md` § structured_text editor parameters.
 
@@ -62,6 +62,8 @@ Modeling-relevant subset only. Full grammar, child rules, and marks: [document m
 - `inlineBlock` = inside prose. Equations, mentions, badges, widgets — flows with text.
 
 "Quote between paragraphs" → `block`. "Stock ticker mid-sentence" → `inlineBlock`.
+
+On write (CMA), `block` / `inlineBlock` `item` is a full block object when the record is created or the block is new; an ID string keeps an existing block and is valid only in the same field and locale of the same record. The API normalizes the document on write (unknown node attributes dropped) and rejects `link` URLs with `javascript:`, `vbscript:` or `data:` schemes (`INVALID_FORMAT`).
 
 **`itemLink` vs `inlineItem`** — both point at record, one has inner text.
 

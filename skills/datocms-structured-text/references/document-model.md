@@ -1,5 +1,14 @@
 # Structured Text document model
 
+## Contents
+
+- Representations
+- Shape and nodes
+- What the API accepts, rejects and rewrites
+- Reference identity
+- Validation and diagnosis
+- Source authority
+
 ## Representations
 
 | Input | Document location | Reference data |
@@ -44,6 +53,16 @@ Never save a CDA envelope as a CMA field or pass raw DAST as a native Slate form
 `block` is root-only; `inlineBlock` lives in paragraph/heading text flow. No native table or image node. Images require an explicit representation, commonly a schema-specific image block.
 
 Default marks: `strong`, `emphasis`, `code`, `underline`, `strikethrough`, `highlight`. Preserve custom marks and paragraph/heading `style` when editing; a project may restrict which values are allowed. External `link` uses `url`; `itemLink` and `inlineItem` use record IDs. Link metadata is an array of `{ id, value }`, not an attribute object.
+
+## What the API accepts, rejects and rewrites
+
+Rules the Content Management API applies when a document is saved; the library validator knows none of them.
+
+- **Three allowlists on the field.** `block` nodes must use a block model listed in the field's `structured_text_blocks` validator, `inlineBlock` nodes one listed in `structured_text_inline_blocks` (a field without that validator accepts no inline block), `itemLink` / `inlineItem` a record of a model listed in `structured_text_links`.
+- **Rejected:** a tree that breaks the table above (`block` inside a paragraph, a `span` under `root`, heading `level` outside 1–6, list `style` other than `bulleted` / `numbered`); link `url` with a `javascript:`, `vbscript:` or `data:` scheme; the same block ID twice in one document; an ID of a record that does not exist in the environment.
+- **Rewritten on save:** adjacent spans with identical marks are merged, empty nodes and attributes the node type does not define are dropped, `meta` entries are deduplicated by `id`. Do not expect the stored tree to equal the sent one node for node.
+- **Empty:** a document with no content (`children: []`, or only empty nodes) is stored as `null`. A single paragraph with one empty span is kept and counts as empty for the `required` validator and for locale fallbacks.
+- **Not enforced:** the field editor's `nodes`, `marks` and `heading_levels` settings limit the dashboard toolbar only. An import must respect them itself when editors are expected to maintain the content.
 
 ## Reference identity
 

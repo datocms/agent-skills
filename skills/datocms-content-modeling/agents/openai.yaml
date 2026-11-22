@@ -1,5 +1,5 @@
 # synced_from_name: datocms-content-modeling
-# synced_from_description_sha256: aeff66ad7db2d47a1cf99bcfa5bab1e3e32beda7e6df8844a207592cfe79dfd2
+# synced_from_description_sha256: 93d71a42131c25372af4c372ae8c38c7a95813cb7c5aabffdeea6db031605994
 interface:
   display_name: "DatoCMS Content Modeling"
   short_description: "Design DatoCMS schemas, field settings and editor UI"

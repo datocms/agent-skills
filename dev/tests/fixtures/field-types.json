@@ -1,0 +1,199 @@
+{
+  "source": "DatoCMS API source (lib/dato/field_type/*.rb, lib/dato/validator/*.rb, lib/dato/editor/*.rb), read 2026-11-22. `required` lists the validators a field of that type cannot be created without. The first editor of each type is its default.",
+  "fieldTypes": {
+    "string": {
+      "validators": ["required", "unique", "length", "format", "enum"],
+      "required": [],
+      "editors": ["single_line", "string_select", "string_radio_group"],
+      "defaultValue": true
+    },
+    "text": {
+      "validators": ["required", "length", "format", "sanitized_html"],
+      "required": [],
+      "editors": ["markdown", "wysiwyg", "textarea"],
+      "defaultValue": true
+    },
+    "slug": {
+      "validators": ["required", "unique", "length", "slug_format", "slug_title_field"],
+      "required": [],
+      "editors": ["slug"],
+      "defaultValue": false
+    },
+    "json": {
+      "validators": ["required"],
+      "required": [],
+      "editors": ["json", "string_multi_select", "string_checkbox_group"],
+      "defaultValue": true
+    },
+    "integer": {
+      "validators": ["required", "number_range"],
+      "required": [],
+      "editors": ["integer"],
+      "defaultValue": true
+    },
+    "float": {
+      "validators": ["required", "number_range"],
+      "required": [],
+      "editors": ["float"],
+      "defaultValue": true
+    },
+    "boolean": {
+      "validators": [],
+      "required": [],
+      "editors": ["boolean", "boolean_radio_group"],
+      "defaultValue": true
+    },
+    "date": {
+      "validators": ["required", "date_range"],
+      "required": [],
+      "editors": ["date_picker"],
+      "defaultValue": true
+    },
+    "date_time": {
+      "validators": ["required", "date_time_range"],
+      "required": [],
+      "editors": ["date_time_picker"],
+      "defaultValue": true
+    },
+    "color": {
+      "validators": ["required"],
+      "required": [],
+      "editors": ["color_picker"],
+      "defaultValue": true
+    },
+    "lat_lon": {
+      "validators": ["required"],
+      "required": [],
+      "editors": ["map"],
+      "defaultValue": true
+    },
+    "seo": {
+      "validators": ["required_seo_fields", "title_length", "description_length", "file_size", "image_dimensions", "image_aspect_ratio"],
+      "required": [],
+      "editors": ["seo"],
+      "defaultValue": false
+    },
+    "video": {
+      "validators": ["required"],
+      "required": [],
+      "editors": ["video"],
+      "defaultValue": false
+    },
+    "file": {
+      "validators": ["required", "extension", "file_size", "image_dimensions", "image_aspect_ratio", "required_alt_title"],
+      "required": [],
+      "editors": ["file"],
+      "defaultValue": false
+    },
+    "gallery": {
+      "validators": ["size", "extension", "file_size", "image_dimensions", "image_aspect_ratio", "required_alt_title"],
+      "required": [],
+      "editors": ["gallery"],
+      "defaultValue": false
+    },
+    "link": {
+      "validators": ["item_item_type", "required", "unique"],
+      "required": ["item_item_type"],
+      "editors": ["link_select", "link_embed"],
+      "defaultValue": false
+    },
+    "links": {
+      "validators": ["items_item_type", "size"],
+      "required": ["items_item_type"],
+      "editors": ["links_select", "links_embed"],
+      "defaultValue": false
+    },
+    "rich_text": {
+      "validators": ["rich_text_blocks", "size"],
+      "required": ["rich_text_blocks"],
+      "editors": ["rich_text"],
+      "defaultValue": false
+    },
+    "single_block": {
+      "validators": ["single_block_blocks", "required"],
+      "required": ["single_block_blocks"],
+      "editors": ["framed_single_block", "frameless_single_block"],
+      "defaultValue": false
+    },
+    "structured_text": {
+      "validators": ["structured_text_blocks", "structured_text_links", "structured_text_inline_blocks", "required", "length"],
+      "required": ["structured_text_blocks", "structured_text_links"],
+      "editors": ["structured_text"],
+      "defaultValue": false
+    }
+  },
+  "validators": {
+    "required": [],
+    "unique": [],
+    "length": ["min", "max", "eq"],
+    "size": ["min", "max", "eq", "multiple_of"],
+    "number_range": ["min", "max"],
+    "date_range": ["min", "max"],
+    "date_time_range": ["min", "max"],
+    "enum": ["values"],
+    "format": ["predefined_pattern", "custom_pattern", "description"],
+    "slug_format": ["predefined_pattern", "custom_pattern", "description"],
+    "slug_title_field": ["title_field_id"],
+    "sanitized_html": ["sanitize_before_validation"],
+    "extension": ["predefined_list", "extensions"],
+    "file_size": ["min_value", "min_unit", "max_value", "max_unit"],
+    "image_dimensions": ["width_min_value", "width_max_value", "height_min_value", "height_max_value"],
+    "image_aspect_ratio": ["min_ar_numerator", "min_ar_denominator", "eq_ar_numerator", "eq_ar_denominator", "max_ar_numerator", "max_ar_denominator"],
+    "required_alt_title": ["alt", "title"],
+    "required_seo_fields": ["title", "description", "image", "twitter_card"],
+    "title_length": ["min", "max"],
+    "description_length": ["min", "max"],
+    "item_item_type": ["item_types", "on_publish_with_unpublished_references_strategy", "on_reference_unpublish_strategy", "on_reference_delete_strategy"],
+    "items_item_type": ["item_types", "on_publish_with_unpublished_references_strategy", "on_reference_unpublish_strategy", "on_reference_delete_strategy"],
+    "structured_text_links": ["item_types", "on_publish_with_unpublished_references_strategy", "on_reference_unpublish_strategy", "on_reference_delete_strategy"],
+    "rich_text_blocks": ["item_types"],
+    "single_block_blocks": ["item_types"],
+    "structured_text_blocks": ["item_types"],
+    "structured_text_inline_blocks": ["item_types"]
+  },
+  "editors": {
+    "single_line": ["heading", "placeholder"],
+    "string_select": ["options"],
+    "string_radio_group": ["radios"],
+    "markdown": ["toolbar"],
+    "wysiwyg": ["toolbar"],
+    "textarea": ["placeholder"],
+    "slug": ["url_prefix", "placeholder"],
+    "json": [],
+    "string_multi_select": ["options"],
+    "string_checkbox_group": ["options"],
+    "integer": ["placeholder"],
+    "float": ["placeholder"],
+    "boolean": [],
+    "boolean_radio_group": ["positive_radio", "negative_radio"],
+    "date_picker": [],
+    "date_time_picker": [],
+    "color_picker": ["enable_alpha", "preset_colors"],
+    "map": [],
+    "seo": ["fields", "previews"],
+    "video": [],
+    "file": [],
+    "gallery": [],
+    "link_select": ["filters"],
+    "link_embed": ["filters"],
+    "links_select": ["filters"],
+    "links_embed": ["filters"],
+    "rich_text": ["start_collapsed"],
+    "framed_single_block": ["start_collapsed"],
+    "frameless_single_block": [],
+    "structured_text": ["nodes", "marks", "heading_levels", "blocks_start_collapsed", "show_links_target_blank", "show_links_meta_editor"]
+  },
+  "requiredEditorParameters": {
+    "string_select": ["options"],
+    "string_radio_group": ["radios"],
+    "string_multi_select": ["options"],
+    "string_checkbox_group": ["options"],
+    "boolean_radio_group": ["positive_radio", "negative_radio"]
+  },
+  "strategies": {
+    "on_publish_with_unpublished_references_strategy": ["fail", "publish_references"],
+    "on_reference_unpublish_strategy": ["delete_references", "fail", "unpublish"],
+    "on_reference_delete_strategy": ["delete_references", "fail"]
+  },
+  "typeConversions": [["string", "text"], ["integer", "float"], ["file", "gallery"], ["link", "links"], ["rich_text", "single_block"]]
+}

@@ -40,8 +40,8 @@ Block fields bounded per-record. Content compounds? Limits push to models.
 
 | Limit | Default | Notes |
 | - | - | - |
-| Max record size | **300 KB** | Nested blocks count. Links/assets don't. Plan-independent; support raises only exceptionally. |
-| Max blocks per record | **500** | All block fields, all nesting. |
+| Max record size | **1 MB** | Nested blocks count. Links/assets don't. Plan-dependent: Enterprise plans 3 MB; legacy per-project plans keep lower limits; read the project's real values from `client.publicInfo.find()`. Support raises only exceptionally. |
+| Max blocks per record | **1,000** | All block fields, all nesting, all locales. Enterprise plans: 3,000 (plan-dependent, see `publicInfo`). |
 | Max nested depth | **5 levels** | Block in block in block... 5 deep. |
 
 Near limit? **Smell**. Fix: promote blocks to linked models. Links don't count toward host size/block budget.
@@ -51,7 +51,7 @@ Near limit? **Smell**. Fix: promote blocks to linked models. Links don't count t
 Block fields localized at _containing field_. `rich_text` with `localized: true` = separate block list per locale.
 
 ```
-total blocks counted toward the 500/record cap
+total blocks counted toward the per-record cap (1,000; 3,000 on Enterprise)
   = sum over (each locale × each block-bearing field × blocks in that locale)
 ```
 
@@ -64,7 +64,7 @@ First three = model-vs-block reframes. Blocks → linked models.
 1. **Move repeating compositions to linked records.** `rich_text` with 50 sections → `Section` model, link to list. Links don't count toward budget.
 2. **Promote page to parent + children.** `Page` record with `links` to `PageSection` records. Each section has own localized fields. Scoped edits, per-section limits.
 3. **Localize coarser.** Only prose needs locale, not whole composition. Localized `structured_text` + non-localized structural blocks = drop multiplier.
-4. **Audit over-decomposition.** `callout_block` (one text), `spacer_block`, `divider_block` — each costs 500 budget. Consolidate. See `content-reuse.md`.
+4. **Audit over-decomposition.** `callout_block` (one text), `spacer_block`, `divider_block` — each spends block budget. Consolidate. See `content-reuse.md`.
 
 ### Diagnosing existing limit failures
 

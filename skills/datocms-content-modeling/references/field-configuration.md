@@ -2,6 +2,8 @@
 
 Every field has two settings beyond `field_type`: **validators** (accepted values) and **appearance** (editor + parameters). Defaults sensible — most fields don't need explicit `appearance`. This reference covers choices that _matter_ for content modeling.
 
+Exact lookup — every validator and editor each field type accepts, with parameters and value shapes: `../../datocms-cma/references/field-types.md`. This file is about which to pick.
+
 > For full TypeScript shape, run `npx datocms cma:docs fields create --expand-types '<TypeName>'` (e.g. `StringFieldValidators`, `FileFieldAppearance`).
 
 ## Contents
@@ -85,7 +87,7 @@ validators: {
 
 ### Force uniqueness — `unique`
 
-Available on `string`, `slug`, `link`. Use for natural keys (slug, SKU, internal codename). DatoCMS enforces uniqueness across whole collection — no scoping.
+Available on `string`, `slug`, `link` (not on fields of block models). Use for natural keys (slug, SKU, internal codename). DatoCMS enforces uniqueness across whole collection — no scoping.
 
 ### Constrain numeric/date ranges
 
@@ -108,7 +110,7 @@ validators: { date_time_range: { min: "2024-01-01T00:00:00Z" } }
 | `image_aspect_ratio: { eq_ar_numerator: 16, eq_ar_denominator: 9 }` | Force editorial consistency (also `min_*` / `max_*`). |
 | `file_size: { max_value: 2, max_unit: "MB" }` | Cap upload size. |
 | `required_alt_title: { alt: true }` | Force alt text — wire on every user-facing image field. Accessibility/SEO depend on it. |
-| `size: { min, max }` (gallery only) | Limit image count. |
+| `size: { min, max }` (gallery) | Limit image count. `gallery` has no `required`: `size: { min: 1 }` makes it mandatory. |
 
 ### Constrain links between records
 
@@ -146,7 +148,7 @@ validators: {
 // rich_text
 validators: { rich_text_blocks: { item_types: [...] }, size: { min: 1, max: 30 } }
 
-// structured_text — see schema.md for the three overlapping validators
+// structured_text — three separate allowlists: blocks, inline blocks, record links
 validators: {
   structured_text_blocks: { item_types: [...] },
   structured_text_inline_blocks: { item_types: [...] },
@@ -155,7 +157,7 @@ validators: {
 }
 ```
 
-`size` caps `rich_text` blocks; `structured_text` has no block-count validator — `length` caps characters only. Limits: `models-vs-blocks.md`.
+`size` caps `rich_text` blocks (and is its only way to require content: `size: { min: 1 }`); `structured_text` has no block-count validator — `length` caps characters only. `structured_text_blocks` and `structured_text_links` are mandatory on every `structured_text` field (`item_types: []` when nothing is allowed); without `structured_text_inline_blocks` no inline block is accepted. Limits: `models-vs-blocks.md`.
 
 ### Sanitize HTML for `text` fields
 
@@ -260,7 +262,7 @@ Both = pick / create referenced record. Difference = **preview density**.
 - `link_select` / `links_select` — compact chips. Linked record = small tag with title + `x`. Right for high-density many-link fields where editors recognize records by name (tags, technologies, categories).
 - `link_embed` / `links_embed` — rich card. Linked record shows presentation image, model name, title, publication status. Right when editor needs visual cue or publication state matters (featured Author, selected Project).
 
-Both offer "Create new…" and "From library" actions, keep linked record as real reference — neither edits upstream inline. Pick by information editor needs to scan.
+Both offer "Create new…" and "From library" actions, keep linked record as real reference — neither edits upstream inline. Pick by information editor needs to scan. Both take an optional `filters` parameter (IDs of saved filters that narrow the picker).
 
 ### `structured_text` editor parameters
 
@@ -282,10 +284,12 @@ appearance: {
 
 Decisions per field:
 
-- **`nodes`** — block-level node types editors can insert. Constrain aggressively. "Article body" = everything; "Quote attribution" = only `link`.
+- **`nodes`** — node types editors can insert: `blockquote`, `code`, `heading`, `link`, `list`, `thematicBreak`, plus `itemLink` and `inlineItem` (record links). Constrain aggressively. "Article body" = everything; "Quote attribution" = only `link`.
 - **`marks`** — inline formatting. Drop `underline` if design doesn't use it.
 - **`heading_levels`** — which `<h2>`–`<h6>` editor can produce. `<h1>` reserved for page; body content = `[2, 3]`.
 - **`show_links_target_blank`** — "open in new tab" toggle. Disable if frontend handles target globally.
+
+These parameters shape the dashboard toolbar only: the API accepts any valid node, mark or heading level, so scripts and imports must respect them on their own.
 
 ### `seo` editor parameters
 

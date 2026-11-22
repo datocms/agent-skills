@@ -125,6 +125,6 @@ Raw methods (`rawCreate`, `rawFind`, `rawList`, ...) hand you wire payload untou
 const records = await client.uploads.references("upload-id", { nested: true });
 ```
 
-Returns records that link to this upload via any File / Gallery / Modular Content / Structured Text field. Use before deleting asset to surface broken links — `destroy()` will succeed even if records still reference upload, and those references will silently render as "missing asset".
+Returns records that link to this upload via any File / Gallery / Modular Content / Structured Text field. Use before deleting asset to surface broken links — `destroy()` is refused with `UPLOAD_IS_CURRENTLY_IN_USE` (listing the records in `items`) while a current or published record version references the asset or the environment itself uses it; update or unpublish those records first, then retry.
 
 Pass `nested: true` if you need full block payloads in returned records (page-cap-30 rule from `references/filtering-and-pagination.md` applies).

@@ -1,101 +1,176 @@
-# Schema: Models, Fields, and Fieldsets
+# Schema: models, block models, fields, fieldsets
 
-Models define structure. Fields define attributes. Fieldsets group fields visually.
+How to create and change the schema through the CMA, and the rules the API enforces. What each field type stores, every validator and every editor with its parameters: `references/field-types.md`.
 
-> In CLI mode, endpoint shapes / payloads / TS signatures: `npx datocms cma:docs {itemTypes|fields|fieldsets} <action>` (add `--expand-types '*'` for full TS definitions). Only what docs don't carry below.
+> In CLI mode, endpoint shapes / payloads / TS signatures: `npx datocms cma:docs {itemTypes|fields|fieldsets} <action>` (add `--expand-types '*'` for full TS definitions).
 
 ## Contents
 
 - Build order: model → fields → meta-relationships
+- Worked example: a model with blocks and Structured Text
+- Model settings
 - Block models: a constrained subset
+- Fields: create, update, convert, delete
+- Fieldsets
 - Singletons auto-create their record
-- Validator payload gotchas
 - Reference-cascade strategies (the non-obvious part of link/structured-text validators)
-- Structured-text: three overlapping validators, three roles
-- Slug auto-fill
-- Localized defaults take a locale-keyed object
 - Schema mutations are async jobs
 - Impact analysis before deleting
-- Editor appearance — defaults vs explicit
 
 ## Build order: model → fields → meta-relationships
 
 Many model attributes are **field references**: `title_field`, `image_preview_field`, `excerpt_field`, `presentation_title_field`, `presentation_image_field`, `ordering_field`. Can't set on `itemTypes.create` — fields don't exist yet. Order that always works:
 
-1. `itemTypes.create({ name, api_key, ... })` — without field-relationship attributes.
-2. `fields.create(model.id, { ... })` — for each field, any order.
+1. Block models first (a field's block validator needs their IDs), then models: `itemTypes.create({ name, api_key, ... })` — without field-relationship attributes.
+2. `fields.create(model.id, { ... })` — for each field. Create a `string` field before the `slug` field that derives from it, and linked models before the `link` fields that point to them.
 3. `itemTypes.update(model.id, { title_field: { id: titleField.id, type: "field" }, ... })` — wire up relationships now that field IDs exist.
 
-Skipping step 3 is common mistake when scripting migrations: model created and populated but editor UI lacks title preview / SEO fallbacks because nothing wired.
+The first `string` field of a model becomes its `title_field` and `presentation_title_field` automatically, and the first `file` field its `image_preview_field` and `presentation_image_field`; step 3 is for everything else (`excerpt_field`, `ordering_field`, a different title).
 
 Automatic order: `ordering_field` or `ordering_meta` requires `ordering_direction` (`"asc"` / `"desc"`; newest first = `"desc"`) in the same call — API rejects either without the other and reports the error on the ordering attribute, not the direction.
 
 Display order: `fields.update(fieldId, { position, fieldset: { id, type: "fieldset" } | null })` (also on `fields.create`; `fieldset` moves field in/out of fieldset, `null` = top level) and `fieldsets.update(fieldsetId, { position })`. No `itemTypes.reorderFieldsAndFieldsets` (only private, deprecated `rawReorderFieldsAndFieldsets`).
 
+## Worked example: a model with blocks and Structured Text
+
+```ts
+// 1. Block model and its fields (no localized fields, no fieldsets inside blocks)
+const cta = await client.itemTypes.create({ name: "CTA", api_key: "cta", modular_block: true });
+await client.fields.create(cta.id, {
+  label: "Label", api_key: "label", field_type: "string",
+  validators: { required: {}, length: { max: 40 } },
+});
+await client.fields.create(cta.id, {
+  label: "Style", api_key: "style", field_type: "string",
+  validators: { required: {}, enum: { values: ["primary", "secondary"] } },
+  appearance: {
+    editor: "string_select",
+    parameters: { options: [{ label: "Primary", value: "primary" }, { label: "Secondary", value: "secondary" }] },
+    addons: [],
+  },
+});
+
+// 2. Model, then fields
+const article = await client.itemTypes.create({ name: "Article", api_key: "article", draft_mode_active: true });
+const title = await client.fields.create(article.id, {
+  label: "Title", api_key: "title", field_type: "string",
+  validators: { required: {} },
+});
+await client.fields.create(article.id, {
+  label: "Slug", api_key: "slug", field_type: "slug",
+  validators: { required: {}, unique: {}, slug_title_field: { title_field_id: title.id }, slug_format: { predefined_pattern: "webpage_slug" } },
+});
+await client.fields.create(article.id, {
+  label: "Body", api_key: "body", field_type: "structured_text",
+  validators: {
+    structured_text_blocks: { item_types: [cta.id] },        // required
+    structured_text_links: { item_types: [article.id] },     // required ([] = no record links)
+    structured_text_inline_blocks: { item_types: [] },       // optional; omitted or [] = no inline blocks
+  },
+  appearance: {
+    editor: "structured_text",
+    parameters: { heading_levels: [2, 3], marks: ["strong", "emphasis", "code"] },
+    addons: [],
+  },
+});
+await client.fields.create(article.id, {
+  label: "Sections", api_key: "sections", field_type: "rich_text", // Modular Content
+  validators: { rich_text_blocks: { item_types: [cta.id] }, size: { max: 20 } },
+});
+```
+
+## Model settings
+
+Create: `client.itemTypes.create({ name, api_key, ...settings })`. All settings default to `false` / `null` unless noted.
+
+| Setting | Rule |
+| - | - |
+| `name`, `api_key` | Required, unique. `api_key`: lowercase, starts with a letter, 2+ characters, no `__`, no trailing `_`, no `_` right before a digit, and **singular** (`blog_post`; `blog_posts` → `VALIDATION_PLURAL`). Reserved: `id`, `find`, `site`, `environment`, `available_locales`, `item_types`, `single_instance_item_types`, `collection_item_types`, `items_of_type`, `model` |
+| `modular_block` | `true` = block model. Fixed at creation: a model cannot become a block model or the reverse |
+| `singleton` | One record only. Not with `sortable`, `tree` or an ordering. Turning it on fails with `MULTIPLE_INSTANCES_OF_SINGLETON` when the model has more than one record |
+| `sortable` / `tree` | Manual ordering / parent-child hierarchy. Mutually exclusive with `ordering_field` and `ordering_meta` |
+| `ordering_field` + `ordering_direction` | Default sort by a field of type `string`, `date`, `date_time`, `integer`, `float`, `boolean`; direction `"asc"` \| `"desc"` required |
+| `ordering_meta` + `ordering_direction` | Default sort by `created_at`, `updated_at`, `first_published_at` or `published_at`; not together with `ordering_field` |
+| `draft_mode_active` | Records have a draft and a published version. Default: the environment's setting (normally `true`) |
+| `draft_saving_active` | Invalid records can be saved as drafts; validators are enforced at publish. Needs `draft_mode_active` |
+| `all_locales_required` | Every locale must be present in every localized field. Default `false` through the CMA |
+| `collection_appearance` | `"compact"` (default) or `"table"` |
+| `inverse_relationships_enabled` | Exposes `_allReferencing…` queries in the CDA |
+| `hint` | Text shown to editors |
+| `title_field` | SEO title fallback; a `string` field |
+| `image_preview_field` | SEO image fallback; `file` or `gallery` |
+| `excerpt_field` | SEO description fallback; `string`, `text` or `structured_text` |
+| `presentation_title_field` | Title shown in the dashboard; `string`, `text`, `structured_text`, `slug`, `date`, `date_time`, `integer`, `float`, `color`, `lat_lon`, `video`, `link`, `single_block` |
+| `presentation_image_field` | Image shown in the dashboard; `file`, `gallery`, `link`, `video`, `color`, `date`, `date_time`, `lat_lon`, `single_block` |
+| `workflow` | Relationship to a workflow (plan feature: `PLAN_UPGRADE_REQUIRED`) |
+
+Field relationships (`{ id, type: "field" }`) must point to fields of the same model (`FIELD_DOES_NOT_BELONG_TO_ITEM_TYPE`).
+
 ## Block models: a constrained subset
 
-Block model is model with `modular_block: true`, but several flags not legal: `sortable`, `tree`, `draft_mode_active`, `draft_saving_active`, `singleton`, `inverse_relationships_enabled` must all be `false`. API rejects create otherwise. Reason: blocks are **inline children** of parent records, not standalone — no independent publication state, no list page, no tree position.
+Block model is model with `modular_block: true`. Blocks are **inline children** of a record, not standalone content, so:
 
-Block records never created via `client.items.create` directly; appear inside parent record's Modular Content / Single Block / Structured Text field payload (see `references/editing-records.md`).
+- These must stay `false` / unset: `singleton`, `sortable`, `tree`, `draft_mode_active`, `draft_saving_active`, `inverse_relationships_enabled`, `title_field`, `image_preview_field`, `excerpt_field`. API rejects create otherwise.
+- Their fields cannot be `localized` (the field that contains the block is what gets localized), cannot use the `unique` validator, cannot sit in a fieldset, cannot enable `deep_filtering_enabled`. Everything else is allowed, including block fields of their own (nesting) and link fields to records.
+- A block model can only be listed in block validators (`rich_text_blocks`, `single_block_blocks`, `structured_text_blocks`, `structured_text_inline_blocks`); a regular model only in link validators (`item_item_type`, `items_item_type`, `structured_text_links`).
+- Block records never created via `client.items.create` directly; appear inside parent record's Modular Content / Single Block / Structured Text field payload (see `references/editing-records.md`).
+- Deleting a block model that a field still allows fails with `MODULAR_BLOCK_IN_USE`: remove it from those validators first (which destroys its existing blocks).
 
 `itemTypes.list()` returns regular models and block models mixed; filter on `m.modular_block` when you only want one kind.
+
+## Fields: create, update, convert, delete
+
+`client.fields.create(modelIdOrApiKey, { label, api_key, field_type, ... })`. Required: `label` (unique within the model), `api_key`, `field_type`. Optional: `localized`, `validators`, `appearance`, `hint`, `default_value`, `position`, `fieldset`, `deep_filtering_enabled`, `content_link_enabled`.
+
+Which validators and editors a type accepts, their exact names and parameters, value shapes and `default_value` support are in `references/field-types.md`: look them up there instead of inferring them. The rules that most often reject a field:
+
+- Requiredness is a validator, not a top-level field property: `validators: { required: {} }`, or `validators: {}` for an optional field. Do not send `required: false`. Types without `required`: `boolean` (no validators at all), `gallery`, `links`, `rich_text` (use `size: { min: 1 }`), `seo` (use `required_seo_fields`).
+
+- `link`, `links`, `rich_text`, `single_block` and `structured_text` need their item-type validators at creation. `structured_text` needs both `structured_text_blocks` and `structured_text_links`, and accepts inline blocks only through `structured_text_inline_blocks`.
+
+- `appearance`, when sent, carries `editor`, `parameters` and `addons` together (`{}` and `[]` when empty); unknown parameters are rejected. Omit it to get the type's default editor.
+
+- Names often confused: `length` (characters) vs `size` (number of items), `number_range` (not `numeric_range`), `rich_text_blocks` / `single_block_blocks` (block allowlists).
+
+- For validator and editor **choices** rather than payload mechanics, load `../../datocms-content-modeling/references/field-configuration.md`.
+
+- `api_key` format: same as models, without the singular rule. Reserved: `position`, `is_valid`, `id`, `type`, `updated_at`, `created_at`, `attributes`, `fields`, `item_type`, `is_singleton`, `seo_meta_tags`, `parent_id`, `parent`, `children`, `status`, `meta`, `eq`, `neq`, `all_in`, `any_in`, `creator`, `exists` (`VALIDATION_RESERVED`).
+
+- `hint` accepts a little HTML: `a`, `b`, `i`, `em`, `strong`, `u`, `code`, `br`.
+
+- `deep_filtering_enabled`: only on `rich_text`, `single_block`, `structured_text` fields of regular models. `content_link_enabled` (default `true`) can be turned off only on `string`, `text`, `structured_text`.
+
+- **Update:** `validators` replaces the whole object (send all of them); `appearance.parameters` merge while the editor stays the same.
+
+- **Changing `field_type`:** only `string`↔`text`, `integer`↔`float`, `file`↔`gallery`, `link`↔`links`, `rich_text`↔`single_block`. The request ignores every other attribute, and validators and appearance are reset (`rich_text` → `single_block` keeps the first block only). `string` → `text` is refused with `USED_AS_SLUG_SOURCE` while a slug derives from it. Any other change of type: create a new field and migrate the values.
+
+- **Toggling `localized`:** `false` → `true` copies the current value into every locale; `true` → `false` keeps the main locale's value and drops the others.
+
+- **Narrowing an allowlist** (removing a model from `item_types` of a link or block validator) deletes the existing links to that model or destroys the existing blocks of it.
+
+- Tightening validators does not reject: existing records are re-validated in the background and may become invalid (they then fail on their next save or publish).
+
+- **Deleting a field** deletes its values in every record. Fork a sandbox first (see `references/environments.md`).
+
+## Fieldsets
+
+`client.fieldsets.create(modelId, { title, hint?, position?, collapsible?, start_collapsed? })`. `title` unique per model; `start_collapsed` needs `collapsible: true`; positions share one sequence with the fields outside fieldsets. Not available on block models (`VALIDATION_NOT_ALLOWED_ON_BLOCK_MODELS`). Put a field in one with `fieldset: { id, type: "fieldset" }`.
 
 ## Singletons auto-create their record
 
 Setting `singleton: true` on model causes DatoCMS to **lazily auto-create** singleton record. After create, `model.meta.has_singleton_item` is `false` and `model.singleton_item` is `null` until something (UI visit, API call) materializes it. Once exists, `singleton_item` points at record id. To pre-populate from script, just `items.create({ item_type: { id, type: "item_type" } })` — API enforces "exactly one" for you.
-
-## Validator payload gotchas
-
-Requiredness is a validator, not a top-level field property: use `validators: { required: {} }` for a required field, or `validators: {}` for a new optional field. Do not send `required: false` to `fields.create()`.
-
-`field.validators` is a per-`field_type` map — never copy a validator set between field types. Use the selected mode's documentation for field methods or the [field doc § Validators](https://www.datocms.com/docs/content-management-api/resources/field#validators) for the authoritative keys and exact shapes. For validator and editor **choices** rather than payload mechanics, load `../../datocms-content-modeling/references/field-configuration.md`.
-
-The names most often confused are `length` (characters on string/text/slug/structured text) vs `size` (linked records or Modular Content blocks), `number_range` (not `numeric_range`), and the block allowlists `rich_text_blocks` / `single_block_blocks`. The non-obvious reference-cascade, Structured Text, slug, and localized-default mechanics remain below.
 
 ## Reference-cascade strategies (the non-obvious part of link/structured-text validators)
 
 `item_item_type` (single link), `items_item_type` (multiple links), and `structured_text_links` validators all share three cascade-strategy fields beyond `item_types` allowlist:
 
 - **`on_publish_with_unpublished_references_strategy`** — `"fail"` (refuse publish; default) | `"publish_references"` (auto-publish dependencies). Use latter only when model graph genuinely cascades top-down ("Page" publishing should publish embedded "Author").
-- **`on_reference_unpublish_strategy`** — `"fail"` | `"unpublish"` | `"delete_references"`. Behavior when upstream record unpublished while referrer still published. `"delete_references"` removes reference from referrer (`null` for single, dropped from array for multiple).
-- **`on_reference_delete_strategy`** — `"fail"` | `"delete_references"` (default). On upstream delete: `"fail"` blocks it; `"delete_references"` unlinks referrers (never deletes them; fails if field `required`).
+- **`on_reference_unpublish_strategy`** — `"delete_references"` (default) | `"fail"` | `"unpublish"`. Behavior when upstream record unpublished while referrer still published. `"delete_references"` removes reference from referrer (`null` for single, dropped from array for multiple).
+- **`on_reference_delete_strategy`** — `"delete_references"` (default) | `"fail"`. On upstream delete: `"fail"` blocks it; `"delete_references"` unlinks referrers (never deletes them; fails if field `required`).
 
-Pick deliberately — omitted delete strategy silently unlinks. `"fail"` safe for editorial content; `"delete_references"` when referrer should gracefully degrade.
+Pick deliberately — the defaults silently unlink. `"fail"` safe for editorial content; `"delete_references"` when referrer should gracefully degrade. In Structured Text, `delete_references` rewrites the document: an `itemLink` is replaced by its text, an `inlineItem` is dropped.
 
-## Structured-text: three overlapping validators, three roles
-
-`structured_text` field actually accepts three `*_blocks`-shaped validators that look similar but address different parts of DAST tree:
-
-- **`structured_text_blocks`** — allowlist for **block** nodes (block-level, between paragraphs).
-- **`structured_text_inline_blocks`** — allowlist for **inlineBlock** nodes (inline within paragraphs/headings; mid-flow content like badges, mentions, equations).
-- **`structured_text_links`** — allowlist for **itemLink** / **inlineItem** nodes (record references rendered as link or chip), and where cascade-strategy fields live.
-
-Native nodes (`heading`, `list`, `code`, `blockquote`, `link`, `thematicBreak`) and marks are editor settings, not validators: `appearance.parameters.nodes` / `marks` (omitted = all). To enable one, update appearance with the current list plus the new entry — never replace the list or model it as a block.
-
-Setting `structured_text_blocks` does not implicitly authorize inline blocks or links — wire each to models that should be permitted. For "no embedded blocks" structured text, set `structured_text_blocks: { item_types: [] }` (and same for inline / links). For DAST construction and node rules, load [document model](../../datocms-structured-text/references/document-model.md); for Markdown/HTML sources, load [conversion](../../datocms-structured-text/references/conversion.md).
-
-## Slug auto-fill
-
-`slug_title_field` validator binds slug field to string field for editor auto-generation:
-
-```ts
-validators: {
-  slug_title_field: { title_field_id: titleField.id },
-  slug_format: { predefined_pattern: "webpage_slug" },
-}
-```
-
-Without `slug_title_field`, slug is editor-typed only. With it, editor pre-fills and updates from bound title until user manually edits slug. Useful in migration scripts that recreate models with editor UX users expect.
-
-## Localized defaults take a locale-keyed object
-
-For localized field, `default_value` is `{ [locale]: value }`, not bare value:
-
-```ts
-default_value: { en: "Untitled", it: "Senza titolo" }
-```
-
-Passing bare value on `localized: true` field is silently accepted and then doesn't apply (or yields odd behavior) — TypeScript's discriminated union catches this when you've passed right `localized` literal.
+Native Structured Text nodes (`heading`, `list`, `code`, `blockquote`, `link`, `thematicBreak`) and marks are editor settings, not validators: `appearance.parameters.nodes` / `marks` / `heading_levels` (omitted = all). To enable one, update appearance with the current list plus the new entry — never replace the list or model it as a block.
 
 ## Schema mutations are async jobs
 
@@ -107,9 +182,3 @@ Passing bare value on `localized: true` field is silently accepted and then does
 - `fields.referencing(modelId)` — same shape but at field granularity.
 
 Both are read-only queries. Run as pre-check; destroy itself does not surface impact.
-
-## Editor appearance — defaults vs explicit
-
-Each `field_type` has a default editor (`string` → `single_line`, `text` → `markdown`, `link` → `link_select`, single block → `framed_single_block`, modular content → `rich_text`). Omitting `appearance` uses that default — right for the common case. Set it only to override (e.g. `string_select` for a string with a fixed `enum`, `wysiwyg`/`textarea` for text) or to wire a plugin editor/addons.
-
-When you set `appearance`, supply all three keys: `editor`, `parameters`, and `addons`. Parameters are editor-specific and sometimes required, so never copy them between editors; use the selected mode's documentation for field methods or the [field doc § Specifying the appearance](https://www.datocms.com/docs/content-management-api/resources/field#specifying-the-appearance) for the exact shape. Plugin editors additionally require `field_extension`; addon entries use `{ id, field_extension, parameters }`. For guidance on choosing an editor, load `../../datocms-content-modeling/references/field-configuration.md`.

@@ -21,7 +21,7 @@ const writeEvent = (route = "mcp") => ({ kind: "execution", route, name: "script
 
 test("shipped localized mapper keeps response narrowing and creates a valid partial block update", () => {
   const reference = readFileSync(new URL("../../../skills/datocms-cma/references/editing-records.md", import.meta.url), "utf8");
-  const example = reference.split("## Chaining Structured Text helpers")[1].split("```ts\n")[1].split("```")[0];
+  const example = reference.split("Structured Text: keep the nested response type on the input")[1].split("```ts\n")[1].split("```")[0];
   const source = `
     import { buildBlockRecord, type FieldValueInRequest } from '@datocms/cma-client-node';
     import { mapNodes, isBlockWithItemOfType } from 'datocms-structured-text-utils';
@@ -662,7 +662,7 @@ test("MCP rejects never casts used to escape request types", () => {
 
 test("shipped typed inspection captures nested spans, custom marks and nullable asset values", () => {
   const reference = readFileSync(new URL("../../../skills/datocms-cma/references/editing-records.md", import.meta.url), "utf8");
-  const example = reference.split("For typed inspection,")[1].split("```ts\n")[1].split("```")[0];
+  const example = reference.split("Typed snapshots of a Structured Text locale")[1].split("```ts\n")[1].split("```")[0];
   for (const variant of [undefined, "rich"]) {
     const original = initialRecord({variant});
     const result = execute(`

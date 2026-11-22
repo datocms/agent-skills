@@ -4,6 +4,8 @@ Covers roles, API tokens, users, invitations, and SSO.
 
 Consult endpoint documentation for payloads, permission enums, inheritance and environment scoping. Resources here: `roles`, `accessTokens`, `users`, `siteInvitations`, `ssoUsers`, `ssoGroups`, `ssoSettings`. This file carries operational advice.
 
+Invitation e-mails (`siteInvitations` create and resend) are capped per project owner per 24 hours: 20 on free plans, 300 on paid ones. Past the cap the API answers 429 `RATE_LIMIT_EXCEEDED` with `X-RateLimit-Reset` set to the seconds left in the window; `autoRetry` cannot fix it, so stop and report instead of looping.
+
 > In CLI mode: `npx datocms cma:docs <resource> [<action>]` (add `--expand-types '*'` for full TS definitions).
 
 ## Roles

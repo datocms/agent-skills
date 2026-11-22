@@ -1,17 +1,20 @@
 ---
 name: datocms-cma
 description: >-
-  Manage DatoCMS records, uploads, and project automation through the Content
-  Management API (CMA). Use for content reads/edits, publish/unpublish, bulk
-  imports/exports, CSV scripts, localization, Structured Text and block edits,
-  assets, roles/tokens, webhooks, scheduling, environment operations, and typed
-  Node.js/TypeScript CMA scripts. Includes short follow-ups such as "publish
-  them" or "fix those slugs", token/OAuth setup before content operations, and
-  model/field changes needing a migration-versus-direct decision or embedded
-  in CMA automation. Works with the CLI or an available DatoCMS MCP; neither
-  MCP installation nor local execution is assumed. Route schema-inspection-only
-  requests, versioned migrations, and standalone CLI configuration to `datocms-cli`, GraphQL reads to `datocms-cda`, and
-  frontend or plugin code to their dedicated skills.
+  Read and write DatoCMS content and schema through the Content Management API
+  (CMA): records, blocks and nested blocks, Structured Text, localized fields,
+  uploads, publish/unpublish, bulk imports/exports, CSV scripts; models, block
+  models, fields, every field type with its validators and editors
+  (presentations); roles/tokens, webhooks, scheduling, environments; API limits
+  and error codes; typed Node.js/TypeScript CMA scripts. Includes short
+  follow-ups such as "publish them" or "fix those slugs", token/OAuth setup
+  before content operations, and model/field changes needing a
+  migration-versus-direct decision. Works with the CLI or an available DatoCMS
+  MCP; neither MCP installation nor local execution is assumed. Route
+  schema-inspection-only requests, versioned migrations, and standalone CLI
+  configuration to `datocms-cli`, GraphQL reads to `datocms-cda`, modeling
+  advice to `datocms-content-modeling`, and frontend or plugin code to their
+  dedicated skills.
 ---
 
 # DatoCMS Content Management API Skill
@@ -52,7 +55,7 @@ Inspect the relevant models, fields, validators, and current record values befor
 
 | Task | Approach |
 | - | - |
-| Destructive schema change: drop fields/models, lossy field-type changes, or `bulk_destroy` records | **datocms-cli** migration against a forked sandbox first. Never execute against primary without explicit, repeated user confirmation. |
+| Destructive schema change: drop fields/models, lossy field-type changes, narrowing a link or block validator's `item_types`, or `bulk_destroy` records | **datocms-cli** migration against a forked sandbox first. Never execute against primary without explicit, repeated user confirmation. |
 | Reversible schema change: add/rename fields or models, change validators, reorder fieldsets | Ask whether the user wants a reviewable migration or direct sandbox mutation unless already decided. Prefer migrations when the repo uses them or work is on a secondary branch; direct mutation is valid for quick sandbox iteration. |
 | Explicit one-off or migration opt-out | Honor direct mutation unless the change is destructive. Do not repeatedly suggest migrations. |
 | Content operation: publish/unpublish, individual record deletion, field edits, bulk value updates, upload metadata | Use the selected route; no migration needed. Preserve the authorized records, fields, locales, and publication state. |
@@ -60,19 +63,40 @@ Inspect the relevant models, fields, validators, and current record values befor
 
 Load sibling guidance yourself when available; do not bounce the user between skills. If a local deliverable cannot be produced here, explain the missing local capability rather than silently replacing it with a remote mutation.
 
-## 3. Load only the relevant workflow
+## 3. Rules that reject writes or lose data
+
+The API is strict where guesses usually go wrong. Hold these before building anything; the reference named in each group has the full rule and the exact names.
+
+**Schema** — `references/schema.md`; every field type, validator and editor with parameters in `references/field-types.md`.
+
+- Modular Content's `field_type` is `rich_text`. `link`, `links`, `rich_text`, `single_block` and `structured_text` fields are rejected without their item-type validator; `structured_text` needs `structured_text_blocks` and `structured_text_links`, and allows inline blocks only when `structured_text_inline_blocks` lists them.
+- Validators and editors are per field type and their names and parameters are exact (`string_select` takes `options`, `string_radio_group` takes `radios`; `boolean`, `gallery`, `links` and `rich_text` have no `required`). Look them up, don't infer them. `appearance` always carries `editor`, `parameters` and `addons`.
+- `fields.update` replaces the whole `validators` object. Removing a model from a link or block validator deletes the existing links or blocks. `field_type` converts only within five pairs and resets validators and appearance.
+- Model `api_key` must be singular; no key may have `_` right before a digit. Block models cannot have localized fields, `unique`, or fieldsets, and a model never converts to or from a block model.
+
+**Content** — values per field type and limits in `references/records.md`; blocks, Structured Text and locales in `references/editing-records.md`.
+
+- Odd value shapes: `json` is a JSON string, `color` is `{ red, green, blue, alpha }` 0–255, `file` is `{ upload_id, ... }`, a `null` string reads back as `""`, slugs are never generated by the API.
+- A field you send replaces its whole value: blocks you leave out are deleted, and so are locales you leave out. In a block field an ID string keeps a block, `{ id, ...changes }` edits it, an object with `item_type` adds one. When creating a record every block is an object. A block ID cannot move to another field, locale or record.
+- All localized fields of a record share one set of locales: adding a locale means sending every localized field.
+- Per record: 1,000 blocks, 5 block levels, 1 MB by default (`TECHNICAL_LIMIT_REACHED`; the project's real limits come from `client.publicInfo.find()`).
+- Structured Text: `block` nodes only under `root`, `inlineBlock` inside text. The API normalizes the document it stores and does not enforce the editor's `nodes` / `marks` / `heading_levels`.
+- `update` never publishes. Blocks cannot be written, published or deleted on their own, only through their record.
+- Rejections are `INVALID_FIELD` errors: `details.field` is the path (`sections.0.ctas.0.title`), `details.code` the reason (`VALIDATION_REQUIRED`, `INVALID_FORMAT`…).
+
+## 4. Load only the relevant workflow
 
 Method documentation supplies API shapes; these references supply DatoCMS editing workflows and gotchas. Consult current method details only for the operation being built. If the selected tool already returned the relevant guidance, reuse it instead of loading a duplicate. Do not preload every reference or reread unchanged references on follow-ups.
 
 | Task | Reference |
 | - | - |
-| Record lifecycle, publication, references | `references/records.md` |
+| Record lifecycle, publication, versions, value of each field type, per-record limits, write errors | `references/records.md` |
+| Modular Content, Single Block, nested blocks, Structured Text record create/update/backfill | `references/editing-records.md`. Its sections stand alone: block edits need it up to "Single block", Structured Text edits the three "Structured text" sections, and the typing and verification sections only when a type error or a preservation check calls for them. Pure DAST work (conversion, deep document questions): `../datocms-structured-text/references/document-model.md` plus its editing or conversion reference. |
+| Create or change models, block models, fields, fieldsets | `references/schema.md` |
+| Which validators and editors a field type accepts, their parameters, `default_value`, `api_key` rules | `references/field-types.md` |
 | Uploads and asset metadata | `references/uploads.md` |
-| Direct schema changes | `references/schema.md` |
 | Filtering (including creator audits), querying, collection pagination | `references/filtering-and-pagination.md`; check filter operators here even when the installed SDK accepts a broad object. |
 | Localized fields and locale backfills | `references/localization.md`; also `references/editing-records.md` when adding or backfilling a locale. |
-| Modular Content, Single Block, block traversal | `references/editing-records.md` |
-| Structured Text record create/update/backfill | `references/editing-records.md` for CMA adaptation; `../datocms-structured-text/references/document-model.md` plus its editing or conversion reference for the DAST operation. |
 | Environment operations | `references/environments.md` |
 | Roles, tokens, collaborators | `references/access-control.md` |
 | Requested migration scripts | `references/migration-patterns.md` plus **datocms-cli** migration guidance |
@@ -83,7 +107,7 @@ Method documentation supplies API shapes; these references supply DatoCMS editin
 
 Combine references only when the task spans their subjects: for example, a localized Structured Text edit needs localization and editing guidance. Don't load migration or type-generation guidance merely because a content operation uses a script.
 
-## 4. Build the operation
+## 5. Build the operation
 
 - Use the selected runtime's authenticated client, helper availability, and script form. Do not transplant CLI globals, imports, or file-mode conventions into another runtime. For client construction, read credentials from environment variables, never chat or hardcoded strings; use the least privileges needed and explicitly target the sandbox when applicable.
 - Prefer the simplified API. Use raw methods only when the task needs JSON:API payloads or relationship metadata. Use `listPagedIterator()` with `for await...of` for complete collection traversal when available. For `items` with `nested: true`, keep `perPage` ≤ 30 (default): API rejects larger pages; iterator won't lower it. Nested records: own fields flattened (`record.title`), embedded blocks keep theirs under `block.attributes`.
@@ -93,7 +117,7 @@ Combine references only when the task spans their subjects: for example, a local
 - Handle API errors at the operation boundary using the selected runtime's facilities, including `ApiError` and `TimeoutError` when exposed. Report authentication and permission failures accurately; do not bypass them through another route. A timeout or missing write response has an uncertain outcome: inspect resulting state before any retry, and never replay that write through another route or tool.
 - For long-running scripts, report progress and final totals using the selected runtime's output facilities.
 
-## 5. Verify and report
+## 6. Verify and report
 
 Verify against the same project, environment, and authorized scope. Compare saved field/node values with an independent snapshot of the original read, using deep equality for objects; object identity and serialized update payloads cannot establish preservation. Nested reads expand block IDs and partial updates into full objects. Check requested changes, unrelated content, locales, links, and publication state. Publishing requires separate authorization. Validate script types, helpers, pagination, and error handling against the chosen runtime contract.
 

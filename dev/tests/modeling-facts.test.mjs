@@ -38,12 +38,13 @@ test('native DAST code attributes named in the guide pass the real validator', (
   }
 });
 
-test('record limits are plan-independent', () => {
-  // docs/content-modelling/record-block-limits-and-byte-size-limits: limits "apply regardless of your
-  // DatoCMS pricing plan"; support may raise them only "in exceptional cases ... after a technical evaluation".
+test('record limits are plan-dependent and readable through publicInfo', () => {
+  // api item_limits.rb reads the limits from the plan (PerOwnerPricing::Limit); GET /public-info exposes blocks_per_item and blocks_depth.
+  // Public technical-limits docs: 1 MB (3 MB Enterprise), 1,000 blocks (3,000 Enterprise), 5 levels.
   const row = reference('models-vs-blocks.md').split('\n').find((line) => line.startsWith('| Max record size'));
   assert.doesNotMatch(row, /higher on some plans/i);
-  assert.match(row, /plan-independent/i);
+  assert.match(row, /plan-dependent/i);
+  assert.match(row, /publicInfo\.find\(\)/);
 });
 
 test('rich_text size counts blocks; structured_text length caps characters, not blocks', () => {
