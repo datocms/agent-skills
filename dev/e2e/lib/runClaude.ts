@@ -4,12 +4,13 @@ import {
 	mkdirSync,
 	mkdtempSync,
 	readFileSync,
+	realpathSync,
 	rmSync,
 	symlinkSync,
 	writeFileSync,
 } from "node:fs";
 import { cp } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { delimiter, dirname, join, resolve } from "node:path";
 import { cliLauncherSource } from "./cliLauncher.js";
 import {
@@ -34,6 +35,62 @@ export {
 	type RunAgentResult as RunClaudeResult,
 	type ToolCallRecord,
 };
+
+/**
+ * Hosts a case may reach: the DatoCMS APIs, its asset CDN and the storage that receives uploads. Everything else is
+ * refused by the sandbox proxy, so an actor cannot fetch another CLI or send what it reads anywhere else.
+ */
+const ALLOWED_HOSTS = (
+	process.env.E2E_ALLOWED_HOSTS ??
+	"site-api.datocms.com,graphql.datocms.com,www.datocms-assets.com,*.datocms-assets.com,*.amazonaws.com,*.r2.cloudflarestorage.com"
+)
+	.split(",")
+	.map((host) => host.trim())
+	.filter(Boolean);
+
+/**
+ * Settings passed to the actor's session with --settings (a settings file in its folder would be the actor's to
+ * edit, and Claude Code ignores the allow rules of a folder nobody trusted). An actor with a shell and free rein reads whatever it finds: in a probe
+ * with a failing CLI, actors listed the operator's home directory and printed a credentials file from it. So Bash
+ * runs in Claude Code's sandbox, the home directory is unreadable and unwritable apart from this checkout's
+ * `node_modules` (the CLI lives there), the node installation and the CLI's own data folder (`cma:script` keeps its
+ * lock and its script workspace there, and waits two minutes for the lock before failing when it cannot write it;
+ * credentials live elsewhere), and nothing may leave the sandbox to retry. The write tools are allowed in the
+ * temporary folder only: a deny rule on the home directory would also take the data folder away from the shell.
+ * `dev/e2e/routing/claude-tasks.mjs` carries the same settings for its own actors: change the two together.
+ */
+export function cliDataDir(home = homedir()): string {
+	if (process.platform === "darwin") return join(home, "Library/Application Support/datocms-cli");
+	return join(process.env.XDG_DATA_HOME ?? join(home, ".local/share"), "datocms-cli");
+}
+
+export function actorSettings(home = homedir()): Record<string, unknown> {
+	const nodeRoot = resolve(dirname(process.execPath), "..");
+	const dataDir = cliDataDir(home);
+	const temporary = [...new Set([tmpdir(), realpathSync(tmpdir())])];
+	return {
+		sandbox: {
+			enabled: true,
+			failIfUnavailable: true,
+			allowUnsandboxedCommands: false,
+			autoAllowBashIfSandboxed: true,
+			filesystem: {
+				denyRead: ["~"],
+				allowRead: [".", join(DEV_ROOT, "node_modules"), dataDir, ...(nodeRoot.startsWith(`${home}/`) ? [nodeRoot] : [])],
+				// The shell writes in its own folder and here, nowhere else.
+				allowWrite: [dataDir],
+				// Its own settings and skills: an actor must not be able to loosen what confines it.
+				denyWrite: ["./.claude"],
+			},
+			network: { allowedDomains: ALLOWED_HOSTS },
+		},
+		permissions: {
+			defaultMode: "dontAsk",
+			allow: ["Bash", "Glob", "Grep", "Skill", ...temporary.map((folder) => `Edit(/${folder}/**)`)],
+			deny: ["Read(~/**)", "Edit(/.claude/**)", "Write(/.claude/**)"],
+		},
+	};
+}
 
 // Same budget as the Codex adapter, so the two tracks stop a run at the same point.
 const DEFAULT_TIMEOUT_MS = 420 * 1000;
@@ -111,6 +168,9 @@ export async function runClaude(
 		{ mode: 0o700 },
 	);
 	await cp(SKILLS_SOURCE, join(workspace, ".claude/skills"), { recursive: true });
+	if (workspace.startsWith(`${homedir()}/`)) throw Error("The temporary folder is under the home directory: the sandbox could not tell them apart");
+	// The sandbox grants a folder that exists; the CLI would create it on first use anyway.
+	mkdirSync(cliDataDir(), { recursive: true });
 
 	const environment = options.environment ?? "main";
 	const model = options.model ?? process.env.E2E_MODEL ?? CLAUDE_MODEL;
@@ -129,7 +189,9 @@ export async function runClaude(
 		"--tools",
 		"Bash,Read,Glob,Grep,Skill,Write,Edit",
 		"--permission-mode",
-		"bypassPermissions",
+		"dontAsk",
+		"--settings",
+		JSON.stringify(actorSettings()),
 		"--output-format",
 		"stream-json",
 		"--verbose",
@@ -138,9 +200,10 @@ export async function runClaude(
 		model,
 	];
 
-	// The harness's own credentials and the invoking session's markers stay out of the actor's environment.
+	// The actor's environment is a short allow-list: the harness's credentials and whatever tokens the operator's
+	// shell exports stay out of it.
 	const inherited = Object.fromEntries(
-		Object.entries(process.env).filter(([key]) => !/^(E2E_|CLAUDECODE$|CLAUDE_CODE_)/.test(key)),
+		Object.entries(process.env).filter(([key]) => /^(HOME|USER|LOGNAME|SHELL|TERM|TMPDIR|LANG|LC_[A-Z_]+|TZ)$/.test(key)),
 	);
 	const child = spawn("claude", args, {
 		cwd: workspace,
@@ -151,6 +214,9 @@ export async function runClaude(
 			DATOCMS_ENVIRONMENT: environment,
 			// The datocms CLI keeps the operator's linked plugins in its data directory: give the actor an empty one.
 			XDG_DATA_HOME: join(workspace, ".data"),
+			npm_config_cache: join(workspace, ".npm"),
+			// Node ignores the sandbox proxy unless told to use it; without this every CLI request fails.
+			NODE_USE_ENV_PROXY: "1",
 			PATH: `${join(workspace, "bin")}${delimiter}${PROJECT_BIN}${delimiter}${process.env.PATH ?? ""}`,
 		},
 	});
