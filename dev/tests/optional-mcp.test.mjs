@@ -107,6 +107,11 @@ const reviewedCorrections = {
       "`client.publicInfo.find()` returns this project's `blocks_per_item` and `blocks_depth`.",
       "`client.publicInfo.find()` returns this project's `extras.blocks_per_item` and `extras.blocks_depth` (`extras` can be `null`).",
     ],
+    // Measured in a live case: dependencies published one by one stayed live after the cascade was refused.
+    [
+      "A single cascading publication runs in a transaction: a blocked or invalid dependency can abort the requested publication and its cascade.",
+      "Publish the linking record only and let the API cascade. A single cascading publication runs in a transaction: a blocked or invalid dependency can abort the requested publication and its cascade, while linked records you publish yourself one by one stay live when a later one is refused.",
+    ],
     // Measured on the API: the first publication of a record cannot leave its non-localized content out.
     [
       "Useful when some locales finish before others — publish ready locales now without lying about field values to satisfy validators.",

@@ -86,6 +86,7 @@ The API is strict where guesses usually go wrong. Hold these before building any
 - Per record: 1,000 blocks, 5 block levels, 1 MB by default (`TECHNICAL_LIMIT_REACHED`; the project's real limits come from `client.publicInfo.find()`).
 - Structured Text: `block` nodes only under `root`, `inlineBlock` inside text. Marks are `strong`, `emphasis`, `code`, `underline`, `strikethrough`, `highlight` (never `bold` / `italic`: the API stores an unknown name as a custom mark instead of rejecting it). The API normalizes the document it stores and does not enforce the editor's `nodes` / `marks` / `heading_levels`.
 - `update` never publishes a draft-mode record. Blocks cannot be written, published or deleted on their own, only through their record.
+- Publishing a record "with what it needs": publish that record only. When its link fields use `publish_references` the API publishes the linked records in the same transaction, all or nothing. Publishing them yourself one by one leaves the earlier ones live when a later one is refused; do it only when the strategy is `fail`, after checking every one is valid (`meta.is_valid`).
 - Publishing some locales (`content_in_locales`) of a record with no published version: send `non_localized_content: true` too. The non-localized fields belong to that first version, so this is still "only that locale", not an extra publication (`references/records.md`).
 - A model without draft mode (`draft_mode_active: false`) has no drafts: every write is live at once, and `itemVersions.restore` publishes the version it restores (with draft mode it adds an unpublished version). Read the model's setting before a restore or an edit that must not reach the website; when it cannot be done without going live, say so and change nothing.
 - Rejections are `INVALID_FIELD` errors: `details.field` is the path (`sections.0.ctas.0.title`), `details.code` the reason (`VALIDATION_REQUIRED`, `INVALID_FORMAT`…).
@@ -116,6 +117,8 @@ Method documentation gives API shapes; these references give DatoCMS workflows a
 - Errors: `ApiError` and `TimeoutError` at the operation boundary. Report authentication and permission failures as they are; never route around them. After a timeout or a missing write response the outcome is unknown: read the state before any retry, and never replay the write through another route or tool.
 
 ## 6. Verify and report
+
+To check that validators reject and accept what they should, use `client.items.validateNew(...)`: nothing is saved (`references/records.md`). Delete any record created only as a test before finishing (a leftover blocks later records through `unique`), and confirm it is gone.
 
 Read back from the same project and environment: the requested change, and that unrelated content, locales, links and publication state are as they were (compare saved values with a snapshot of the original read; object identity and the payload sent prove nothing, since nested reads expand IDs and partial updates). Publishing requires its own authorization. Report what was executed and verified, partial or uncertain outcomes included; for local code, say whether it was validated or run live.
 

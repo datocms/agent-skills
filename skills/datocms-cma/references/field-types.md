@@ -36,7 +36,7 @@ Entries below: **Value** = what the CMA takes and returns. **Validators** / **Ed
 
 - Value: string. `null` is stored and read back as `""`.
 - Validators: `required`, `unique`, `length`, `format`, `enum`.
-- Editors: `single_line` { `heading`=false, `placeholder`? } · `string_select` { `options`: \[{ `label`, `value`, `hint`? }] } · `string_radio_group` { `radios`: \[{ `label`, `value`, `hint`? }] }. Pair the last two with an `enum` validator holding the same values.
+- Editors: `single_line` { `heading`=false (true: the field shows as the big heading of the record form; a display option of this field, unrelated to the model's title field), `placeholder`? } · `string_select` { `options`: \[{ `label`, `value`, `hint`? }] } · `string_radio_group` { `radios`: \[{ `label`, `value`, `hint`? }] }. Pair the last two with an `enum` validator holding the same values.
 - Only type usable as a slug source and as the model's `title_field`.
 
 ### `text` (Multiple-paragraph text)
