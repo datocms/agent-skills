@@ -174,7 +174,7 @@ Rules that bite:
 | Block nesting (block levels; the record is not a level) | 5 | 5 |
 | Record size (record plus all its blocks, all locales) | 1 MB | 3 MB |
 
-Limits come from the project's plan, and legacy plans can be lower: `client.publicInfo.find()` returns this project's `blocks_per_item` and `blocks_depth`. Past a limit the write fails as a whole with `TECHNICAL_LIMIT_REACHED` (`details.limit`: `blocks_per_item`, `blocks_depth` or `item_size_bytes`). A localized block field multiplies both the block count and the size by its locales.
+Limits come from the project's plan, and legacy plans can be lower: `client.publicInfo.find()` returns this project's `extras.blocks_per_item` and `extras.blocks_depth` (`extras` can be `null`). Past a limit the write fails as a whole with `TECHNICAL_LIMIT_REACHED` (`details.limit`: `blocks_per_item`, `blocks_depth` or `item_size_bytes`). A localized block field multiplies both the block count and the size by its locales.
 
 ## Errors on writes
 

@@ -61,17 +61,17 @@ DatoCMS supports **all** imgix URL API parameters. Common ones:
 
 | Parameter | Type | Description |
 | - | - | - |
-| `w` | `Int` | Width |
-| `h` | `Int` | Height |
+| `w` | `FloatType` | Width |
+| `h` | `FloatType` | Height |
 | `fit` | `ImgixParamsFit` | Resize mode: `crop`, `clip`, `fill`, `max`, `min`, `scale` |
 | `auto` | `ImgixParamsAuto` | Automatic optimizations. Pass a single value (`auto: format`) or an array (`auto: [format, compress]`) |
 | `fm` | `ImgixParamsFm` | Output format: `jpg`, `png`, `webp`, `gif`, `avif` |
-| `q` | `Int` | Quality (1-100) |
+| `q` | `IntType` | Quality (1-100) |
 | `crop` | `ImgixParamsCrop` | Crop mode: `focalpoint`, `faces`, `entropy`, `edges`, `top`, `bottom`, `left`, `right` (no `center`: omitted = center, unless Focal Point applies) |
 | `ar` | `String` | Aspect ratio (e.g., `"16:9"`) |
-| `dpr` | `Int` | Device pixel ratio |
-| `blur` | `Int` | Gaussian blur (0-2000) |
-| `sat` | `Int` | Saturation (-100 to 100) |
+| `dpr` | `FloatType` | Device pixel ratio |
+| `blur` | `IntType` | Gaussian blur (0-2000) |
+| `sat` | `IntType` | Saturation (-100 to 100) |
 
 ```graphql
 responsiveImage(
@@ -94,7 +94,7 @@ Several placeholder strategies are available directly on file/upload fields (not
 
 | Field | Type | Description |
 | - | - | - |
-| `blurUpThumb` | `String` | Data URL of a tiny blurred thumbnail (\~20px wide) |
+| `blurUpThumb` | `String` | Data URL of a tiny blurred thumbnail. Args: `size` (default 24, px), `punch` (1), `quality` (70), `imgixParams` |
 | `blurhash` | `String` | BlurHash encoding (compact placeholder) |
 | `thumbhash` | `String` | ThumbHash encoding (higher quality than blurhash) |
 | `colors` | `[ColorField]` | Dominant colors. Each has a `hex` field. |
@@ -120,7 +120,7 @@ query {
 }
 ```
 
-**`base64`** (inside `responsiveImage`) and **`blurUpThumb`** (on the file field) both provide LQIP thumbnails. `base64` is computed based on the imgix transformation parameters, while `blurUpThumb` is a fixed tiny thumbnail of the original image.
+**`base64`** (inside `responsiveImage`) and **`blurUpThumb`** (on the file field) both provide LQIP thumbnails. `base64` is computed based on the imgix transformation parameters, while `blurUpThumb` is a tiny thumbnail of the original (its own `size`, `punch`, `quality` and `imgixParams` arguments) image.
 
 ## Focal Point
 
@@ -202,14 +202,14 @@ query {
 
 | Field | Type | Description |
 | - | - | - |
-| `muxPlaybackId` | `String` | Mux playback ID (use with Mux Player or HLS.js) |
-| `streamingUrl` | `String` | HLS streaming URL (`https://stream.mux.com/{id}.m3u8`) |
-| `mp4Url(res: ResolutionEnum)` | `String` | Direct MP4 URL. `res`: `high`, `medium`, or `low` |
-| `thumbnailUrl(format: ThumbnailFormatEnum)` | `String` | Video thumbnail. `format`: `jpg`, `png`, or `gif` |
-| `width` | `Int` | Video width in pixels |
-| `height` | `Int` | Video height in pixels |
-| `duration` | `Float` | Duration in seconds |
-| `framerate` | `Float` | Frames per second |
+| `muxPlaybackId` | `String!` | Mux playback ID (use with Mux Player or HLS.js) |
+| `streamingUrl` | `String!` | HLS streaming URL (`https://stream.mux.com/{id}.m3u8`) |
+| `mp4Url(res: VideoMp4Res, exactRes: VideoMp4Res)` | `String` | Direct MP4 URL. `res`: `high`, `medium`, or `low` |
+| `thumbnailUrl(format: MuxThumbnailFormatType, time, width, height, fitMode, rotate, flipV, flipH)` | `String!` | Video thumbnail. `format`: `jpg`, `png`, or `gif` |
+| `width` | `IntType!` | Video width in pixels |
+| `height` | `IntType!` | Video height in pixels |
+| `duration` | `Int` | Duration in seconds |
+| `framerate` | `Int` | Frames per second |
 | `thumbhash` | `String` | Base64 preview encoding for placeholder |
 
 **HLS streaming is recommended over MP4** for better adaptive bitrate and performance. Use `muxPlaybackId` with a Mux-compatible player or `streamingUrl` with HLS.js.

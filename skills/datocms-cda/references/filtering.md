@@ -147,8 +147,8 @@ Format: Date `"YYYY-MM-DD"`; DateTime `"YYYY-MM-DDTHH:MM:SS+HH:MM"` (ISO 8601 wi
 
 | Operator | Value Type | Description |
 | - | - | - |
-| `eq` | `Date` / `DateTime` | Exact match |
-| `neq` | `Date` / `DateTime` | Not equal |
+| `eq` | `Date` / `DateTime` | Exact match (`DateTime`: within that minute) |
+| `neq` | `Date` / `DateTime` | Not equal (`DateTime`: outside that minute) |
 | `lt` | `Date` / `DateTime` | Before |
 | `lte` | `Date` / `DateTime` | Before or on |
 | `gt` | `Date` / `DateTime` | After |
@@ -394,7 +394,7 @@ query {
 
 | Field | Operators | Values |
 | - | - | - |
-| `type` | `eq`, `neq`, `in`, `notIn` | `image`, `video` (unquoted enums) |
+| `type` | `eq`, `neq`, `in`, `notIn` | `image`, `audio`, `video`, `richtext`, `presentation`, `spreadsheet`, `pdfdocument`, `archive` (unquoted enums) |
 | `resolution` | `eq`, `neq`, `in`, `notIn` | `icon`, `small`, `medium`, `large` |
 | `orientation` | `eq`, `neq` | `landscape`, `portrait`, `square` |
 
@@ -431,6 +431,8 @@ Operator value types: `matches`/`notMatches` take `{ pattern: String, caseSensit
 | `anyIn` | `[String]` | Contains at least one specified value |
 | `notIn` | `[String]` | Contains NONE of specified values |
 | `eq` | `[String]` | Exact array match |
+
+`colors` takes the `ColorBucketType` enum in place of `String`, unquoted (`colors: { contains: red }`; a quoted `"red"` is rejected): `red`, `orange`, `pink`, `cyan`, `purple`, `blue`, `yellow`, `green`, `brown`, `grey`, `white`, `black`.
 
 #### DateTime Fields: `_createdAt`, `_updatedAt`
 

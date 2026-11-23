@@ -194,7 +194,7 @@ Transient server errors (5xx with `transient: true`) are also retried automatica
 | - | - |
 | Max record size | 1 MB (3 MB on Enterprise plans) including nested blocks, excluding assets and linked records |
 | Max blocks per record | 1,000 (3,000 on Enterprise plans) |
-| Max nested block depth | 5 levels (record limits are plan-dependent; `client.publicInfo.find()` returns the project's `blocks_per_item` and `blocks_depth`) |
+| Max nested block depth | 5 levels (record limits are plan-dependent; `client.publicInfo.find()` returns the project's `extras?.blocks_per_item` and `extras?.blocks_depth`) |
 | Max upload size | 1 GB per asset |
 | Rate limit | 60 requests per 3 seconds |
 | Bulk operation batch | 200 items per request |

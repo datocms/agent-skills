@@ -90,7 +90,7 @@ Search behavior:
 
 1. **Exact match first** — query equals `id`, `name` (case-insensitive), or full `domain` (case-insensitive) → only those matches.
 2. **Fuzzy match otherwise** — scores against project name and short domain (custom or `internal_subdomain`). `.admin.datocms.com` excluded from fuzzy matching.
-3. Results sorted by score, capped to `--limit`. **Always returns list, never single "best" guess.**
+3. Results sorted by score, capped to `--limit` (exact matches are not capped; with no query, the first `--limit` projects). **Always returns list, never single "best" guess.**
 4. Query matches nothing → error `No projects match '<query>'`: rerun without query (default cap 20: raise `--limit` or narrow with `--workspace`). No accessible project at all → error `No projects found.`: user creates one at <https://dashboard.datocms.com/>, then link.
 
 JSON output schema (one object per project):
@@ -128,8 +128,9 @@ Profiles map to **separate projects or auth contexts**, not to environments of t
 # Interactive: pick workspace + project, configure profile
 npx datocms link
 
-# Non-interactive: link to a specific project by ID (no prompts when
-# OAuth credentials are already saved)
+# Link to a specific project by ID. No prompts in a non-TTY shell when OAuth
+# credentials are saved; in a terminal it still asks for log level and
+# migration settings unless their flags are passed
 npx datocms link --site-id=12345
 
 # Add the org id when the project belongs to an organization
@@ -151,7 +152,7 @@ Extra profile: linking a profile not yet in a config that already has another (e
 
 ### Interactive vs non-interactive behavior
 
-- **`--site-id` provided + OAuth credentials present** → fully non-interactive. Defaults written for log level and migrations; agent can drive.
+- **`--site-id` provided + OAuth credentials present** → fully non-interactive in a non-TTY shell (in a terminal, log level and migration settings are still asked unless flagged). Defaults written for log level and migrations; agent can drive.
 - **`--site-id` provided but no credentials** → fails fast in non-TTY with suggestion to run `datocms login` first.
 - **No `--site-id` in non-TTY** → fails fast with suggestion to pass `--site-id=<ID>` (use `projects:list` to discover) or run in interactive terminal.
 - **No `--site-id` in TTY** → interactive picker (workspace selection + project search).
@@ -218,7 +219,7 @@ CLI uses `datocms.config.json` in project root. Structure:
 | `migrations.directory` | `string` | Path to migrations directory (relative to config) |
 | `migrations.modelApiKey` | `string` | API key of model used to track migrations |
 | `migrations.template` | `string` | Path to custom migration template |
-| `migrations.tsconfig` | `string` | Path to tsconfig for running TS migrations |
+| `migrations.tsconfig` | `string` | Path to a tsconfig: makes `migrations:new` write `.ts`; must exist for `migrations:run`, which does not otherwise read it |
 
 ## Active Profile Selection
 
@@ -243,6 +244,8 @@ Once active profile known, CLI resolves API token in this order:
    - named profile `client_a`: `DATOCMS_CLIENT_A_PROFILE_API_TOKEN`
 
 Token must have CMA access enabled (`can_access_cma: true`).
+
+`migrations:new` and `migrations:run` also need `datocms.config.json` with the active profile, whatever the auth: with a token alone they stop at `No config file found` or `No profile specified!`. The other commands run on a token alone.
 
 ### Example `.env` setup (env-var-based auth)
 

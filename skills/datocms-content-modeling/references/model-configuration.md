@@ -106,7 +106,7 @@ Model can use exactly one ordering strategy at time. Setting two of these togeth
 | **Hierarchical tree** | `tree: true` | Drag-and-drop with indenting; parent/children built in | Categories, doc sections, anything that's "X is a kind of Y." See `taxonomy-classification.md`. |
 | **By a field** | `ordering_field: { id, type: "field" }` + `ordering_direction` | Records sort by that field automatically | Natural sort key model already has: `event_date`, `priority`, `position_in_album` |
 | **By a meta timestamp** | `ordering_meta: 'created_at' \| 'updated_at' \| 'first_published_at' \| 'published_at'` + `ordering_direction` | Records sort by record metadata | Pure chronological feeds where model has no domain-specific date field |
-| **None (default)** | All of above null/false | Records appear in creation order | Reference data, lookup tables, anything where order is irrelevant |
+| **None (default)** | All of above null/false | Records appear last-updated first | Reference data, lookup tables, anything where order is irrelevant |
 
 ### Decision shortcuts
 

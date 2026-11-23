@@ -131,13 +131,13 @@ Link validators accept only regular models in `item_types`, never block models.
 
 - Value: record ID string or `null`.
 - Validators: `item_item_type` (**required**), `required`, `unique`.
-- Editors: `link_select` (compact) · `link_embed` (expanded card). Both { `filters`=\[] }.
+- Editors: `link_select` (compact) · `link_embed` (expanded card). Both { `filters`=\[] } (accepted by the API; the client's types declare no parameters, so cast in typed code).
 
 ### `links` (Multiple links)
 
 - Value: array of record ID strings; `null` becomes `[]`.
 - Validators: `items_item_type` (**required**), `size`. No `required`: use `size: { min: 1 }`.
-- Editors: `links_select` · `links_embed`. Both { `filters`=\[] }.
+- Editors: `links_select` · `links_embed`. Both { `filters`=\[] } (accepted by the API; the client's types declare no parameters, so cast in typed code).
 
 ## Blocks: `rich_text`, `single_block`, `structured_text`
 

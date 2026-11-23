@@ -81,7 +81,7 @@ export default async function (client: Client): Promise<void> {
 ```
 
 - `export default async function(client: Client)` required; top-level await rejected in file-mode (use stdin-mode for that).
-- `Client` imported from `datocms/lib/cma-client-node` — same import that migrations use. file-mode script can be promoted into migration with `mv tmp/scripts/publish-drafts.ts migrations/` (signature matches too).
+- `Client` imported from `datocms/lib/cma-client-node` — same import that migrations use. file-mode script can be promoted into migration (signature matches too): `mv tmp/scripts/publish-drafts.ts migrations/$(date +%s)_publishDrafts.ts`. The runner only picks up files that start with digits (`{unix_timestamp}_{name}`); any other name is skipped silently.
 - Typed `Schema.*` **opt-in**: run `npx datocms schema:generate ./datocms-schema.ts` next to script and `import * as Schema from './datocms-schema'`. Without it, client still usable with generic types.
 - Ambient globals **not** available in file-mode — write explicit `import` statements. Install whatever modules you need into your own `package.json`.
 - Requires `datocms` reachable in `node_modules` from file's directory, so the file lives inside a project that has `datocms` installed: a gitignored scratch dir under the project root, typically `tmp/scripts/` or `scratch/`. A file in the system `/tmp` (or any folder with no `node_modules` above it) fails with `Cannot resolve "datocms/lib/cma-client-node"`. Prefer migration for code you want to commit, version, and replay across environments, and do not put file-mode scripts under `migrations/` — that directory owned by `migrations:run`.
@@ -176,7 +176,7 @@ npx datocms cma:script tmp/scripts/backfill-slugs.ts --environment=staging
 | `cma:call` | Single CMA call with shape readable from `cma:docs`. Fastest — direct HTTP request, no workspace cold-start. |
 | `cma:script` stdin-mode | Throwaway one-liner, heredoc, or pipe. Zero setup, ambient `client` and `Schema`, top-level await only. |
 | `cma:script` file-mode | Same throwaway scenario as stdin-mode, but script long enough that heredoc quoting hurts, imports local helpers, or should be rerunnable by filename. Lives in gitignored scratch dir. |
-| Migration (`datocms-cli`) | Code that must be **committed, versioned, and replayed** across environments. Use `migrations:new` to scaffold — file-mode script can be promoted with `mv` since imports and signature already match. |
+| Migration (`datocms-cli`) | Code that must be **committed, versioned, and replayed** across environments. Use `migrations:new` to scaffold — file-mode script can be promoted with `mv` into a `{unix_timestamp}_{name}.ts` file since imports and signature already match. |
 | Checked-in `buildClient()` script (**datocms-cma**) | **Unattended runtime** code: CI, app server, webhook, long-lived automation. Needs CMA token in environment. |
 
 > **Method lookup:** docs actions are REST names, not SDK methods: `npx datocms cma:docs items instances` documents `client.items.list()`, `cma:docs items self` documents `client.items.find()` / `cma:call items find`; `create`/`update`/`destroy` match. Discover others with `cma:docs <resource>`.

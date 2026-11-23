@@ -156,6 +156,7 @@ Add `--force` to the maintenance step only when the release process explicitly a
 ### Key CI/CD Considerations
 
 - **Always** run `maintenance:off` in an `if: always()` step to avoid leaving the project locked if a step fails
+- Commit `datocms.config.json`: `migrations:run` needs its profile even when `--api-token` is passed
 - Use the git SHA or a build ID as the `--destination` name for traceability; `migrations:run --destination` forks the current primary itself, so CI needs no `environments:primary` lookup step
 - Store `DATOCMS_API_TOKEN` as repo secret, pass via `--api-token` — linked profile (`siteId`) never reads env var, errors without OAuth login
 - Trigger only on changes to the `migrations/` directory to avoid unnecessary runs

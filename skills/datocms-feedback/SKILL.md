@@ -42,7 +42,7 @@ Base: `https://www.datocms.com/support`. Query params URL-encoded via `encodeURI
 - `subject=<short subject>` — one line.
 - `body=<sanitized message>` — see body rules.
 
-Append `#form` anchor — page scrolls to the form on load.
+Append `#form` anchor — required: for this topic the page shows the form only when it loads with that anchor.
 
 ## Body rules
 
@@ -53,7 +53,7 @@ Append `#form` anchor — page scrolls to the form on load.
 - Keep raw details short. Command names, call names, short safe error excerpts only when useful.
 - No secrets, tokens, auth headers, private content, user-identifying details, full request/response payloads, raw transcript dumps, long local paths.
 - No apology on DatoCMS's behalf inside the body.
-- Keep plaintext body under \~4000 chars — encoded URL must fit edge limits (Vercel \~14 KB). Trim if longer.
+- Keep plaintext body under \~4000 chars — the site answers 414 once the encoded URL passes \~8 KB, and accents, emoji or markup encode to several bytes each. Trim if longer.
 - No `Hi DatoCMS support,` / `Thanks,` salutations — the form is not an email.
 
 ## Body shape
@@ -89,8 +89,8 @@ Two steps. Do not build or reveal the URL on step 1.
 
 - macOS: `open '<url>'`
 - Linux: `xdg-open '<url>'`
-- Windows: `start '' '<url>'`
+- Windows: `start "" "<url>"` in cmd (double quotes; the empty pair is the window title), `Start-Process "<url>"` in PowerShell
 
-Single-quote the URL — shell would otherwise interpret `&` and `#`. Echo the URL on its own line as a clickable fallback.
+Quote the URL — single quotes on macOS and Linux, double on Windows: the shell would otherwise interpret `&` and `#`. Echo the URL on its own line as a clickable fallback.
 
 No "I drafted...", no recap.

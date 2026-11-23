@@ -150,9 +150,9 @@ query {
 | - | - | - |
 | `title` | `String` | SEO title override |
 | `description` | `String` | Meta description override |
-| `image` | `Upload` | Social sharing image |
+| `image` | `FileField` | Social sharing image |
 | `twitterCard` | `String` | Twitter card type |
-| `noIndex` | `Boolean` | Prevent search engine indexing |
+| `noIndex` | `BooleanType` | Prevent search engine indexing |
 
 ## Complete Example: SEO Head Tags
 

@@ -34,7 +34,7 @@ CMA operations and scripts. For advice or code explanations, skip execution and 
 **CLI quick path.** Look first with plain commands, which have nothing to type-check:
 
 ```bash
-npx datocms schema:inspect <model_api_key> --environment=<env>   # fields, validators, editors, allowed blocks
+npx datocms schema:inspect <model_api_key> --fields-details=complete --environment=<env>   # fields, validators, editors, allowed blocks (the default prints fields only)
 npx datocms cma:call items find <RECORD_ID> --params '{"nested": true}' --environment=<env>
 ```
 

@@ -82,7 +82,7 @@ Operational notes:
 - Pass exactly one of `package_name` (marketplace) or `url` (custom) to `client.plugins.create()` — never both.
 - `parameters` is project-specific global configuration; modern plugins define its shape in their code. `parameter_definitions` describes legacy plugins only. An API token or OAuth app whose role cannot edit the schema reads `parameters` as `null` (collaborators and roles with schema or CMS-internals access get the object). Never write back a `parameters` value you read through such a credential: `null` overwrites the stored configuration, so omit the attribute or check it is non-null first.
 - `client.plugins.fields(pluginId)` finds fields using that installation. Duplicating a plugin in the CMS does not copy those editor/addon assignments; reassign the intended test fields explicitly.
-- Update `enabled` to disable or re-enable an installation without deleting its configuration. Disabled plugins do not run.
+- Update `enabled` to disable or re-enable an installation without deleting its configuration. Disabled plugins do not run. `enabled` and `package_name` are not in the client's update type (6.1.3): send them with the raw request shown below.
 
 For modern plugins, these updates affect the selected installation; use a [development copy](../../datocms-plugin/references/project-scaffold.md#development-copy) when the original must remain available:
 
@@ -123,7 +123,7 @@ Operational notes:
 
 - Leaf `menu_item` references either `item_type` **or** `external_url`, never both. Parent folder typically has neither — just groups children by `parent`.
 - `position` is **per-parent** — siblings under same `parent` (or top-level when `parent` is null) ordered by `position` numbers; positions across different parents independent.
-- Reordering done by updating `position` on each affected sibling — API does not expose "move up/down" or "reorder" action.
+- Reordering done by updating `position` on each affected sibling — API has no public "move up/down" or "reorder" action (`menuItems.reorder` exists but is marked private).
 
 ## Upload tracks and tags (`uploadTracks`, `uploadTags`, `uploadSmartTags`)
 

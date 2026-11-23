@@ -140,7 +140,7 @@ query {
 
 ## Complexity Cost Reference
 
-Every query has a complexity cost that must stay under **10,000,000**. Response headers `X-Complexity` and `X-Max-Complexity` report the actual and maximum values.
+Every query has a complexity cost that must stay under the plan's limit (**10,000,000** by default). Response headers `X-Complexity` and `X-Max-Complexity` report the actual and maximum values.
 
 When a query exceeds the complexity limit, the API returns an error:
 

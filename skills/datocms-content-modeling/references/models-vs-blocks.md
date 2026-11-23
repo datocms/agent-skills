@@ -40,7 +40,7 @@ Block fields bounded per-record. Content compounds? Limits push to models.
 
 | Limit | Default | Notes |
 | - | - | - |
-| Max record size | **1 MB** | Nested blocks count. Links/assets don't. Plan-dependent: Enterprise plans 3 MB; legacy per-project plans keep lower limits; read the project's real values from `client.publicInfo.find()`. Support raises only exceptionally. |
+| Max record size | **1 MB** | Nested blocks count. Links/assets don't. Plan-dependent: Enterprise plans 3 MB; legacy per-project plans keep lower limits; read the project's block limits from `client.publicInfo.find()` (`extras.blocks_per_item`, `extras.blocks_depth`; record size is not there: it comes from the plan). Support raises only exceptionally. |
 | Max blocks per record | **1,000** | All block fields, all nesting, all locales. Enterprise plans: 3,000 (plan-dependent, see `publicInfo`). |
 | Max nested depth | **5 levels** | Block in block in block... 5 deep. |
 

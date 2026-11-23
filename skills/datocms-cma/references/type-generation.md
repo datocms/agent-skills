@@ -6,7 +6,7 @@ First inspect existing schema imports, `cma-types.ts` / `datocms-schema.ts` file
 
 The generated types are useful for **both** CMA API styles:
 
-- the **simplified API** via `ItemTypeDefinition` generics on methods such as `client.items.create/update/upsert/...`
+- the **simplified API** via `ItemTypeDefinition` generics on methods such as `client.items.create/update/find/list/...`
 - the **raw API** via `raw*()` methods and `RawApiTypes.Item<>` when you intentionally need raw JSON:API payloads or metadata
 
 Default to the simplified API. Reach for raw methods only when the task explicitly needs them. See `client-types-and-behaviors.md` for the `RawApiTypes` overview and dual-API guidance.

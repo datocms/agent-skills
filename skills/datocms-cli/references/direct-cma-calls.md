@@ -107,15 +107,17 @@ Writing typed mutations? Raise `--types-depth` past the default of 2 for a deepe
 
 Recommended way to look up: request body schemas, required fields, query params, response shapes, TS signatures before constructing `cma:call` or CMA client code.
 
-### `cma:call --help` — Quick resource/method listing
+### `cma:docs` — Quick resource/method listing
 
 ```bash
 # List all available resources
-npx datocms cma:call --help
+npx datocms cma:docs
 
-# List all methods for a specific resource
-npx datocms cma:call <resourceCamelCase> --help
+# List all actions of a specific resource
+npx datocms cma:docs <resourceCamelCase>
 ```
+
+`cma:call --help` prints only the command's own flags, never resources or methods.
 
 CLI suggests valid options when resource/method not found.
 
@@ -178,8 +180,9 @@ npx datocms cma:call items update <ITEM_ID> --data '{title: "Updated"}'
 npx datocms cma:call fields list <ITEM_TYPE_ID>
 npx datocms cma:call fields create <ITEM_TYPE_ID> --data '{label: "Title", api_key: "title", field_type: "string"}'
 
-# Some need both parent and entity ID
-npx datocms cma:call fields update <ITEM_TYPE_ID> <FIELD_ID> --data '{label: "New Label"}'
+# Children take the parent ID to list or create, their own ID alone for the rest
+npx datocms cma:call fields create <ITEM_TYPE_ID> --data '{label: "Title", api_key: "title", field_type: "string"}'
+npx datocms cma:call fields update <FIELD_ID> --data '{label: "New Label"}'
 npx datocms cma:call uploadTracks create <UPLOAD_ID> --data '{...}'
 ```
 
@@ -277,8 +280,8 @@ Run `npx datocms cma:call --help` for current list. Most frequent:
 | - | - | - |
 | `items` | list, find, create, update, destroy, publish, unpublish, duplicate, bulkPublish, bulkUnpublish, bulkDestroy, references, validateNew, validateExisting | itemId |
 | `itemTypes` | list, find, create, update, destroy, duplicate, referencing | itemTypeId |
-| `fields` | list, find, create, update, destroy, duplicate, referencing, related | itemTypeId + fieldId |
-| `fieldsets` | list, find, create, update, destroy | itemTypeId + fieldsetId |
+| `fields` | list, find, create, update, destroy, duplicate, referencing, related | itemTypeId (list, create, referencing, related) or fieldId (the rest); never both |
+| `fieldsets` | list, find, create, update, destroy | itemTypeId (list, create) or fieldsetId (the rest); never both |
 | `uploads` | list, find, create, update, destroy, references, bulkTag, bulkDestroy | uploadId |
 | `roles` | list, find, create, update, destroy, duplicate | roleId |
 | `webhooks` | list, find, create, update, destroy | webhookId |

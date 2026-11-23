@@ -102,6 +102,11 @@ const reviewedCorrections = {
       "| `date_time` | ISO 8601 with offset, `\"2026-03-01T09:30:00+01:00\"`, or `null` |",
       "| `date_time` | ISO 8601 with offset, `\"2026-03-01T09:30:00+01:00\"`, or `null`. Without an offset the time is taken as UTC, not as the editor's timezone |",
     ],
+    // Client types: the two limits sit under the nullable `extras` of the public info.
+    [
+      "`client.publicInfo.find()` returns this project's `blocks_per_item` and `blocks_depth`.",
+      "`client.publicInfo.find()` returns this project's `extras.blocks_per_item` and `extras.blocks_depth` (`extras` can be `null`).",
+    ],
     // Measured on the API: the first publication of a record cannot leave its non-localized content out.
     [
       "Useful when some locales finish before others — publish ready locales now without lying about field values to satisfy validators.",

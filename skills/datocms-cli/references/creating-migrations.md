@@ -34,7 +34,7 @@ Creates a new migration script in the migrations directory.
 Let the CLI name the file (`{unix_timestamp}_{camelCaseName}.ts|.js`); do not create migration filenames manually. Keep the generated function signature:
 
 ```ts
-import type { Client } from 'datocms/lib/cma-client-node';
+import { Client } from 'datocms/lib/cma-client-node';
 
 export default async function (client: Client): Promise<void> {
   // CMA operations using the supplied client
