@@ -106,6 +106,15 @@ Create: `client.itemTypes.create({ name, api_key, ...settings })`. All settings 
 
 Field relationships (`{ id, type: "field" }`) must point to fields of the same model (`FIELD_DOES_NOT_BELONG_TO_ITEM_TYPE`).
 
+**Sidebar entries come with the model.** `itemTypes.create` also creates the model's entry in the Schema sidebar (`schema_menu_item`: always, at top level) and, for a regular model, in the Content menu (`menu_item`; second argument `{ skip_menu_item_creation: true }` skips it). The options `schema_menu_item_id` / `menu_item_id` set the ID the **new** entry gets. They are not a group to file it under: an existing entry's ID fails with `422 VALIDATION_UNIQUENESS` on `public_id`. A second Schema entry for the same model cannot be created, nor the first one destroyed (`CANNOT_CREATE_OR_DESTROY_SCHEMA_MENU_ITEM_LINKED_TO_ITEM_TYPE`). To file a model or block in a group, move its entry after the create:
+
+```ts
+const entry = (await client.schemaMenuItems.list()).find((item) => item.item_type?.id === model.id);
+await client.schemaMenuItems.update(entry!.id, { parent: { type: "schema_menu_item", id: groupId } });
+```
+
+Content menu: same two steps with `menuItems` and parent type `menu_item`.
+
 ## Block models: a constrained subset
 
 Block model is model with `modular_block: true`. Blocks are **inline children** of a record, not standalone content, so:

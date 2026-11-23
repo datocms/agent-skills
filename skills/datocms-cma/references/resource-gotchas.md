@@ -121,6 +121,7 @@ CLI lookup: `cma:docs menuItems`, `cma:docs schemaMenuItems` cover create/update
 
 Operational notes:
 
+- A model's or block's own Schema entry is created by `itemTypes.create`, at top level: it cannot be created or destroyed here (`CANNOT_CREATE_OR_DESTROY_SCHEMA_MENU_ITEM_LINKED_TO_ITEM_TYPE`), only found with `list()` and moved with `update` (`parent`, `position`). See `references/schema.md` § Model settings.
 - Leaf `menu_item` references either `item_type` **or** `external_url`, never both. Parent folder typically has neither — just groups children by `parent`.
 - `position` is **per-parent** — siblings under same `parent` (or top-level when `parent` is null) ordered by `position` numbers; positions across different parents independent.
 - Reordering done by updating `position` on each affected sibling — API has no public "move up/down" or "reorder" action (`menuItems.reorder` exists but is marked private).
