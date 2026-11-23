@@ -1,5 +1,5 @@
 # synced_from_name: datocms-plugin-design
-# synced_from_description_sha256: 64c802de3561eebc1ea2afba1749600f146ac2872cd60f3b945e1e4ac384aad5
+# synced_from_description_sha256: b92d4401021d21feb14755de4cddc4d8e17bc3dbfcbcf9d1a33421e5d9e51c74
 interface:
   display_name: "DatoCMS Plugin Design"
   short_description: "Native-looking plugin UI with datocms-react-ui 4"

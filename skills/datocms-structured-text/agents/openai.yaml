@@ -1,5 +1,5 @@
 # synced_from_name: datocms-structured-text
-# synced_from_description_sha256: eca45819f26ab768dd00d9684b3fed12eabb58b5ffd59ed084ac709205053254
+# synced_from_description_sha256: b31c6630cf507d9ecb45a72751b8f867d0ef5e606ec75bbda1ac189a3b2e9abb
 interface:
   display_name: "DatoCMS Structured Text"
   short_description: "Create, edit, convert, and validate DAST documents"

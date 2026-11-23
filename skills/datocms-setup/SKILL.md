@@ -1,14 +1,16 @@
 ---
 name: datocms-setup
 description: >-
-  Guided DatoCMS setup: inspects the project, asks only what it can't infer,
-  proposes a plan with prerequisites, and changes nothing until the user
-  agrees. For setting DatoCMS up in a site or repo (previews and visual
-  editing, caching, content rendering, SEO, search, CLI and migrations,
-  releases, multi-project sync, webhooks, build triggers, WordPress or
-  Contentful imports) or starting a new DatoCMS site. Use when the user wants
-  something set up end to end or wants to be walked through it; a single,
-  already-specified code change belongs to the owning DatoCMS skill.
+  Load FIRST when the user names an outcome to set up rather than a specific
+  code change, wants a setup planned or to be walked through it, is unsure what
+  they need, or is starting a new DatoCMS site. Guided: inspects the project,
+  asks only what it can't infer, proposes a plan and changes nothing until the
+  user agrees. Covers a website or repo: previews and visual editing, live
+  updates, caching and rebuild-on-publish, content rendering, SEO, search,
+  migrations workflow and releases, multi-project sync, webhooks, build
+  triggers, WordPress or Contentful moves. A change whose files or steps are
+  already specified (this endpoint, this route, this migration, link the CLI,
+  this webhook) belongs to its owning skill.
 ---
 
 # DatoCMS Setup

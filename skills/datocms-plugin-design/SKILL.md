@@ -1,20 +1,20 @@
 ---
 name: datocms-plugin-design
 description: >-
-  Build DatoCMS plugin UI that looks native to the dashboard with
-  datocms-react-ui 4, the CMS's own React components, following the rules of
-  react-ui.datocms.com, whose pages are bundled. Use when creating, restyling
-  or reviewing the interface of any plugin surface: config screen, field
-  editor or addon, manual field-extension config, record or asset sidebar and
-  sidebar panel, custom page, modal, inspector, outlet, asset source. Covers
-  installing and importing datocms-react-ui, Canvas, picking and composing
-  components (Page, Pane, Toolbar, FieldWrapper, SelectInput, Table,
-  Dropdown, SidebarPanel, BlankSlate, Modal), color tokens and dark mode, CSS
-  variables, frame height and what the host already draws, list-and-detail
-  and list-and-form screens, keyboard actions, and upgrading from
-  datocms-react-ui 2.x or 3.x prereleases. SDK wiring with no UI (connect
-  hooks, ctx methods, dropdown action handlers, lifecycle hooks, scaffolding,
-  permissions) belongs to datocms-plugin.
+  Load BEFORE writing or changing anything a DatoCMS plugin renders, in any
+  project whose package.json (read it first) lists `datocms-plugin-sdk`, even
+  when the request never mentions DatoCMS and even for a small tweak: the
+  interface of a config screen, field editor or addon, field-extension config,
+  sidebar or sidebar panel, custom page, modal, inspector, outlet or asset
+  source. Built with datocms-react-ui 4, the dashboard's own components, by the
+  rules of react-ui.datocms.com. Use for a new surface (with `datocms-plugin`,
+  which wires its hook), restyling to look native, UI review, picking and
+  composing components (Canvas, Page, Pane, Toolbar, FieldWrapper, Table,
+  Dropdown, BlankSlate, Modal), colour tokens and dark mode, frame height and
+  what the host already draws (a title, border or close button shown twice),
+  list-and-detail and form screens, keyboard actions, upgrading from
+  datocms-react-ui 2.x or 3.x. Plugin work with no UI (hooks, ctx, lifecycle,
+  scaffolding, permissions, publishing): `datocms-plugin`.
 ---
 
 # DatoCMS plugin design

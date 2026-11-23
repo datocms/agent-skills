@@ -1,18 +1,18 @@
 ---
 name: datocms-cli
 description: >-
-  DatoCMS CLI (datocms) — command-line migrations, schema codegen, schema
-  inspection, one-off CMA calls, typed TypeScript CMA scripts, env operations,
-  deployment workflows, multi-project profile syncing. Use for datocms CLI
-  commands/scripts: migrations:new, migrations:run; schema:generate;
-  schema:inspect (dump models, blocks, fields, validators, appearance,
-  fieldsets, nested blocks, referenced/embedding models); cma:call, cma:docs,
-  cma:script (ad-hoc typed TS with ambient client/Schema globals); migration
-  scaffolding for models/fields/blocks; CLI setup via datocms.config.json +
-  profiles; OAuth (login/logout/whoami); projects:list; project link/unlink;
-  env list/fork/promote/rename/destroy; maintenance-mode toggle; CI/CD
-  migration pipelines; blueprint/client project sync; imports from WordPress
-  or Contentful (assets + content); CLI plugin management.
+  Load BEFORE running or writing anything with the DatoCMS CLI (`datocms`) apart
+  from record edits: schema migrations (`migrations:new`, `migrations:run`,
+  migration scripts) and any request to add, rename, change or remove a model,
+  block or field that does not say to skip migrations; inspecting a schema
+  without changing it (`schema:inspect`: models, blocks, fields, validators,
+  appearance, where a block or model is used); `schema:generate` types;
+  environments (fork, promote, destroy) and maintenance mode; CLI setup
+  (`datocms.config.json`, profiles, link, login); CI/CD releases; WordPress and
+  Contentful imports; CLI plugins. Record and upload work, even through
+  `cma:call`, `cma:script` or the CLI login, and schema changes to make
+  directly: `datocms-cma`. A setup to plan or be walked through:
+  `datocms-setup`.
 ---
 
 # DatoCMS CLI Skill

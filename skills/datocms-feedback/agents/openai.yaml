@@ -1,5 +1,5 @@
 # synced_from_name: datocms-feedback
-# synced_from_description_sha256: ffa69a7a21315c87a0434864d26df9ef43a844548cb559f982c6b56859689b4b
+# synced_from_description_sha256: 3797c1b3cc45bf144cda5fab9dc45af8f4bd58a0fa6596f48105a565b33bcfb6
 interface:
   display_name: "DatoCMS Feedback"
   short_description: "Build a prefilled DatoCMS support link for stuck workflows"

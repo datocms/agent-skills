@@ -1,20 +1,17 @@
 ---
 name: datocms-frontend-integrations
 description: >-
-  Patch, extend, or explain DatoCMS front-end integration code in an existing
-  web project (Next.js App Router, Nuxt, SvelteKit, Astro, plus
-  React/Vue/Svelte component usage). Use for targeted, per-concern work —
-  adding a draft mode endpoint, wiring Preview Links / Visual Editing flows,
-  fixing Content Link overlays, tuning real-time preview subscriptions,
-  setting up cache-tag invalidation/revalidation (Next.js revalidateTag or
-  CDN purge by tags), adding robots/sitemap wiring, hooking up crawler-safe
-  search. Also the go-to skill for framework component/hook wiring with
-  react-datocms, vue-datocms, @datocms/svelte, @datocms/astro:
-  Image/RSCImage/datocms-image, StructuredText, VideoPlayer (React/Vue/Svelte),
-  SEO/meta helpers (renderMetaTags/toHead/Seo), QuerySubscription/QueryListener
-  realtime, ContentLink components, Site Search (React/Vue). Prefer when
-  modifying a live codebase one concern at a time, asking a framework-specific
-  API question, or mixing several front-end concerns in the same patch.
+  Load BEFORE the first edit to website code in any project whose package.json
+  (read it first) lists `@datocms/cda-client`, react-datocms, vue-datocms,
+  @datocms/svelte or @datocms/astro, even when the request never mentions
+  DatoCMS and even for a one-file patch, and before explaining such code.
+  Next.js, Nuxt, SvelteKit, Astro, React/Vue/Svelte: draft mode endpoints,
+  preview links and Web Previews, Visual Editing and Content Link overlays,
+  real-time preview subscriptions, cache tags and revalidation, robots and
+  sitemap routes, Site Search UI, responsive Image, StructuredText rendering,
+  VideoPlayer, SEO/meta tags. Writing or tuning the GraphQL query itself:
+  `datocms-cda`. An outcome to set up, plan or be walked through, or a new site:
+  `datocms-setup`. Content or schema changes: `datocms-cma`.
 ---
 
 # DatoCMS Front-End Integrations Skill

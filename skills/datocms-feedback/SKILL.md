@@ -1,15 +1,13 @@
 ---
 name: datocms-feedback
 description: >-
-  Build sanitized, prefilled datocms.com/support links about frustrating
-  DatoCMS skills or MCP experiences. Use only when users explicitly ask to
-  report, email, or summarize feedback about DatoCMS skills/MCP, or when the
-  skills/MCP workflow has clearly reached a dead end after repeated loops,
-  wrong routing, unresolved misunderstandings, or no credible next step. Do not
-  use for ordinary first failures, retryable MCP/command/API errors, validation
-  feedback, schema discovery misses, missing environment values,
-  project/plugin bugs, or setup problems where another DatoCMS skill can still
-  continue.
+  Build a sanitized, prefilled datocms.com/support link reporting a bad
+  experience with the DatoCMS skills or MCP. Only when the user asks to report,
+  email or summarize feedback about the DatoCMS skills/MCP, or that workflow is
+  at a dead end after repeated loops or wrong routing with no credible next
+  step. Never for a first or retryable failure (command, API, MCP, validation),
+  a missing value, a project, plugin or dashboard bug, other support requests,
+  or anything another DatoCMS skill can still continue.
 ---
 
 # DatoCMS Feedback

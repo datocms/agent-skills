@@ -1,18 +1,19 @@
 ---
 name: datocms-plugin
 description: >-
-  Build, scaffold, wire, maintain, test, and release DatoCMS plugins with
-  datocms-plugin-sdk. Use when users ask to create a new DatoCMS plugin
-  project, patch an existing plugin, add or adjust connect() hooks and their
-  ctx (field extensions, config screens, sidebars, pages, modals, inspectors,
-  outlets, asset sources, dropdown actions, lifecycle hooks), read or write
-  form values and plugin parameters, browser CMA flows, plugin permissions,
-  package metadata, testing local plugin changes without affecting the live
-  installation, or publishing and switching plugin versions. How a plugin's
-  UI looks, which datocms-react-ui components to use, dark mode, and
-  upgrading datocms-react-ui belong to datocms-plugin-design. Route
-  standalone CMA scripts to datocms-cma and frontend website integrations to
-  datocms-frontend-integrations.
+  Load BEFORE the first edit or answer in any project whose package.json (read
+  it first) lists `datocms-plugin-sdk`, not a Vite or other tool's plugin, even
+  when the request never mentions DatoCMS, even for a small fix, and before
+  creating a DatoCMS plugin or hunting a bug in one: scaffolding, connect()
+  hooks and their ctx (field extensions, config screens, sidebar panels, pages,
+  modals, asset sources, dropdown actions, lifecycle hooks), form values and
+  plugin parameters, browser CMA calls, permissions, publishing, testing local
+  changes safely. When the work adds a surface that renders UI, load
+  `datocms-plugin-design` too. Work that only changes how a plugin looks
+  (restyling, components, colours, dark mode, UI review, datocms-react-ui
+  upgrade): `datocms-plugin-design` alone. Installing a plugin on a project or
+  changing its settings through the API: `datocms-cma`. CLI plugins:
+  `datocms-cli`.
 ---
 
 # DatoCMS Plugin
@@ -29,7 +30,7 @@ Plugin code: patch in place; scaffold only when requested or absent. A project's
 2. Classify the request:
    - **Existing plugin:** package already exists and user asks to patch, add, maintain, fix, release-prep, or restyle. Default here.
    - **New plugin:** user asks to create/scaffold/bootstrap a plugin folder, or no plugin project exists.
-   - **UI work** (layout, components, styling, dark mode, react-ui upgrade): also load `datocms-plugin-design`; this skill keeps the hook wiring.
+   - **Anything rendered** (new or changed panel, page, modal, field editor/addon, config form, asset source; layout, components, styling, dark mode, react-ui upgrade): load `datocms-plugin-design` now, before writing TSX; this skill keeps the hook wiring.
 3. Ask only when inspection cannot resolve a behavior-changing choice:
    - plugin/folder name for a new scaffold
    - private vs marketplace plugin when package metadata changes

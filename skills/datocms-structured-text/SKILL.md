@@ -1,16 +1,18 @@
 ---
 name: datocms-structured-text
 description: >-
-  Work with DatoCMS Structured Text (DAST) documents: understand nodes and marks,
-  construct content, edit or traverse trees while preserving embedded references,
-  diagnose and validate documents, import Markdown/HTML or Google Docs exports,
-  and serialize or extract document content. Use for DAST payload work within
-  record creates, updates, and migrations too. Ordinary record CRUD, GraphQL
-  queries, schema design, framework component wiring, and plugin Slate editing
-  stay with their respective skills; pair with this skill when they need
-  document-level Structured Text operations. Do not activate merely because
-  Structured Text appears in a query or renderer task: component props and
-  renderBlock callbacks alone belong to frontend integrations.
+  Load BEFORE building, converting, rewriting, inspecting or validating a
+  DatoCMS Structured Text (DAST) document. With `datocms-cma` when the document
+  is in a record: importing Markdown or HTML into a field, adding, moving or
+  removing nodes, blocks, inline records, links or marks, rewriting prose,
+  changing headings or lists. Alone for local work: explain nodes and marks,
+  write a document, convert Markdown, HTML or a Google Docs export, edit a tree
+  while preserving embedded references, diagnose an invalid document, tell CMA
+  and GraphQL representations apart, extract text, serialize to HTML, Dastdown.
+  Not for saving a ready document unchanged, publishing or editing other fields,
+  choosing a field type (`datocms-content-modeling`), GraphQL queries
+  (`datocms-cda`), framework rendering (`datocms-frontend-integrations`) or
+  Slate editing in a plugin (`datocms-plugin`).
 ---
 
 # DatoCMS Structured Text

@@ -2,19 +2,19 @@
 name: datocms-cma
 description: >-
   Load BEFORE the first command of any task that reads or changes DatoCMS
-  content or schema through the Content Management API (CMA), the `datocms`
-  CLI (`cma:call`, `cma:script`) or a DatoCMS MCP, even a one-record edit:
-  writes to blocks, nested blocks, Structured Text and localized fields
-  replace whole values, what a payload leaves out is deleted, and some
-  operations publish. Covers records, blocks, Structured Text, locales,
-  uploads, publish/unpublish, scheduling, versions and restore, bulk
-  imports/exports, CSV scripts; models, block models, fields, every field type
-  with its validators and editors (presentations); roles/tokens, webhooks,
-  environments; API limits and error codes; typed TypeScript CMA scripts.
-  Includes short follow-ups such as "publish them" or "fix those slugs". Route
-  schema-inspection-only requests, versioned migrations and CLI setup to
-  `datocms-cli`, GraphQL reads to `datocms-cda`, modeling advice to
-  `datocms-content-modeling`, frontend or plugin code to their own skills.
+  records, uploads or schema through the Content Management API (CMA), the
+  `datocms` CLI (`cma:call`, `cma:script`) or a DatoCMS MCP, even a one-record
+  edit: writes to blocks, Structured Text and localized fields replace whole
+  values, what a payload leaves out is deleted, and some operations publish.
+  Covers records, blocks, locales, uploads, publishing, scheduling, restore,
+  bulk imports/exports; direct changes to models, blocks and fields (types,
+  validators, editors); roles/tokens, webhooks, installed plugins, environments;
+  API errors; typed CMA scripts; the token or OAuth login such work needs.
+  Includes short follow-ups ("publish them", "fix those slugs"). Building or
+  rewriting a Structured Text document: also load `datocms-structured-text`.
+  Schema inspection only, migrations, CLI setup, WordPress or Contentful
+  imports: `datocms-cli`. GraphQL reads: `datocms-cda`. Modeling advice:
+  `datocms-content-modeling`. Guided setup: `datocms-setup`.
 ---
 
 # DatoCMS Content Management API Skill

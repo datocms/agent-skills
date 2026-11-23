@@ -1,5 +1,5 @@
 # synced_from_name: datocms-setup
-# synced_from_description_sha256: dfec7027638a694c3839c3ca0571109c875d5d4904eb6080061661c8ac0df080
+# synced_from_description_sha256: 4cd8cbc0bf218f8cdfd0004c7daac205eeb1a24c1a76a108d8b648b0573ca241
 interface:
   display_name: "DatoCMS Setup"
   short_description: "Guided DatoCMS setup: plan first, then build"

@@ -1,20 +1,16 @@
 ---
 name: datocms-content-modeling
 description: >-
-  Decision frameworks for DatoCMS content modeling — schema shape, field
-  choice, content reuse, taxonomies, content vs presentation, admin UI
-  organization. Use for modeling *decisions*, not implementation: model vs
-  block; single_block vs Modular Content vs Structured Text; references vs
-  embedded blocks; taxonomy shape (flat/tree/faceted); refactoring page-shaped
-  schemas to reusable content; fitting per-record size / block-count / depth
-  limits; model behaviour (singleton, draft mode, all_locales_required,
-  sortable/tree/ordering_field, presentation_title_field,
-  collection_appearance, inverse_relationships_enabled); field config
-  (validator + appearance — enum + string_select, slug auto-fill,
-  required_alt_title, structured_text allowlists, framed vs frameless
-  single_block). Also schema review (reuse, editor ergonomics, omnichannel).
-  *Creating* schema → `datocms-cli` or `datocms-cma`. Query/render →
-  `datocms-cda` + `datocms-frontend-integrations`.
+  Load BEFORE advising on or deciding how DatoCMS content should be modelled,
+  and before designing a schema that will then be created. Decisions, not
+  implementation: model vs block; single block vs Modular Content vs Structured
+  Text; link vs embedded block; inside Structured Text, record link vs inline
+  record vs block vs inline block; taxonomies; record size and nesting limits;
+  model behaviour (singleton, draft mode, all locales required, ordering); which
+  field type, validator and editor fit a need; whether a field is worth adding;
+  the editor's experience: hints, fieldsets, menu organisation, saved views.
+  Also schema reviews. Making a decided change: `datocms-cma` or `datocms-cli`.
+  Queries and rendering: `datocms-cda`, `datocms-frontend-integrations`.
 ---
 
 # DatoCMS Content Modeling

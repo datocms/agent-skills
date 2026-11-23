@@ -1,16 +1,17 @@
 ---
 name: datocms-cda
 description: >-
-  Query the DatoCMS Content Delivery API (CDA) — the read-only GraphQL API —
-  using @datocms/cda-client. Use when users ask for GraphQL content reads:
-  fetching posts/pages/projects, filtering by date/text/fields, sorting/order,
-  pagination/load-more, text pattern matching via regex filters, localization and fallback locales,
-  modular content fragments, Structured Text (DAST) with blocks/inline records,
-  responsive images (srcset/blur-up/imgix), SEO metadata (_seoMetaTags, favicons,
-  global SEO), video/Mux fields, draft or preview reads, environment-targeted
-  reads, cache tags via rawExecuteQuery, why responses miss the CDN cache or
-  hit rate limits, and Content Link metadata for visual editing. Also use for CDA query type generation with gql.tada or GraphQL Code
-  Generator.
+  Load BEFORE writing or changing a GraphQL query in any project whose
+  package.json (read it first) lists `@datocms/cda-client` or another DatoCMS
+  package, and whenever the request names DatoCMS or its Content Delivery API
+  (CDA), the read-only GraphQL API: fetching records, filters, sorting,
+  pagination, locale fallbacks, modular content, Structured Text with blocks and
+  inline records, responsive images, video, SEO fields (_seoMetaTags), draft or
+  environment reads, cache tags via rawExecuteQuery, CDN cache misses and rate
+  limits, Content Link metadata, typed queries with gql.tada or GraphQL Code
+  Generator. Draft mode endpoints, preview links, overlays, real-time updates,
+  cache invalidation routes and rendering components:
+  `datocms-frontend-integrations`. Changing content or schema: `datocms-cma`.
 ---
 
 # DatoCMS Content Delivery API Skill

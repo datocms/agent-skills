@@ -1,5 +1,5 @@
 # synced_from_name: datocms-cli
-# synced_from_description_sha256: 5cb7ca5ec829d57b29a79194837a3bd9fe097bb4b5b678c70be68cdb19f612ad
+# synced_from_description_sha256: e11f42beef9e27b1fe104661d6f884b012f4cf50b472b9581f80e3e4830ec241
 interface:
   display_name: "DatoCMS CLI"
   short_description: "Inspect schemas and run migrations with the DatoCMS CLI"
