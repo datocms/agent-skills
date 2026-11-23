@@ -57,6 +57,8 @@ const ALLOWED_HOSTS = (
  * lock and its script workspace there, and waits two minutes for the lock before failing when it cannot write it;
  * credentials live elsewhere), and nothing may leave the sandbox to retry. The write tools are allowed in the
  * temporary folder only: a deny rule on the home directory would also take the data folder away from the shell.
+ * One Unix socket folder is open: `cma:script` runs its script through tsx, which listens on a pipe under the
+ * temporary folder, and with sockets blocked every script that passes type-checking dies on `listen EPERM`.
  * `dev/e2e/routing/claude-tasks.mjs` carries the same settings for its own actors: change the two together.
  */
 export function cliDataDir(home = homedir()): string {
@@ -68,6 +70,9 @@ export function actorSettings(home = homedir()): Record<string, unknown> {
 	const nodeRoot = resolve(dirname(process.execPath), "..");
 	const dataDir = cliDataDir(home);
 	const temporary = [...new Set([tmpdir(), realpathSync(tmpdir())])];
+	// tsx names its pipe `<tmpdir>/tsx-<uid>/<pid>.pipe`; inside the sandbox the temporary folder is /tmp/claude-<uid>.
+	const uid = process.getuid?.() ?? 0;
+	const tsxPipes = [...new Set([tmpdir(), `/tmp/claude-${uid}`, `/private/tmp/claude-${uid}`])].map((folder) => join(folder, `tsx-${uid}`));
 	return {
 		sandbox: {
 			enabled: true,
@@ -82,7 +87,7 @@ export function actorSettings(home = homedir()): Record<string, unknown> {
 				// Its own settings and skills: an actor must not be able to loosen what confines it.
 				denyWrite: ["./.claude"],
 			},
-			network: { allowedDomains: ALLOWED_HOSTS },
+			network: { allowedDomains: ALLOWED_HOSTS, allowUnixSockets: tsxPipes },
 		},
 		permissions: {
 			defaultMode: "dontAsk",
