@@ -68,6 +68,22 @@ export function assertOutcome(kind,before,after){
  assert.equal(after.versions,before.versions+1,'Exactly one new parent version is required');
  assert.deepEqual(canonicalRecord(after.published),canonicalRecord(before.published),'Published content changed');
 }
+// The new block must sit inside the group. No create flag places it there: the entry is created at top level and moved.
+export function assertMenuOutcome(before,after,group){
+ const byId=list=>[...list].sort((a,b)=>a.id.localeCompare(b.id));
+ const models=new Set(before.models.map(m=>m.id)),entries=new Set(before.schemaMenu.map(m=>m.id));
+ const added=after.models.filter(m=>!models.has(m.id));
+ assert.equal(added.length,1,'Exactly one new model is required');
+ const [block]=added;
+ assert.equal(block.api_key,'hero_block');assert.equal(block.modular_block,true,'The new model must be a block');
+ assert.deepEqual(block.fields.map(f=>[f.api_key,f.field_type,'required' in f.validators]),[['headline','string',true]],'Wrong fields on the new block');
+ assert.deepEqual(byId(after.models.filter(m=>models.has(m.id))),byId(before.models),'Existing models changed');
+ assert.deepEqual(byId(after.schemaMenu.filter(m=>entries.has(m.id))),byId(before.schemaMenu),'Existing schema navigation changed');
+ const created=after.schemaMenu.filter(m=>!entries.has(m.id));
+ assert.equal(created.length,1,'Exactly one new schema navigation entry is required');
+ assert.equal(created[0].itemType,block.id,'The new entry must point at the new block');
+ assert.equal(created[0].parent,group,'The new block is not inside the requested group');
+}
 
 async function main(){
  const {values}=parseArgs({options:{site:{type:'string'},output:{type:'string'}}});
@@ -116,20 +132,28 @@ async function main(){
   const ids=records.records;
   assert.deepEqual(ids.map(x=>x.kind),['simple','localized','published']);report.records=ids;save();
   const observation=observationSource(ids);
+  async function actor(kind,recordId,prompt,instructions){
+   const result=await run(`case-${kind}`,prompt,instructions);
+   for(const call of result.mcpCalls.filter(c=>/script$/.test(c.tool)))assert.equal(call.arguments.environment,environment,'Wrong script environment');
+   const executions=result.mcpCalls.filter(c=>/upsert_and_execute_/.test(c.tool));
+   const errors=executions.filter(c=>c.status!=='completed'||!/# Script executed successfully/.test(responseText(c))).map(c=>({tool:c.tool,text:responseText(c),error:c.error??null}));
+   report.cases.push({kind,recordId,strictExecutionPassed:errors.length===0,executionErrors:errors,mcpCalls:result.mcpCalls.length,skillReads:result.skillReads,correctOutcome:null});save();console.log(`COMPLETED actor ${kind}; strict=${errors.length===0}`);
+  }
   const before=await exact('before',observation);writeFileSync(join(output,'before.json'),json(before));
   for(const target of ids){
    const original=before.records.find(r=>r.kind===target.kind);
    const blockId=original.current.body.en.document.children[1].item.id;
    const task=target.kind==='simple'?`Change its title to "Summer update". Leave every other field unchanged. Do not publish.`:`Make three edits to its English Structured Text: change the existing greeting span "Hello reader" to "Welcome reader", change the caption of existing image block ${blockId} to "Summer portrait", and append a final paragraph containing "See you soon.". Preserve the greeting marks, existing link, block ID and image, all other nodes and fields, and the entire Italian locale. Do not publish.`;
-   const result=await run(`case-${target.kind}`,`Use the current hosted DatoCMS MCP for site ${site}, environment ${environment}, record ${target.id}. ${task}`,`Only the requested record edit in the named disposable sandbox is authorized. No changes to schema, settings, environments, uploads, roles, API tokens, billing, or other records. Keep the selected MCP route; no local CLI or direct HTTP fallback.`);
-   for(const call of result.mcpCalls.filter(c=>/script$/.test(c.tool)))assert.equal(call.arguments.environment,environment,'Wrong script environment');
-   const executions=result.mcpCalls.filter(c=>/upsert_and_execute_/.test(c.tool));
-   const errors=executions.filter(c=>c.status!=='completed'||!/# Script executed successfully/.test(responseText(c))).map(c=>({tool:c.tool,text:responseText(c),error:c.error??null}));
-   report.cases.push({kind:target.kind,recordId:target.id,strictExecutionPassed:errors.length===0,executionErrors:errors,mcpCalls:result.mcpCalls.length,correctOutcome:null});save();console.log(`COMPLETED actor ${target.kind}; strict=${errors.length===0}`);
+   await actor(target.kind,target.id,`Use the current hosted DatoCMS MCP for site ${site}, environment ${environment}, record ${target.id}. ${task}`,`Only the requested record edit in the named disposable sandbox is authorized. No changes to schema, settings, environments, uploads, roles, API tokens, billing, or other records. Keep the selected MCP route; no local CLI or direct HTTP fallback.`);
   }
+  await actor('menu',null,`Use the current hosted DatoCMS MCP for site ${site}, environment ${environment}. Create a block model named "Hero" (API key hero_block) with one required single-line string field "Headline" (API key headline). The Schema sidebar has a group called "Page sections": put the new block inside that group.`,`Only the requested new block, its field and its place in the Schema sidebar, in the named disposable sandbox, are authorized. No changes to other models or fields, records, settings, environments, uploads, roles, API tokens or billing. Keep the selected MCP route; no local CLI or direct HTTP fallback.`);
   const after=await exact('after',observation);writeFileSync(join(output,'after.json'),json(after));
   for(const entry of report.cases){
-   try {assertOutcome(entry.kind,before.records.find(r=>r.kind===entry.kind),after.records.find(r=>r.kind===entry.kind));entry.correctOutcome=true;}
+   try {
+    if(entry.kind==='menu')assertMenuOutcome(before,after,schema.group);
+    else assertOutcome(entry.kind,before.records.find(r=>r.kind===entry.kind),after.records.find(r=>r.kind===entry.kind));
+    entry.correctOutcome=true;
+   }
    catch(error){entry.correctOutcome=false;entry.failure=String(error);}
   }
  } catch(error){report.failure=String(error);console.error(String(error));}
@@ -139,7 +163,7 @@ async function main(){
     report.cleanup=await exact('cleanup',cleanupSource(site,environment),{write:true,target:'main'});
    }catch(error){report.cleanup={clean:false,error:String(error)};console.error(`CLEANUP FAILED: ${error}`);}
   }
-  report.completedAt=new Date().toISOString();report.passed=!report.failure&&report.cases.length===3&&report.cases.every(c=>c.correctOutcome)&&report.cleanup?.clean===true;save();
+  report.completedAt=new Date().toISOString();report.passed=!report.failure&&report.cases.length===4&&report.cases.every(c=>c.correctOutcome)&&report.cleanup?.clean===true;save();
  }
  console.log(json(report));if(!report.passed)process.exitCode=1;
 }

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {assertOutcome,exactScriptOutput} from '../e2e/hosted/run.mjs';
+import {assertMenuOutcome,assertOutcome,exactScriptOutput} from '../e2e/hosted/run.mjs';
 import * as hosted from '../e2e/hosted/run.mjs';
 import {readFileSync} from 'node:fs';
 import {initialRecord,expectedRecord} from '../evals/coexistence/cases.mjs';
@@ -44,6 +44,24 @@ test('hosted oracle rejects changes to non-target blocks, assets, locales and pu
   after=>after.current.meta.published_at='different date',
   after=>after.versions++,
  ]){const before=record('published'),after=changed(before);mutate(after);assert.throws(()=>assertOutcome('published',before,after));}
+});
+test('hosted schema oracle accepts only a new block filed inside the requested group',()=>{
+ const article={id:'article',api_key:'hosted_article',modular_block:false,fields:[{api_key:'body',field_type:'structured_text',validators:{structured_text_blocks:{item_types:['image']}}}]};
+ const image={id:'image',api_key:'hosted_image',modular_block:true,fields:[]};
+ const entry=(id,itemType,parent=null,label=null)=>({id,label,kind:itemType==='article'?'item_type':'modular_block',parent,itemType});
+ const before={models:[article,image],schemaMenu:[entry('m-article','article'),entry('m-image','image'),entry('group',null,null,'Page sections')]};
+ const done=()=>({models:[image,{id:'hero',api_key:'hero_block',modular_block:true,fields:[{api_key:'headline',field_type:'string',validators:{required:{}}}]},article],schemaMenu:[...structuredClone(before.schemaMenu).reverse(),entry('m-hero','hero','group')]});
+ assert.doesNotThrow(()=>assertMenuOutcome(before,done(),'group'));
+ for(const [mutate,message] of [
+  [after=>{after.schemaMenu.at(-1).parent=null;},/not inside the requested group/],
+  [after=>{after.schemaMenu.at(-1).parent='m-image';},/not inside the requested group/],
+  [after=>{after.schemaMenu.find(m=>m.id==='m-image').parent='group';},/Existing schema navigation changed/],
+  [after=>{after.schemaMenu.push(entry('other',null,null,'Page sections'));},/Exactly one new schema navigation entry/],
+  [after=>{after.models[1].modular_block=false;},/must be a block/],
+  [after=>{after.models[1].fields[0].validators={};},/Wrong fields/],
+  [after=>{after.models[2].fields[0].validators.structured_text_blocks.item_types.push('hero');},/Existing models changed/],
+  [after=>{after.models.splice(1,1);},/Exactly one new model/],
+ ]){const after=structuredClone(done());mutate(after);assert.throws(()=>assertMenuOutcome(before,after,'group'),message);}
 });
 test('hosted fixture output requires verbatim source and an actual execution receipt',()=>{
  const source='console.log(JSON.stringify({ok:true}));';
