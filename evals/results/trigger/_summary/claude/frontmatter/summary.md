@@ -1,21 +1,21 @@
 # Trigger Eval Summary
 
-Generated at: 2026-09-26T13:21:36.049437+00:00
+Generated at: 2026-11-23T02:27:21.014957+00:00
 Track / source: `claude` / `frontmatter`
 Trigger threshold (per-query): `0.5`
 F1 gate threshold: `0.9`
-Models: `claude-opus-5-5`
+Models: `claude-sonnet-5-5`
 
 ## Gate
 
-PASS — 9/9 skills at or above F1 90.0%.
+PASS — 10/10 skills at or above F1 90.0%.
 
 ## Unweighted F1 Stats
 
 - Median: 100.0%
-- Mean: 98.7%
-- Min: 92.1% (`datocms-cli`)
-- Max: 100.0% (`datocms-cda`)
+- Mean: 99.2%
+- Min: 97.1% (`datocms-cma`)
+- Max: 100.0% (`datocms-cli`)
 
 Each skill counts once. No case-weighted averaging across skills.
 
@@ -23,15 +23,16 @@ Each skill counts once. No case-weighted averaging across skills.
 
 | Skill | Reported Pass | Precision | Recall | F1 | FN | FP |
 |---|---:|---:|---:|---:|---:|---:|
-| datocms-cda | 30/30 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
-| datocms-cli | 42/47 (89.4%) | 93.5% | 90.6% | 92.1% | 3 | 2 |
-| datocms-cma | 40/40 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
-| datocms-content-modeling | 41/42 (97.6%) | 100.0% | 96.4% | 98.2% | 1 | 0 |
-| datocms-feedback | 40/40 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
-| datocms-frontend-integrations | 27/27 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
-| datocms-plugin | 29/29 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
-| datocms-setup | 42/43 (97.7%) | 95.5% | 100.0% | 97.7% | 0 | 1 |
-| datocms-structured-text | 34/34 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
+| datocms-cda | 38/39 (97.4%) | 96.3% | 100.0% | 98.1% | 0 | 1 |
+| datocms-cli | 91/91 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
+| datocms-cma | 99/102 (97.1%) | 100.0% | 94.3% | 97.1% | 3 | 0 |
+| datocms-content-modeling | 54/54 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
+| datocms-feedback | 45/45 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
+| datocms-frontend-integrations | 57/57 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
+| datocms-plugin | 42/43 (97.7%) | 96.6% | 100.0% | 98.2% | 0 | 1 |
+| datocms-plugin-design | 41/41 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
+| datocms-setup | 63/64 (98.4%) | 100.0% | 96.4% | 98.2% | 1 | 0 |
+| datocms-structured-text | 90/90 (100.0%) | 100.0% | 100.0% | 100.0% | 0 | 0 |
 
 ## Skill Mode Breakdown
 
@@ -39,82 +40,89 @@ Each skill counts once. No case-weighted averaging across skills.
 
 | Query Mode | Total | Reported Pass | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
-| implicit | 14 | 14/14 (100.0%) | 100.0% | 100.0% | 100.0% |
+| implicit | 21 | 21/21 (100.0%) | 100.0% | 100.0% | 100.0% |
 | explicit | 2 | 2/2 (100.0%) | 100.0% | 100.0% | 100.0% |
-| overlap | 14 | 14/14 (100.0%) | 100.0% | 100.0% | 100.0% |
+| overlap | 16 | 15/16 (93.8%) | 91.7% | 100.0% | 95.7% |
 
 ### datocms-cli
 
 | Query Mode | Total | Reported Pass | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
-| implicit | 30 | 30/30 (100.0%) | 100.0% | 100.0% | 100.0% |
+| implicit | 40 | 40/40 (100.0%) | 100.0% | 100.0% | 100.0% |
 | explicit | 4 | 4/4 (100.0%) | 100.0% | 100.0% | 100.0% |
-| overlap | 13 | 8/13 (61.5%) | 66.7% | 57.1% | 61.5% |
+| overlap | 47 | 47/47 (100.0%) | 100.0% | 100.0% | 100.0% |
 
 ### datocms-cma
 
 | Query Mode | Total | Reported Pass | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
-| implicit | 24 | 24/24 (100.0%) | 100.0% | 100.0% | 100.0% |
+| implicit | 43 | 42/43 (97.7%) | 100.0% | 97.1% | 98.6% |
 | explicit | 2 | 2/2 (100.0%) | 100.0% | 100.0% | 100.0% |
-| overlap | 14 | 14/14 (100.0%) | 100.0% | 100.0% | 100.0% |
+| overlap | 57 | 55/57 (96.5%) | 100.0% | 87.5% | 93.3% |
 
 ### datocms-content-modeling
 
 | Query Mode | Total | Reported Pass | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
-| implicit | 26 | 26/26 (100.0%) | 100.0% | 100.0% | 100.0% |
-| overlap | 16 | 15/16 (93.8%) | 100.0% | 66.7% | 80.0% |
+| implicit | 34 | 34/34 (100.0%) | 100.0% | 100.0% | 100.0% |
+| overlap | 20 | 20/20 (100.0%) | 100.0% | 100.0% | 100.0% |
 
 ### datocms-feedback
 
 | Query Mode | Total | Reported Pass | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
-| implicit | 9 | 9/9 (100.0%) | 100.0% | 100.0% | 100.0% |
+| implicit | 13 | 13/13 (100.0%) | 100.0% | 100.0% | 100.0% |
 | explicit | 1 | 1/1 (100.0%) | 100.0% | 100.0% | 100.0% |
-| overlap | 30 | 30/30 (100.0%) | 100.0% | 100.0% | 100.0% |
+| overlap | 31 | 31/31 (100.0%) | 100.0% | 100.0% | 100.0% |
 
 ### datocms-frontend-integrations
 
 | Query Mode | Total | Reported Pass | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
-| implicit | 14 | 14/14 (100.0%) | 100.0% | 100.0% | 100.0% |
+| implicit | 15 | 15/15 (100.0%) | 100.0% | 100.0% | 100.0% |
 | explicit | 2 | 2/2 (100.0%) | 100.0% | 100.0% | 100.0% |
-| overlap | 11 | 11/11 (100.0%) | 100.0% | 100.0% | 100.0% |
+| overlap | 40 | 40/40 (100.0%) | 100.0% | 100.0% | 100.0% |
 
 ### datocms-plugin
 
 | Query Mode | Total | Reported Pass | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
-| implicit | 20 | 20/20 (100.0%) | 100.0% | 100.0% | 100.0% |
+| implicit | 23 | 23/23 (100.0%) | 100.0% | 100.0% | 100.0% |
 | explicit | 3 | 3/3 (100.0%) | 100.0% | 100.0% | 100.0% |
-| overlap | 6 | 6/6 (100.0%) | 100.0% | 100.0% | 100.0% |
+| overlap | 17 | 16/17 (94.1%) | 90.0% | 100.0% | 94.7% |
+
+### datocms-plugin-design
+
+| Query Mode | Total | Reported Pass | Precision | Recall | F1 |
+|---|---:|---:|---:|---:|---:|
+| implicit | 13 | 13/13 (100.0%) | 100.0% | 100.0% | 100.0% |
+| explicit | 1 | 1/1 (100.0%) | 100.0% | 100.0% | 100.0% |
+| overlap | 27 | 27/27 (100.0%) | 100.0% | 100.0% | 100.0% |
 
 ### datocms-setup
 
 | Query Mode | Total | Reported Pass | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
-| implicit | 19 | 19/19 (100.0%) | 100.0% | 100.0% | 100.0% |
+| implicit | 19 | 18/19 (94.7%) | 100.0% | 91.7% | 95.7% |
 | explicit | 4 | 4/4 (100.0%) | 100.0% | 100.0% | 100.0% |
-| overlap | 20 | 19/20 (95.0%) | 83.3% | 100.0% | 90.9% |
+| overlap | 41 | 41/41 (100.0%) | 100.0% | 100.0% | 100.0% |
 
 ### datocms-structured-text
 
 | Query Mode | Total | Reported Pass | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
-| implicit | 17 | 17/17 (100.0%) | 100.0% | 100.0% | 100.0% |
+| implicit | 23 | 23/23 (100.0%) | 100.0% | 100.0% | 100.0% |
 | explicit | 2 | 2/2 (100.0%) | 100.0% | 100.0% | 100.0% |
-| overlap | 15 | 15/15 (100.0%) | 100.0% | 100.0% | 100.0% |
+| overlap | 65 | 65/65 (100.0%) | 100.0% | 100.0% | 100.0% |
 
 ## False Negatives
 
-- `datocms-cli` [overlap] I need to add a seo field to the article model on DatoCMS
-- `datocms-cli` [overlap] rename the 'body' field on blog_post to 'content' in our DatoCMS project
-- `datocms-cli` [overlap] add a required meta_description to every DatoCMS model that has a title field
-- `datocms-content-modeling` [overlap] Inside DatoCMS structured text, when should I use inlineItem vs itemLink? And what's the difference between block and inlineBlock?
+- `datocms-cma` [overlap] How do I fork a DatoCMS environment, make some schema changes (add a new field to the blog_post model), and then promote it to primary? Using the CMA client programmatically.
+- `datocms-cma` [overlap] I just want to add a new optional text field to the author model on DatoCMS, quickly, without setting up a migrations workflow — what's the right way?
+- `datocms-cma` I just want to add an optional text field called nickname to the author model in DatoCMS, quickly, without setting up a migrations workflow.
+- `datocms-setup` Plan the DatoCMS setup for this repo: connect the CLI, generate CMA types, and add a GitHub Actions workflow that releases migrations.
 
 ## False Positives
 
-- `datocms-cli` [overlap] We have no DatoCMS tooling in this repo yet. Can you plan how we'd link the project, keep schema changes in migrations and release them from GitHub Actions? Don't change anythin...
-- `datocms-cli` [overlap] I don't want to add a CMA token to .env for this DatoCMS cleanup — use my login instead and delete those three test records
-- `datocms-setup` [overlap] Set up the datocms CLI in this repo and link it to our existing project.
+- `datocms-cda` [overlap] how do i set up cache tag invalidation for my DatoCMS next.js site? when content changes i want to revalidate only the affected pages, not the whole site
+- `datocms-plugin` [overlap] Patch this existing DatoCMS plugin settings page and make the updated UI feel native while keeping the behavior the same.

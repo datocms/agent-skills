@@ -1,0 +1,480 @@
+{
+  "skill_name": "datocms-plugin-design",
+  "description": "Load BEFORE writing or changing anything a DatoCMS plugin renders, in any project whose package.json (read it first) lists `datocms-plugin-sdk`, even when the request never mentions DatoCMS and even for a small tweak: the interface of a config screen, field editor or addon, field-extension config, sidebar or sidebar panel, custom page, modal, inspector, outlet or asset source. Built with datocms-react-ui 4, the dashboard's own components, by the rules of react-ui.datocms.com. Use for a new surface (with `datocms-plugin`, which wires its hook), restyling to look native, UI review, picking and composing components (Canvas, Page, Pane, Toolbar, FieldWrapper, Table, Dropdown, BlankSlate, Modal), colour tokens and dark mode, frame height and what the host already draws (a title, border or close button shown twice), list-and-detail and form screens, keyboard actions, upgrading from datocms-react-ui 2.x or 3.x. Plugin work with no UI (hooks, ctx, lifecycle, scaffolding, permissions, publishing): `datocms-plugin`.",
+  "evaluation_source": "frontmatter",
+  "routing_surface": {
+    "description": "Load BEFORE writing or changing anything a DatoCMS plugin renders, in any project whose package.json (read it first) lists `datocms-plugin-sdk`, even when the request never mentions DatoCMS and even for a small tweak: the interface of a config screen, field editor or addon, field-extension config, sidebar or sidebar panel, custom page, modal, inspector, outlet or asset source. Built with datocms-react-ui 4, the dashboard's own components, by the rules of react-ui.datocms.com. Use for a new surface (with `datocms-plugin`, which wires its hook), restyling to look native, UI review, picking and composing components (Canvas, Page, Pane, Toolbar, FieldWrapper, Table, Dropdown, BlankSlate, Modal), colour tokens and dark mode, frame height and what the host already draws (a title, border or close button shown twice), list-and-detail and form screens, keyboard actions, upgrading from datocms-react-ui 2.x or 3.x. Plugin work with no UI (hooks, ctx, lifecycle, scaffolding, permissions, publishing): `datocms-plugin`."
+  },
+  "model": "claude-sonnet-5-5",
+  "results": [
+    {
+      "query": "The config screen of our DatoCMS plugin looks off next to the rest of the dashboard. Rebuild it with datocms-react-ui so it looks native.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Which datocms-react-ui component should I use for a list of webhooks with a detail panel on the right, inside my plugin's custom page?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "My plugin's sidebar panel shows two titles and two collapse arrows. What am I doing wrong in the panel UI?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Our plugin hard-codes #ff5e49 and #f5f5f5 in its CSS and looks broken in dark mode. Switch it to the right color tokens.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "We still import TextField and ButtonLink from datocms-react-ui 2. Move the plugin to version 4 components.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Design the asset picker UI for our Unsplash asset source: search box, grid of results, empty and loading states.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "The modal my plugin opens has its own title and close button inside, duplicated by DatoCMS. Fix the modal content layout.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Review the UI of this DatoCMS plugin field addon against the react-ui.datocms.com rules before we publish it.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "The Pane on my plugin page collapses to zero height inside a SplitPane. How should the layout be set up?",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Use datocms-plugin-design to lay out the settings form of our translation plugin.",
+      "should_trigger": true,
+      "query_mode": "explicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Restyle this DatoCMS plugin sidebar panel with local CSS so it matches DatoCMS density, borders, and typography.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Upgrade this existing DatoCMS plugin from legacy CSS variables to semantic Canvas tokens so it works in dark mode.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Patch this existing DatoCMS plugin settings page and make the updated UI feel native while keeping the behavior the same.",
+      "should_trigger": true,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Register an itemFormDropdownActions entry that duplicates the current record, with no UI.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Scaffold a new DatoCMS plugin project with Vite and a connect() entry point.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Add an onBeforeItemUpsert hook to our plugin that blocks saving when the slug is empty.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Which plugin permission do I need to read the current user's access token from ctx?",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Make our field extension read and write a nested localized field value with ctx.setFieldValue.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Render the DatoCMS responsive Image component on our Next.js blog post page.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-frontend-integrations"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Our marketing site should match the look of the DatoCMS dashboard. Style the Nuxt header with the same colors.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-frontend-integrations"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Install the SEO Analysis plugin on our project and set its global parameters through the API.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cma"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Change the editor appearance of 40 text fields to our color-picker plugin with a script.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-cma"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Write a Node script that exports every record of the article model to CSV.",
+      "should_trigger": false,
+      "query_mode": "implicit",
+      "boundary_with": [],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In our DatoCMS plugin: add a dropdown action to the record form that clears the slug field.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In our DatoCMS plugin: make this plugin stop a record from being saved when its slug is empty.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In our DatoCMS plugin: which permission does this plugin need to read the current user's access token from ctx?",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "This plugin is installed on our live DatoCMS project. I want to try my local changes without breaking it for the editors. How?",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Scaffold a new DatoCMS plugin project with Vite and a connect() entry point. No screens yet.",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Get this DatoCMS plugin ready for the Marketplace: what must package.json contain, and how do I publish it?",
+      "should_trigger": false,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In our DatoCMS plugin: add a second sidebar panel to this plugin that shows the word count and reading time of the body field.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Create a DatoCMS plugin with a config screen where the admin enters an API key and picks a default language, and a record sidebar panel that shows the translation status of the record.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In our DatoCMS plugin: add a page to this plugin, reachable from the top navigation, with a table of the latest webhook calls and a detail pane on the right.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In our DatoCMS plugin: add a modal to this plugin where the editor picks a product from our catalogue API; the chosen product's handle goes back to the field that opened it.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In our DatoCMS plugin: add an Unsplash asset source to this plugin: a search box, a grid of results, loading and empty states.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In our DatoCMS plugin: add a star-rating field editor to this plugin for integer fields.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "The config screen of this plugin looks off next to the rest of the DatoCMS dashboard. Make it look native; keep what it does.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In our DatoCMS plugin: this plugin hard-codes #ff5e49 and #f5f5f5 and looks broken in dark mode. Fix the colours.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "In our DatoCMS plugin: which component should I use for a list of items with a detail panel on the right, inside a page of this plugin?",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "The sidebar panel of this plugin shows its title twice in DatoCMS. What is wrong with the panel?",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "This plugin is still on datocms-react-ui 2. Move it to the current version.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "Review the interface of this plugin's config screen against the DatoCMS design rules before we publish it.",
+      "should_trigger": true,
+      "query_mode": "overlap",
+      "boundary_with": [
+        "datocms-plugin"
+      ],
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    }
+  ],
+  "summary": {
+    "total": 41,
+    "passed": 41,
+    "failed": 0
+  }
+}
