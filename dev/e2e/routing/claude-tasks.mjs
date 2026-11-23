@@ -75,7 +75,8 @@ const SETTINGS = {
   },
 };
 
-const OTHER_STACK = new Set(['next-other', 'vite-plugin']);
+// Projects with no DatoCMS in them: another CMS, another kind of plugin, or a site that does not use DatoCMS yet.
+const OTHER_STACK = new Set(['next-other', 'vite-plugin', 'next-plain']);
 
 function workspaceFor(task) {
   const dir = mkdtempSync(join(tmpdir(), 'dato-routing-'));

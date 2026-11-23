@@ -86,6 +86,7 @@ The API is strict where guesses usually go wrong. Hold these before building any
 - Per record: 1,000 blocks, 5 block levels, 1 MB by default (`TECHNICAL_LIMIT_REACHED`; the project's real limits come from `client.publicInfo.find()`).
 - Structured Text: `block` nodes only under `root`, `inlineBlock` inside text. Marks are `strong`, `emphasis`, `code`, `underline`, `strikethrough`, `highlight` (never `bold` / `italic`: the API stores an unknown name as a custom mark instead of rejecting it). The API normalizes the document it stores and does not enforce the editor's `nodes` / `marks` / `heading_levels`.
 - `update` never publishes a draft-mode record. Blocks cannot be written, published or deleted on their own, only through their record.
+- Publishing some locales (`content_in_locales`) of a record with no published version: send `non_localized_content: true` too. The non-localized fields belong to that first version, so this is still "only that locale", not an extra publication (`references/records.md`).
 - A model without draft mode (`draft_mode_active: false`) has no drafts: every write is live at once, and `itemVersions.restore` publishes the version it restores (with draft mode it adds an unpublished version). Read the model's setting before a restore or an edit that must not reach the website; when it cannot be done without going live, say so and change nothing.
 - Rejections are `INVALID_FIELD` errors: `details.field` is the path (`sections.0.ctas.0.title`), `details.code` the reason (`VALIDATION_REQUIRED`, `INVALID_FORMAT`…).
 
