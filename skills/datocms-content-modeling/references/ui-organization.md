@@ -101,7 +101,7 @@ Every `itemTypes.create` auto-creates menu entries:
 - Regular model → `menu_item` in **Content tab** **and** `schema_menu_item` (`kind: "item_type"`) in **Schema tab**
 - Block model → only `schema_menu_item` (`kind: "modular_block"`) in **Schema tab** blocks tree — no Content tab entry (dashboard menu form excludes block models; API doesn't enforce it); editors reach block instances through parent record
 
-`schema_menu_item` **always** created — no skip flag. Can only redirect placement. Content tab `menu_item` = only one that can skip outright.
+`schema_menu_item` **always** created, at top level — no skip flag, no placement flag: move it after the create. Content tab `menu_item` = only one that can skip outright.
 
 Convenient for first ten models. After? Menu sprawls — every block at top level in creation order. Fix = awareness at script time.
 
@@ -110,8 +110,8 @@ Convenient for first ten models. After? Menu sprawls — every block at top leve
 | Flag | Effect |
 | - | - |
 | `skip_menu_item_creation: true` | Skips Content tab `menu_item` only. `schema_menu_item` still created. No-op for blocks. |
-| `menu_item_id: "<id>"` | Wire new model's Content tab entry to _specific existing_ `menu_item` vs creating new one. |
-| `schema_menu_item_id: "<id>"` | Place auto-created `schema_menu_item` _under_ existing schema menu node, not top level. |
+| `menu_item_id: "<id>"` | ID the auto-created Content tab `menu_item` _gets_: a new one (`generateId()`), so the script knows it up front. Not a link and not a parent: an existing menu item's ID fails with `422 VALIDATION_UNIQUENESS` on `public_id`. |
+| `schema_menu_item_id: "<id>"` | Same for the auto-created `schema_menu_item`, which lands at top level either way. |
 
 ```ts
 // Bulk creation without polluting the Content tab menu — Schema tab
@@ -121,12 +121,17 @@ await client.itemTypes.create(
   { skip_menu_item_creation: true },
 );
 
-// Or: create the block directly inside an existing "Page sections" group
-await client.itemTypes.create(
-  { name: "Hero", api_key: "hero_block", modular_block: true },
-  { schema_menu_item_id: pageSectionsGroupId },
-);
+// Put a new block inside an existing "Page sections" group: create it, then
+// move its schema menu item (no create flag places it).
+const hero = await client.itemTypes.create({ name: "Hero", api_key: "hero_block", modular_block: true });
+const entry = (await client.schemaMenuItems.list()).find((item) => item.item_type?.id === hero.id);
+await client.schemaMenuItems.update(entry!.id, {
+  parent: { type: "schema_menu_item", id: pageSectionsGroupId },
+  position: 1,
+});
 ```
+
+Content tab entry: same two steps with `menuItems.list()` and `menuItems.update(id, { parent: { type: "menu_item", id: folderId }, position })`. To skip the lookup, pass a fresh `generateId()` as `schema_menu_item_id` / `menu_item_id` on create and update that ID.
 
 **Modeling implication: menu organization = part of migration**, not cleanup. Script creates ten blocks? Should also place them. Default behavior wins, menu degrades one model at time.
 
