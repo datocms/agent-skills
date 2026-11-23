@@ -150,6 +150,25 @@ Any other skill loaded fails the task, so a task with none of the three expects 
 
 [`dev/e2e/routing/live-loads.mjs`](../dev/e2e/routing/live-loads.mjs) reads finished runs of the live suite (`local/e2e/<run>`) and checks the skills each case loaded against [`live-expected.json`](../dev/e2e/routing/live-expected.json). It runs no model.
 
+### What an agent did with each skill file
+
+[`dev/e2e/routing/skill-usage.mjs`](../dev/e2e/routing/skill-usage.mjs) replays the transcripts of finished runs and reports, per skill file and per section, what happened to the text. It works on the live suite (`local/e2e/<run>`), the hosted MCP smoke (`local/hosted/<run>`) and any folder of cases that hold a Claude `raw.jsonl` or a Codex `native.jsonl`.
+
+```bash
+node dev/e2e/routing/skill-usage.mjs --out local/usage/<name>.md local/e2e/<run> [more runs]
+node dev/e2e/routing/skill-usage.mjs --judge claude-sonnet-5-5 --only <case> local/e2e/<run>
+```
+
+| Measure | Meaning |
+| - | - |
+| Reach | Lines of the file found in what the agent was shown: the skill body a `Skill` call injects and the output of every read, `cat`, `grep` or MCP call. A file nobody opened is listed as such |
+| How it arrived | Skill load, file read, or the MCP tool whose answer carried the text |
+| When | Before the first write attempt, after a failed call, or later with nothing failing |
+| Echo | Code terms the agent used after the read that it first met in that file: not in the prompt, not used before, not shown first by another tool. Evidence of use, not proof: a model may know the term anyway |
+| Judge (`--judge <model>`) | A model without tools reads each case's timeline and the sections the agent saw, and answers per file: used, not used or misled, plus what the agent needed and no file gave. This is the only part that runs a model |
+
+Reach and timing are measured from the transcript. A file with reach and no echo was read and is not shown to matter; a section no case reaches is text no agent has seen in these tasks, which says as much about the tasks as about the text. Runs made before the harness saved the task prompt (`prompt` in `session.json`) credit a file with terms the prompt gave. Lines are matched against the skills in the checkout: for a run made on older skills, pass that version with `--skills <dir>` (for example `git worktree add <dir> <commit>`, then `<dir>/skills`), or lines edited since count as not read.
+
 ---
 
 ## Validation

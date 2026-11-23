@@ -695,6 +695,8 @@ export async function nativeSession(options: NativeOptions) {
   const result = {
     model,
     reasoningEffort: EFFORT,
+    // What the agent was asked, one entry per turn: the transcript does not repeat it, and usage analysis needs it.
+    prompts,
     exitCode,
     stderr: redact(stderr),
     timedOut,

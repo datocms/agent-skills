@@ -336,6 +336,8 @@ export async function runClaude(
 			{
 				agent: "claude",
 				model,
+				// What the agent was asked: the transcript does not repeat it, and usage analysis needs it.
+				prompt: options.prompt.split(options.apiToken).join(REDACTED),
 				exitCode,
 				stderr: stderr.slice(-2000),
 				timedOut,
