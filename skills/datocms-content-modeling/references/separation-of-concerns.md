@@ -95,7 +95,7 @@ Every DatoCMS record exposes `meta` object with fields existing on all models. *
 | `created_at` | Timestamp record first created | ✅ yes (record info panel, by anyone who can update the record's non-localized content, or `meta` through the API) |
 | `updated_at` | Timestamp of last update | no, set by the system |
 | `published_at` | Timestamp of most recent publication | no, set by publishing |
-| `first_published_at` | Timestamp of first-ever publication | ✅ yes, same as `created_at` (the panel shows it on draft-mode models; the API accepts it on any) |
+| `first_published_at` | Timestamp of first-ever publication | ✅ yes, same as `created_at` (the panel shows it on draft-mode models once the record has been published; the API accepts it on any) |
 | `publication_scheduled_at` | Timestamp of future scheduled publication | by scheduling a publication, not by editing the value |
 | `status` | `'draft' \| 'updated' \| 'published'` | derived |
 | `is_valid` | Whether record passes its validators | derived |
@@ -110,7 +110,7 @@ fields.create(modelId, {
   label: "Publication date",
 });
 
-// ✅ Just read record.meta on the frontend: published_at (set by each publish), or
+// ✅ Just read record.meta on the frontend: published_at (set when the published version changes), or
 // first_published_at when editors must be able to backdate it. It is the one
 // publication timestamp that can be edited, and editing it never changes published_at.
 ```

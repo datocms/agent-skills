@@ -88,7 +88,7 @@ Flag has no effect unless `draft_mode_active: true` also set. Both must be `fals
 
 ### `all_locales_required`
 
-When `true`, every localized field of a stored record carries every project locale. On create a missing locale is filled with `null`; on update a locale cannot be removed (`INVALID_LOCALES`). A value may be empty unless the field is `required`, and a first selective publication must include every locale.
+When `true`, every localized field of a stored record carries every project locale. On create a missing locale is filled with `null`; on update a locale cannot be removed (`INVALID_LOCALES`). A value may be empty unless the field is `required`. A selective publication of a record with no published version must list every locale, and a selective unpublish is always refused (`ALL_LOCALES_MUST_BE_PUBLISHED`): unpublish the whole record.
 
 **Use when:** team operates strict translation parity (legal content, structured data feeds, consistent product catalogs).
 

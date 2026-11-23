@@ -98,10 +98,10 @@ Mental model: a record has **one locale set**, shared by all its localized field
 
 Two consequences to internalize:
 
-- `title: { it }` alone on an `{ en, it }` record is **rejected** — it would drop `en` from one field only. To actually drop `en`, use the add/remove row (send every field).
+- `title: { it }` alone on an `{ en, it }` record is **rejected** — it would drop `en` from one field only. To actually drop `en`, use the add/remove row (send every field; never possible on an `all_locales_required` model).
 - Adding `fr` means sending **every** localized field with an `fr` key (value or `null`) in the same request — the one time you can't send just the field you changed (DatoCMS calls this the "Locale Sync Rule").
 
-**Replace, not merge** ([update Rule 1](https://www.datocms.com/docs/content-management-api/resources/item/update#updating-localized-fields)). A sent field's per-locale object fully replaces the stored one, so a locale you omit is not kept: the write is rejected, or, when every localized field of the record is sent without it, the locale is deleted — spread to preserve, as in _Updating Localized Fields_ above. Whole fields you don't send stay untouched.
+**Replace, not merge** ([update Rule 1](https://www.datocms.com/docs/content-management-api/resources/item/update#updating-localized-fields)). A sent field's per-locale object fully replaces the stored one, so a locale you omit is not kept: the write is rejected, or, when every localized field of the record is sent without it, the locale is deleted (never with `all_locales_required`) — spread to preserve, as in _Updating Localized Fields_ above. Whole fields you don't send stay untouched.
 
 **Locale-scoped tokens — update only** ([update Rule 3](https://www.datocms.com/docs/content-management-api/resources/item/update#updating-localized-fields)). A token that can write only some locales sends just those; the CMA preserves the record's existing values for the locales it can't access (so the set stays consistent), and rejects any write to an out-of-scope locale with `INSUFFICIENT_PERMISSIONS`. No such preservation on create.
 

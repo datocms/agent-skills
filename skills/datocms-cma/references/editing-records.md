@@ -358,7 +358,7 @@ if (currentItem.content) {
 
 A localized field's value is an object keyed by locale. Two rules:
 
-- **Send every locale of a field you update:** spread the current value and change what you need (`{ ...it.question, es: "..." }`). A locale left out of one field is rejected with `INVALID_LOCALES`; left out of every localized field of the record, all sent together, it is removed from the record (that is how a translation is deleted: an empty string keeps the locale).
+- **Send every locale of a field you update:** spread the current value and change what you need (`{ ...it.question, es: "..." }`). A locale left out of one field is rejected with `INVALID_LOCALES`; left out of every localized field of the record, all sent together, it is removed from the record (that is how a translation is deleted, never with `all_locales_required`: an empty string keeps the locale).
 - **All localized fields of a record share one set of locales.** Adding or removing a locale on one field means sending **every** localized field in that update, each with the new set (a value or `null`). Adding `es` to `question` alone is rejected; include `es` on `answer` too.
 
 Adding a locale = two executions: record types come from the environment's locales before a script runs, so the script that adds a locale cannot type it. 1) Append the locale (keep order; first = primary), read `site.locales` back. 2) New execution (regenerate any local schema file first): backfill. Spread existing per-locale objects.
