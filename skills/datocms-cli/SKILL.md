@@ -53,7 +53,7 @@ For CLI work, use `npx datocms schema:inspect` (not manually joined model and fi
 
 ### Authentication policy
 
-- **Interactive CLI execution**: OAuth via `login` + `link`. Never ask user to paste token or add `DATOCMS_CMA_TOKEN=...` to `.env` for this case.
+- **Interactive CLI execution**: OAuth via `login` + `link`. Never ask user to paste token or add `DATOCMS_API_TOKEN=...` to `.env` for this case.
 - **Unattended execution** (CI, cron, server-side app, shared scripts without OAuth session): CMA-enabled token via env var. Read-only CDA tokens (`DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`, `DATOCMS_DRAFT_CONTENT_CDA_TOKEN`, `NEXT_PUBLIC_DATOCMS_API_TOKEN`) won't work — flag that separate CMA-enabled token is needed.
 
 ## Step 2: Resolve the Workflow

@@ -29,7 +29,7 @@ Design reusable, editor-friendly DatoCMS schemas. Advice needs no CLI, MCP, logi
 
 Once modeling decision made:
 
-- **Implementation** — `datocms-cli` (migrations, default) or `datocms-cma` (user opts out of migrations / wants immediate schema mutation).
+- **Implementation** — `datocms-cli` (migrations; it asks first when the user has no preference and the repo has no migration convention) or `datocms-cma` (user opts out of migrations / wants immediate schema mutation).
 - **Querying / rendering** — `datocms-cda` for GraphQL reads and Structured Text query fragments; `datocms-frontend-integrations` for framework rendering.
 - **Validator and cascade-strategy mechanics** — `datocms-cma/references/schema.md` (link/structured-text validators, `on_reference_delete_strategy`, etc.).
 - **Building, editing, or validating DAST** — **datocms-structured-text**: [document model](../datocms-structured-text/references/document-model.md), [editing](../datocms-structured-text/references/editing.md); source import/export → [conversion](../datocms-structured-text/references/conversion.md). CMA persists the finished payload.

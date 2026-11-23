@@ -92,10 +92,10 @@ Every DatoCMS record exposes `meta` object with fields existing on all models. *
 
 | Built-in (on `record.meta`) | What it is | Editor-editable? |
 | - | - | - |
-| `created_at` | Timestamp record first created | ✅ yes (record info panel, or `meta` through the API; needs the permission to edit record metadata) |
+| `created_at` | Timestamp record first created | ✅ yes (record info panel, by anyone who can update the record, or `meta` through the API) |
 | `updated_at` | Timestamp of last update | no, set by the system |
 | `published_at` | Timestamp of most recent publication | no, set by publishing |
-| `first_published_at` | Timestamp of first-ever publication | ✅ yes, same as `created_at` |
+| `first_published_at` | Timestamp of first-ever publication | ✅ yes, same as `created_at` (draft-mode models) |
 | `publication_scheduled_at` | Timestamp of future scheduled publication | by scheduling a publication, not by editing the value |
 | `status` | `'draft' \| 'updated' \| 'published'` | derived |
 | `is_valid` | Whether record passes its validators | derived |
@@ -111,8 +111,8 @@ fields.create(modelId, {
 });
 
 // ✅ Just read record.meta.published_at on the frontend.
-// If the editor needs to backdate, they can edit it directly in the admin —
-// the meta timestamps are user-editable.
+// If the editor needs to backdate, use meta.first_published_at: it is the one
+// publication timestamp that can be edited (published_at is set by publishing).
 ```
 
 In GraphQL, meta fields are `_createdAt`, `_updatedAt`, `_publishedAt`, `_firstPublishedAt`, `_publicationScheduledAt`, `_status`. If domain concept differs from "when published" (e.g., `event_date` on event model, or `effective_from` on pricing rule), that's a real field — test: can value change independently of publication lifecycle?

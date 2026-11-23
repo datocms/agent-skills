@@ -88,7 +88,7 @@ Flag has no effect unless `draft_mode_active: true` also set. Both must be `fals
 
 ### `all_locales_required`
 
-When `true`, every localized field must have value in every project locale before record can be published.
+When `true`, every localized field of a record carries every project locale: a locale cannot be left out or removed. The value may still be empty unless the field is `required`.
 
 **Use when:** team operates strict translation parity (legal content, structured data feeds, consistent product catalogs).
 

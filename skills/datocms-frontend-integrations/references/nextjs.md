@@ -254,7 +254,7 @@ type ExecuteQueryOptions<Variables> = {
 };
 ```
 
-`force-cache` holds published responses until `cacheTag` is revalidated; Core alone never does (Vercel Data Cache survives deploys). New wrapper: add bearer-`SECRET_API_TOKEN` POST route (e.g. `src/app/api/invalidate-cache/route.ts`) calling `revalidateTag(cacheTag, { expire: 0 })` on Next 16+, `revalidateTag(cacheTag)` on Next ≤15 (check installed `next`), hit by a DatoCMS webhook (`cda_cache_tags` → `invalidate`, `Authorization: Bearer` header) — Cache Tags handler minus DB lookup. Patching: keep existing cache policy. `includeDrafts` picks draft/published token. Published-only variant (no draft mode yet): drop `includeDrafts` and the draft token, always `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`; keep `force-cache` + `tags` only with the invalidation route.
+`force-cache` holds published responses until `cacheTag` is revalidated; Core alone never does (Vercel Data Cache survives deploys). New wrapper: add bearer-`CACHE_INVALIDATION_WEBHOOK_SECRET` POST route (`src/app/api/revalidate/route.ts`, as in Cache Tags) calling `revalidateTag(cacheTag, { expire: 0 })` on Next 16+, `revalidateTag(cacheTag)` on Next ≤15 (check installed `next`), hit by a DatoCMS webhook (`cda_cache_tags` → `invalidate`, `Authorization: Bearer` header) — Cache Tags handler minus DB lookup. Patching: keep existing cache policy. `includeDrafts` picks draft/published token. Published-only variant (no draft mode yet): drop `includeDrafts` and the draft token, always `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`; keep `force-cache` + `tags` only with the invalidation route.
 
 ### Core Environment Variables
 

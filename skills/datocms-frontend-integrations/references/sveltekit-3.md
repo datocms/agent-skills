@@ -2,7 +2,7 @@
 
 This reference contains the exact code patterns for implementing draft mode in a SvelteKit project with DatoCMS. Sections are organized by feature — always follow `## Core`, then follow optional sections only for features the user selected.
 
-The snippets are written for SvelteKit 3 (`@sveltejs/kit@3`, `latest`; needs Svelte >=5.57.1, Node >=22.17, Vite >=8.0.12, TypeScript >=6, `@sveltejs/vite-plugin-svelte` >=7), type-checked and built on 3.4.0. A SvelteKit 2 project (`@sveltejs/kit@2`): use [sveltekit.md](./sveltekit.md), these snippets do not build there. Kit 3 project setup they rely on: `"extends": "$app/tsconfig"` in `tsconfig.json`, `sveltekit({ adapter })` in `vite.config.ts` (no `svelte.config.js`), `#lib` in `package.json` `imports` (`"#lib": "./src/lib/index.js"`, `"#lib/*": "./src/lib/*"`; `$lib` is gone) and every variable declared in `src/env.ts`. Check the installed `@sveltejs/kit` version before editing.
+The snippets are written for SvelteKit 3 (`@sveltejs/kit@3`, `latest`; peers: Svelte ^5.57.1, Vite ^8.0.12, TypeScript ^6 (not 7), `@sveltejs/vite-plugin-svelte` ^7; Node >=22.17), type-checked and built on 3.4.0. A SvelteKit 2 project (`@sveltejs/kit@2`): use [sveltekit.md](./sveltekit.md), these snippets do not build there. Kit 3 project setup they rely on: `"extends": "$app/tsconfig"` in `tsconfig.json`, `sveltekit({ adapter })` in `vite.config.ts` (no `svelte.config.js`), `#lib` in `package.json` `imports` (`"#lib": "./src/lib/index.js"`, `"#lib/*": "./src/lib/*"`; `$lib` is gone) and every variable declared in `src/env.ts`. Check the installed `@sveltejs/kit` version before editing.
 
 ## Contents
 
@@ -677,7 +677,7 @@ export async function generateRealtimeSubscription<Result, Variables>(
 }
 ```
 
-**Note: Combining with Content Link** — If the user also selected Content Link, add these options to both the `executeQuery` call and the returned subscription config:
+**Note: Combining with Content Link** — If the user also selected Content Link, add these options to both the `executeQuery` call and the returned subscription config (import `PRIVATE_DATOCMS_BASE_EDITING_URL` from `$app/env/private`):
 
 ```ts
 contentLink: draftModeEnabled ? 'v1' : undefined,

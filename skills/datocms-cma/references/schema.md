@@ -12,7 +12,7 @@ How to create and change the schema through the CMA, and the rules the API enfor
 - Block models: a constrained subset
 - Fields: create, update, convert, delete
 - Fieldsets
-- Singletons auto-create their record
+- Singletons: one record, created by you
 - Reference-cascade strategies (the non-obvious part of link/structured-text validators)
 - Schema mutations are async jobs
 - Impact analysis before deleting
@@ -156,9 +156,9 @@ Which validators and editors a type accepts, their exact names and parameters, v
 
 `client.fieldsets.create(modelId, { title, hint?, position?, collapsible?, start_collapsed? })`. `title` unique per model; `start_collapsed` needs `collapsible: true`; positions share one sequence with the fields outside fieldsets. Not available on block models (`VALIDATION_NOT_ALLOWED_ON_BLOCK_MODELS`). Put a field in one with `fieldset: { id, type: "fieldset" }`.
 
-## Singletons auto-create their record
+## Singletons: one record, created by you
 
-Setting `singleton: true` on model causes DatoCMS to **lazily auto-create** singleton record. After create, `model.meta.has_singleton_item` is `false` and `model.singleton_item` is `null` until something (UI visit, API call) materializes it. Once exists, `singleton_item` points at record id. To pre-populate from script, just `items.create({ item_type: { id, type: "item_type" } })` — API enforces "exactly one" for you.
+`singleton: true` creates no record. `model.meta.has_singleton_item` is `false` and `model.singleton_item` is `null` until the first `items.create({ item_type: { id, type: "item_type" } })` or the editor's first save; then `singleton_item` points at the record id. A second create fails with `DUPLICATE_SINGLETON`: the API enforces "exactly one" for you.
 
 ## Reference-cascade strategies (the non-obvious part of link/structured-text validators)
 

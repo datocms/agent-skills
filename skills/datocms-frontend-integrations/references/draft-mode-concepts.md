@@ -114,7 +114,7 @@ Modify `executeQuery` wrapper (or create one):
 
 1. Accept `includeDrafts` option
 2. Switch tokens: `true` → Draft CDA Token, `false`/`undefined` → Published CDA Token
-3. Always set `excludeInvalid: true`
+3. Default to `excludeInvalid: true` (stable schema; while validations are changing it can error for minutes: use `filter: { _isValid: { eq: true } }` then, see `datocms-cda`)
 
 ```ts
 const result = await executeQuery(query, {

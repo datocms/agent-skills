@@ -33,7 +33,7 @@ connect({
         icon: 'search',
         pointsTo: {
           inspectorId: 'content-browser',
-          preferredWidth: 400,
+          preferredWidth: 600,
           initialInspectorPanel: {
             panelId: 'welcome-panel',
             parameters: { greeting: 'Hello!' },
@@ -156,7 +156,7 @@ connect({
         icon: 'search',
         pointsTo: {
           inspectorId: 'browser',
-          preferredWidth: 350,
+          preferredWidth: 600,
         },
         placement: ['after', 'content'],
       },

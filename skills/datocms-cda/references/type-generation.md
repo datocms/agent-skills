@@ -38,7 +38,7 @@ Add to `package.json` scripts:
 
 Two commands chained — `generate schema` fetches `schema.graphql`, `generate-output` writes the `.d.ts` from it. Always run together; the `.d.ts` is stale without a fresh schema. Re-run after model changes. The tsconfig plugin (below) regenerates the `.d.ts` live in the IDE, but CI builds need this script before `tsc`.
 
-> **Token env var:** The command above uses `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` (the name in the official starters and the frontend framework references). If your project uses a different name like `DATOCMS_CDA_TOKEN`, adjust the command accordingly.
+> **Token env var:** The command above uses `DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN` (the name in the official starters; Nuxt and SvelteKit add a `NUXT_` / `PRIVATE_` prefix). If your project uses a different name like `DATOCMS_CDA_TOKEN`, adjust the command accordingly.
 
 > **Framework env var conventions:** SvelteKit prefixes with `PRIVATE_` (e.g., `PRIVATE_DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`). Nuxt prefixes with `NUXT_PUBLIC_` (e.g., `NUXT_PUBLIC_DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN`).
 

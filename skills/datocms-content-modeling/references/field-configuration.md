@@ -286,7 +286,7 @@ Decisions per field:
 
 - **`nodes`** — node types editors can insert: `blockquote`, `code`, `heading`, `link`, `list`, `thematicBreak`, plus `itemLink` and `inlineItem` (record links). Constrain aggressively. "Article body" = everything; "Quote attribution" = only `link`.
 - **`marks`** — inline formatting. Drop `underline` if design doesn't use it.
-- **`heading_levels`** — which `<h2>`–`<h6>` editor can produce. `<h1>` reserved for page; body content = `[2, 3]`.
+- **`heading_levels`** — which of levels 1–6 the editor can produce (default: all six). Drop `1` when the page template owns `<h1>`; body content = `[2, 3]`.
 - **`show_links_target_blank`** — "open in new tab" toggle. Disable if frontend handles target globally.
 
 These parameters shape the dashboard toolbar only: the API accepts any valid node, mark or heading level, so scripts and imports must respect them on their own.
