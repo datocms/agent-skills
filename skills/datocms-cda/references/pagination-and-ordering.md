@@ -66,7 +66,7 @@ const data = await executeQueryWithAutoPagination(query, {
 // data.allBlogPosts contains all 2000 records
 ```
 
-**Complexity warning:** Because all aliased selections are in one query, the complexity cost multiplies. A `first: 2000` query becomes 4 aliased selections of 500 each — roughly 4x the complexity of a single page. Keep inner field selections minimal when fetching large collections, or you may exceed the 10M complexity limit.
+**Complexity warning:** Because all aliased selections are in one query, the complexity cost multiplies. A `first: 2000` query becomes 4 aliased selections of 500 each — roughly 4x the complexity of a single page. Keep inner field selections minimal when fetching large collections, or you may exceed the complexity limit (10M by default).
 
 **Limitation: only ONE paginated collection per query.** If the query contains multiple collections with oversized `first` arguments, the function throws an error. Split into separate queries.
 
@@ -90,6 +90,7 @@ query {
 
 | Meta Field | Example |
 | - | - |
+| `id` | `id_ASC` |
 | `_createdAt` | `_createdAt_DESC` |
 | `_updatedAt` | `_updatedAt_DESC` |
 | `_publishedAt` | `_publishedAt_DESC` |
@@ -100,7 +101,7 @@ query {
 | `_isValid` | `_isValid_ASC` |
 | `position` | `position_ASC` (sortable/tree models only) |
 
-Any scalar field on the model can also be used for ordering.
+Of the model's own fields, only single-line string, integer, float, boolean, date and date-time fields can be used for ordering (not text, slug, color, JSON, links or files).
 
 ## Tree / Hierarchical Models
 
@@ -178,7 +179,7 @@ Default page size for collections is 20. Page size = `first` argument value.
 | Asset gallery | 5 x inner field costs |
 | Multi-paragraph text (Markdown → HTML) | 5 |
 | JSON field | 5 |
-| Single link | 10 |
+| Single link | 10 + inner field costs |
 | Multiple links | 5 x inner field costs |
 | Modular content | 5 x inner field costs |
 | Structured text `value` | 10 |
@@ -187,7 +188,7 @@ Default page size for collections is 20. Page size = `first` argument value.
 | Tree `children` | 5 x inner field costs |
 | Tree `parent` | 25 |
 | SEO image | 5 |
-| `_seoMetaTags` | 5 |
+| `_seoMetaTags` | 5 + inner field costs |
 | `blurUpThumb` (on uploads) | 5 |
 
 ### Additional Cost Factors
@@ -200,7 +201,7 @@ Default page size for collections is 20. Page size = `first` argument value.
 | Union type fields | Maximum cost among all possible union variants |
 | Deep filtering per block model type | +1,000,000 |
 
-### Strategies to Stay Under 10M
+### Strategies to Stay Under the Limit
 
 - Request only the fields you actually need
 - Use small `first` values — avoid `first: 500` unless necessary

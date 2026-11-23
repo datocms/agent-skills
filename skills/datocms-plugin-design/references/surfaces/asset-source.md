@@ -2,7 +2,7 @@
 
 Skeleton assumes `datocms-react-ui/styles.css` imported in the entry and the template's `render` helper (`src/utils/render.tsx`); icons from the plugin's own set. Frame sizing and padding: `../surfaces.md`.
 
-Inside a host dialog titled "Pick asset from {source}" with the source icon and a cross; padding 20, Auto height (declare `modal.initialHeight` in the hook to avoid a jump). Shell: a search field, then a grid of `MediaCard`s; a pick calls `ctx.select({ resource: { url, filename } })`. No title of your own. Loading: `BlankSlate` with `loading`; no results: `BlankSlate` saying the search found nothing.
+Inside a host dialog titled "Upload asset using {source}" with the source icon and a cross; padding 20, Auto height (declare `modal.initialHeight` in the hook to avoid a jump). Shell: a search field, then a grid of `MediaCard`s; a pick calls `ctx.select({ resource: { url, filename } })`. No title of your own. Loading: `BlankSlate` with `loading`; no results: `BlankSlate` saying the search found nothing.
 
 ```tsx
 import type { RenderAssetSourceCtx } from 'datocms-plugin-sdk';

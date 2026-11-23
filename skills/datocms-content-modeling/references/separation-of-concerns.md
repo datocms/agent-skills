@@ -92,11 +92,11 @@ Every DatoCMS record exposes `meta` object with fields existing on all models. *
 
 | Built-in (on `record.meta`) | What it is | Editor-editable? |
 | - | - | - |
-| `created_at` | Timestamp record first created | ✅ yes, like regular field |
-| `updated_at` | Timestamp of last update | ✅ yes |
-| `published_at` | Timestamp of most recent publication | ✅ yes |
-| `first_published_at` | Timestamp of first-ever publication | ✅ yes |
-| `publication_scheduled_at` | Timestamp of future scheduled publication | ✅ yes |
+| `created_at` | Timestamp record first created | ✅ yes (record info panel, or `meta` through the API; needs the permission to edit record metadata) |
+| `updated_at` | Timestamp of last update | no, set by the system |
+| `published_at` | Timestamp of most recent publication | no, set by publishing |
+| `first_published_at` | Timestamp of first-ever publication | ✅ yes, same as `created_at` |
+| `publication_scheduled_at` | Timestamp of future scheduled publication | by scheduling a publication, not by editing the value |
 | `status` | `'draft' \| 'updated' \| 'published'` | derived |
 | `is_valid` | Whether record passes its validators | derived |
 

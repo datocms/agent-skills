@@ -56,7 +56,7 @@ For full mechanic and ordering rules, see `../../datocms-cma/references/schema.m
 
 ### `singleton`
 
-Marks model as single-instance. DatoCMS lazily auto-creates record on first UI visit or API call — `model.meta.has_singleton_item` initially `false`, flips when record materializes.
+Marks model as single-instance. Nothing creates its record: `model.meta.has_singleton_item` stays `false` until the first `items.create` or the editor's first save (the dashboard opens an empty form); a second create fails with `DUPLICATE_SINGLETON`.
 
 **Use for:** site settings, global config, footer, header, homepage, "about the company" — anything where exactly one record by definition.
 
@@ -66,7 +66,7 @@ Block models can't be singletons (attribute applies to models only).
 
 ### `draft_mode_active`
 
-Adds draft/published distinction to records — editors save drafts and explicitly publish. Required for visual editing and preview workflows.
+Adds draft/published distinction to records — editors save drafts and explicitly publish. Without it every save is live, so there is no unpublished version for a preview to show.
 
 **Always set `true` on every non-block model.** No exceptions for "internal" or "settings" models — cost of having draft mode unused is zero, cost of retrofitting it later (or shipping half-finished save) is real. Default on, always.
 

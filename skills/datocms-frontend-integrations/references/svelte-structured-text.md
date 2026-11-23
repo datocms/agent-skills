@@ -308,6 +308,8 @@ Don't import `<StructuredText />` from `@datocms/svelte` into pages directly —
 - Every render needs `data-datocms-content-link-group` for Visual Editing — wrapper enforces it so no page can forget.
 - Wrapper bakes in **what's universal to every structured-text rendering** — generic node overrides for code blocks, heading anchors, etc. Per-field concerns (block / inline-record / link-to-record renderers, which depend on which models a given structured-text field accepts) stay in the route and are passed in via `components`:
 
+`$lib/…` below is the SvelteKit 2 alias; in SvelteKit 3 write `#lib/….svelte` / `#lib/….js` (see `sveltekit-3.md`).
+
 ```svelte
 <!-- src/lib/components/Text/index.svelte -->
 <script lang="ts">

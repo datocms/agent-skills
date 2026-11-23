@@ -80,7 +80,7 @@ await client.items.publish(id, {
 
 Useful when some locales finish before others — publish ready locales now without lying about field values to satisfy validators.
 
-A record that was never published must send `non_localized_content: true` with its first locales: `false` fails with `NON_LOCALIZED_CONTENT_MUST_BE_PUBLISHED`. The non-localized fields are part of that first version, not an extra publication, so "publish only English" on such a record is `{ content_in_locales: ["en"], non_localized_content: true }`.
+First publication of a record: if its model has non-localized fields, send `non_localized_content: true` with the first locales (`false` fails with `NON_LOCALIZED_CONTENT_MUST_BE_PUBLISHED`). Those fields are part of that first version, not an extra publication, so "publish only English" on such a record is `{ content_in_locales: ["en"], non_localized_content: true }`. A model with `all_locales_required` cannot publish one locale first: `ALL_LOCALES_MUST_BE_PUBLISHED` until every locale is sent.
 
 For tree-model records, `{ recursive: true }` as the third argument auto-cascades:
 

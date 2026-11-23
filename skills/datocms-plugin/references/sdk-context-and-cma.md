@@ -182,7 +182,7 @@ import type {
 } from 'datocms-plugin-sdk';
 ```
 
-Entity exports include `Account`, `Field`, `Item`, `ItemType`, `Plugin`, `Role`, `Site`, `SsoUser`, `Upload`, and `User`. `Fieldset` is not exported: `import type { RawApiTypes } from '@datocms/cma-client'` and use `RawApiTypes.Fieldset`.
+Entity exports include `Account`, `Field`, `Item`, `ItemType`, `Plugin`, `Role`, `Site`, `SsoUser`, `Upload`, and `User`. `Fieldset` is not exported: `import type { RawApiTypes } from '@datocms/cma-client-browser'` (or `@datocms/cma-client`, whichever the project installs) and use `RawApiTypes.Fieldset`.
 
 Field extension `fieldTypes`: `'all'` or `FieldType[]` (no `single_block`; Modular Content is `rich_text`):
 

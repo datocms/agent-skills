@@ -6,7 +6,7 @@ The host draws the field's label, hint, label menu and validation errors around 
 
 ```tsx
 import type { RenderFieldExtensionCtx } from 'datocms-plugin-sdk';
-import { get } from 'lodash-es';
+import { get } from 'lodash-es'; // optional in the scaffold: add `lodash-es` and `@types/lodash-es`
 import Canvas from 'datocms-react-ui/Canvas';
 import StringInput from 'datocms-react-ui/StringInput';
 

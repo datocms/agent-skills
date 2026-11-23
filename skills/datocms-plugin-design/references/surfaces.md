@@ -20,7 +20,7 @@ Frame facts no docs page states, shared by every surface. SDK wiring (`connect`,
 | Inspector panel | `renderInspectorPanel` | Fixed | 0 | Right side of the inspector split |
 | Record form outlet | `renderItemFormOutlet` | Auto | 10 (+15 above) | Above the record form |
 | Collection outlet | `renderItemCollectionOutlet` | Auto | 0 | Above the record list; 20px between outlets |
-| Asset source | `renderAssetSource` | Auto | 20 | Dialog titled "Pick asset from {source name}" with the source icon and a cross |
+| Asset source | `renderAssetSource` | Auto | 20 | Dialog titled "Upload asset using {source name}" with the source icon and a cross |
 
 - **Auto** frames: the ctx has `startAutoResizer`/`updateHeight`/`setHeight`; Canvas starts the resizer, which measures the bottom of every element in `body` and sends `setHeight`. The iframe has `scrolling="no"`: whatever passes its height is clipped. Initial height is the hook's `initialHeight` (else 35px) plus vertical padding, so declare a realistic `initialHeight` to avoid a jump. Keep the resizer on; `noAutoResizer` only when the plugin calls `ctx.setHeight` itself.
 - **Fixed** frames: `ImposedSizePluginFrameCtx`, no sizing methods; the iframe fills its host area (`position: absolute; height: 100%`) and scrolls. Layout shells that fill a box (`Pane`, `ListDetail.Page`) belong here.

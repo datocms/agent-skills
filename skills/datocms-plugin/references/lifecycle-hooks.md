@@ -109,7 +109,7 @@ payload.data.meta?.current_version               // Present on updates, absent o
 
 **Important**: This runs BEFORE server-side validation. Client-side field validations (onBlur) are not affected.
 
-If you return `false`, DatoCMS shows "A plugin blocked the action". Use `ctx.alert()` for a better user experience.
+Returning `false` from `onBeforeItemUpsert` shows "A plugin blocked the action". The publish, unpublish and destroy hooks cancel silently: call `ctx.alert()` so the editor knows why.
 
 ### Example: Validation Hook
 

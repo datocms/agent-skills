@@ -2,7 +2,7 @@
 
 Skeleton assumes `datocms-react-ui/styles.css` imported in the entry and the template's `render` helper (`src/utils/render.tsx`); icons from the plugin's own set. Frame sizing and padding: `../surfaces.md`.
 
-`renderInspector`: Fixed frame on the left of a split (default 30% wide, min 550px); the right side shows a record list, a record editor or `renderInspectorPanel`, switched by `ctx.setInspectorMode`. Shell: `Main` > `Pane` with `Pane.Header`. `ctx.location` marks the active `Link`. `renderInspectorPanel` is also Fixed, padding 0, a frame of its own with no `Main`: a `Pane` whose `Pane.Header.Title` has no `level`, or `SidebarPanel`s.
+`renderInspector`: Fixed frame on the left of a split, taking the width the right side leaves; the right side (default 30% wide or `preferredWidth`, min 550px) shows a record list, a record editor or `renderInspectorPanel`, switched by `ctx.setInspectorMode`. Shell: `Main` > `Pane` with `Pane.Header`. `ctx.location` marks the active `Link`. `renderInspectorPanel` is also Fixed, padding 0, a frame of its own with no `Main`: a `Pane` whose `Pane.Header.Title` has no `level`, or `SidebarPanel`s.
 
 ```tsx
 import type { RenderInspectorCtx } from 'datocms-plugin-sdk';

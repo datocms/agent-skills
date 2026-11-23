@@ -427,7 +427,7 @@ const isLocalized = ctx.field.attributes.localized;
 
 - **ctx recreation in iframes**: The `ctx` object is recreated on every message from parent window, triggering `useEffect` even when values appear identical. Use `useDeepCompareEffect` from `use-deep-compare-effect` instead of `useEffect` when depending on `ctx` properties. See `sdk-context-and-cma.md`.
 
-- **`toggleField()` destroys plugin iframes**: When field is hidden via `ctx.toggleField(path, false)`, its plugin iframes are **completely destroyed**. When field is shown again, iframes are recreated from scratch — all React state is lost. If you need to persist state across visibility changes, store it in plugin parameters or outside React tree.
+- **`toggleField()` destroys plugin iframes**: When field is hidden via `ctx.toggleField(path, false)`, its plugin iframes are **completely destroyed**. A localized field is hidden per locale: pass `title.en`, not `title`. When field is shown again, iframes are recreated from scratch — all React state is lost. If you need to persist state across visibility changes, store it in plugin parameters or outside React tree.
 
 - **Avoid Editor extensions for Modular Content, Single Block, and Structured Text fields**: Use Addon extensions instead (Modular Content is `rich_text`; `FieldType` lacks `single_block`: reach it via `overrideFieldExtensions`, or `fieldTypes: 'all'` if every field type may offer the addon). Editor extensions for these field types require reimplementing rendering and update logic for all contained fields and blocks. See `form-values.md` for working with these field types programmatically.
 

@@ -161,7 +161,7 @@ When `autoRetry` is `true` (the default), the client automatically retries 429 r
 
 | Limit | Value |
 | - | - |
-| Max query complexity | 10,000,000 per query (costs, `X-Complexity` headers, strategies: `pagination-and-ordering.md` § Complexity Cost Reference) |
+| Max query complexity | The plan's limit, 10,000,000 per query by default (costs, `X-Complexity` headers, strategies: `pagination-and-ordering.md` § Complexity Cost Reference) |
 | Rate limit | 40 requests/second, 1,000 requests/minute **per API token** (applies only to non-cached requests — CDN cache hits are not rate-limited) |
 | Max records per page | 500 (use `first` argument) |
 | Default records per page | 20 |

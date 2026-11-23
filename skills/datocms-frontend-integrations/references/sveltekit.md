@@ -2,7 +2,7 @@
 
 This reference contains the exact code patterns for implementing draft mode in a SvelteKit project with DatoCMS. Sections are organized by feature — always follow `## Core`, then follow optional sections only for features the user selected.
 
-The snippets are written for SvelteKit 2 (`@sveltejs/kit@2`, tag `version-2`). Kit 3 (`latest`; needs Svelte >=5.57.1, Node >=22.17, Vite >=8.0.12) still runs them, with these differences: `$env/dynamic/private|public` work but are deprecated in favour of `$app/env/private|public`, `json` from `@sveltejs/kit` is deprecated in favour of `Response.json`, and the `cookie` types moved to cookie v2 (see the draft mode helper). Check the installed `@sveltejs/kit` version before editing.
+The snippets are written for SvelteKit 2 (`@sveltejs/kit@2`, tag `version-2`), the version of the official starter kit. A SvelteKit 3 project (`latest`): use [sveltekit-3.md](./sveltekit-3.md). These snippets do not build there: `$lib` and `$env/dynamic/*` are gone (`#lib/….js`, `$app/env/private|public` with `src/env.ts`), `Handle` moved to `@sveltejs/kit/hooks`, `json` is deprecated for `Response.json`, and the `cookie` types moved to cookie v2. Check the installed `@sveltejs/kit` version before editing.
 
 ## Contents
 

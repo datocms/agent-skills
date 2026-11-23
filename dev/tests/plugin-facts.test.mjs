@@ -49,8 +49,8 @@ test('current-plugin-patterns points at the public plugins repo without version 
   const text = ref('current-plugin-patterns.md');
   assert.doesNotMatch(text, /\b\d+\.\d+\.x\b/);
   assert.match(text, /https:\/\/github\.com\/datocms\/plugins\b/);
-  // `gh api repos/datocms/plugins/contents` (private: false), 2026-09-25.
-  const folders = ['import-export-schema', 'web-previews', 'shopify-product', 'record-comments', 'bulk-operations-workbench', 'unsplash'];
+  // `gh api repos/datocms/plugins/contents` (private: false), 2026-11-23.
+  const folders = ['import-export-schema', 'web-previews', 'shopify-product', 'record-comments', 'find-and-replace', 'unsplash'];
   const named = [...text.matchAll(/^- `([\w-]+)`/gm)].map((m) => m[1]);
   assert.ok(named.length > 0, 'no example folders named');
   assert.deepEqual(named.filter((name) => !folders.includes(name)), []);

@@ -153,7 +153,7 @@ See `client-and-config.md` → "Technical Limits" for CDN eligibility/hit header
 
 ## Content Link / Visual Editing
 
-**Note:** Visual Editing is available on every plan, Free included. `INVALID_X_VISUAL_EDITING_HEADER`: the value is not `v1` (or the legacy `vercel-v1`). `INVALID_X_BASE_EDITING_URL_HEADER`: `X-Base-Editing-Url` is missing.
+**Note:** Visual Editing is included in every current plan, Free too; a project on a legacy per-project plan is refused. `INVALID_X_VISUAL_EDITING_HEADER` covers both cases, told apart by its message: the plan does not include the feature, or the value is not `v1` (or the legacy `vercel-v1`). `INVALID_X_BASE_EDITING_URL_HEADER`: `X-Base-Editing-Url` is missing.
 
 Draft only — stega metadata in string fields powers click-to-edit overlays (`@datocms/content-link`) but breaks production strings (comparisons, layout, SEO):
 

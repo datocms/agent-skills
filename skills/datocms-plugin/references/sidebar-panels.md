@@ -220,7 +220,7 @@ itemFormSidebars(
   label: string;           // Sidebar tab label
   parameters?: Record<string, unknown>;
   rank?: number;
-  preferredWidth?: number; // Preferred width in pixels (capped at 60% of screen width)
+  preferredWidth?: number; // Preferred width in pixels (default 350, min 300, capped at 60% of the record form area)
 }
 ```
 

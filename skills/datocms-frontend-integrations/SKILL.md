@@ -32,7 +32,7 @@ Silently examine:
 2. **UI stack** — Dato rendering lib: React (`react-datocms`), Vue (`vue-datocms`), SvelteKit/Svelte (`@datocms/svelte`), Astro without React (`@datocms/astro`)
 3. **Existing Dato helpers** — `@datocms/cda-client`, query wrappers, image/Structured Text helpers, env vars
 4. **Existing integration markers** — draft mode endpoints, preview-links, Content Link, real-time subscriptions, cache-tag forwarding, search routes, robots/sitemap
-5. **File structure** — `src/` or root-level app directories. References show `src/` paths; Next.js without `src/` → `app/`, `lib/datocms/`; SvelteKit and Astro default to `src/` (`kit.files.src`, deprecated in Kit 3 but still read; `srcDir`); Nuxt refs show root `lib/`, `composables/` — relative to `srcDir` (`~`): Nuxt 4 → `app/` when it exists, else root; `server/` stays at root (`references/nuxt.md` › File Structure)
+5. **File structure** — `src/` or root-level app directories. References show `src/` paths; Next.js without `src/` → `app/`, `lib/datocms/`; SvelteKit and Astro default to `src/` (`kit.files.src`, deprecated but still read; `srcDir`); Nuxt refs show root `lib/`, `composables/` — relative to `srcDir` (`~`): Nuxt 4 → `app/` when it exists, else root; `server/` stays at root (`references/nuxt.md` › File Structure)
 6. **Starter-conventions markers** (gql.tada projects) — `gql.tada` in `package.json`, `lib/datocms/gqlUrlBuilder/` folder, project `<Text>` wrapper around `<StructuredText />`, co-located `fragments.ts` next to block / inline-record / link-to-record components. Presence of these = project follows the patterns in `references/url-builders.md` + `datocms-cda/references/fragment-patterns.md`.
 
 ### Stop conditions
@@ -101,7 +101,7 @@ Load these for mixed-feature setup work:
 - one framework reference:
   - `references/nextjs.md`
   - `references/nuxt.md`
-  - `references/sveltekit.md`
+  - `references/sveltekit.md` (SvelteKit 2) or `references/sveltekit-3.md` (SvelteKit 3: read `@sveltejs/kit` in package.json)
   - `references/astro.md`
 - optional concept references:
   - `references/web-previews-concepts.md`

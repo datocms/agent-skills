@@ -13,9 +13,9 @@
 
 ## Critical Filter Behaviors
 
-**`neq` / `notIn` / `notMatches` return nulls:** Across all field types, negation operators also return records where the field is `null`. For example, `neq: "x"` returns records with a different value **and** records with no value. Add `exists: true` (or `isPresent: true` for string/text fields) if you need to exclude nulls.
+**`neq` / `notIn` / `notMatches` return nulls:** On every field type that has them, negation operators also return records where the field is `null` (`neq: null` is the exception: it means "has a value"). For example, `neq: "x"` returns records with a different value **and** records with no value. Add `exists: true` (or `isPresent: true` for string/text fields) if you need to exclude nulls.
 
-**Empty arrays in `in` / `notIn`:** `{ in: [] }` returns an **empty result** (nothing matches). `{ notIn: [] }` returns **all records** (nothing is excluded). Be careful when building filters dynamically — an empty array can produce unexpected results.
+**Empty arrays in `in` / `notIn`:** `{ in: [] }` returns an **empty result** (nothing matches). `{ notIn: [] }` returns **all records** (nothing is excluded). On gallery and multiple-links fields `allIn: []` and `anyIn: []` are ignored too: all records. Be careful when building filters dynamically — an empty array can produce unexpected results.
 
 ## Filter Syntax
 
@@ -260,7 +260,7 @@ filter: {
 
 ## Deep Filtering
 
-Deep filtering allows filtering records based on the content of their Modular Content or Structured Text blocks. It must be **explicitly enabled per field** in the DatoCMS admin.
+Deep filtering allows filtering records based on the content of their Modular Content, Single Block or Structured Text blocks (Structured Text: inline blocks too). It must be **explicitly enabled per field** in the DatoCMS admin, on a field of a model (not of a block). A Single Block field filters like Modular Content.
 
 **Complexity warning:** Deep filtering adds **1,000,000 per block model type** to query complexity. Use sparingly.
 

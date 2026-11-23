@@ -43,13 +43,13 @@ query {
 
 | Field | Type | Description |
 | - | - | - |
-| `src` | `String` | The fallback image URL |
-| `srcSet` | `String` | HTML5 `srcSet` attribute for multiple resolutions |
-| `webpSrcSet` | `String` | `srcSet` in WebP format for supporting browsers |
-| `sizes` | `String` | HTML5 `sizes` attribute (media query conditions) |
-| `width` | `Int!` | Image width in pixels |
-| `height` | `Int` | Image height in pixels |
-| `aspectRatio` | `Float` | Width / height ratio |
+| `src` | `String!` | The fallback image URL |
+| `srcSet` | `String!` | HTML5 `srcSet` attribute for multiple resolutions |
+| `webpSrcSet` | `String!` | `srcSet` in WebP format for supporting browsers |
+| `sizes` | `String!` | HTML5 `sizes` attribute (media query conditions) |
+| `width` | `IntType!` | Image width in pixels |
+| `height` | `IntType!` | Image height in pixels |
+| `aspectRatio` | `FloatType!` | Width / height ratio |
 | `alt` | `String` | Alternative text for accessibility |
 | `title` | `String` | Title attribute |
 | `base64` | `String` | Base64-encoded Low Quality Image Placeholder (LQIP) |
@@ -97,7 +97,7 @@ Several placeholder strategies are available directly on file/upload fields (not
 | `blurUpThumb` | `String` | Data URL of a tiny blurred thumbnail. Args: `size` (default 24, px), `punch` (1), `quality` (70), `imgixParams` |
 | `blurhash` | `String` | BlurHash encoding (compact placeholder) |
 | `thumbhash` | `String` | ThumbHash encoding (higher quality than blurhash) |
-| `colors` | `[ColorField]` | Dominant colors. Each has a `hex` field. |
+| `colors` | `[ColorField!]!` | Dominant colors. Each has a `hex` field. |
 
 ```graphql
 query {
@@ -134,28 +134,28 @@ All fields available on a file/upload field:
 
 | Field | Type | Description |
 | - | - | - |
-| `id` | `UploadId` | Internal DatoCMS upload ID |
-| `url` | `String` | The asset URL (on imgix CDN for images) |
-| `format` | `String` | File extension (e.g., `"jpg"`, `"png"`, `"pdf"`) |
-| `filename` | `String` | Full original filename |
-| `basename` | `String` | Filename without extension |
-| `mimeType` | `String` | MIME type |
-| `size` | `IntType` | File size in bytes |
-| `width` | `Int` | Image width in pixels (null for non-images) |
-| `height` | `Int` | Image height in pixels (null for non-images) |
+| `id` | `UploadId!` | Internal DatoCMS upload ID |
+| `url` | `String!` | The asset URL (on imgix CDN for images) |
+| `format` | `String!` | File extension (e.g., `"jpg"`, `"png"`, `"pdf"`) |
+| `filename` | `String!` | Full original filename |
+| `basename` | `String!` | Filename without extension |
+| `mimeType` | `String!` | MIME type |
+| `size` | `IntType!` | File size in bytes |
+| `width` | `IntType` | Image width in pixels (null for non-images) |
+| `height` | `IntType` | Image height in pixels (null for non-images) |
 | `alt` | `String` | Alternative text |
 | `title` | `String` | Title |
-| `tags` | `[String]` | User-assigned tags |
-| `smartTags` | `[String]` | AI-generated tags |
-| `customData` | `CustomData` | Custom key-value metadata |
+| `tags` | `[String!]!` | User-assigned tags |
+| `smartTags` | `[String!]!` | AI-generated tags |
+| `customData` | `CustomData!` | Custom key-value metadata |
 | `author` | `String` | Author attribution |
 | `copyright` | `String` | Copyright information |
 | `notes` | `String` | Internal notes |
-| `colors` | `[ColorField]` | Dominant colors (each with `hex`) |
+| `colors` | `[ColorField!]!` | Dominant colors (each with `hex`) |
 | `blurhash` | `String` | BlurHash placeholder encoding |
 | `thumbhash` | `String` | ThumbHash placeholder encoding |
 | `blurUpThumb` | `String` | Data URL blurred thumbnail |
-| `exifInfo` | `CustomData` | EXIF metadata for images (camera, exposure, etc.) |
+| `exifInfo` | `CustomData!` | EXIF metadata for images (camera, exposure, etc.) |
 | `focalPoint` | `FocalPoint` | Contains `x` and `y` (0-1 floats) |
 | `responsiveImage(...)` | `ResponsiveImage` | Responsive image sub-selection (images only) |
 | `video` | `UploadVideoField` | Video metadata (Mux videos only) |

@@ -60,5 +60,5 @@ Each tag in the `_seoMetaTags` and `faviconMetaTags` arrays has this shape:
 | - | - | - |
 | Next.js | `process.env.SITE_URL` (server) | `generateMetadata` → `{ ...toNextMetadata(tags), alternates: { canonical } }` |
 | Nuxt | `useRuntimeConfig().public.siteUrl` | `useHead({ link: [{ rel: 'canonical', href: canonical }] })` beside `useHead(toHead(...))` |
-| SvelteKit | `env.SITE_URL` from `$env/dynamic/private` in `+page.server.ts` | `<svelte:head><link rel="canonical" href={data.canonical} /></svelte:head>` |
+| SvelteKit | `env.SITE_URL` from `$env/dynamic/private` in `+page.server.ts` (Kit 3: `SITE_URL` from `$app/env/private`, declared in `src/env.ts`) | `<svelte:head><link rel="canonical" href={data.canonical} /></svelte:head>` |
 | Astro | `Astro.site`, else a `SITE_URL` field in `env.schema` (`context: 'server', access: 'public'`) via `astro:env/server` | `<link rel="canonical" href={canonical} />` in `<head>` beside `<Seo />` |

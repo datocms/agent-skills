@@ -30,7 +30,7 @@ Create a new sandbox environment by forking an existing one:
 npx datocms environments:fork <SOURCE_ENVIRONMENT_ID> <NEW_ENVIRONMENT_ID>
 ```
 
-Environment ids (fork targets, `environments:rename`, `migrations:run --destination`): lowercase letters, numbers and dashes only. Primary isn't always `main` — promotion makes the promoted sandbox's id primary; get the current one with `environments:primary` (inside `$(…)` add `--log-level=NONE`: profile `logLevel` above `NONE` prints API log lines to stdout).
+Environment ids (fork targets, `environments:rename`, `migrations:run --destination`): lowercase letters, numbers and dashes only, starting and ending with a letter or number. Primary isn't always `main` — promotion makes the promoted sandbox's id primary; get the current one with `environments:primary` (inside `$(…)` add `--log-level=NONE`: profile `logLevel` above `NONE` prints API log lines to stdout).
 
 Run `npx datocms environments:fork --help` for all flags (including `--fast` and `--force`).
 

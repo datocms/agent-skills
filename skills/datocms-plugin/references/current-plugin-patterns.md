@@ -6,5 +6,5 @@ Target has no precedent → mirror a similar plugin from <https://github.com/dat
 - `web-previews` — config screen, sidebar panel, full sidebar, inspector + panels, modal
 - `shopify-product` — manual + override field extensions, modal flow, `onBoot` parameter/appearance migration
 - `record-comments` — full record sidebar, browser CMA storage, `currentUserAccessToken` permission handling
-- `bulk-operations-workbench` — role-gated top navigation tab, full-page work area, browser CMA utilities
+- `find-and-replace` — role-gated top navigation tab, full-page work area, browser CMA utilities
 - `unsplash` — `assetSources` + `renderAssetSource` + `ctx.select()` (pre-2.4 `default_field_metadata` shape; see `asset-sources.md`)

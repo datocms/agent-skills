@@ -176,11 +176,8 @@ Some methods need positional args after method name. Map to URL placeholders.
 npx datocms cma:call items find <ITEM_ID>
 npx datocms cma:call items update <ITEM_ID> --data '{title: "Updated"}'
 
-# Nested resources need the parent ID
-npx datocms cma:call fields list <ITEM_TYPE_ID>
-npx datocms cma:call fields create <ITEM_TYPE_ID> --data '{label: "Title", api_key: "title", field_type: "string"}'
-
 # Children take the parent ID to list or create, their own ID alone for the rest
+npx datocms cma:call fields list <ITEM_TYPE_ID>
 npx datocms cma:call fields create <ITEM_TYPE_ID> --data '{label: "Title", api_key: "title", field_type: "string"}'
 npx datocms cma:call fields update <FIELD_ID> --data '{label: "New Label"}'
 npx datocms cma:call uploadTracks create <UPLOAD_ID> --data '{...}'
@@ -208,7 +205,8 @@ Wrap `--data`/`--params` in **single quotes** to prevent shell interpolation. Do
 
 ```bash
 # Correct — single quotes outside
-npx datocms cma:call items create --data '{item_type: {type: "item_type", id: "blog_post"}, title: "Hello"}'
+# item_type.id is the model's ID (an API key there answers 404): look it up with `itemTypes find blog_post`
+npx datocms cma:call items create --data '{item_type: {type: "item_type", id: "<ITEM_TYPE_ID>"}, title: "Hello"}'
 ```
 
 ## Core Patterns by Example
@@ -246,7 +244,7 @@ npx datocms cma:call site find
 # Create — path args for parent if nested, --data for the body
 npx datocms cma:call itemTypes create --data '{name: "Author", api_key: "author"}'
 npx datocms cma:call fields create <ITEM_TYPE_ID> --data '{label: "Name", api_key: "name", field_type: "string"}'
-npx datocms cma:call items create --data '{item_type: {type: "item_type", id: "blog_post"}, title: "New Post"}'
+npx datocms cma:call items create --data '{item_type: {type: "item_type", id: "<ITEM_TYPE_ID>"}, title: "New Post"}'
 
 # Update — entity ID as path arg, changed fields in --data
 npx datocms cma:call items update <ITEM_ID> --data '{title: "Updated Title"}'
@@ -274,7 +272,7 @@ Bulk payloads use relationship arrays: `{items: [{type: "item", id: "..."}]}`.
 
 ## Commonly Used Resources
 
-Run `npx datocms cma:call --help` for current list. Most frequent:
+Run `npx datocms cma:docs` for current list. Most frequent:
 
 | Resource | Key methods | Path args |
 | - | - | - |

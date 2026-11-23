@@ -44,7 +44,7 @@ Unattended/CI (no OAuth session): linked profile never reads env tokens and erro
 | - | - | - |
 | Next.js | `@/lib/datocms/cma-types` | `src/lib/datocms/cma-types.ts`; no `src/` (`@/*` → `./*`) → `lib/datocms/cma-types.ts` |
 | Astro | `@/lib/datocms/cma-types` | `src/lib/datocms/cma-types.ts` |
-| SvelteKit | `$lib/datocms/cma-types` | `src/lib/datocms/cma-types.ts` — always, never root `lib/` |
+| SvelteKit | `$lib/datocms/cma-types` (Kit 3: `#lib/datocms/cma-types.js`) | `src/lib/datocms/cma-types.ts` — always, never root `lib/` |
 | Nuxt | `~/lib/datocms/cma-types` | `<srcDir>/lib/datocms/cma-types.ts` — `~` = `srcDir`; Nuxt 4 default: `app/` when it exists, else root |
 
 ## Generated Output

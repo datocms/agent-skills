@@ -6,7 +6,7 @@ Rendered under the field's editor, 10px below it. Keep it to one quiet line: a s
 
 ```tsx
 import type { RenderFieldExtensionCtx } from 'datocms-plugin-sdk';
-import { get } from 'lodash-es';
+import { get } from 'lodash-es'; // optional in the scaffold: add `lodash-es` and `@types/lodash-es`
 import Button from 'datocms-react-ui/Button';
 import Canvas from 'datocms-react-ui/Canvas';
 import Pill from 'datocms-react-ui/Pill';

@@ -134,7 +134,7 @@ Which validators and editors a type accepts, their exact names and parameters, v
 
 - For validator and editor **choices** rather than payload mechanics, load `../../datocms-content-modeling/references/field-configuration.md`.
 
-- `api_key` format: same as models, without the singular rule. Reserved: `position`, `is_valid`, `id`, `type`, `updated_at`, `created_at`, `attributes`, `fields`, `item_type`, `is_singleton`, `seo_meta_tags`, `parent_id`, `parent`, `children`, `status`, `meta`, `eq`, `neq`, `all_in`, `any_in`, `creator`, `exists` (`VALIDATION_RESERVED`).
+- `api_key` format: same as models, without the singular rule. Reserved: `position`, `is_valid`, `id`, `type`, `updated_at`, `created_at`, `attributes`, `fields`, `item_type`, `is_singleton`, `seo_meta_tags`, `parent_id`, `parent`, `children`, `status`, `meta`, `eq`, `neq`, `all_in`, `any_in`, `creator`, `exists`, `is_current_version_valid`, `is_published_version_valid`, `item_type_id`, `item_id` (`VALIDATION_RESERVED`).
 
 - `hint` accepts a little HTML: `a`, `b`, `i`, `em`, `strong`, `u`, `code`, `br`.
 

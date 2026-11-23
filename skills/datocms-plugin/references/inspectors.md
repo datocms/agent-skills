@@ -51,7 +51,7 @@ connect({
 ```ts
 {
   inspectorId: string;        // ID passed to renderInspector
-  preferredWidth?: number;    // Preferred width of the left panel in pixels
+  preferredWidth?: number;    // Width in pixels of the right side (list, record or panel; default 30%, min 550); the inspector frame takes the rest
   initialInspectorPanel?: {   // Optional: what to show on the right side initially
     panelId: string;          // Custom panel ID (rendered by renderInspectorPanel)
     parameters?: Record<string, unknown>;

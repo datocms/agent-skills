@@ -86,7 +86,7 @@ Operational notes:
 
 For modern plugins, these updates affect the selected installation; use a [development copy](../../datocms-plugin/references/project-scaffold.md#development-copy) when the original must remain available:
 
-- **Marketplace to private:** update `url`; this clears the package/version association.
+- **Marketplace to private:** update `url`; this clears the package/version association. So does sending `name`, `description` or `permissions` to a Marketplace installation: send only `parameters`, `enabled` or `package_version` to keep it.
 - **Private to Marketplace:** update `package_name`; this preserves `parameters` and replaces package metadata and permissions. Send it separately from other attributes except optional `enabled`.
 - **Published version:** update `package_version` on a Marketplace installation to select that version.
 

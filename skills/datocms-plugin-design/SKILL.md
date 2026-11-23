@@ -74,7 +74,7 @@ Auto = height follows `setHeight` (Canvas auto-resizer); the frame never scrolls
 | Inspector (`renderInspector`, `renderInspectorPanel`) | `inspector` | Fixed, 0 | The split | `Main` > `Pane` | `Layout/Pane` |
 | Form outlet (`renderItemFormOutlet`) | `outlets` | Auto, 10px, 15px above | Record form | Quiet `Callout`, `InfoList` | `Feedback/Callout` |
 | Collection outlet (`renderItemCollectionOutlet`) | `outlets` | Auto, 0 | Record list below | Content with own spacing | `Feedback/Callout` |
-| Asset source (`renderAssetSource`) | `asset-source` | Auto, 20px | Dialog titled "Pick asset from {source}", cross | Search + `MediaCard` grid; `ctx.select` | `Lists/MediaCard` |
+| Asset source (`renderAssetSource`) | `asset-source` | Auto, 20px | Dialog titled "Upload asset using {source}", cross | Search + `MediaCard` grid; `ctx.select` | `Lists/MediaCard` |
 | Dropdown actions | `dropdown-actions` | No frame | Menu item | UI only via `ctx.openModal` | `Overlays/Modal` |
 
 - **Config screen:** never open with a section title or divider: the host's "Plugin settings" title sits right above the frame, so a second stacks under it. Start with content; titles are fine from the second section.

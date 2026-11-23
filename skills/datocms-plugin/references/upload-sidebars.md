@@ -154,7 +154,7 @@ uploadSidebars(ctx: UploadSidebarsCtx): UploadSidebar[]
   label: string;           // Sidebar tab label
   parameters?: Record<string, unknown>;
   rank?: number;
-  preferredWidth?: number; // Preferred width in pixels
+  preferredWidth?: number; // Accepted, but the asset view ignores it: the sidebar is 500px (min 300)
 }
 ```
 

@@ -118,7 +118,7 @@ Missing directory → `migrations:run` (`--dry-run` too) fails with `Directory "
 
 ## TypeScript Execution
 
-TypeScript migrations are executed using `tsx`, which reads the `tsconfig.json` nearest to the script. `--migrations-tsconfig` / `migrations.tsconfig` does not change how a migration runs: `migrations:run` only checks that the file exists, and `migrations:new` uses it to pick `.ts` over `.js`. To name one:
+TypeScript migrations are executed using `tsx`, which reads the `tsconfig.json` found from the working directory upward. `--migrations-tsconfig` / `migrations.tsconfig` does not change how a migration runs: `migrations:run` only checks that the file exists, and `migrations:new` uses it to pick `.ts` over `.js`. To name one:
 
 ```bash
 npx datocms migrations:run --migrations-tsconfig=tsconfig.migrations.json

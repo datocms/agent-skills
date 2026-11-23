@@ -127,7 +127,7 @@ validators: {
 
 Without `slug_title_field`, editors type slug by hand. With it, slug pre-fills from the bound title while a new record is written; later title edits do not change it. Wire on every URL slug.
 
-`slug_format` accepts `predefined_pattern: "webpage_slug"` (lowercase, hyphens, ASCII) or `custom_pattern` regex.
+`slug_format` accepts `predefined_pattern: "webpage_slug"` (lowercase ASCII letters, digits, hyphens, underscores) or `custom_pattern` regex.
 
 ### Require specific SEO sub-fields
 

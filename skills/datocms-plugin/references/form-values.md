@@ -216,11 +216,17 @@ Full DAST rules and validation live in [document model](../../datocms-structured
 For **read-only** operations (e.g., analyzing content in a sidebar panel), convert with `datocms-structured-text-slate-utils`:
 
 ```ts
-import { slateToDast } from 'datocms-structured-text-slate-utils';
+import type { Field } from 'datocms-plugin-sdk';
+import { slateToDast, type Node } from 'datocms-structured-text-slate-utils';
 
-const slateValue = ctx.formValues.body; // Slate format
-// Second argument: `Record<blockModelId, Field[]>` for the blocks in the document
-// (build it from `ctx.fields`: see structured-text.md); `{}` only when there are none.
+// Second argument: the fields of every block model in the document, by model ID
+// (a missing one throws: `await ctx.loadItemTypeFields(id)` first).
+const fieldsByModel: Record<string, Field[]> = {};
+for (const field of Object.values(ctx.fields)) {
+  if (field) (fieldsByModel[field.relationships.item_type.data.id] ??= []).push(field);
+}
+
+const slateValue = ctx.formValues.body as Node[] | null; // Slate format
 const dast = slateToDast(slateValue, fieldsByModel); // Standard DAST, or null when empty
 ```
 

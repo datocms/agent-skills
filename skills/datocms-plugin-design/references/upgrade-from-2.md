@@ -13,7 +13,7 @@ From 2.x (the `latest` line, last 2.5.1) or a 3.x prerelease. No migration page 
 
 ## From 3.x prereleases
 
-4.0.0-next.8 has the same components, entries, props and peer ranges (SDK `^2.2.7 || ^3.0.0-next.0`) as 3.1.0-next.9. 3.1.0-next.9 was published later and differs in one file: a disabled tree toggle in `Table` also prevents the click's default action. npm marks 4.0.0-next.8 deprecated in its favour; this skill keeps the 4.0.0-next.8 pin.
+4.0.0-next.8 has the same components, entries, props and peer ranges (SDK `^2.2.7 || ^3.0.0-next.0`) as 3.1.0-next.9. 3.1.0-next.9 was published later and differs in one runtime file: a disabled tree toggle in `Table` also prevents the click's default action. npm marks 4.0.0-next.8 deprecated in its favour; this skill keeps the 4.0.0-next.8 pin.
 
 - Pin `"datocms-react-ui": "4.0.0-next.8"` (exact; `next` still points to 3.x).
 - Delete the `overrides` block that early 3.x needed (`"datocms-react-ui": { "datocms-plugin-sdk": "$datocms-plugin-sdk" }`): the peer range now accepts SDK prereleases.
