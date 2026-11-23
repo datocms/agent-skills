@@ -61,7 +61,7 @@ const record = await client.items.create({
 });
 ```
 
-**Important:** If the model has `all_locales_required: true`, you must provide values for every locale on the site. If `all_locales_required: false`, you can provide values for only some locales.
+**Important:** If the model has `all_locales_required: true`, every record carries every site locale in each localized field: on create a locale you leave out is filled with `null`, on update a field you send must list them all (a value may be `null` unless the field is required). If `all_locales_required: false`, you can provide values for only some locales.
 
 ## Updating Localized Fields
 
@@ -94,14 +94,14 @@ Mental model: a record has **one locale set**, shared by all its localized field
 | **Add / remove a locale** — changing the set | **every** localized field, in one request | the **new** set, identical across all (`null` for empties) |
 | **Create** a record | the fields you want filled (the rest auto-fill `null`) | one set, identical across the fields you send (≥1 field) |
 
-> **`all_locales_required: true` model** overrides the table: every sent field must carry **all** site locales — keys mandatory, values may be `null`.
+> **`all_locales_required: true` model** overrides the table: on update every sent field must carry **all** site locales — keys mandatory, values may be `null` — and a locale can never be removed. On create a missing locale is filled with `null`.
 
 Two consequences to internalize:
 
 - `title: { it }` alone on an `{ en, it }` record is **rejected** — it would drop `en` from one field only. To actually drop `en`, use the add/remove row (send every field).
 - Adding `fr` means sending **every** localized field with an `fr` key (value or `null`) in the same request — the one time you can't send just the field you changed (DatoCMS calls this the "Locale Sync Rule").
 
-**Replace, not merge** ([update Rule 1](https://www.datocms.com/docs/content-management-api/resources/item/update#updating-localized-fields)). A sent field's per-locale object fully replaces the stored one, so omitting a locale deletes it — spread to preserve, as in _Updating Localized Fields_ above. Whole fields you don't send stay untouched.
+**Replace, not merge** ([update Rule 1](https://www.datocms.com/docs/content-management-api/resources/item/update#updating-localized-fields)). A sent field's per-locale object fully replaces the stored one, so a locale you omit is not kept: the write is rejected, or, when every localized field of the record is sent without it, the locale is deleted — spread to preserve, as in _Updating Localized Fields_ above. Whole fields you don't send stay untouched.
 
 **Locale-scoped tokens — update only** ([update Rule 3](https://www.datocms.com/docs/content-management-api/resources/item/update#updating-localized-fields)). A token that can write only some locales sends just those; the CMA preserves the record's existing values for the locales it can't access (so the set stays consistent), and rejects any write to an out-of-scope locale with `INSUFFICIENT_PERMISSIONS`. No such preservation on create.
 

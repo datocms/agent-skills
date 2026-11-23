@@ -293,8 +293,9 @@ Stega leakage into application logic is THE most common visual-editing bug sourc
 ### Import
 
 ```ts
-// Also re-exported by the framework package in use: `react-datocms/stega`, `vue-datocms`,
-// `@datocms/svelte`, `@datocms/astro/ContentLink`. Either import works.
+// `stripStega` and `decodeStega` are also re-exported by the framework package in use
+// (`react-datocms/stega`, `vue-datocms`, `@datocms/svelte`, `@datocms/astro/ContentLink`);
+// `revealStega` only by `react-datocms`.
 import { stripStega, decodeStega, revealStega } from '@datocms/content-link';
 ```
 

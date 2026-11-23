@@ -93,7 +93,7 @@ Create: `client.itemTypes.create({ name, api_key, ...settings })`. All settings 
 | `ordering_meta` + `ordering_direction` | Default sort by `created_at`, `updated_at`, `first_published_at` or `published_at`; not together with `ordering_field` |
 | `draft_mode_active` | Records have a draft and a published version. Default: the environment's setting (normally `true`) |
 | `draft_saving_active` | Invalid records can be saved as drafts; validators are enforced at publish. Needs `draft_mode_active` |
-| `all_locales_required` | Every locale must be present in every localized field. Default `false` through the CMA |
+| `all_locales_required` | Every localized field of a record carries every locale: missing ones are filled with `null` on create, none can be removed. Default `false` through the CMA |
 | `collection_appearance` | `"compact"` (default) or `"table"` |
 | `inverse_relationships_enabled` | Exposes `_allReferencing…` queries in the CDA |
 | `hint` | Text shown to editors |

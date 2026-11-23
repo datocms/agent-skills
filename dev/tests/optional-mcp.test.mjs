@@ -117,11 +117,11 @@ const reviewedCorrections = {
     // Measured on the API: a locale left out of one field is rejected; left out of all, it is deleted.
     [
       "- **Localized block field:** the value is `{ en: [...], it: [...] }` with separate blocks per locale. Send every locale: a locale you leave out is deleted with its blocks.",
-      "- **Localized block field:** the value is `{ en: [...], it: [...] }` with separate blocks per locale. Send every locale the record has: leaving one out is rejected (`INVALID_LOCALES`) unless every localized field of the record is sent and leaves it out, and then that locale is deleted with its blocks.",
+      "- **Localized block field:** the value is `{ en: [...], it: [...] }` with separate blocks per locale. Send every locale the record has: leaving one out is rejected (`INVALID_LOCALES`) unless every localized field of the record is sent without it: then that locale is deleted with its blocks (never with `all_locales_required`).",
     ],
     [
       "- **Send every locale of a field you update.** A locale left out of the object is removed: spread the current value and change what you need (`{ ...it.question, es: \"...\" }`).",
-      "- **Send every locale of a field you update:** spread the current value and change what you need (`{ ...it.question, es: \"...\" }`). A locale left out of one field is rejected with `INVALID_LOCALES`; left out of every localized field of the record, all sent in the same request, it is removed from the record (that is how a translation is deleted: an empty string keeps the locale).",
+      "- **Send every locale of a field you update:** spread the current value and change what you need (`{ ...it.question, es: \"...\" }`). A locale left out of one field is rejected with `INVALID_LOCALES`; left out of every localized field of the record, all sent together, it is removed from the record (that is how a translation is deleted: an empty string keeps the locale).",
     ],
   ],
 };

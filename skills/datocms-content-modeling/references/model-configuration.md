@@ -88,11 +88,11 @@ Flag has no effect unless `draft_mode_active: true` also set. Both must be `fals
 
 ### `all_locales_required`
 
-When `true`, every localized field of a record carries every project locale: a locale cannot be left out or removed. The value may still be empty unless the field is `required`.
+When `true`, every localized field of a stored record carries every project locale. On create a missing locale is filled with `null`; on update a locale cannot be removed (`INVALID_LOCALES`). A value may be empty unless the field is `required`, and a first selective publication must include every locale.
 
 **Use when:** team operates strict translation parity (legal content, structured data feeds, consistent product catalogs).
 
-**Skip when:** locales fall back gracefully or content added per locale on rolling basis (typical editorial workflow). Forcing `all_locales_required: true` on editorial site usually backfires — editors stop publishing because Italian translations aren't ready.
+**Skip when:** locales fall back gracefully or content added per locale on rolling basis (typical editorial workflow). Forcing `all_locales_required: true` on editorial site usually backfires — editors stop publishing because required fields have no Italian value yet.
 
 Default (`false`) lets you publish record with only some locales populated; CDA serves whatever is there.
 

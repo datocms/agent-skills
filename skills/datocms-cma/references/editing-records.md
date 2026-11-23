@@ -126,7 +126,7 @@ Compound predicates such as `(node) => isSpan(node) && node.value === text` retu
 - **Your own ID for a new block:** allowed. Use `generateId()` from the CMA client (a URL-safe base64 UUIDv4), unused in the environment, on an object that also has `item_type`. A malformed ID fails with `INVALID_ENTITY_ID`.
 - **One ID once per payload**, at any depth: `Block record ID "…" is used twice in this payload`.
 - **A bare ID string only keeps a block.** It never creates one and never changes one.
-- **Localized block field:** the value is `{ en: [...], it: [...] }` with separate blocks per locale. Send every locale the record has: leaving one out is rejected (`INVALID_LOCALES`) unless every localized field of the record is sent and leaves it out, and then that locale is deleted with its blocks.
+- **Localized block field:** the value is `{ en: [...], it: [...] }` with separate blocks per locale. Send every locale the record has: leaving one out is rejected (`INVALID_LOCALES`) unless every localized field of the record is sent without it: then that locale is deleted with its blocks (never with `all_locales_required`).
 - **Blocks cannot be written directly:** `client.items.update(blockId)`, `publish`, `destroy` answer 404. They are saved, published and deleted with their record.
 - **Limits** (blocks per record, nesting depth, record size), **error paths** such as `sections.0.ctas.0.title`: see the `items` guide (`records.md`), "Limits per record" and "Errors on writes".
 
@@ -358,7 +358,7 @@ if (currentItem.content) {
 
 A localized field's value is an object keyed by locale. Two rules:
 
-- **Send every locale of a field you update:** spread the current value and change what you need (`{ ...it.question, es: "..." }`). A locale left out of one field is rejected with `INVALID_LOCALES`; left out of every localized field of the record, all sent in the same request, it is removed from the record (that is how a translation is deleted: an empty string keeps the locale).
+- **Send every locale of a field you update:** spread the current value and change what you need (`{ ...it.question, es: "..." }`). A locale left out of one field is rejected with `INVALID_LOCALES`; left out of every localized field of the record, all sent together, it is removed from the record (that is how a translation is deleted: an empty string keeps the locale).
 - **All localized fields of a record share one set of locales.** Adding or removing a locale on one field means sending **every** localized field in that update, each with the new set (a value or `null`). Adding `es` to `question` alone is rejected; include `es` on `answer` too.
 
 Adding a locale = two executions: record types come from the environment's locales before a script runs, so the script that adds a locale cannot type it. 1) Append the locale (keep order; first = primary), read `site.locales` back. 2) New execution (regenerate any local schema file first): backfill. Spread existing per-locale objects.
