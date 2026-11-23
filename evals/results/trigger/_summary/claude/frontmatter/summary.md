@@ -1,6 +1,6 @@
 # Trigger Eval Summary
 
-Generated at: 2026-11-23T02:27:21.014957+00:00
+Generated at: 2026-11-23T03:02:54.366092+00:00
 Track / source: `claude` / `frontmatter`
 Trigger threshold (per-query): `0.5`
 F1 gate threshold: `0.9`
