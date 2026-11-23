@@ -295,7 +295,8 @@ const query = `
 
 async function fetchBlogPost(slug: string) {
   try {
-    const data = await executeQuery(query, {
+    // Result: this query's shape, hand-written or generated (type-generation.md); a string query is `unknown` without it.
+    const data = await executeQuery<Result>(query, {
       token: process.env.DATOCMS_PUBLISHED_CONTENT_CDA_TOKEN!,
       variables: { slug },
     });

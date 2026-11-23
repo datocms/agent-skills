@@ -6,12 +6,13 @@ The host draws the field's label, hint, label menu and validation errors around 
 
 ```tsx
 import type { RenderFieldExtensionCtx } from 'datocms-plugin-sdk';
+import { get } from 'lodash-es';
 import Canvas from 'datocms-react-ui/Canvas';
 import StringInput from 'datocms-react-ui/StringInput';
 
 function ColorEditor({ ctx }: { ctx: RenderFieldExtensionCtx }) {
-  // a top-level, non-localized field; see datocms-plugin for nested paths
-  const value = (ctx.formValues[ctx.fieldPath] as string | null) ?? null;
+  // fieldPath is a path (`title.en`, a block's nested path), not a key
+  const value = (get(ctx.formValues, ctx.fieldPath) as string | null) ?? null;
 
   return (
     <StringInput

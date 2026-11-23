@@ -13,7 +13,7 @@ From 2.x (the `latest` line, last 2.5.1) or a 3.x prerelease. No migration page 
 
 ## From 3.x prereleases
 
-4.0.0-next.8 has the same components, entries and props as 3.1.0-next.9; the major bump only widens the SDK peer range to `^2.2.7 || ^3.0.0-next.0`.
+4.0.0-next.8 has the same components, entries, props and peer ranges (SDK `^2.2.7 || ^3.0.0-next.0`) as 3.1.0-next.9. 3.1.0-next.9 was published later and differs in one file: a disabled tree toggle in `Table` also prevents the click's default action. npm marks 4.0.0-next.8 deprecated in its favour; this skill keeps the 4.0.0-next.8 pin.
 
 - Pin `"datocms-react-ui": "4.0.0-next.8"` (exact; `next` still points to 3.x).
 - Delete the `overrides` block that early 3.x needed (`"datocms-react-ui": { "datocms-plugin-sdk": "$datocms-plugin-sdk" }`): the peer range now accepts SDK prereleases.
@@ -60,7 +60,7 @@ Every 2.5.1 export and its 4 replacement. Pages are under `docs/`.
 | `SplitView`, `SplitViewPane`, `VerticalSplit` | `SplitPane`, or the patterns | `Layout/SplitPane`, `Patterns/ListAndDetail`, `Patterns/ListAndForm` |
 | `Tooltip`, `TooltipTrigger`, `TooltipContent`, `TooltipDelayGroup` | `Tooltip label={…}` around the trigger; Canvas mounts the delay group | `Overlays/Tooltip` |
 | `HotKey` | `useRegisterActions` + `Shortcut` (`datocms-react-ui/Actions`); `Tooltip shortcut` for keys with no action | `Actions/Actions` |
-| `Spinner` (`placement`, `size: number`) | `Spinner` (`inline`, `size: 'small' \| 'regular'`), `Spinner.Area`, `Spinner.Overlay` | `Feedback/Progress` |
+| `Spinner` (`placement`, `size: number`) | `Spinner` (`inline`; no `size`), `Spinner.Area` (`size: 'small' \| 'regular'`), `Spinner.Overlay` | `Feedback/Progress` |
 | `useClickOutside` | `datocms-react-ui/hooks/useClickOutside` (same signature) | `Foundations/Hooks` |
 | `useMediaQuery` | `datocms-react-ui/hooks/useMediaQuery` (read `.matches`) | `Foundations/Hooks` |
 | `MediaQuery` component | Removed: branch on `useMediaQuery(query).matches` | `Foundations/Hooks` |
@@ -73,7 +73,7 @@ Every 2.5.1 export and its 4 replacement. Pages are under `docs/`.
 - **Inputs:** controlled; `onChange(newValue)`, not an event. Text inputs give `string | null` (empty = `null`). `textInputProps`, `switchInputProps`, `selectInputProps` → props on the input itself. `monospaced` → `code`. `SwitchInput` `name` optional; label on the switch.
 - **SelectInput:** value = the option's `value` string (array with `multiple`), not the option object; `isMulti` → `multiple`; `onChange` gets the option(s) as second argument; `loadOptions` → `useAsyncSelectOptions`.
 - **Dropdown:** `renderTrigger` → `triggerComponent` (`Dropdown.ButtonTrigger`, `IconTrigger`, `TextualTrigger`, `PillTrigger`); `DropdownOption onClick` → `Dropdown.Option onPick` (or `to`, `href`, `action`); `red` → `alert`, last, after `Dropdown.Separator`.
-- **Section:** `collapsible={{ isOpen, onToggle }}` → `collapse` on `Page.Section` (see `Layout/Page`, "Collapse").
+- **Section:** `collapsible={{ isOpen, onToggle }}` → `collapse` on `Page.SectionTitle` or `Page.Group`, not on `Page.Section` (see `Layout/Page`, "Collapse").
 
 ## CSS variables
 

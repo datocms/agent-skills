@@ -55,7 +55,8 @@ const query = `
   }
 `;
 
-const result = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
+// Result: this query's shape; a string query returns `unknown` without it.
+const result = await executeQuery<Result>(query, { token: '<YOUR-API-TOKEN>' });
 ---
 
 <html>
@@ -100,7 +101,8 @@ Then use it from a page:
 import Layout from '~/layouts/Layout.astro';
 import { executeQuery } from '@datocms/cda-client';
 
-const result = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
+// Result: this query's shape; a string query returns `unknown` without it.
+const result = await executeQuery<Result>(query, { token: '<YOUR-API-TOKEN>' });
 const seoData = [...result.page.seo, ...result.site.favicon];
 ---
 

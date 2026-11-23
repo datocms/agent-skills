@@ -65,7 +65,8 @@ const data = await executeQuery(query, {
 ```ts
 const query = `query { allBlogPosts(first: 10) { id title slug } }`;
 
-const data = await executeQuery(query, { ... });
+// Result: this query's shape, hand-written or generated (type-generation.md); a string query is `unknown` without it.
+const data = await executeQuery<Result>(query, { ... });
 
 console.log(data.allBlogPosts);
 ```

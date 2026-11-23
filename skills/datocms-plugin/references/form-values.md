@@ -219,7 +219,9 @@ For **read-only** operations (e.g., analyzing content in a sidebar panel), conve
 import { slateToDast } from 'datocms-structured-text-slate-utils';
 
 const slateValue = ctx.formValues.body; // Slate format
-const dast = slateToDast(slateValue);   // Standard DAST
+// Second argument: `Record<blockModelId, Field[]>` for the blocks in the document
+// (build it from `ctx.fields`: see structured-text.md); `{}` only when there are none.
+const dast = slateToDast(slateValue, fieldsByModel); // Standard DAST, or null when empty
 ```
 
 For **read-write** operations, work directly with the Slate format using the package's TypeScript types and type guards:

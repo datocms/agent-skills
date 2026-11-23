@@ -44,7 +44,8 @@ const query = `
   }
 `;
 
-const data = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
+// Result: this query's shape; a string query returns `unknown` without it.
+const data = await executeQuery<Result>(query, { token: '<YOUR-API-TOKEN>' });
 ---
 
 <h1>{data.homepage.title}</h1>
@@ -72,7 +73,8 @@ const query = `
   }
 `;
 
-const data = await executeQuery(query, {
+// Result: this query's shape; a string query returns `unknown` without it.
+const data = await executeQuery<Result>(query, {
   token: draftModeToken,
   includeDrafts: true,
   excludeInvalid: true,
@@ -120,7 +122,7 @@ const isDraftMode = /* your draft mode check */;
 
 ## Initialization Options
 
-See `realtime-concepts.md` for the full options table. `<QueryListener />` accepts the same core options as props, except it does not expose `fetcher` or `eventSourceClass`.
+See `realtime-concepts.md` for the full options table. `<QueryListener />` accepts the same core options as props, except `fetcher`, `eventSourceClass` and the callbacks (`onUpdate`, `onStatusChange`, `onChannelError`, `onError`, `onEvent`): the page reloads instead. It adds `reloadDelayMs` (default 2000): the wait before that reload.
 
 ## Key Differences from React, Vue, and Svelte
 

@@ -6,12 +6,14 @@ Rendered under the field's editor, 10px below it. Keep it to one quiet line: a s
 
 ```tsx
 import type { RenderFieldExtensionCtx } from 'datocms-plugin-sdk';
+import { get } from 'lodash-es';
 import Button from 'datocms-react-ui/Button';
 import Canvas from 'datocms-react-ui/Canvas';
 import Pill from 'datocms-react-ui/Pill';
 
 function SeoAddon({ ctx }: { ctx: RenderFieldExtensionCtx }) {
-  const text = String(ctx.formValues[ctx.fieldPath] ?? '');
+  // fieldPath is a path (`title.en`, a block's nested path), not a key
+  const text = String(get(ctx.formValues, ctx.fieldPath) ?? '');
   return (
     <div style={{ display: 'flex', gap: 'var(--spacing-s)', alignItems: 'center' }}>
       <Pill tone={text.length > 60 ? 'warning' : 'success'}>{`${text.length} characters`}</Pill>

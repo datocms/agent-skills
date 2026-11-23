@@ -102,6 +102,11 @@ const reviewedCorrections = {
       "| `date_time` | ISO 8601 with offset, `\"2026-03-01T09:30:00+01:00\"`, or `null` |",
       "| `date_time` | ISO 8601 with offset, `\"2026-03-01T09:30:00+01:00\"`, or `null`. Without an offset the time is taken as UTC, not as the editor's timezone |",
     ],
+    // Measured on the API: the first publication of a record cannot leave its non-localized content out.
+    [
+      "Useful when some locales finish before others — publish ready locales now without lying about field values to satisfy validators.",
+      "Useful when some locales finish before others — publish ready locales now without lying about field values to satisfy validators.\n\nA record that was never published must send `non_localized_content: true` with its first locales: `false` fails with `NON_LOCALIZED_CONTENT_MUST_BE_PUBLISHED`. The non-localized fields are part of that first version, not an extra publication, so \"publish only English\" on such a record is `{ content_in_locales: [\"en\"], non_localized_content: true }`.",
+    ],
   ],
   'editing-records': [
     // Measured on the API: a locale left out of one field is rejected; left out of all, it is deleted.

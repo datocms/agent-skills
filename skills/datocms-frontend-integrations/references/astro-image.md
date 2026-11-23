@@ -51,7 +51,8 @@ const query = `
   }
 `;
 
-const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
+// Result: this query's shape; a string query returns `unknown` without it.
+const { blogPost } = await executeQuery<Result>(query, { token: '<YOUR-API-TOKEN>' });
 ---
 
 <h1>{blogPost.title}</h1>
@@ -68,7 +69,7 @@ const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
 | `imgClass` | string | null | Additional CSS class for the `<img>` tag |
 | `imgStyle` | CSS properties | null | Additional CSS for the `<img>` tag |
 | `priority` | boolean | false | Disables lazy loading, sets `fetchPriority="high"` |
-| `sizes` | string | undefined | HTML5 `sizes` attribute (falls back to `data.sizes`) |
+| `sizes` | string | undefined | HTML5 `sizes` attribute. Falls back to `data.sizes`, then to `"auto, 100vw"` unless `priority` |
 | `usePlaceholder` | boolean | true | Whether to show blurred image placeholder |
 | `srcSetCandidates` | Array<number> | `[0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4]` | Width multipliers for auto-generated `srcset` (used when `data` has no `srcSet`) |
 | `referrerPolicy` | string | `no-referrer-when-downgrade` | Defines which referrer is sent when fetching the image |

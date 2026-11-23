@@ -52,7 +52,8 @@ const query = `
   }
 `;
 
-const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
+// Result: this query's shape; a string query returns `unknown` without it.
+const { blogPost } = await executeQuery<Result>(query, { token: '<YOUR-API-TOKEN>' });
 ---
 
 <article>
@@ -131,7 +132,8 @@ import NewsletterSignup from '~/components/NewsletterSignup.astro';
 import InlineTeamMember from '~/components/InlineTeamMember.astro';
 import LinkToTeamMember from '~/components/LinkToTeamMember.astro';
 
-const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
+// Result: this query's shape; a string query returns `unknown` without it.
+const { blogPost } = await executeQuery<Result>(query, { token: '<YOUR-API-TOKEN>' });
 ---
 
 <article>

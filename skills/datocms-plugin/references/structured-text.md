@@ -95,10 +95,18 @@ If your plugin needs to read or modify Structured Text content programmatically 
 For read-only analysis, convert to DAST first for a cleaner tree structure:
 
 ```ts
-import { slateToDast } from 'datocms-structured-text-slate-utils';
+import type { Field } from 'datocms-plugin-sdk';
+import { slateToDast, type Node } from 'datocms-structured-text-slate-utils';
 
-const slateValue = ctx.formValues.body;
-const dast = slateToDast(slateValue);
+// Second argument: the fields of every block model in the document, by model ID.
+// A block whose model is missing throws: `await ctx.loadItemTypeFields(id)` first.
+const fieldsByModel: Record<string, Field[]> = {};
+for (const field of Object.values(ctx.fields)) {
+  if (field) (fieldsByModel[field.relationships.item_type.data.id] ??= []).push(field);
+}
+
+const slateValue = ctx.formValues.body as Node[] | null;
+const dast = slateToDast(slateValue, fieldsByModel); // null for an empty field
 // Use the Structured Text specialist for DAST traversal and validation.
 ```
 
@@ -147,5 +155,5 @@ function extractLinks(nodes: Node[]): string[] {
 ### Key rules
 
 - **Never use Editor extensions for Structured Text fields** — use Addon extensions instead
-- Custom marks defined via `customMarksForStructuredTextField` appear as boolean keys on Slate text nodes (e.g., `{ text: "spoiler text", spoiler: true }`)
+- Custom marks defined via `customMarksForStructuredTextField` appear on Slate text nodes as boolean keys prefixed `customMark_` (e.g., `{ text: "spoiler text", customMark_spoiler: true }`); default marks keep their bare name (`strong: true`)
 - Custom block styles defined via `customBlockStylesForStructuredTextField` appear as `style` properties on block nodes (e.g., `{ type: "paragraph", style: "callout", children: [...] }`)

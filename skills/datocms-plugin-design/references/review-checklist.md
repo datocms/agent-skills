@@ -57,7 +57,7 @@ Run over the finished UI. Each item is checkable by reading the code; the page i
 ## Actions and feedback
 
 - [ ] One `tone="primary"` per place. \[`Actions/Button`]
-- [ ] No `size` or `expand` forced on buttons beyond what a page asks; icon-only `Button` is `tone="ghost" size="micro"` with a `label`. \[`Actions/Button`]
+- [ ] No `size` or `expand` forced on buttons beyond what a page asks; icon-only `Button` is `iconOnly`, `tone="ghost" size="micro"`, with a `label`. \[`Actions/Button`]
 - [ ] Destructive actions last, after `Dropdown.Separator`, `alert`/`ghost-alert`, confirmed by `ctx.openConfirm`. \[`Actions/Button`, `Actions/Dropdown`]
 - [ ] Each element does one thing: one of `onClick`/`onPick`, `to`, `href`, `action`. \[`Actions/Button`]
 - [ ] CMS links use `to`, not `onClick={() => ctx.navigateTo(...)}`. \[`Navigation/Link`]

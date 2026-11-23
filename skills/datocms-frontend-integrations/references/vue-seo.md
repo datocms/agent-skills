@@ -62,7 +62,7 @@ export default {
 </script>
 ```
 
-### With Nuxt 3 `useHead`
+### With Nuxt `useHead`
 
 ```vue
 <script setup>
