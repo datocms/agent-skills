@@ -1,0 +1,28 @@
+{
+  "default": { "load": ["cma"] },
+  "cases": {
+    "claude-confinement": {},
+    "add-locale": { "oneOf": ["cma", "cli"] },
+    "create-simple-model": { "oneOf": ["cma", "cli"] },
+    "schema-editorial-fields": { "oneOf": ["cma", "cli"] },
+    "schema-extend-allowed-blocks": { "oneOf": ["cma", "cli"] },
+    "schema-field-type-change": { "oneOf": ["cma", "cli"] },
+    "schema-media-and-links": { "oneOf": ["cma", "cli"] },
+    "schema-nested-blocks-and-record": { "load": ["cma"], "allow": ["cli", "structured-text"] },
+    "schema-presentation-options": { "oneOf": ["cma", "cli"] },
+    "schema-tighten-validators": { "oneOf": ["cma", "cli"] },
+    "structured-text-blocks-to-list": { "load": ["cma", "structured-text"] },
+    "structured-text-content-aware-insert": { "load": ["cma", "structured-text"] },
+    "structured-text-copy-to-locale": { "load": ["cma"], "allow": ["structured-text"] },
+    "structured-text-enable-inline-block": { "load": ["cma", "structured-text"], "allow": ["cli"] },
+    "structured-text-import-html": { "load": ["cma", "structured-text"] },
+    "structured-text-import-markdown": { "load": ["cma", "structured-text"] },
+    "structured-text-marks-and-links": { "load": ["cma", "structured-text"] },
+    "structured-text-nested-block-edit": { "load": ["cma", "structured-text"] },
+    "structured-text-nested-blocks": { "load": ["cma", "structured-text"] },
+    "structured-text-preserve-references": { "load": ["cma", "structured-text"] },
+    "structured-text-prose-rewrite": { "load": ["cma", "structured-text"] },
+    "structured-text-record-links": { "load": ["cma", "structured-text"] },
+    "structured-text-transform": { "load": ["cma", "structured-text"] }
+  }
+}

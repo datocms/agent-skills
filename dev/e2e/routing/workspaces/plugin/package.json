@@ -1,0 +1,9 @@
+{
+  "name": "datocms-plugin-reading-tools",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "vite", "build": "tsc -b && vite build" },
+  "dependencies": { "datocms-plugin-sdk": "*", "datocms-react-ui": "*", "react": "*", "react-dom": "*" },
+  "devDependencies": { "@vitejs/plugin-react": "*", "typescript": "*", "vite": "*" }
+}

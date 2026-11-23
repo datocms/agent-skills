@@ -4,7 +4,7 @@ For native `gpt-6-luna` medium task execution, live CMS verification, and built-
 
 This directory holds the **trigger check**, a cheap lint of each skill's description. For each labelled query, a classifier reads one skill's description and decides whether that skill should load. The check catches descriptions that attract requests owned by another skill (precision) or miss requests they should handle (recall).
 
-It does not measure real routing. A real agent chooses among every installed skill at once, turn by turn. For that, use the routing probes, which record the skills an agent actually opens for a fixture's queries: [`dev/e2e/routing/claude.mjs`](../dev/e2e/routing/claude.mjs) for Claude Code and [`dev/e2e/routing/codex.mjs`](../dev/e2e/routing/codex.mjs) for Codex (the pinned native model, stopped after a few commands). The end-to-end suite covers the rest. Setup orchestration behavior (questions, plan-then-confirm, handoff) is covered by the regression case [`dev/e2e/regressions/cases/setup-guided.mjs`](../dev/e2e/regressions/cases/setup-guided.mjs), not here.
+It does not measure real routing. A real agent chooses among every installed skill at once, turn by turn. For that, use the routing probes, which record the skills an agent actually opens for a fixture's queries: [`dev/e2e/routing/claude.mjs`](../dev/e2e/routing/claude.mjs) for Claude Code and [`dev/e2e/routing/codex.mjs`](../dev/e2e/routing/codex.mjs) for Codex (the pinned native model, stopped after a few commands). Those two give the agent nothing to do but pick a skill. An agent that has its working tools often skips the skills and starts editing, so the [task probe](#task-probe) runs each request with tools in a project folder. The end-to-end suite covers the rest. Setup orchestration behavior (questions, plan-then-confirm, handoff) is covered by the regression case [`dev/e2e/regressions/cases/setup-guided.mjs`](../dev/e2e/regressions/cases/setup-guided.mjs), not here.
 
 > **Cost warning.** Evals make many LLM calls. Do not run them proactively. Only run when explicitly asked.
 
@@ -122,6 +122,33 @@ The comparison notes when the runs used different or unrecorded models, since a 
 ### Refining a description
 
 Edit the SKILL.md frontmatter `description` in small steps, based on the misroutes the summary lists, then re-run. Never paste words from failed queries into it: that fits the description to this fixture and grows it without improving real routing. Touch the SKILL.md body only once the description change is validated.
+
+---
+
+## Task probe
+
+**Question it answers:** "Given this request in a real project folder, with its tools at hand, which skills does Claude Code load before it works?"
+
+[`dev/e2e/routing/claude-tasks.mjs`](../dev/e2e/routing/claude-tasks.mjs) runs every task of [`tasks.json`](../dev/e2e/routing/tasks.json) through `claude -p` in a temporary copy of one of the folders in `dev/e2e/routing/workspaces/` (`empty`, `cms`, `next`, `astro`, `plugin`, and `next-other` and `vite-plugin` for projects on another stack, where no DatoCMS skill should load), with the skills under test installed as project skills and the tools an agent normally has. No operator settings, plugins or MCP servers load, and the run stops after six turns.
+
+Every actor is confined. An agent with a shell goes looking when its tools fail: it lists the home directory, opens credential files and fetches a real CLI that uses the operator's saved login. So the probe runs each actor in Claude Code's sandbox with no network, denies reads and writes under the operator's home, passes an environment that holds only `PATH` and locale, and gives it a `datocms` command that works ([`fake-datocms.mjs`](../dev/e2e/routing/fake-datocms.mjs): canned answers, no connection), except in the other-stack folders, where finding one would mark the project as a DatoCMS one. Before any task, a self-check actor tries to read and write outside its folder and to reach the network; the run refuses to start unless every attempt failed. Keep both when changing the probe, and never give a test agent a shell without them.
+
+```bash
+node dev/e2e/routing/claude-tasks.mjs --model claude-haiku-5-5 --output local/routing/<run>
+node dev/e2e/routing/claude-tasks.mjs --model claude-sonnet-5-5 --output local/routing/<run> --only 'plugin*,fe-draft-mode'
+```
+
+Each task names the whole set of skills it expects, by short name (`cma` for `datocms-cma`):
+
+| Field | Meaning |
+| - | - |
+| `load` | Every one of these must be loaded |
+| `oneOf` | At least one of these must be loaded (either owner is right) |
+| `allow` | Loading these is fine |
+
+Any other skill loaded fails the task, so a task with none of the three expects no DatoCMS skill at all. The result also lists the tasks where a required skill was loaded only after the first command or edit. A model does not answer the same way twice: `--repeat 3` runs every task three times, and a description change is only worth keeping when it moves the count over all runs. `tasks-heldout.json` (`--tasks`) holds tasks written from the ownership rules without sight of the descriptions: tune descriptions against `tasks.json` only, and run the held-out set to check the result. Run on the weakest model you support first: it skips skills that a stronger model loads.
+
+[`dev/e2e/routing/live-loads.mjs`](../dev/e2e/routing/live-loads.mjs) reads finished runs of the live suite (`local/e2e/<run>`) and checks the skills each case loaded against [`live-expected.json`](../dev/e2e/routing/live-expected.json). It runs no model.
 
 ---
 

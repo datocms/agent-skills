@@ -1,0 +1,7 @@
+{
+  "name": "acme-content",
+  "private": true,
+  "type": "module",
+  "scripts": { "migrate": "datocms migrations:run --destination=release-candidate" },
+  "devDependencies": { "datocms": "*", "@datocms/cma-client-node": "*", "typescript": "*" }
+}

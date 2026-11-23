@@ -12,7 +12,7 @@
     "should_trigger": true
   },
   {
-    "query": "I'm building a portfolio site with DatoCMS. Each project has modular content blocks \u2014 a text block, an image gallery block, and a video embed block. How do I query these with the CDA and render them with the right components?",
+    "query": "I'm building a portfolio site with DatoCMS. Each project has modular content blocks — a text block, an image gallery block, and a video embed block. How do I query these with the CDA and render them with the right components?",
     "should_trigger": true,
     "query_mode": "overlap",
     "boundary_with": [
@@ -180,5 +180,56 @@
     "boundary_with": [
       "datocms-cma"
     ]
+  },
+  {
+    "query": "Write the GraphQL query for the 10 latest DatoCMS blog posts with title, slug, cover image and author name.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "With GraphQL, I need to page through all DatoCMS products priced between 10 and 50, sorted by name, 100 at a time. Write the query and the loop.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "How do I query DatoCMS content in Italian and fall back to English when a field is empty?",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Set up typed GraphQL queries for DatoCMS with gql.tada in this project.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Our DatoCMS GraphQL requests almost never hit the CDN cache and we run into the rate limit. Why, and what should we change in the requests?",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "From a Node script, read draft content of the DatoCMS sandbox environment staging with a GraphQL request.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Write the GraphQL query that pulls our DatoCMS category tree three levels deep for the mega menu.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Write the GraphQL query that fetches DatoCMS posts with their Structured Text body, including its blocks and linked records.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Our DatoCMS page has a sections field with hero, gallery and quote blocks. Write the GraphQL query with a fragment per block type.",
+    "should_trigger": true,
+    "query_mode": "implicit"
   }
 ]

@@ -233,5 +233,78 @@
   {
     "query": "In Sanity, should page sections be an array of objects or references to separate documents?",
     "should_trigger": false
+  },
+  {
+    "query": "Should testimonials be their own model or a block in DatoCMS? The same ones appear on several landing pages and editors want to update them in one place.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "I'm starting a DatoCMS project for a SaaS marketing site. How should I structure pages, blog posts, authors and categories?",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "We need product categories like Electronics > Phones > Smartphones in DatoCMS. A tree model, or a parent link field?",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "A status field in DatoCMS with three values: draft, review, published. A plain text field with a validation, or is there something better for editors?",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Editors keep skipping alt text on images in DatoCMS. Should I force it on every image field?",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Our DatoCMS content sidebar is a flat list of 25 models and editors get lost. How should I organise it?",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Should the body of our DatoCMS page model be Structured Text or Modular Content? Editors mostly stack sections but sometimes need rich text between them.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Our DatoCMS page model, with localized page-builder content in 6 locales, keeps hitting the record size limit. What are our options?",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "A lot of the fields in our DatoCMS schema are named after the visual design: bigHeroText, threeColumnGrid, redCallout. Is that a problem, and how should we refactor it?",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Editors keep asking for a \"Drafts awaiting review\" view in DatoCMS. Can I put that in the sidebar so they don't have to filter every time?",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Inside DatoCMS Structured Text, when should editors embed a record inline and when should they link to it? And when is a block better than an inline block?",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-structured-text"
+    ]
+  },
+  {
+    "query": "Design the content model for a recipe site in DatoCMS (recipes, ingredients, authors, collections) and create it in our sandbox environment called recipes.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma",
+      "datocms-cli"
+    ]
   }
 ]

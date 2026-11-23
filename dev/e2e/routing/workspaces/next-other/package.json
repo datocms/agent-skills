@@ -1,0 +1,7 @@
+{
+  "name": "acme-blog",
+  "private": true,
+  "scripts": { "dev": "next dev", "build": "next build" },
+  "dependencies": { "next": "*", "react": "*", "react-dom": "*", "contentful": "*" },
+  "devDependencies": { "typescript": "*", "@types/react": "*", "@types/node": "*" }
+}

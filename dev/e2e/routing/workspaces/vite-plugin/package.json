@@ -1,0 +1,9 @@
+{
+  "name": "vite-plugin-build-banner",
+  "version": "0.2.1",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": { "build": "tsc" },
+  "peerDependencies": { "vite": "*" },
+  "devDependencies": { "typescript": "*", "vite": "*" }
+}

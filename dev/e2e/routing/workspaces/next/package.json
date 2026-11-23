@@ -1,0 +1,7 @@
+{
+  "name": "acme-site",
+  "private": true,
+  "scripts": { "dev": "next dev", "build": "next build" },
+  "dependencies": { "next": "*", "react": "*", "react-dom": "*", "@datocms/cda-client": "*", "react-datocms": "*" },
+  "devDependencies": { "typescript": "*", "@types/react": "*", "@types/node": "*" }
+}

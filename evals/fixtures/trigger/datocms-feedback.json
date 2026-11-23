@@ -291,5 +291,33 @@
       "datocms-setup",
       "datocms-cli"
     ]
+  },
+  {
+    "query": "The DatoCMS skills sent me in circles all afternoon. Help me report that to DatoCMS.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "The DatoCMS MCP keeps failing on my edits and I'm done trying. Draft a support request about it that I can send.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Three times today the DatoCMS skills started a whole guided setup when I had asked for one route to be patched. Summarize that as feedback I can send to the DatoCMS team.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Draft an email to DatoCMS support asking why our invoice doubled this month.",
+    "should_trigger": false,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "In our DatoCMS project repo: this migration flow is driving me crazy. The last run failed because the author model already exists; adjust the migration so it passes.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cli"
+    ]
   }
 ]

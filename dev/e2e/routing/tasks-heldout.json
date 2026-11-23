@@ -1,0 +1,557 @@
+[
+  {
+    "id": "h-cma-unpublish-past-events",
+    "workspace": "empty",
+    "task": "Unpublish every event record in our DatoCMS project whose end date is before January 1st 2025.",
+    "load": [
+      "cma"
+    ]
+  },
+  {
+    "id": "h-cma-unused-assets",
+    "workspace": "empty",
+    "task": "Find the images in our DatoCMS media library that no record uses anymore and delete them. Show me the list before deleting.",
+    "load": [
+      "cma"
+    ]
+  },
+  {
+    "id": "h-cma-rotate-token",
+    "workspace": "empty",
+    "task": "Our DatoCMS preview API token got committed to a public repo. Rotate it.",
+    "load": [
+      "cma"
+    ]
+  },
+  {
+    "id": "h-cma-translator-role",
+    "workspace": "empty",
+    "task": "Create a Translator role in DatoCMS that can edit the French locale of articles but can't publish anything.",
+    "load": [
+      "cma"
+    ]
+  },
+  {
+    "id": "h-cma-plugin-parameters",
+    "workspace": "empty",
+    "task": "Through the API, change the settings of the SEO Analysis plugin installed on our DatoCMS project so its default language is Spanish.",
+    "load": [
+      "cma"
+    ]
+  },
+  {
+    "id": "h-cma-429-bulk",
+    "workspace": "empty",
+    "task": "My script that updates prices on 5,000 DatoCMS product records dies with 429 errors after a few hundred. How should I change it?",
+    "load": [
+      "cma"
+    ]
+  },
+  {
+    "id": "h-cma-direct-rename-field",
+    "workspace": "empty",
+    "task": "Quickly rename the subtitle field of the DatoCMS product model to tagline, straight on primary. No migration, it's a tiny project.",
+    "load": [
+      "cma"
+    ]
+  },
+  {
+    "id": "h-st-gdocs-faq",
+    "workspace": "empty",
+    "files": {
+      "faq.html": "<html><body><p class=\"c1\"><span class=\"c2\">How do I return an item?</span></p><p><span style=\"font-weight:700\">Within 30 days</span><span>, from </span><a href=\"https://www.google.com/url?q=https://example.com/returns\">your account</a><span>.</span></p><ul><li><span>Keep the receipt</span></li><li><span>Use the original box</span></li></ul></body></html>\n"
+    },
+    "task": "faq.html is a Google Docs export. Put its content into the Structured Text answer field of DatoCMS FAQ record Qp4rT8mWZ2eLsK1vXn6bYa, keeping bold, links and the list.",
+    "load": [
+      "cma",
+      "structured-text"
+    ]
+  },
+  {
+    "id": "h-st-steps-to-list",
+    "workspace": "empty",
+    "task": "In our DatoCMS recipes, the Structured Text method field has every step in one long paragraph starting with \"Step 1:\", \"Step 2:\" and so on. Turn each method into a numbered list, one step per item.",
+    "load": [
+      "cma",
+      "structured-text"
+    ]
+  },
+  {
+    "id": "h-st-rebrand-links",
+    "workspace": "empty",
+    "task": "Links inside the Structured Text bodies of our DatoCMS news records still point to oldbrand.com. Change them all to newbrand.com, same paths.",
+    "load": [
+      "cma",
+      "structured-text"
+    ]
+  },
+  {
+    "id": "h-st-invalid-on-save",
+    "workspace": "empty",
+    "task": "Saving DatoCMS page Lm9wQ3xR7tYbN2cVk5aHzE fails with a validation error on the Structured Text content field, something about a block node. Look at the document and fix it.",
+    "load": [
+      "cma",
+      "structured-text"
+    ]
+  },
+  {
+    "id": "h-st-quotes-to-blocks",
+    "workspace": "empty",
+    "task": "Convert every blockquote in the Structured Text bodies of our DatoCMS case studies into a pull_quote block (that block model already exists).",
+    "load": [
+      "cma",
+      "structured-text"
+    ],
+    "allow": [
+      "cli"
+    ]
+  },
+  {
+    "id": "h-st-build-press-release",
+    "workspace": "empty",
+    "task": "Build a DatoCMS Structured Text document in TypeScript for a press release: an h2, two paragraphs with a link in the second, and a blockquote. Write the JSON to press.dast.json, no project involved.",
+    "load": [
+      "structured-text"
+    ]
+  },
+  {
+    "id": "h-st-list-references",
+    "workspace": "empty",
+    "files": {
+      "doc.json": "{\"schema\":\"dast\",\"document\":{\"type\":\"root\",\"children\":[{\"type\":\"paragraph\",\"children\":[{\"type\":\"span\",\"value\":\"See \"},{\"type\":\"itemLink\",\"item\":\"Ab1cD2eF3gH4iJ5kL6mN7o\",\"children\":[{\"type\":\"span\",\"value\":\"pricing\"}]},{\"type\":\"inlineItem\",\"item\":\"Pq8rS9tU0vW1xY2zA3bC4d\"}]},{\"type\":\"block\",\"item\":\"Ef5gH6iJ7kL8mN9oP0qR1s\"}]}}\n"
+    },
+    "task": "doc.json is a DatoCMS Structured Text value. List every record ID it references and say how each one is used.",
+    "load": [
+      "structured-text"
+    ]
+  },
+  {
+    "id": "h-st-lint-helper",
+    "workspace": "empty",
+    "task": "Write a TypeScript helper for our tests that fails when a DatoCMS Structured Text value has an empty paragraph or a heading deeper than h3.",
+    "load": [
+      "structured-text"
+    ]
+  },
+  {
+    "id": "h-st-trap-publish-category",
+    "workspace": "empty",
+    "task": "The Structured Text body of DatoCMS article Hq7mN2RkQ5aXb8LpT1vEwA is final. Set its category to the \"Recipes\" category record and publish it.",
+    "load": [
+      "cma"
+    ]
+  },
+  {
+    "id": "h-cli-fork-sandbox",
+    "workspace": "cms",
+    "task": "Fork primary into a new sandbox called redesign-2027 from the command line.",
+    "load": [
+      "cli"
+    ]
+  },
+  {
+    "id": "h-cli-block-migration",
+    "workspace": "cms",
+    "task": "Write a migration that adds a faq_item block (question, answer) and lets the sections field of the page model accept it.",
+    "load": [
+      "cli"
+    ],
+    "allow": [
+      "cma"
+    ]
+  },
+  {
+    "id": "h-cli-migration-compile-error",
+    "workspace": "cms",
+    "files": {
+      "migrations/1731000000_add_tag_model.ts": "import type { Client } from '@datocms/cli/lib/cma-client-node';\n\nexport default async function (client: Client) {\n  const tag = await client.itemTypes.create({ name: 'Tag', api_key: 'tag' });\n  await client.fields.create(tag, { label: 'Name', api_key: 'name', field_type: 'strin' });\n}\n"
+    },
+    "task": "migrations:run fails on 1731000000_add_tag_model.ts. Fix it so it runs.",
+    "load": [
+      "cli"
+    ],
+    "allow": [
+      "cma"
+    ]
+  },
+  {
+    "id": "h-cli-login-projects",
+    "workspace": "empty",
+    "task": "Log the datocms CLI into my DatoCMS account and show me which projects I can access.",
+    "load": [
+      "cli"
+    ]
+  },
+  {
+    "id": "h-cli-field-settings-readonly",
+    "workspace": "empty",
+    "task": "Show me the validators and appearance settings of the promo_banner field on our DatoCMS page model. Read-only, I'm just checking.",
+    "load": [
+      "cli"
+    ]
+  },
+  {
+    "id": "h-cli-rename-env",
+    "workspace": "cms",
+    "task": "Rename our DatoCMS sandbox environment test to qa with the datocms command.",
+    "load": [
+      "cli"
+    ]
+  },
+  {
+    "id": "h-cli-plugins-list",
+    "workspace": "cms",
+    "task": "Which plugins does my datocms command line have installed, and how do I update them?",
+    "load": [
+      "cli"
+    ]
+  },
+  {
+    "id": "h-cli-gitlab-mr",
+    "workspace": "cms",
+    "task": "Add a GitLab CI job that, for every merge request, forks primary and runs our pending DatoCMS migrations on the fork.",
+    "load": [
+      "cli"
+    ]
+  },
+  {
+    "id": "h-schema-remove-field",
+    "workspace": "empty",
+    "task": "Remove the deprecated legacy_banner field from the page model in DatoCMS.",
+    "oneOf": [
+      "cma",
+      "cli"
+    ]
+  },
+  {
+    "id": "h-schema-gallery-block",
+    "workspace": "cms",
+    "task": "Add a gallery block with a title and multiple images, and allow it in the sections field of the landing_page model.",
+    "oneOf": [
+      "cma",
+      "cli"
+    ]
+  },
+  {
+    "id": "h-schema-rename-model",
+    "workspace": "empty",
+    "task": "Rename the news_item model in DatoCMS to press_release, API key included.",
+    "oneOf": [
+      "cma",
+      "cli"
+    ]
+  },
+  {
+    "id": "h-model-opening-hours",
+    "workspace": "empty",
+    "task": "Our DatoCMS store model needs opening hours for each weekday, sometimes with a lunch break. Which field setup is best?",
+    "load": [
+      "content-modeling"
+    ]
+  },
+  {
+    "id": "h-model-price-currency",
+    "workspace": "empty",
+    "task": "We sell in EUR and USD. Should price on our DatoCMS product model be a float, a string, or something else?",
+    "load": [
+      "content-modeling"
+    ]
+  },
+  {
+    "id": "h-model-schema-review",
+    "workspace": "empty",
+    "files": {
+      "schema.md": "# News site schema (DatoCMS)\n\n- article: title, slug, body (HTML), author_name (string), author_photo (file), tags (string, comma separated), homepage_hero (boolean)\n- author: name, bio\n- homepage: hero_article_1 (link), hero_article_2 (link), hero_article_3 (link)\n"
+    },
+    "task": "schema.md is our DatoCMS schema for a news site. Review it and tell me what you'd change.",
+    "load": [
+      "content-modeling"
+    ]
+  },
+  {
+    "id": "h-model-editor-guidance",
+    "workspace": "empty",
+    "task": "DatoCMS editors keep uploading tiny images into the hero field and writing headlines that are far too long. How can the fields themselves guide them?",
+    "load": [
+      "content-modeling"
+    ]
+  },
+  {
+    "id": "h-model-recipe-facets",
+    "workspace": "empty",
+    "task": "For a DatoCMS recipe site: should cuisine, diet and course be one shared tag model or three separate models?",
+    "load": [
+      "content-modeling"
+    ]
+  },
+  {
+    "id": "h-model-events-design-build",
+    "workspace": "empty",
+    "task": "Plan the content model for a conference site in DatoCMS (events, venues, speakers, sessions) and then create it in our sandbox called events-dev.",
+    "load": [
+      "content-modeling"
+    ],
+    "oneOf": [
+      "cma",
+      "cli"
+    ]
+  },
+  {
+    "id": "h-plugin-auto-slug",
+    "workspace": "plugin",
+    "task": "Make this plugin fill the slug from the title whenever a new record is created and the slug is still empty.",
+    "load": [
+      "plugin"
+    ]
+  },
+  {
+    "id": "h-plugin-current-locale",
+    "workspace": "plugin",
+    "task": "In the sidebar panel of this plugin, how do I know which locale the editor is currently looking at?",
+    "load": [
+      "plugin"
+    ]
+  },
+  {
+    "id": "h-plugin-stale-params",
+    "workspace": "plugin",
+    "task": "After I save a new API token on this plugin's config screen, the plugin keeps using the old one until I reload the page. Why, and how do I fix it?",
+    "load": [
+      "plugin"
+    ]
+  },
+  {
+    "id": "h-plugin-browser-cma",
+    "workspace": "plugin",
+    "task": "This plugin needs to update linked records through the Content Management API from the browser. Which permission does it need and how do I create the client?",
+    "load": [
+      "plugin"
+    ]
+  },
+  {
+    "id": "h-plugin-ui-char-counter",
+    "workspace": "plugin",
+    "task": "Add a field add-on to this plugin that shows a live character counter under SEO description fields, with a warning above 160 characters.",
+    "load": [
+      "plugin",
+      "plugin-design"
+    ]
+  },
+  {
+    "id": "h-plugin-ui-bulk-category",
+    "workspace": "plugin",
+    "task": "Add an action on the records list that opens a modal where the editor picks a category and assigns it to all the selected records.",
+    "load": [
+      "plugin",
+      "plugin-design"
+    ]
+  },
+  {
+    "id": "h-plugin-ui-settings-page",
+    "workspace": "plugin",
+    "task": "Add a page to this plugin under the Settings area that lists the models where reading tools are enabled and lets an admin switch them on or off.",
+    "load": [
+      "plugin",
+      "plugin-design"
+    ]
+  },
+  {
+    "id": "h-design-panel-chrome",
+    "workspace": "plugin",
+    "task": "The sidebar panel of this plugin has its own border, padding and heading that don't match the other panels in DatoCMS. Clean that up.",
+    "load": [
+      "plugin-design"
+    ],
+    "allow": [
+      "plugin"
+    ]
+  },
+  {
+    "id": "h-design-config-components",
+    "workspace": "plugin",
+    "task": "Replace the raw input, checkbox and button on this plugin's config screen with the proper DatoCMS UI components.",
+    "load": [
+      "plugin-design"
+    ],
+    "allow": [
+      "plugin"
+    ]
+  },
+  {
+    "id": "h-design-overflow",
+    "workspace": "plugin",
+    "task": "Long record titles overflow this plugin's sidebar panel and make it wider than the sidebar. Fix the layout.",
+    "load": [
+      "plugin-design"
+    ],
+    "allow": [
+      "plugin"
+    ]
+  },
+  {
+    "id": "h-fe-astro-draft-mode",
+    "workspace": "astro",
+    "task": "Add draft mode to this Astro site: an endpoint that turns it on with a secret, and queries that use the draft token while it's on.",
+    "load": [
+      "frontend-integrations"
+    ],
+    "allow": [
+      "cda"
+    ]
+  },
+  {
+    "id": "h-fe-st-internal-links",
+    "workspace": "next",
+    "task": "On the blog post page, links in the body that point to other posts should render as Next.js Links to /blog/[slug].",
+    "load": [
+      "frontend-integrations"
+    ],
+    "allow": [
+      "cda"
+    ]
+  },
+  {
+    "id": "h-fe-astro-seo",
+    "workspace": "astro",
+    "task": "Put the homepage's SEO tags and favicons from DatoCMS into the <head> of this site.",
+    "load": [
+      "frontend-integrations"
+    ],
+    "allow": [
+      "cda"
+    ]
+  },
+  {
+    "id": "h-fe-post-gallery",
+    "workspace": "next",
+    "task": "The post model now has a gallery field with several images. Show it under the body as responsive images with a blur-up placeholder.",
+    "load": [
+      "frontend-integrations"
+    ],
+    "allow": [
+      "cda"
+    ]
+  },
+  {
+    "id": "h-fe-invalidation-route",
+    "workspace": "next",
+    "task": "Our queries will carry DatoCMS cache tags. Write the route that receives DatoCMS cache-tag invalidation calls and revalidates those tags in Next.js.",
+    "load": [
+      "frontend-integrations"
+    ],
+    "allow": [
+      "cda",
+      "cma"
+    ]
+  },
+  {
+    "id": "h-fe-astro-content-link",
+    "workspace": "astro",
+    "task": "Turn on click-to-edit overlays on the draft pages of this Astro site so editors can jump to the field in DatoCMS.",
+    "load": [
+      "frontend-integrations"
+    ],
+    "allow": [
+      "cda"
+    ]
+  },
+  {
+    "id": "h-cda-title-search",
+    "workspace": "empty",
+    "task": "GraphQL query for DatoCMS articles whose title contains \"pasta\", case-insensitive, newest first.",
+    "load": [
+      "cda"
+    ]
+  },
+  {
+    "id": "h-cda-total-count",
+    "workspace": "empty",
+    "task": "How do I get the total number of DatoCMS recipes matching a filter in the same GraphQL request as the first page of results?",
+    "load": [
+      "cda"
+    ]
+  },
+  {
+    "id": "h-cda-avatar-crop",
+    "workspace": "empty",
+    "task": "Using the DatoCMS GraphQL API, how do I get a 400x400 WebP crop of the author avatar that respects the focal point?",
+    "load": [
+      "cda"
+    ]
+  },
+  {
+    "id": "h-cda-reverse-links",
+    "workspace": "empty",
+    "task": "Write a DatoCMS GraphQL query that returns every article linking to the author with ID 81234, including articles where the author is in a multiple-links field.",
+    "load": [
+      "cda"
+    ]
+  },
+  {
+    "id": "h-cda-blog-index-query",
+    "workspace": "next",
+    "task": "Write the query for the blog index here: posts with title, slug and publish date, newest first, 20 per page with a page number variable.",
+    "load": [
+      "cda"
+    ],
+    "allow": [
+      "frontend-integrations"
+    ]
+  },
+  {
+    "id": "h-setup-site-search",
+    "workspace": "next",
+    "task": "We want site search over our DatoCMS content on this site. Plan it with me before writing any code.",
+    "load": [
+      "setup"
+    ],
+    "allow": [
+      "frontend-integrations",
+      "cda",
+      "cma"
+    ]
+  },
+  {
+    "id": "h-setup-new-nuxt",
+    "workspace": "empty",
+    "task": "I'm starting a new site on DatoCMS with Nuxt. Walk me through getting it running end to end.",
+    "load": [
+      "setup"
+    ],
+    "allow": [
+      "frontend-integrations",
+      "cda",
+      "cli"
+    ]
+  },
+  {
+    "id": "h-setup-astro-gaps",
+    "workspace": "astro",
+    "task": "Not sure what this Astro site still needs to work well with DatoCMS: previews, caching, images? Look at it and propose a plan.",
+    "load": [
+      "setup"
+    ],
+    "allow": [
+      "frontend-integrations",
+      "cda"
+    ]
+  },
+  {
+    "id": "h-feedback-email-summary",
+    "workspace": "empty",
+    "task": "Put together a short summary of what went badly with the DatoCMS skills on my migration task today, so I can email it to the DatoCMS team.",
+    "load": [
+      "feedback"
+    ]
+  },
+  {
+    "id": "h-none-storyblok",
+    "workspace": "empty",
+    "task": "Write a Storyblok component schema for a hero section with a title, a subtitle and a background image."
+  },
+  {
+    "id": "h-none-plan-upgrade",
+    "workspace": "empty",
+    "task": "Draft a message to DatoCMS sales: we need more sandbox environments and want to know which plan gets us there."
+  }
+]

@@ -153,5 +153,249 @@
     "boundary_with": [
       "datocms-setup"
     ]
+  },
+  {
+    "query": "In our DatoCMS plugin: add a second sidebar panel to this plugin that shows the word count and reading time of the body field.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin",
+      "datocms-plugin-design"
+    ]
+  },
+  {
+    "query": "Create a DatoCMS plugin with a config screen where the admin enters an API key and picks a default language, and a record sidebar panel that shows the translation status of the record.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin",
+      "datocms-plugin-design"
+    ]
+  },
+  {
+    "query": "In our DatoCMS plugin: add a page to this plugin, reachable from the top navigation, with a table of the latest webhook calls and a detail pane on the right.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin",
+      "datocms-plugin-design"
+    ]
+  },
+  {
+    "query": "In our DatoCMS plugin: add a modal to this plugin where the editor picks a product from our catalogue API; the chosen product's handle goes back to the field that opened it.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin",
+      "datocms-plugin-design"
+    ]
+  },
+  {
+    "query": "In our DatoCMS plugin: add an Unsplash asset source to this plugin: a search box, a grid of results, loading and empty states.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin",
+      "datocms-plugin-design"
+    ]
+  },
+  {
+    "query": "In our DatoCMS plugin: add a star-rating field editor to this plugin for integer fields.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin",
+      "datocms-plugin-design"
+    ]
+  },
+  {
+    "query": "The config screen of this plugin looks off next to the rest of the DatoCMS dashboard. Make it look native; keep what it does.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin-design"
+    ]
+  },
+  {
+    "query": "In our DatoCMS plugin: this plugin hard-codes #ff5e49 and #f5f5f5 and looks broken in dark mode. Fix the colours.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin-design"
+    ]
+  },
+  {
+    "query": "In our DatoCMS plugin: which component should I use for a list of items with a detail panel on the right, inside a page of this plugin?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin-design"
+    ]
+  },
+  {
+    "query": "The sidebar panel of this plugin shows its title twice in DatoCMS. What is wrong with the panel?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin-design"
+    ]
+  },
+  {
+    "query": "This plugin is still on datocms-react-ui 2. Move it to the current version.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin-design"
+    ]
+  },
+  {
+    "query": "Review the interface of this plugin's config screen against the DatoCMS design rules before we publish it.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin-design"
+    ]
+  },
+  {
+    "query": "In our Next.js site on DatoCMS: add draft mode to this app: the enable and disable route handlers, and make executeQuery switch to the draft token when it is on.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "In our Next.js site on DatoCMS: show the hero image on the homepage with a blur-up placeholder and a proper srcset instead of the plain <img>.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "In our Next.js site on DatoCMS: the blog post page dumps the body as JSON. Render it properly, with a custom component for the image block.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "Add cache-tag revalidation to executeQuery and a route that DatoCMS can call to revalidate the tags of changed content.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda",
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Add click-to-edit overlays to the draft pages of this site so editors can jump from a text to its field in DatoCMS.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "Output the SEO meta tags and the favicons from DatoCMS on the blog post page.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "In our Next.js site on DatoCMS: patch the preview-links route so records of the author model resolve to /authors/[slug].",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "The post model now has a video field. Show it on the blog post page with the DatoCMS video player.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "Add a sitemap.xml route that lists every published DatoCMS post, and a robots.txt that points to it.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "In our Astro site on DatoCMS: wire a real-time subscription into src/pages/index.astro so the draft homepage updates while the editor types; the draft token is already in .env.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "The homepage model has a hero_image field. Show it on the homepage with the DatoCMS image component for Astro.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "Write the GraphQL query for the 10 latest DatoCMS blog posts with title, slug, cover image and author name.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "With GraphQL, I need to page through all DatoCMS products priced between 10 and 50, sorted by name, 100 at a time. Write the query and the loop.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "How do I query DatoCMS content in Italian and fall back to English when a field is empty?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "From a Node script, read draft content of the DatoCMS sandbox environment staging with a GraphQL request.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "Write the GraphQL query that pulls our DatoCMS category tree three levels deep for the mega menu.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "Write the GraphQL query that fetches DatoCMS posts with their Structured Text body, including its blocks and linked records.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
+  },
+  {
+    "query": "Our DatoCMS page has a sections field with hero, gallery and quote blocks. Write the GraphQL query with a fragment per block type.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cda"
+    ]
   }
 ]

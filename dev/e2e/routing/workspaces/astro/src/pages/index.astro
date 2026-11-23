@@ -1,0 +1,12 @@
+---
+import { executeQuery } from "../lib/datocms";
+
+const query = /* GraphQL */ `query Home { homepage { title subtitle } }`;
+const { homepage } = await executeQuery<{ homepage: { title: string; subtitle: string } }>(query);
+---
+<html lang="en">
+  <body>
+    <h1>{homepage.title}</h1>
+    <p>{homepage.subtitle}</p>
+  </body>
+</html>

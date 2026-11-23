@@ -216,5 +216,436 @@
       "datocms-cma",
       "datocms-cda"
     ]
+  },
+  {
+    "query": "Publish every draft record of the product model in our DatoCMS project.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "products.csv has our products (name, price, image URL). Import them into the product model in DatoCMS, uploading each image as an asset.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Every image in our DatoCMS media library that has no alt text should get its filename, without the extension, as alt text.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "The slugs of our DatoCMS blog posts have uppercase letters and spaces in them. Normalise them all and keep the posts published as they are.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "In DatoCMS, change the title of article Yx3kP9QhTSeLmA2uVw7bZg to \"Winter menu\" and its slug to winter-menu. Leave its Structured Text body alone.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Our landing page record in DatoCMS (Hq7mN2RkQ5aXb8LpT1vEwA) has English and German. Add Italian to the headline and subtitle fields, copied from English for now.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "On the DatoCMS homepage record, move the testimonial block of the sections field to the top. The other blocks must stay as they are.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Schedule the three DatoCMS posts whose title starts with \"Launch:\" to go live next Monday at 9am Berlin time.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Create a DatoCMS webhook that calls https://example.com/hooks/dato whenever a record of the article model is published or unpublished.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Create an API token in DatoCMS for our marketing site that can only read published content.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "body.json is a Structured Text value we already validated. Save it unchanged into the body field of DatoCMS article Yx3kP9QhTSeLmA2uVw7bZg and don't publish.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Someone overwrote the pricing page record in DatoCMS yesterday. Bring back the version from before that edit.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "We've agreed on the design. Add an integer reading_time field to the article model directly in our DatoCMS sandbox environment feature-x, no migration file.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Upload the PDFs in ./brochures to DatoCMS and attach each one to the product record whose SKU matches the file name.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Publish the three DatoCMS articles in the \"Guides\" category now that their Structured Text bodies are fixed.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "My script gets INVALID_FIELD on the slug when it creates a DatoCMS post through the API. What does that error mean and how do I fix the payload?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Export all 2,000 records of the DatoCMS article model, with their blocks, to articles.json.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Point every DatoCMS article that links the \"News\" category record at the \"Announcements\" category record instead.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Create a new article in DatoCMS from article.md: the first heading is the title and the rest goes into the body, which is a Structured Text field. Leave it as a draft.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "The body of DatoCMS article Yx3kP9QhTSeLmA2uVw7bZg is Structured Text with image blocks inside. Add a closing paragraph that says \"Updated for 2027.\" and keep the image blocks exactly as they are.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Our blog_post model in DatoCMS has an old HTML field, legacy_body, and a new Structured Text field, body. Fill body from legacy_body for every post. <img> tags must become image blocks of the existing image_block model.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma",
+      "datocms-cli"
+    ]
+  },
+  {
+    "query": "The Structured Text bodies of our DatoCMS articles use h1 headings. Turn them into h2 in every article so each page keeps a single h1.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "In the Structured Text body of DatoCMS article Yx3kP9QhTSeLmA2uVw7bZg, the words \"our pricing\" link to a hard-coded URL. Make them link to the pricing page record instead.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Editors pasted text with underline all over the Structured Text bodies of our DatoCMS guides. Remove the underline everywhere and keep everything else.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Insert a call-to-action block (the existing cta block model) after the second paragraph of the Structured Text body of DatoCMS article Yx3kP9QhTSeLmA2uVw7bZg.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "In the DatoCMS guide Yx3kP9QhTSeLmA2uVw7bZg, the Structured Text body has five consecutive \"tip\" blocks. Replace them with one bulleted list that has each tip's text as an item.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "doc.json is the value of a DatoCMS Structured Text field. Explain what each node and mark in it is.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Convert post.md into DatoCMS Structured Text JSON and write it to post.dast.json. Don't connect to any project.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Is doc.json a valid DatoCMS Structured Text document? If not, say what is wrong and fix the file.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Write a small TypeScript function that extracts searchable plain text from a DatoCMS Structured Text value.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "I need to turn a DatoCMS Structured Text value into an HTML string for our RSS feed, in a plain Node script with no framework. Write it.",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "Why did the table in my Markdown disappear when I converted it to DatoCMS Structured Text?",
+    "should_trigger": true,
+    "query_mode": "implicit"
+  },
+  {
+    "query": "I just want to add an optional text field called nickname to the author model in DatoCMS, quickly, without setting up a migrations workflow.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "Should testimonials be their own model or a block in DatoCMS? The same ones appear on several landing pages and editors want to update them in one place.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
+  },
+  {
+    "query": "I'm starting a DatoCMS project for a SaaS marketing site. How should I structure pages, blog posts, authors and categories?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
+  },
+  {
+    "query": "We need product categories like Electronics > Phones > Smartphones in DatoCMS. A tree model, or a parent link field?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
+  },
+  {
+    "query": "A status field in DatoCMS with three values: draft, review, published. A plain text field with a validation, or is there something better for editors?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
+  },
+  {
+    "query": "Editors keep skipping alt text on images in DatoCMS. Should I force it on every image field?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
+  },
+  {
+    "query": "Our DatoCMS content sidebar is a flat list of 25 models and editors get lost. How should I organise it?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
+  },
+  {
+    "query": "Should the body of our DatoCMS page model be Structured Text or Modular Content? Editors mostly stack sections but sometimes need rich text between them.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
+  },
+  {
+    "query": "Our DatoCMS page model, with localized page-builder content in 6 locales, keeps hitting the record size limit. What are our options?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
+  },
+  {
+    "query": "A lot of the fields in our DatoCMS schema are named after the visual design: bigHeroText, threeColumnGrid, redCallout. Is that a problem, and how should we refactor it?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
+  },
+  {
+    "query": "Editors keep asking for a \"Drafts awaiting review\" view in DatoCMS. Can I put that in the sidebar so they don't have to filter every time?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
+  },
+  {
+    "query": "Should I add a caption field to our DatoCMS gallery block?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
+  },
+  {
+    "query": "Design the content model for a recipe site in DatoCMS (recipes, ingredients, authors, collections) and create it in our sandbox environment called recipes.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-content-modeling"
+    ]
+  },
+  {
+    "query": "In our Next.js site on DatoCMS: add draft mode to this app: the enable and disable route handlers, and make executeQuery switch to the draft token when it is on.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "In our Next.js site on DatoCMS: show the hero image on the homepage with a blur-up placeholder and a proper srcset instead of the plain <img>.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "In our Next.js site on DatoCMS: the blog post page dumps the body as JSON. Render it properly, with a custom component for the image block.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Add cache-tag revalidation to executeQuery and a route that DatoCMS can call to revalidate the tags of changed content.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Add click-to-edit overlays to the draft pages of this site so editors can jump from a text to its field in DatoCMS.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Output the SEO meta tags and the favicons from DatoCMS on the blog post page.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "In our Next.js site on DatoCMS: patch the preview-links route so records of the author model resolve to /authors/[slug].",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "The post model now has a video field. Show it on the blog post page with the DatoCMS video player.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Add a sitemap.xml route that lists every published DatoCMS post, and a robots.txt that points to it.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "In our Astro site on DatoCMS: wire a real-time subscription into src/pages/index.astro so the draft homepage updates while the editor types; the draft token is already in .env.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "The homepage model has a hero_image field. Show it on the homepage with the DatoCMS image component for Astro.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
   }
 ]

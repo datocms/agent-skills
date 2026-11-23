@@ -140,5 +140,149 @@
     "query": "Write a Node script that exports every record of the article model to CSV.",
     "should_trigger": false,
     "query_mode": "implicit"
+  },
+  {
+    "query": "In our DatoCMS plugin: add a dropdown action to the record form that clears the slug field.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "In our DatoCMS plugin: make this plugin stop a record from being saved when its slug is empty.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "In our DatoCMS plugin: which permission does this plugin need to read the current user's access token from ctx?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "This plugin is installed on our live DatoCMS project. I want to try my local changes without breaking it for the editors. How?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "Scaffold a new DatoCMS plugin project with Vite and a connect() entry point. No screens yet.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "Get this DatoCMS plugin ready for the Marketplace: what must package.json contain, and how do I publish it?",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "In our DatoCMS plugin: add a second sidebar panel to this plugin that shows the word count and reading time of the body field.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "Create a DatoCMS plugin with a config screen where the admin enters an API key and picks a default language, and a record sidebar panel that shows the translation status of the record.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "In our DatoCMS plugin: add a page to this plugin, reachable from the top navigation, with a table of the latest webhook calls and a detail pane on the right.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "In our DatoCMS plugin: add a modal to this plugin where the editor picks a product from our catalogue API; the chosen product's handle goes back to the field that opened it.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "In our DatoCMS plugin: add an Unsplash asset source to this plugin: a search box, a grid of results, loading and empty states.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "In our DatoCMS plugin: add a star-rating field editor to this plugin for integer fields.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "The config screen of this plugin looks off next to the rest of the DatoCMS dashboard. Make it look native; keep what it does.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "In our DatoCMS plugin: this plugin hard-codes #ff5e49 and #f5f5f5 and looks broken in dark mode. Fix the colours.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "In our DatoCMS plugin: which component should I use for a list of items with a detail panel on the right, inside a page of this plugin?",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "The sidebar panel of this plugin shows its title twice in DatoCMS. What is wrong with the panel?",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "This plugin is still on datocms-react-ui 2. Move it to the current version.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
+  },
+  {
+    "query": "Review the interface of this plugin's config screen against the DatoCMS design rules before we publish it.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-plugin"
+    ]
   }
 ]

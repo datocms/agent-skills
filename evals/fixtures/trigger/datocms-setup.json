@@ -275,5 +275,176 @@
     "boundary_with": [
       "datocms-frontend-integrations"
     ]
+  },
+  {
+    "query": "In our Next.js site on DatoCMS: add draft mode to this app: the enable and disable route handlers, and make executeQuery switch to the draft token when it is on.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "In our Next.js site on DatoCMS: show the hero image on the homepage with a blur-up placeholder and a proper srcset instead of the plain <img>.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "In our Next.js site on DatoCMS: the blog post page dumps the body as JSON. Render it properly, with a custom component for the image block.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Add cache-tag revalidation to executeQuery and a route that DatoCMS can call to revalidate the tags of changed content.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Add click-to-edit overlays to the draft pages of this site so editors can jump from a text to its field in DatoCMS.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Output the SEO meta tags and the favicons from DatoCMS on the blog post page.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "In our Next.js site on DatoCMS: patch the preview-links route so records of the author model resolve to /authors/[slug].",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "The post model now has a video field. Show it on the blog post page with the DatoCMS video player.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Add a sitemap.xml route that lists every published DatoCMS post, and a robots.txt that points to it.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "In our Astro site on DatoCMS: wire a real-time subscription into src/pages/index.astro so the draft homepage updates while the editor types; the draft token is already in .env.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "The homepage model has a hero_image field. Show it on the homepage with the DatoCMS image component for Astro.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Help me set DatoCMS up properly in this project. I'm not sure what we need yet.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations",
+      "datocms-cda",
+      "datocms-cli"
+    ]
+  },
+  {
+    "query": "We want editors to preview drafts from inside DatoCMS and click text on the site to jump to its field. Guide us through setting that up.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "Walk me through setting up a migrations workflow for our DatoCMS project: linking this repo, a migrations folder and a release process.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cli"
+    ]
+  },
+  {
+    "query": "We've never connected DatoCMS to our Vercel deploys. Plan with me how the site gets rebuilt when an editor publishes, before changing anything.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations",
+      "datocms-cma"
+    ]
+  },
+  {
+    "query": "We're moving our blog from WordPress to DatoCMS. Guide me through the whole move for this repo.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cli"
+    ]
+  },
+  {
+    "query": "Set up what we need to manage several DatoCMS client projects from this one repo with a shared migration history.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-cli"
+    ]
+  },
+  {
+    "query": "We need the full DatoCMS preview experience in this app: draft mode, Web Previews and click-to-edit. Work out what is missing and set it up.",
+    "should_trigger": true,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-frontend-integrations"
+    ]
+  },
+  {
+    "query": "The DatoCMS skills sent me in circles all afternoon. Help me report that to DatoCMS.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-feedback"
+    ]
+  },
+  {
+    "query": "The DatoCMS MCP keeps failing on my edits and I'm done trying. Draft a support request about it that I can send.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-feedback"
+    ]
+  },
+  {
+    "query": "Three times today the DatoCMS skills started a whole guided setup when I had asked for one route to be patched. Summarize that as feedback I can send to the DatoCMS team.",
+    "should_trigger": false,
+    "query_mode": "overlap",
+    "boundary_with": [
+      "datocms-feedback"
+    ]
   }
 ]

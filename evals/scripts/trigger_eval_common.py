@@ -221,6 +221,7 @@ Task:
 For each user query below, decide if this TARGET skill should trigger.
 
 Rules:
+- A query that names this target skill ({skill_name}) is always true, whatever it asks for: an agent loads a skill the user names.
 - Return true only when the query directly falls within this target skill scope.
 - Return false when the query is better handled by a different DatoCMS skill domain.
 - If uncertain, prefer false.
@@ -250,6 +251,7 @@ Task:
 For each user query below, decide if this TARGET skill should trigger.
 
 Rules:
+- A query that names this target skill ({skill_name}) is always true, whatever it asks for: an agent loads a skill the user names.
 - Use only the metadata above to decide the skill boundary.
 - Return true only when the query clearly fits this target better than other DatoCMS skills.
 - If uncertain, prefer false.
@@ -285,6 +287,7 @@ Task:
 For each user query below, decide if this TARGET skill should trigger.
 
 Rules:
+- A query that names this target skill ({skill_name}) is always true, whatever it asks for: an agent loads a skill the user names.
 - Use the frontmatter description for the full scope boundary.
 - Use the agent metadata as the routing surface.
 - Return true only when the query clearly fits this target better than other DatoCMS skills.

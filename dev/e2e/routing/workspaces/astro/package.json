@@ -1,0 +1,7 @@
+{
+  "name": "acme-astro",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "astro dev", "build": "astro build" },
+  "dependencies": { "astro": "*", "@astrojs/node": "*", "@datocms/astro": "*", "@datocms/cda-client": "*" }
+}
