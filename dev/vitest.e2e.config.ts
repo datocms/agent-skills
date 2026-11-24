@@ -10,7 +10,11 @@ process.env.E2E_RUN_ID ??= new Date().toISOString().replace(/[:.]/g, "-");
 export default defineConfig({
 	root,
 	test: {
-		include: ["e2e/cases/**/*.e2e.test.ts"],
+		include: [
+			process.env.E2E_SET === "heldout"
+				? "e2e/heldout/**/*.e2e.test.ts"
+				: "e2e/cases/**/*.e2e.test.ts",
+		],
 		globalSetup: ["./e2e/globalSetup.ts"],
 		testTimeout: 15 * 60 * 1000,
 		hookTimeout: 5 * 60 * 1000,

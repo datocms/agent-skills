@@ -28,6 +28,19 @@ The actor is confined. It runs with `--permission-mode dontAsk` in Claude Code's
 
 `node dev/e2e/routing/live-loads.mjs local/e2e/<run>` checks the skills each case loaded against `routing/live-expected.json`. `node dev/e2e/routing/skill-usage.mjs local/e2e/<run>` reports which skill files and sections reached the agent in each case, when, and what it used afterwards ([details](../../evals/README.md#what-an-agent-did-with-each-skill-file)).
 
+The sandbox blocks the npm registry, which no user's machine does, so two things stand in for it. `npx datocms` is answered by the launcher from any folder (an actor that ran `cd $TMPDIR` first got a registry error instead); every other `npx` call reaches the `npx` the PATH held before, because the CLI runs `npx tsc` and `npx tsx` for each script. And a session ends when its result arrives: a command the actor left running, such as an `npm ci` hanging on the registry, no longer holds a finished case open until the time limit.
+
+### Held-out cases
+
+`e2e/heldout/` holds cases that were never used to tune skill text: written from what users ask, without reading `skills/`. Read failures on `e2e/cases/` only; a held-out run only accepts or rejects a change. A tuned skill looks better on the cases it was tuned on than it is: with the same skills the smaller model failed 0.27 calls per case on the tuning cases and 0.56 on the held-out ones.
+
+```bash
+E2E_SET=heldout E2E_AGENT=claude E2E_MODEL=claude-haiku-5-5 E2E_WORKERS=4 npm --prefix dev run test:e2e
+E2E_SET=heldout E2E_CONTROL=reference npm --prefix dev run test:e2e   # controls work the same way
+```
+
+When a held-out case has taught you something about a skill, it is a tuning case from then on: move it to `e2e/cases/` and write a new one.
+
 A case can carry its own controls, which run with no model: a `solution` (plain CMA client calls that do what the task asks) and `traps` (the wrong solutions the case is built to catch).
 
 ```bash
