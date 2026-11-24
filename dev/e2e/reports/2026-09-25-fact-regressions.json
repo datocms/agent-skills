@@ -503,7 +503,7 @@
       "run": "cli-misc/candidate-02",
       "recheckOf": null,
       "passed": false,
-      "error": "AssertionError [ERR_ASSERTION]: CLI stopped before touching an environment: CMS/datoCMSInternalCode/agent-skills/node_modules/@oclif/core/lib/command.js:182:22)\\n'\u001b[39m +",
+      "error": "AssertionError [ERR_ASSERTION]: CLI stopped before touching an environment: <checkout>/node_modules/@oclif/core/lib/command.js:182:22)\\n'\u001b[39m +",
       "skillReads": [
         "datocms-cli/SKILL.md",
         "datocms-cli/references/cli-setup.md",
