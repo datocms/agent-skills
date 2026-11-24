@@ -41,7 +41,7 @@ Document = `{ schema: "dast", document: { type: "root", children: [...] } }`, or
 
 ```ts
 const record = await client.items.find<Schema.GuidePage>("RECORD_ID", { nested: true });
-const plain = (doc: typeof record.body) => (doc ? reduceNodes(doc, (text, node) => text + (isSpan(node) ? node.value : ""), "") : "");
+const plain = (doc: FieldValueInRequest<typeof record, "body">) => (doc ? reduceNodes(doc, (text, node) => text + (isSpan(node) ? node.value : ""), "") : "");
 if (!record.body) throw new Error("Field is empty");
 
 // 1. Text pass. The round trip must keep the text first: a newline inside a code-marked span does not survive it.
