@@ -135,7 +135,8 @@ function resultText(content: unknown): string {
 
 /**
  * Runs one case with Claude Code (`claude -p`) as the actor. `E2E_MODEL` picks
- * the model (`claude-sonnet-5-5`, `claude-haiku-5-5`, or an alias).
+ * the model (`claude-sonnet-5-5`, `claude-haiku-5-5`, or an alias) and
+ * `E2E_EFFORT` its effort level (`low` to `max`; unset leaves the CLI default).
  *
  * The session runs in a temporary workspace outside the checkout that holds
  * only this checkout's skills (as project skills), the case's files and a
@@ -184,6 +185,8 @@ export async function runClaude(
 
 	const environment = options.environment ?? "main";
 	const model = options.model ?? process.env.E2E_MODEL ?? CLAUDE_MODEL;
+	// Unset: the CLI's own default for the model.
+	const effort = process.env.E2E_EFFORT || undefined;
 	const instructions = `Only the confirmed disposable DatoCMS environment ${environment} may be changed. Use the installed datocms command for CMS access; it already supplies authentication and the environment. Do not inspect the launcher. Do not modify API tokens, roles, billing, environments, or other projects. Schema/content/settings changes requested in the task are authorized in this sandbox.`;
 	const args = [
 		"-p",
@@ -208,6 +211,7 @@ export async function runClaude(
 		"--no-session-persistence",
 		"--model",
 		model,
+		...(effort ? ["--effort", effort] : []),
 	];
 
 	// The actor's environment is a short allow-list: the harness's credentials and whatever tokens the operator's
@@ -353,6 +357,7 @@ export async function runClaude(
 			{
 				agent: "claude",
 				model,
+				effort: effort ?? null,
 				// What the agent was asked: the transcript does not repeat it, and usage analysis needs it.
 				prompt: options.prompt.split(options.apiToken).join(REDACTED),
 				exitCode,
