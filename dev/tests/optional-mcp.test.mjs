@@ -129,6 +129,11 @@ const reviewedCorrections = {
       "- **Send every locale of a field you update.** A locale left out of the object is removed: spread the current value and change what you need (`{ ...it.question, es: \"...\" }`).",
       "- **Send every locale of a field you update:** spread the current value and change what you need (`{ ...it.question, es: \"...\" }`). A locale left out of one field is rejected with `INVALID_LOCALES`; left out of every localized field of the record, all sent together, it is removed from the record (that is how a translation is deleted, never with `all_locales_required`: an empty string keeps the locale).",
     ],
+    // Measured through the CLI: a callback that returns `[node, newNode]` for a child of the root adds a sibling there.
+    [
+      "`mapNodes` can't add siblings at root, so new top-level nodes (a paragraph, `{ type: \"block\", item: buildBlockRecord(...) }`) are pushed into `content.document.children` after the walk.",
+      "New top-level nodes (a paragraph, `{ type: \"block\", item: buildBlockRecord(...) }`): next to an existing node return `[node, newNode]` from the walk; at the end push into `content.document.children` after it.",
+    ],
   ],
 };
 

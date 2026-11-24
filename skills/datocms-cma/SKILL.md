@@ -42,20 +42,27 @@ Then change with ONE script that reads, builds the new values and writes once:
 
 ```bash
 npx datocms cma:script --environment=<env> <<'EOF'
-const record = await client.items.find<Schema.Article>("RECORD_ID", { nested: true });
-// build the new field values from `record`, then:
-await client.items.update<Schema.Article>(record.id, { /* changed fields only */ });
+const record = await client.items.find<Schema.Page>("RECORD_ID", { nested: true });
+// A block field: untouched blocks go back as they are, an edit is buildBlockRecord with `id`, a new block with `item_type`.
+// A block's own fields sit under `block.attributes`, nullable, and only once a guard has narrowed the block.
+const sections: NonNullable<FieldValueInRequest<typeof record, "sections">> = record.sections.map((block) =>
+  isBlockOfType(Schema.HeroBlock.ID, block)
+    ? buildBlockRecord<Schema.HeroBlock>({ id: block.id, title: `${block.attributes.title ?? ""} (2026)` })
+    : block,
+);
+sections.push(buildBlockRecord<Schema.CtaBlock>({ item_type: Schema.CtaBlock.REF, label: "Start" }));
+await client.items.update<Schema.Page>(record.id, { sections }); // changed fields only
 EOF
 ```
 
-A single write of plain values (no blocks, locales or Structured Text) needs no script: `cma:call items update <RECORD_ID> --data '{"title": "New"}'`. Schema changes too: `cma:call itemTypes create`, `cma:call fields create <MODEL_ID>`.
+A single write of plain values (no blocks, locales or Structured Text) needs no script: `cma:call items update <RECORD_ID> --data '{"title": "New"}'`. Schema changes too: `cma:call itemTypes create`, `cma:call fields create <MODEL_ID>`, `cma:call fields update <FIELD_ID> --data '{"validators": {…}}'` (in a script `field.validators.<name>` does not type-check).
 
 - `client`, `Schema.*` and every export of `@datocms/cma-client-node`, `datocms-structured-text-utils` and `datocms-structured-text-dastdown`, functions and types (`buildBlockRecord`, `mapNodes`, `Span`, `Paragraph`…), are ambient: no imports, top-level `await`, no `export default`, no `node:` modules.
 - A script containing `any`, `unknown`, `as never` or `@ts-ignore` is rejected before it runs, and it is type-checked against an ES2020 library (no `.at()`, no `replaceAll`). Let types be inferred from `record`. Type a helper's parameters with `typeof record.field`, a `Schema.X` or a node type. Narrow blocks and nodes with the guards (`isBlockOfType(Schema.X.ID, block)`, `isSpan(node)`), never with property checks or casts.
 - `Schema.<Model>` is the model or block API key in PascalCase (`faq_entry` → `Schema.FaqEntry`). Put it on every `items` call: without it every field is `unknown`. Field values are nullable, and one locale of a localized value can be `undefined`: guard before use.
 - Print what you need with `console.log`; nothing else comes back. A project must be linked or a token set.
 
-`../datocms-cli/references/direct-cma-calls.md` documents `cma:call` and `cma:docs <resource> <action>` (the signature and payload of any method); `../datocms-cli/references/cma-script.md` only for file mode, flags, or a script the quick path does not get running. CLI hints in shared references apply to CLI work only: an MCP task never acquires a CLI prerequisite through them.
+`../datocms-cli/references/direct-cma-calls.md` documents `cma:call` and `cma:docs <resource> <action>` (the signature and payload of any method; actions as `cma:docs <resource>` lists them, such as `instances` and `self`; no `--environment`); `../datocms-cli/references/cma-script.md` only for file mode, flags, or a script the quick path does not get running. CLI hints in shared references apply to CLI work only: an MCP task never acquires a CLI prerequisite through them.
 
 ## 2. Establish scope and schema approach
 
@@ -93,7 +100,7 @@ The API is strict where guesses usually go wrong. Hold these before building any
 
 ## 4. Load only the relevant workflow
 
-Method documentation gives API shapes; these references give DatoCMS workflows and gotchas. Load what the operation needs, once.
+Method documentation gives API shapes; these references give DatoCMS workflows and gotchas. Load what the operation needs, once. Paths are relative to this skill's folder: from another working directory open them by absolute path, never by searching the disk.
 
 | Task | Reference |
 | - | - |
@@ -124,6 +131,6 @@ Read back from the same project and environment: the requested change, and that 
 
 ## Other tasks
 
-**datocms-cli**: CLI configuration, migrations, schema generation, environments, imports, plugin management, multi-project sync, CI/CD. **datocms-setup**: a setup planned or walked through. **datocms-structured-text**: pure DAST construction, inspection, editing, conversion (combine with this skill when a CMA operation persists the document). **datocms-cda**: GraphQL reads. **datocms-frontend-integrations**: framework code. **datocms-plugin**: plugins. **datocms-content-modeling**: modeling decisions.
+Sibling skills, as their descriptions say: **datocms-cli** (CLI configuration, migrations, environments, imports, CI/CD), **datocms-setup**, **datocms-structured-text** (with this skill when a CMA operation persists the document), **datocms-cda**, **datocms-frontend-integrations**, **datocms-plugin**, **datocms-content-modeling**.
 
 Missing sibling reference → install that skill from `datocms/agent-skills` or update the full bundle.

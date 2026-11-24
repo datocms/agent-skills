@@ -17,43 +17,79 @@ description: >-
 
 # DatoCMS Structured Text
 
-Understand, create, edit, convert, and validate DAST documents. Local document work needs no project, token, login, or CLI bootstrap.
+DAST documents: understand, create, edit, convert, validate. Local document work needs no project, token, login or CLI.
 
-## Choose the operation
+## Pick the tool for the change
 
-| Request | Read |
+Document = `{ schema: "dast", document: { type: "root", children: [...] } }`, or `null` when empty. **Existing document: transform what was read, never retype it** — a retyped tree drops words, marks, `meta`, IDs.
+
+| Change | Tool |
 | - | - |
-| Explain structure, distinguish representations, diagnose invalid DAST or target constraints | [Document model](references/document-model.md) |
-| Author content, change prose/marks/links, traverse nodes, preserve embedded references, use Dastdown | [Editing](references/editing.md) |
-| Import Markdown/HTML or a Google Docs export, map unsupported content, extract text, produce HTML | [Conversion](references/conversion.md) |
+| New content | `parse("## Title\n\nText with **strong**")` — Dastdown text, no hand-built nodes |
+| Wording, marks, links, lists; removing or reordering blocks | Text pass: `serialize(doc)` → edit the string → `parse(text, doc)` (blocks come back by ID; their fields are not in the text) |
+| Same change on many nodes, a block's fields, a node swapped or added in place | Node pass: one `mapNodes` walk with guards. Return the node, `[node, newNode]`, or `null` to drop |
+| Markdown, HTML, Google Docs export in; plain text or HTML out | [Conversion](references/conversion.md) |
 
-Read only the selected reference. Add another when the task actually crosses its boundary. Source documents and generated DAST stay in files; inspect focused excerpts and diagnostics instead of filling context with entire trees.
+- Combined: text pass → node pass → root appends → one write. A text pass after a node pass restores stale blocks and throws on new ones.
+- Dastdown ≠ Markdown. `- ` bullets, `*emphasis*`, `==highlight==`, `++underline++`, `[text](dato:item/RECORD_ID)`, `<block id="…"/>`, `<inlineBlock id="…"/>`, `<inlineItem id="…"/>`. `_emphasis_`, `*` bullets, images, tables, raw HTML stay literal or are misread, with no error. Full syntax: [Editing](references/editing.md).
+- Often wrong: `block` sits under `root` only, `inlineBlock` in text; marks are `strong` / `emphasis`, never `bold` / `italic`; `meta` of a link is `[{ id, value }]`; no table node, no image node (an image is a block model). Every node and what it holds: [Document model](references/document-model.md).
+- Never save a CDA response (`{ value, blocks, links }`) as a CMA value, or hand DAST to a plugin's Slate form.
 
-## Working rules
+## In a record (with `datocms-cma`)
 
-- Preserve requested scope: conversion returns a document; importing into a project also needs destination mapping and an authorized write. Do not add authentication or schema setup to local work.
-- Identify input representation before editing: DAST document, CMA field value, CDA response envelope, or plugin Slate value. Do not interchange wrappers.
-- Dastdown is a controlled editing/authoring notation, not a CommonMark importer. Ordinary Markdown and HTML use the conversion workflow.
-- Preserve unaffected nodes, custom marks, link metadata, and embedded reference identity. Reference placeholders do not contain block internals.
-- Report unsupported source semantics and unresolved mappings. Structural validation alone does not prove fidelity or destination acceptance.
-- Use current installed library signatures. Only install the packages needed for the selected operation; keep helper dependencies in task-local scratch.
+`datocms-cma` owns route, read, write, readback; this is the document part. In `datocms cma:script` everything below is ambient (no imports); elsewhere import from `@datocms/cma-client-node`, `datocms-structured-text-utils`, `datocms-structured-text-dastdown`, and `Schema` from generated types (`../datocms-cma/references/type-generation.md`).
 
-## Work with companion skills
+```ts
+const record = await client.items.find<Schema.GuidePage>("RECORD_ID", { nested: true });
+const plain = (doc: typeof record.body) => (doc ? reduceNodes(doc, (text, node) => text + (isSpan(node) ? node.value : ""), "") : "");
+if (!record.body) throw new Error("Field is empty");
 
-For a mixed task, stay responsible for the document; load the relevant companion's specific reference for its integration mechanics. Do not bounce between entrypoints or treat multiple skill activation as a routing failure.
+// 1. Text pass. The round trip must keep the text first: a newline inside a code-marked span does not survive it.
+if (plain(parse(serialize(record.body), record.body)) !== plain(record.body)) throw new Error("Text pass unsafe here: node pass only");
+// Annotate the result with the field's own type, or step 2 fails type-checking.
+const reworded: typeof record.body = parse(serialize(record.body).replace("Old wording", "Clear wording"), record.body);
+if (!reworded) throw new Error("Nothing parsed");
 
-| Needed capability | Owner |
-| - | - |
-| Read/write records, typed block requests, ownership, localization, version checks | `datocms-cma`: [editing records](../datocms-cma/references/editing-records.md) and [record operations](../datocms-cma/references/records.md) |
-| Authentication, project/environment targeting, script runtime or migrations | `datocms-cli`: [scripting](../datocms-cli/references/cma-script.md) or migration references |
-| GraphQL selection sets, CDA envelope and resolving queried references | `datocms-cda`: [querying Structured Text](../datocms-cda/references/structured-text.md) |
-| React/Vue/Svelte/Astro rendering, component props, framework integration | `datocms-frontend-integrations`: framework Structured Text reference |
-| Field/model design or schema changes | `datocms-content-modeling`, then `datocms-cli` for implementation |
-| SDK form values, Slate conversion, editor hooks | `datocms-plugin`: [editor values](../datocms-plugin/references/structured-text.md) |
-| Google Docs acquisition | Available document connector or user-provided export |
+// 2. Node pass. Annotate the result as a request value: it then takes edited and new blocks.
+const body: NonNullable<FieldValueInRequest<typeof record, "body">> = mapNodes(reworded, (node) => {
+  // Document nodes: isBlockWithItemOfType / isInlineBlockWithItemOfType. isBlockOfType is for block fields.
+  if (isBlockWithItemOfType(Schema.CalloutBlock.ID, node)) {
+    return { ...node, item: buildBlockRecord<Schema.CalloutBlock>({ id: node.item.id, tone: "warning" }) }; // id + changed fields
+  }
+  if (isHeading(node) && node.level === 1) return { ...node, level: 2 as const };
+  return node; // everything else, untouched blocks included
+});
 
-Companion skill absent? Local operations still work. For operations requiring that companion, identify it and explain how to install it through the user's existing skill installer; do not attempt a missing sibling file. No new Google authentication/export subsystem here.
+// 3. A new block at the end. Next to an existing node: return [node, newNode] in step 2.
+body.document.children.push({
+  type: "block",
+  item: buildBlockRecord<Schema.CalloutBlock>({ item_type: Schema.CalloutBlock.REF, text: "New callout", tone: "info" }),
+});
 
-## Completion
+await client.items.update<Schema.GuidePage>(record.id, { body });
 
-Return the requested artifact or verified change, concise validation results, and unresolved mappings. For local conversion, report output/report paths. For an authorized import, also verify the destination readback through its integration owner. Distinguish library validation, content preservation, and project checks actually performed.
+// Read back with the same guards. A cast (`as any`) gets the whole script rejected.
+const saved = await client.items.find<Schema.GuidePage>(record.id, { nested: true });
+if (saved.body) {
+  const callouts = collectNodes(saved.body, isBlockWithItemOfType(Schema.CalloutBlock.ID)).map(({ node }) => node.item.attributes);
+  console.log(serialize(saved.body), JSON.stringify(callouts));
+}
+```
+
+- Field = its API key on the record (`record.body`, `record.content`…): take it from the schema. Localized: read `record.body.en`, write `{ ...record.body, en: value }`.
+- New document that also gets blocks: `const parsed = parse(text); if (!parsed) throw …; const body: NonNullable<FieldValueInRequest<typeof record, "body">> = parsed;` then `push` / `splice` the block nodes.
+- Duplicating or moving blocks, documents inside blocks, adding a locale: [editing records](../datocms-cma/references/editing-records.md) § Structured text.
+
+## Scope
+
+- Conversion returns a document. Importing into a project also needs a destination mapping and an authorized write; local work gets no authentication or schema setup.
+- Report unsupported source content and unresolved mappings (a URL is not a record link without an explicit URL-to-record mapping). Never invent IDs.
+- Large documents stay in files: inspect excerpts and diagnostics, not whole trees. Packages: only what the operation needs, in task-local scratch. Google Docs: an available document connector or a user export — no new Google authentication here.
+
+## Other owners
+
+GraphQL selection and the CDA envelope → `datocms-cda` ([querying Structured Text](../datocms-cda/references/structured-text.md)); rendering components → `datocms-frontend-integrations`; Slate values in a plugin → `datocms-plugin` ([editor values](../datocms-plugin/references/structured-text.md)); script runtime, migrations → `datocms-cli` ([scripting](../datocms-cli/references/cma-script.md)); field design → `datocms-content-modeling`. Sibling skill absent → name it and how to install it; don't open a missing file.
+
+## Done when
+
+Requested change present; untouched nodes, blocks, links, marks and other locales as before (read back through the integration owner); unsupported content and unresolved mappings reported. Say which checks ran: library validation, content preservation, project readback.

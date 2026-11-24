@@ -227,7 +227,7 @@ Pick the cheapest tool for the change. Hand-indexing the tree (`document.childre
 | The same attribute on many nodes (heading levels, link metas); editing a block's fields; replacing or duplicating a block in place | Pass 2: one `mapNodes` walk with typed guards |
 | New nodes at the end of the document | push into `content.document.children` |
 
-Apply only the steps you need, in this order: Pass 1 (dastdown round-trip), Pass 2 (one `mapNodes` walk), root-level appends. End with a single `client.items.update`. Wrap in `if (currentItem.content) { ... }` and pass the **original response** into `mapNodes` / `parse`. `mapNodes` can't add siblings at root, so new top-level nodes (a paragraph, `{ type: "block", item: buildBlockRecord(...) }`) are pushed into `content.document.children` after the walk.
+Apply only the steps you need, in this order: Pass 1 (dastdown round-trip), Pass 2 (one `mapNodes` walk), root-level appends. End with a single `client.items.update`. Wrap in `if (currentItem.content) { ... }` and pass the **original response** into `mapNodes` / `parse`. New top-level nodes (a paragraph, `{ type: "block", item: buildBlockRecord(...) }`): next to an existing node return `[node, newNode]` from the walk; at the end push into `content.document.children` after it.
 
 **Pass 1 comes first** because `parse` looks up `<block id="…"/>` placeholders in `currentItem.content`: a block created by Pass 2 would be missing (`parse` throws) and one rewritten by Pass 2 would be silently restored.
 
