@@ -13,7 +13,7 @@
 // with nothing but PATH and locale, and finds a `datocms` command that works (fake-datocms.mjs: canned answers,
 // no connection). Before any task, a self-check runs an actor that tries to break out; the run refuses to start
 // unless every attempt failed.
-//   node dev/e2e/routing/claude-tasks.mjs --model claude-haiku-5-5 --output local/routing/<run> [--skills-root <dir containing skills/>] [--only id,prefix*]
+//   node dev/e2e/routing/claude-tasks.mjs --model claude-haiku-5-5 --output local/routing/<run> [--skills-root <dir containing skills/>] [--only id,prefix*] [--effort medium]
 import { spawn } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -32,6 +32,8 @@ const { values } = parseArgs({
     only: { type: 'string' },
     jobs: { type: 'string', default: '6' },
     model: { type: 'string', default: 'claude-haiku-5-5' },
+    // Unset: the CLI's own default for the model.
+    effort: { type: 'string' },
     'max-turns': { type: 'string', default: '6' },
     'timeout-seconds': { type: 'string', default: '240' },
     'self-check-only': { type: 'boolean', default: false },
@@ -133,6 +135,7 @@ function runActor(prompt, dir, name, maxTurns) {
     '--output-format', 'stream-json', '--verbose', '--no-session-persistence',
     '--max-turns', String(maxTurns),
     '--model', values.model,
+    ...(values.effort ? ['--effort', values.effort] : []),
   ];
   // The actor's environment is a short allow-list: whatever tokens the operator's shell exports stay out of it.
   const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => /^(HOME|USER|LOGNAME|SHELL|TERM|TMPDIR|LANG|LC_[A-Z_]+|TZ)$/.test(key)));
@@ -279,6 +282,7 @@ const perSkill = Object.fromEntries(skills.map((name) => {
 }));
 const summary = {
   model: results[0]?.model,
+  effort: values.effort ?? null,
   skillsRoot: resolve(values['skills-root']),
   maxTurns: Number(values['max-turns']),
   tasks: results.length,
