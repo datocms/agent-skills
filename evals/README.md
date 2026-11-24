@@ -162,6 +162,7 @@ node dev/e2e/routing/skill-usage.mjs --judge claude-sonnet-5-5 --only <case> loc
 | Measure | Meaning |
 | - | - |
 | Reach | Lines of the file found in what the agent was shown: the skill body a `Skill` call injects and the output of every read, `cat`, `grep` or MCP call. A file nobody opened is listed as such |
+| Skill text per case | How many KB of skill text the agent was shown, main files and references apart: what a longer main file costs every case that loads it |
 | How it arrived | Skill load, file read, or the MCP tool whose answer carried the text |
 | When | Before the first write attempt, after a failed call, or later with nothing failing |
 | Echo | Code terms the agent used after the read that it first met in that file: not in the prompt, not used before, not shown first by another tool. Evidence of use, not proof: a model may know the term anyway |

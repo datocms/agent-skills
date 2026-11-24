@@ -8,8 +8,9 @@
 // With --judge <model>, a model without tools reads each case's timeline and says, per file read, whether the later
 // actions relied on it (used / not used / misled) and what the agent needed but was not given.
 //   node dev/e2e/routing/skill-usage.mjs [--skills <dir>] [--out <report.md>] [--only <case>] [--judge <model>] <run dir> …
-// A run dir is local/e2e/<run> (live suite), local/hosted/<run> (hosted MCP smoke) or any folder of case folders that
-// hold raw.jsonl (Claude) or native.jsonl (Codex).
+// A run dir is local/e2e/<run> (live suite), local/hosted/<run> (hosted MCP smoke), local/routing/<run> (routing probe:
+// one transcript per task under raw/, cut off after a few turns) or any folder of case folders that hold raw.jsonl
+// (Claude) or native.jsonl (Codex).
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -77,9 +78,11 @@ export function readTranscript(dir) {
   const events = [];
   let step = 0;
   let model = null;
-  if (existsSync(join(dir, 'raw.jsonl'))) {
+  // A routing probe keeps one Claude transcript per task as <run>/raw/<task>.jsonl.
+  const single = dir.endsWith('.jsonl') ? dir : null;
+  if (single || existsSync(join(dir, 'raw.jsonl'))) {
     const calls = new Map();
-    for (const e of parseLines(join(dir, 'raw.jsonl'))) {
+    for (const e of parseLines(single ?? join(dir, 'raw.jsonl'))) {
       if (e.type === 'system' && e.subtype === 'init') model = e.model;
       const content = Array.isArray(e.message?.content) ? e.message.content : [];
       if (e.type === 'assistant') for (const c of content) {
@@ -105,15 +108,15 @@ export function readTranscript(dir) {
       }
     }
   } else return null;
-  const session = existsSync(join(dir, 'session.json')) ? JSON.parse(readFileSync(join(dir, 'session.json'), 'utf8')) : {};
+  const session = !single && existsSync(join(dir, 'session.json')) ? JSON.parse(readFileSync(join(dir, 'session.json'), 'utf8')) : {};
   model ??= session.model ?? null;
   // Runs made before the harness saved the prompt have none: terms the prompt gave the agent then count as echoes.
   const prompt = session.prompt ?? session.prompts?.join('\n\n') ?? null;
   let passed = null;
-  if (existsSync(join(dir, 'outcome.json'))) passed = JSON.parse(readFileSync(join(dir, 'outcome.json'), 'utf8')).passed ?? null;
+  if (!single && existsSync(join(dir, 'outcome.json'))) passed = JSON.parse(readFileSync(join(dir, 'outcome.json'), 'utf8')).passed ?? null;
   const report = join(dirname(dir), 'report.json');
-  if (passed === null && existsSync(report)) passed = JSON.parse(readFileSync(report, 'utf8')).cases?.find((c) => `case-${c.kind}` === basename(dir))?.correctOutcome ?? null;
-  return { name: basename(dir), dir, model, prompt, events, steps: step, passed };
+  if (!single && passed === null && existsSync(report)) passed = JSON.parse(readFileSync(report, 'utf8')).cases?.find((c) => `case-${c.kind}` === basename(dir))?.correctOutcome ?? null;
+  return { name: basename(dir).replace(/\.jsonl$/, ''), dir: single ? dirname(dir) : dir, model, prompt, events, steps: step, passed };
 }
 
 // Lines as the agent saw them: `cat` prints them bare, Read numbers them, grep prefixes a file name or a line number.
@@ -183,7 +186,9 @@ export function analyse(skills, transcript) {
     }
     for (const section of read.sections) section.echoes = read.echoes.filter((e) => e.section === section.title).map((e) => e.term);
   }
-  return { ...transcript, firstWrite, failedSteps, reads: reads.sort((a, b) => a.firstStep - b.firstStep) };
+  // How much skill text the agent was shown: what a longer main file costs every case that loads it.
+  const shown = (main) => Math.round(reads.filter((r) => r.file.endsWith('/SKILL.md') === main).reduce((n, r) => n + r.bytes * r.part, 0));
+  return { ...transcript, firstWrite, failedSteps, shownBytes: { main: shown(true), references: shown(false) }, reads: reads.sort((a, b) => a.firstStep - b.firstStep) };
 }
 
 // A model without tools reads the timeline and judges each read. It sees what the agent saw of each file.
@@ -255,6 +260,10 @@ export function report(skills, results) {
   const tally = (list) => [...list.reduce((m, x) => m.set(x, (m.get(x) ?? 0) + 1), new Map())].sort((a, b) => b[1] - a[1]).map(([name, n]) => `${name} ${n}`).join(', ');
   const judged = results.some((r) => r.judge);
   out.push(`# Skill usage`, '', `${results.length} cases: ${[...new Set(results.map((r) => basename(dirname(r.dir))))].map((run) => `${run} (${tally(results.filter((r) => basename(dirname(r.dir)) === run).map((r) => r.model ?? 'model not recorded'))})`).join(', ')}.`, '');
+  const mean = (pick) => results.reduce((n, r) => n + pick(r), 0) / Math.max(1, results.length);
+  const shownTotal = (r) => r.shownBytes.main + r.shownBytes.references;
+  const largest = results.reduce((a, b) => (shownTotal(b) > shownTotal(a) ? b : a), results[0]);
+  out.push(`Skill text shown per case: ${kb(mean(shownTotal))} on average (main files ${kb(mean((r) => r.shownBytes.main))}, references ${kb(mean((r) => r.shownBytes.references))}); most in ${largest.name}, ${kb(shownTotal(largest))}. Failed calls: ${results.reduce((n, r) => n + r.failedSteps.length, 0)} in ${results.filter((r) => r.failedSteps.length).length} cases.`, '');
   out.push('Reach is measured, echo is evidence. "Echo" counts code terms the agent used after the read that it first met in that file.', '');
   out.push('## Files that reached the agent', '', `| File | Size | Cases it reached | Of cases that opened its skill | How it arrived | Part read | Read before the first write | Read after a failed call | Read later, nothing failed | Cases with an echo |${judged ? ' Judge: used / not used / misled |' : ''}`, `| - | - | - | - | - | - | - | - | - | - |${judged ? ' - |' : ''}`);
   const opened = [...byFile].filter(([, reads]) => reads.length).sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]));
@@ -283,7 +292,7 @@ export function report(skills, results) {
   }
   out.push('## Cases', '');
   for (const r of results) {
-    out.push(`### ${basename(dirname(r.dir))}/${r.name} (${r.passed === null ? 'outcome not recorded' : r.passed ? 'passed' : 'failed'}; ${r.steps} tool calls, first write at ${r.firstWrite ?? 'none'}, failed calls at ${r.failedSteps.join(', ') || 'none'})`, '');
+    out.push(`### ${basename(dirname(r.dir))}/${r.name} (${r.passed === null ? 'outcome not recorded' : r.passed ? 'passed' : 'failed'}; ${kb(shownTotal(r))} of skill text; ${r.steps} tool calls, first write at ${r.firstWrite ?? 'none'}, failed calls at ${r.failedSteps.join(', ') || 'none'})`, '');
     if (!r.reads.length) out.push('- No skill text reached the agent.');
     for (const read of r.reads) {
       const verdict = r.judge?.files?.find((f) => f.file === read.file);
@@ -301,14 +310,18 @@ function main() {
   if (!positionals.length) throw Error('Give at least one run folder, e.g. local/e2e/<run>');
   const skills = loadSkills(resolve(values.skills ?? join(REPO, 'skills')));
   const results = [];
-  for (const run of positionals) for (const name of readdirSync(resolve(run)).sort()) {
-    if (values.only && !values.only.includes(name)) continue;
-    const dir = join(resolve(run), name);
-    const transcript = statSync(dir).isDirectory() ? readTranscript(dir) : null;
+  for (const given of positionals) {
+    const probe = existsSync(join(resolve(given), 'raw'));
+    const run = probe ? join(resolve(given), 'raw') : resolve(given);
+    for (const name of readdirSync(run).sort()) {
+    if (values.only && !values.only.includes(name.replace(/\.jsonl$/, ''))) continue;
+    const dir = join(run, name);
+    const transcript = statSync(dir).isDirectory() || (probe && name.endsWith('.jsonl')) ? readTranscript(dir) : null;
     if (!transcript) continue;
     const result = analyse(skills, transcript);
-    if (values.judge && result.reads.length) { result.judge = judge(values.judge, result, skills); console.error(`judged ${basename(run)}/${name}`); }
+    if (values.judge && result.reads.length) { result.judge = judge(values.judge, result, skills); console.error(`judged ${basename(given)}/${name}`); }
     results.push(result);
+    }
   }
   const text = report(skills, results);
   if (values.out) { mkdirSync(dirname(resolve(values.out)), { recursive: true }); writeFileSync(resolve(values.out), `${text}\n`); }

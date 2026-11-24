@@ -108,4 +108,6 @@ test('the report counts cases per file and lists the files nobody opened', () =>
   assert.match(text, /\| `datocms-records\/SKILL\.md` \| [\d.]+ KB \| 1\/2 \| - \| skill load 1 \| 100% \| 1 \| 0 \| 0 \| 1 \|/);
   assert.match(text, /\| Deleting a block \| 3 \| 1 \| 1 \| `BLOCK_STILL_REFERENCED` \|/);
   assert.doesNotMatch(text, /Files no agent opened\n\n- /);
+  // The Claude case saw the main file and half the reference, the Codex case the whole reference.
+  assert.match(text, /Skill text shown per case: 0\.\d KB on average \(main files 0\.\d KB, references 0\.\d KB\); most in case-(claude|codex), 0\.\d KB\. Failed calls: 1 in 1 cases\./);
 });
