@@ -4,7 +4,7 @@ import {mkdtempSync, writeFileSync, rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
-import {cliLauncherSource} from '../e2e/lib/cliLauncher.ts';
+import {cliLauncherSource, npxStandInSource} from '../e2e/lib/cliLauncher.ts';
 
 test('live CLI launcher works inside an ESM project, forwards arguments and enforces its environment', () => {
   const directory = mkdtempSync(join(tmpdir(), 'cli-launcher-'));
@@ -29,6 +29,30 @@ test('live CLI launcher works inside an ESM project, forwards arguments and enfo
     }
     assert.deepEqual(JSON.parse(run(['cma:docs', 'items']).stdout), ['cma:docs', 'items']);
     assert.equal(run(['fail']).status, 23);
+  } finally {
+    rmSync(directory, {recursive: true, force: true});
+  }
+});
+
+test('the npx stand-in hands datocms to the launcher and everything else, untouched, to the npx it replaces', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'npx-stand-in-'));
+  try {
+    const echo = (name) => {
+      const path = join(directory, name);
+      writeFileSync(path, `#!/bin/sh\nprintf '%s' "${name}"; for a in "$@"; do printf '|%s' "$a"; done\n`, {mode: 0o700});
+      return path;
+    };
+    const standIn = join(directory, 'npx');
+    writeFileSync(standIn, npxStandInSource(echo('launcher'), echo('real npx')), {mode: 0o700});
+    // From another folder, as an actor does after `cd $TMPDIR`.
+    const run = (...args) => spawnSync(standIn, args, {cwd: tmpdir(), encoding: 'utf8'}).stdout;
+    assert.equal(run('datocms', 'cma:call', 'items', 'find', 'X', '--params', '{"nested": true}'), 'launcher|cma:call|items|find|X|--params|{"nested": true}');
+    assert.equal(run('--yes', 'datocms@latest', 'whoami'), 'launcher|whoami');
+    assert.equal(run('-y', '-q', 'datocms'), 'launcher');
+    // What the CLI itself runs for every script must reach the same npx as before, arguments intact.
+    assert.equal(run('tsc', '--noEmit', '-p', '.'), 'real npx|tsc|--noEmit|-p|.');
+    assert.equal(run('tsx', '/a path/runner.ts', 'datocms'), 'real npx|tsx|/a path/runner.ts|datocms');
+    assert.equal(run('--yes', 'cowsay', 'hi'), 'real npx|cowsay|hi');
   } finally {
     rmSync(directory, {recursive: true, force: true});
   }

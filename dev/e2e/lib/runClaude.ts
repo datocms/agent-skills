@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import {
 	appendFileSync,
+	existsSync,
 	mkdirSync,
 	mkdtempSync,
 	readFileSync,
@@ -12,7 +13,7 @@ import {
 import { cp } from "node:fs/promises";
 import { homedir, tmpdir } from "node:os";
 import { delimiter, dirname, join, resolve } from "node:path";
-import { cliLauncherSource } from "./cliLauncher.js";
+import { cliLauncherSource, npxStandInSource } from "./cliLauncher.js";
 import {
 	DEV_ROOT,
 	REPO_ROOT,
@@ -172,6 +173,10 @@ export async function runClaude(
 		cliLauncherSource(join(PROJECT_BIN, "datocms"), join(workspace, ".claude/skills")),
 		{ mode: 0o700 },
 	);
+	// `npx datocms` from any folder, without the registry: see npxStandInSource.
+	const nextNpx = [PROJECT_BIN, ...(process.env.PATH ?? "").split(delimiter)].map((dir) => join(dir, "npx")).find((path) => existsSync(path));
+	if (!nextNpx) throw Error("No npx on PATH");
+	writeFileSync(join(workspace, "bin/npx"), npxStandInSource(join(workspace, "bin/datocms"), nextNpx), { mode: 0o700 });
 	await cp(SKILLS_SOURCE, join(workspace, ".claude/skills"), { recursive: true });
 	if (workspace.startsWith(`${homedir()}/`)) throw Error("The temporary folder is under the home directory: the sandbox could not tell them apart");
 	// The sandbox grants a folder that exists; the CLI would create it on first use anyway.
@@ -234,6 +239,7 @@ export async function runClaude(
 	let completed = false;
 	let terminatedByCap = false;
 	let timedOut = false;
+	let endedAfterResult = false;
 	let credentialLeak = false;
 	let stdoutBuffer = "";
 	let stderrBuffer = "";
@@ -294,6 +300,16 @@ export async function runClaude(
 				num_turns: event.num_turns,
 				duration_ms: event.duration_ms,
 			});
+			// The session is over. A command the actor left running can keep the process open until the time limit: an
+			// `npm ci` hangs on the registry the sandbox blocks, and failed a case whose work was done and correct. Give
+			// the process a moment to exit on its own, then end it, and do not count that as a timeout.
+			clearTimeout(timeout);
+			setTimeout(() => {
+				if (child.exitCode === null && child.signalCode === null) {
+					endedAfterResult = true;
+					child.kill("SIGKILL");
+				}
+			}, 5_000).unref();
 		}
 	}
 
@@ -320,6 +336,7 @@ export async function runClaude(
 		clearTimeout(timeout);
 	}
 	if (stdoutBuffer) handleLine(stdoutBuffer);
+	if (endedAfterResult) exitCode = 0;
 	const stderr = stderrBuffer.split(options.apiToken).join(REDACTED);
 	if (stderr) writeFileSync(join(output, "stderr.log"), stderr);
 

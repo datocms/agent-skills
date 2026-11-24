@@ -43,3 +43,22 @@ const result = spawnSync(${JSON.stringify(process.execPath)}, [${JSON.stringify(
 process.exit(result.status ?? 1);
 `;
 }
+
+// Source of the `npx` command put first on the actor's PATH. `npx datocms` works from any folder on a machine that can
+// reach the npm registry; the sandbox blocks the registry, so outside the workspace (an actor often runs `cd $TMPDIR`
+// first) npx failed on a lookup no user's machine refuses: 11 of the 20 failed calls of one Sonnet run. This one hands
+// `datocms` to the launcher and everything else to `nextNpx`, the `npx` the PATH held before. That must stay the same
+// binary: the CLI itself runs `npx tsc` and `npx tsx` for every script, and another npx (a newer npm) prints notices
+// into each script's output and looks packages up on the blocked registry.
+export function npxStandInSource(launcher: string, nextNpx: string): string {
+  return `#!/bin/sh
+for arg in "$@"; do
+  case "$arg" in
+    -y|--yes|-q|--quiet|--no-install) shift ;;
+    datocms|datocms@*) shift; exec ${JSON.stringify(launcher)} "$@" ;;
+    *) break ;;
+  esac
+done
+exec ${JSON.stringify(nextNpx)} "$@"
+`;
+}
